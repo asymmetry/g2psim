@@ -11,3 +11,8 @@
 *.lai
 *.la
 *.a
+
+*.d
+update.sh
+TestSNAKE
+obj.*
