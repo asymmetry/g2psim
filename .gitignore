@@ -16,3 +16,7 @@
 update.sh
 TestSNAKE
 obj.*
+*.bak
+*.root
+*.png
+*.dat

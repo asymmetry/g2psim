@@ -140,7 +140,20 @@ float theta_sl5p65_400016                     (float *x,int m);
 float phi_sl5p65_400016                       (float *x,int m);
 float y00_sl5p65_400016                       (float *x,int m);
 
+
 ////////////////////////////////////////////////////////////////
+//*******484816 septum with shims, 5.65 central ray, no target field*********
+//unrastered beam
+//*****M.Huang 11/27/2012********
+//the source code can be found in Fwd_sl5p65_unraster_484816.cpp
+float x_sl5p65_484816_unrastered_fp           (float *x,int m);
+float t_sl5p65_484816_unrastered_fp           (float *x,int m);
+float y_sl5p65_484816_unrastered_fp           (float *x,int m);
+float p_sl5p65_484816_unrastered_fp           (float *x,int m);
+float l_sl5p65_484816_unrastered_fp           (float *x,int m);
+
+
+/////////////////////////////////////////////
 
 extern "C"
 {

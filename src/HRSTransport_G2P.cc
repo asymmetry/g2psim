@@ -342,14 +342,90 @@ bool TransportRightHRS_Shim_484816(double* pV5)
 
 bool TransportLeftHRS_Shim_484816(double* pV5)
 {
-	//use right arm routines for left arm before left arm is ready
-	//return TransportLeftHRS(pV5);
-	pV5[2]*=-1.;
-	pV5[3]*=-1.;
-	bool bGoodParticle=TransportRightHRS_Shim_484816(pV5);
-	pV5[2]*=-1.;
-	pV5[3]*=-1.;
-	return bGoodParticle;
+	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
+	int nvar=5;
+	int ii=5;
+
+	float x_test, y_test;
+
+	//Target to Septum ep5
+	//y, -480., 0.,none,84.0,388.,97.,97.,-97.,-97.  ;84.388.
+	x_test = x_sl5p65_400016_ep5(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep5(vector_jjl, ii)*m2cm;
+	if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 ) 
+		return false;
+
+	//Target to Septum ep7
+	//y, 480., 0.,none,84.0,388.,97.,97.,-97.,-97.
+	x_test = x_sl5p65_400016_ep7(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep7(vector_jjl, ii)*m2cm;
+	if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 ) 
+		return false;
+
+	//Target to Q1 en ep10
+	//y,-200., 0.,none,149.2,149.2,0.,0.,0.,0.
+	x_test = x_sl5p65_400016_ep10_q1en(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep10_q1en(vector_jjl, ii)*m2cm;
+	if( sqrt(x_test*x_test + y_test*y_test) > 14.92 )
+		return false;
+
+	//Target to Q1 ex ep13
+	//y,675., 0. ,none,300.,300.,0.,0.,0.,0.
+	x_test = x_sl5p65_400016_ep13_q1ex(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep13_q1ex(vector_jjl, ii)*m2cm;
+	if( sqrt(x_test*x_test + y_test*y_test) > 30. )
+		return false;
+
+
+
+	//Target to dipole exit, trapezoid -46.19cm<x<46.19cm  |y| < -0.0161*x+12.5 ep24
+	//y,0., 0.,none,-461.88,461.88,132.44,117.56,-132.44,-117.56 
+	x_test = x_sl5p65_400016_ep24_dex(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep24_dex(vector_jjl, ii)*m2cm;
+	if( (x_test<-46.19) || (x_test>46.19) || fabs(y_test) > fabs(-0.0161*x_test+12.5) )
+		return false;
+
+	//Target to Q3 entrance, circle of radius 30.0 cm ep26
+	//y,915.,0.,none,300.,300.,0.,0.,0.,0.
+	x_test = x_sl5p65_400016_ep26_q3en(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep26_q3en(vector_jjl, ii)*m2cm;
+	if( sqrt(x_test*x_test + y_test*y_test) > 30.0 )
+		return false;
+
+	//Target to Q3 exit, circle of radius 30.0 cm ep29
+	//y,575., 0.,none,300.,300.,0.,0.,0.,0.
+	x_test = x_sl5p65_400016_ep29_q3ex(vector_jjl, ii)*m2cm;
+	y_test = y_sl5p65_400016_ep29_q3ex(vector_jjl, ii)*m2cm;
+	if( sqrt(x_test*x_test + y_test*y_test) > 30.0)
+		return false;
+
+	/////////////////////////////////////////////////////////////
+	// succesfully reach focus plane
+	float x_fp     = x_sl5p65_484816_unrastered_fp(vector_jjl,ii);
+	float theta_fp = t_sl5p65_484816_unrastered_fp(vector_jjl,ii);
+	float y_fp     = y_sl5p65_484816_unrastered_fp(vector_jjl,ii);
+	float phi_fp   = p_sl5p65_484816_unrastered_fp(vector_jjl,ii);
+
+
+	//reset the vector and return it back to the caller
+	pV5[0] = (double)x_fp;
+	pV5[1] = (double)theta_fp;
+	pV5[2] = (double)y_fp;
+	pV5[3] = (double)phi_fp;
+	//pV5[4] = (double)delta_fp;  // delta is not change
+
+	return true;
+
+
+
+// 	//use right arm routines for left arm before left arm is ready
+// 	//return TransportLeftHRS(pV5);
+// 	pV5[2]*=-1.;
+// 	pV5[3]*=-1.;
+// 	bool bGoodParticle=TransportRightHRS_Shim_484816(pV5);
+// 	pV5[2]*=-1.;
+// 	pV5[3]*=-1.;
+// 	return bGoodParticle;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
