@@ -1,3 +1,4 @@
+###################################################################
 #   This Makefile shows how to compile all C++, C and Fortran
 #   files found in $(SRCDIR) directory.
 #   Linking is done with g++. Need to have $CERN_ROOT and $ROOTSYS defined
@@ -16,7 +17,7 @@ SRCDIR   := src
 INCDIR   := include 
 
 OTHERINC := 
-OTHERLIBS := -LHRSTransport/obj.${ARCH} -lHRSTransport -lgfortran
+OTHERLIBS := -lgfortran -LHRSTransport/obj.${ARCH} -lHRSTransport
 
 ###################################################################
 TARGETLIB = $(TARGET)_v$(VERSION)
@@ -32,30 +33,20 @@ AR       := libtool -static -o
 endif
 
 ###################################################################
-ifeq ($(ARCH),i686) 
-####
+ifeq ($(ARCH),i686)
 MODE     := -m32
+else
+MODE     := -m64
+endif
 GPPFLAGS := -M
 CXX      := g++
 FF       := gfortran
-CXXFLAGS := -Wall -O3 -g -Wno-deprecated  $(MODE) -I$(INCDIR) $(OTHERINC) 
-CFLAGS   := -Wall -O3 -g  $(MODE) -I$(INCDIR) $(OTHERINC) 
-FFLAGS   := -Wall -O3 -g  $(MODE) -I$(INCDIR) $(OTHERINC) 
+CXXFLAGS := -Wall -O3 -g -Wno-deprecated $(MODE) -I$(INCDIR) $(OTHERINC) 
+CFLAGS   := -Wall -O3 -g $(MODE) -I$(INCDIR) $(OTHERINC) 
+FFLAGS   := -Wall -O3 -g $(MODE) -I$(INCDIR) $(OTHERINC) 
 LD       := g++
 LDFLAGS  := -O3 -g $(MODE)  
-SYSLIBS  := -lstdc++ 
-else
-MODE     := -m64
-FF       := gfortran 
-GPPFLAGS := -M
-CXX      := g++
-CXXFLAGS := -Wall -O3 -g -Wno-deprecated  $(MODE) -I$(INCDIR) $(OTHERINC) 
-CFLAGS   := -Wall -O3 -g  $(MODE) -I$(INCDIR) $(OTHERINC) 
-FFLAGS   := -Wall -O3 -g  $(MODE) -I$(INCDIR) $(OTHERINC) 
-LD       := g++
-LDFLAGS  := -O3 -g $(MODE)
-SYSLIBS  := -lstdc++ 
-endif
+SYSLIBS  := -lstdc++
 
 ###################################################################
 #you can specify the .SUFFIXES
@@ -79,14 +70,14 @@ OBJS  := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
 COBJS := $(addsuffix .o, $(basename $(CSOURCES)))
 COBJS := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(COBJS))
 DEPS  := $(subst .o,.d,$(COBJS))
+
 ###################################################################
 ifneq ($(FSOURCES),)
 ifeq ($(FF),gfortran)
-SYSLIBS   += -lgfortran 
-else
-SYSLIBS   += -lg2c 
+SYSLIBS   += -lgfortran
 endif
 endif
+
 ###################################################################
 ROOTCFLAGS   := $(shell root-config --cflags)
 ROOTLIBS     := $(shell root-config --libs)
@@ -105,8 +96,8 @@ endif
 
 CXXFLAGS     += $(ROOTCFLAGS) 
 LDFLAGS      += $(GLIBS) $(OTHERLIBS) 
-###################################################################
 
+###################################################################
 all: exe
 
 # Make the $(TARGET).d file and include it.
@@ -160,7 +151,6 @@ ifneq ($(DEPS),)
 endif
 
 ##########################################################
-
 lib: $(OBJDIR) $(OBJS)
 	@make -C HRSTransport lib
 	@rm -f $(OBJDIR)/lib$(TARGETLIB).a

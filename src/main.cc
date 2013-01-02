@@ -1,39 +1,84 @@
-#include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
-using namespace std;
+#include <getopt.h>
 
-//input:
-//iExperiment=10: g2p normal, 11: g2p 484816_shim; 12 g2p 403216_shim; 13 g2p 400016_shim 
-//iSmearX0=0,1,2 means X0=0, X0=X0_BPM, X0=gaussian_smeared_X0_BMP
-//iSourceDistr=0,1,2 means pV5_tg[5] is in delta, flat, gaussian distribution
-//iArm = 0,1,2 means random, left, right
-void TestSNAKE(int iNEvent,int iExperiment=11, int iSmearX0=2, int iSourceDistr=2, int iArm=0);
+void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double fBPM);
+void usage(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
-	if(argc<4)
-	{
-		cout<<"Usage: "<<argv[0]<<" <iNEvent> <iExperiment(=10|11|12|13|19|20)> <iSmearX0(=0|1)> \n"
-			<<"\t [iSourceDistr=1(0|1|2)] [iArm=0(0|1|2)]\n"<<endl
-			<<"\t 10<=iExperiment<20 is for g2p|gep experiment, iExperiment=20 for GDH experiment\n"
-			<<"\t iExperiment=10,11,12,13 are for normal 484816 septa, 484816+shim,403216+shim,400016+shim\n"
-			<<"\t iSmearX0=0,1 means X0_bpm is smeared (0.5 mm) or not\n"
-			<<"\t iSourceDistr=0,1,2 means delta,flat, gaussian distribution for x,theta,y,phi,delta\n"
-            <<"\t iSourceDistr=3 means use real data as focus plane variable\n"
-			<<"\t iArm = 0,1 means left arm, right arm\n"
-			<<endl;
-		exit(-1);
-	}
+    int c;
 
-	int iNEvent= atoi(argv[1]);
-	int iExperiment = atoi(argv[2]);
-	int iSmearX0 = atoi(argv[3]);
-	int iSourceDistr = 1;
-	if(argc>4) iSourceDistr = atoi(argv[4]);
-	int iArm = 0; 
-	if(argc>5) iArm = atoi(argv[5]);
+    int iNEvent = 50000;   // default 50000
+    int iSetting = 11;  // default 484816 septa with shim
+    double fBPM = 0.0;     // default no smear
+    int iSource = 0;       // default delta distribution
+    int iDirection = 0;    // default forward direction
+    int iArm = 0;          // default left arm
 
-    TestSNAKE(iNEvent,iExperiment,iSmearX0,iSourceDistr,iArm);
+    while (1) {
+        static struct option long_options[] = {
+            {"help",        no_argument,       0, 'h'},           
+            {"inputsource", required_argument, 0, 'i'},
+            {"direction",   required_argument, 0, 'd'},
+            {"setting",     required_argument, 0, 's'},
+            {"bpm",         required_argument, 0, 'b'},
+            {"arm",         required_argument, 0, 'a'},
+            {0, 0, 0, 0}
+        };
+
+        int option_index = 0;
+
+        c = getopt_long(argc, argv, "a:b:d:hs:", long_options, &option_index);
+
+        if (c==-1) break;
+
+        switch (c) {
+        case 'a':
+            iArm = atoi(optarg);
+            break;
+        case 'b':
+            fBPM = atof(optarg);
+            break;
+        case 'd':
+            iDirection = atoi(optarg);
+            break;
+        case 'h':
+            usage(argc, argv);
+            break;
+        case 'i':
+            iSource = atoi(optarg);
+            break;
+        case 's':
+            iSetting = atoi(optarg);
+            break;
+        case '?':
+            break;
+        default:
+            usage(argc, argv);
+        }
+    }
+
+    if (optind<argc) {
+        iNEvent = atoi(argv[optind++]);
+    }
+    else {
+        usage(argc, argv);
+        exit(-1);
+    }
+
+    TestSNAKE(iNEvent, iArm, iSetting, iSource, iDirection, fBPM);
 
 	return 0;
+}
+
+void usage(int argc, char** argv)
+{
+    printf("usage: %s [options] NEvent\n", argv[0]);
+    printf("  -a, --arm=0          Set arm: 0 means left arm, 1 means right arm\n");
+    printf("  -b, --bpm=0.0        Set bpm resolution\n");
+    printf("  -d, --direction=0    Set sim direction: 0 means forward, 1 means backward, 2 means both\n");
+    printf("  -h, --help           This small usage guide\n");
+    printf("  -i, --inputsource=0  Set data source: 0,1,2 means use delta,flat,gaussian distribution for input position and angle, 3 means use real data in file input_tg.dat and input_fp.dat\n");
+    printf("  -s, --setting=11     Set experiment setting: 10 means normal 484816 septa, 11 means 484816 septa with shim, 12 means 403216 septa with shim, 13 means 400016 septa with shim\n");
 }
