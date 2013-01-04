@@ -104,89 +104,40 @@
 //
 //y0=y00(x,5)
 //
+
 #ifndef HRS_TRANSPORT_H
 #define HRS_TRANSPORT_H
 
-#include "HRSTransport_STD.hh"
-#include "HRSTransport_GDH.hh"
-#include "HRSTransport_G2P.hh"
-
-//Try to swing particle through the HRS, if it does not go through
-//return false, otherwise return true and set the parameters of the 
-//focus plan into the array
-//
-//For transportation, the input array is 
-//the detail of input vector is
-//vector_jjl[0] = x_tr;
-//vector_jjl[1] = theta_tr;
-//vector_jjl[2] = y_tr;
-//vector_jjl[3] = phi_tr;
-//vector_jjl[4] = delta_tr;
-//the output is 
-//vector_jjl[0] = x_fp;
-//vector_jjl[1] = theta_fp;
-//vector_jjl[2] = y_fp;
-//vector_jjl[3] = phi_fp;
-//vector_jjl[4] = delta_fp;  // delta is not change
-//all length in unit of meter
-//The name ended with underscore are using fortran code
-
-//bool TransportLeftHRS_ID(double* vector_jjl, int experiment);	
-//bool TransportRightHRS_ID(double* vector_jjl, int experiment);	
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-// For reconstruction
-//vector_jjl[0] = x_fp;
-//vector_jjl[1] = theta_fp;
-//vector_jjl[2] = y_fp;
-//vector_jjl[3] = phi_fp;6
-//vector_jjl[4] = x_or;
-//the output is 
-//vector_jjl[0] = x_or;
-//vector_jjl[1] = theta_rec;
-//vector_jjl[2] = y_rec;
-//vector_jjl[3] = phi_rec;
-//vector_jjl[4] = delta_rec;
-//all length in unit of meter
-
-//void ReconstructLeftHRS_ID(double* vector_jjl, int experiment);	
-//void ReconstructRightHRS_ID(double* vector_jjl,int experiment);	
+#include "HRSTransport_G2P.hh"	
 
 ///////////////////////////////////////////////////////////////////////////
+// Definition of variables
+// forward:
+// pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+// pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
+// delta does not change
+// backward:
+// pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, x_tg};
+// pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+// x_tg does not change
 
-//input:
-//pVector_tg[0] = x_tr;
-//pVector_tg[1] = theta_tr;
-//pVector_tg[2] = y_tr;
-//pVector_tg[3] = phi_tr;
-//pVector_tg[4] = delta_tr;
-//output
-//pVector_fp[0] = x_fp;
-//pVector_fp[1] = theta_fp;
-//pVector_fp[2] = y_fp;
-//pVector_fp[3] = phi_fp;
-//pVector_fp[4] = delta_fp;		// = delta_tr; not change
-//pVector_rec_tg[0] = x_rec ;	// = x_tr; not change
-//pVector_rec_tg[1] = theta_rec;
-//pVector_rec_tg[2] = y_rec;
-//pVector_rec_tg[3] = phi_rec;
-//pVector_rec_tg[4] = delta_rec;
-void CMP_HRS_TRANSPORTATION(float *pV5_tg, float *pV5_g2p);
-void CMP_HRS_TRANSPORTATION(double *pV5_tg, double *pV5_g2p);
+// Transport particles through HRS using SNAKE model
+// Use iSetting to identify which SNAKE model to be used
+// 10: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
+// 11: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
+// 12: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
+// 13: 400016 with shim, 5.65 deg, SNAKE Model not ready yet 
+// 19: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
+// May add more HRS packages later
+
+bool SNAKEForward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
+
+bool SNAKEBackward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
 
 void DeltaCorrection(double &pDelta, double &pP_rec);
 void XtgCorrection(double &pX,double pP_rec);
 void ThetatgCorrection(double &pTheta,double pP_rec);
 void YtgCorrection(double &pY,double pP_rec);
 void PhitgCorrection(double &pPhi,double pP_rec);
-
-
-//transport particles through HRS, use iExperiment to identify which HRS packages
-//will be use, iExperiment==[10,20) is for g2p, 20 for E97110 GDH iExperiment
-//will add more HRS packages later
-bool SNAKEThruHRS(int pIsLeftArm, double pEndPlaneAngle, double pX0_tg_m, 
-				  double pHRSMomentum, int iFieldRotation, int iExperiment,
-				  double* pV5_tg, double* pV5_fp);
 
 #endif

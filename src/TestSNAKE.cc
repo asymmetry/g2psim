@@ -1,8 +1,7 @@
-#include "math.h"
-#include "stdlib.h"
-#include "time.h"
-#include <iostream>
-#include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -20,19 +19,26 @@
 #include "TPaveText.h"
 
 #include "HRSRecUseDB.hh"
-
+#include "Rand.hh"
 #include "HRSTransport.hh"
 #include "HRSTransform_TCSNHCS.hh"
 
 using namespace std;
 
-//flat random number generator between [0,1)
-double fRand();
-double fRandGaus(double m=0.0, double s=1.0);
-//return random number in [low,High) following a*x+c prob density
-double fLinearRand(double a=1.0,double c=0.0,double low=0.0,double high=1.0);
-
 typedef double (*func)(double);
+
+void VDCSmearing(double* pV5_fp)
+{
+    double mWireChamberRes_x = 0.0013; //m;
+    double mWireChamberRes_y = 0.0013; //m;
+    double mWireChamberRes_theta = 0.0003; //rad;
+    double mWireChamberRes_phi = 0.0003; //rad;
+
+    pV5_fp[0] += fGausRand(0, mWireChamberRes_x);
+    pV5_fp[2] += fGausRand(0, mWireChamberRes_y);
+    pV5_fp[1] += fGausRand(0, mWireChamberRes_theta);
+    pV5_fp[3] += fGausRand(0, mWireChamberRes_phi);
+}
 
 double fPol1(double x)
 {

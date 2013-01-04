@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double fBPM);
+void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double iBPM);
 void usage(int argc, char** argv);
 
 int main(int argc, char** argv)
@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
     int iNEvent = 50000;   // default 50000
     int iSetting = 11;  // default 484816 septa with shim
-    double fBPM = 0.0;     // default no smear
+    double iBPM = 0.0;     // default no smear
     int iSource = 0;       // default delta distribution
     int iDirection = 0;    // default forward direction
     int iArm = 0;          // default left arm
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
             iArm = atoi(optarg);
             break;
         case 'b':
-            fBPM = atof(optarg);
+            iBPM = atof(optarg);
             break;
         case 'd':
             iDirection = atoi(optarg);
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    TestSNAKE(iNEvent, iArm, iSetting, iSource, iDirection, fBPM);
+    TestSNAKE(iNEvent, iArm, iSetting, iSource, iDirection, iBPM);
 
 	return 0;
 }

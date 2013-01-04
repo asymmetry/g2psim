@@ -1,14 +1,10 @@
 #include "HRSTransport_G2P.hh"
-#include "GlobalDebuger.hh"
 
 #include <iostream>
 #include <iomanip>
 #include <math.h>
 
 using namespace std;
-
-//#define DEBUG_HRS_TRANSPORT 2
-
 
 static const float m2cm = 100.0;
 
@@ -343,7 +339,6 @@ bool TransportRightHRS_Shim_484816(double* pV5)
 bool TransportLeftHRS_Shim_484816(double* pV5)
 {
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-	int nvar=5;
 	int ii=5;
 
 	float x_test, y_test;
@@ -467,7 +462,6 @@ bool TransportLeftHRS_Shim_400016(double* pV5)
 {
 
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-	int nvar=5;
 	int ii=5;
 
 	float x_test, y_test;
