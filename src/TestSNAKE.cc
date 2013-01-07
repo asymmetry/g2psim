@@ -6,26 +6,12 @@
 #include "TROOT.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TCanvas.h"
-#include "TCut.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TString.h"
-#include "TF1.h"
-#include "TPad.h"
-#include "TStyle.h"
-
-#include "TText.h"
-#include "TPaveText.h"
+#include "TMath.h"
 
 #include "HRSRecUseDB.hh"
-#include "Rand.hh"
 #include "HRSTransport.hh"
 #include "HRSTransform_TCSNHCS.hh"
-
-using namespace std;
-
-typedef double (*func)(double);
+#include "Rand.hh"
 
 void VDCSmearing(double* pV5_fp)
 {
@@ -40,76 +26,25 @@ void VDCSmearing(double* pV5_fp)
     pV5_fp[3] += fGausRand(0, mWireChamberRes_phi);
 }
 
-double fPol1(double x)
+// definition:
+// iArm: Set Arm 0 means left arm, 1 means right arm
+// iBPM: Set bpm resolution
+// iDirection: Set sim direction: 0 means forward, 1 means backward, 2 means both
+// iSource: Set data source: 1,2,3 means use delta,flat,gaussian distribution for input position and angle, 3 means use real data in file input_tg.dat and input_fp.dat
+// iSetting: Set experiment setting: 10 means normal 484816 septa, 11 means 484816 septa with shim, 12 means 403216 septa with shim, 13 means 400016 septa with shim
+void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double pHRSMomentum, double pBPMRes)
 {
-	double a=1.0,b=0.0;
-	return a*x+b;
-}
-
-double fPol2(double x)
-{
-	double a=1.0,b=0.0,c=0.0;
-	return a*x*x+b*x+c;
-}
-
-//generate a non-uniform x using the constrain(distribution) of f(x)
-double RandomOfFunction(func f, double low,double high)
-{
-	//input:
-	//	low,high	  lower,higher limit of x
-	double x,y;
-	double ylow=f(low),yhigh=f(high);
-	if(ylow<yhigh) 
-	{
-		double tmp=ylow;
-		ylow=yhigh;
-		yhigh=tmp;
-	}
-
-	do{
-		x=low+(high-low)*((double)rand())/(double(RAND_MAX));
-		y=ylow+(yhigh-ylow)*((double)rand())/(double(RAND_MAX));
-
-		if(f(x)>y) break;
-	}while(true);
-	return x;
-}
-
-bool SNAKEThruHRS(int pIsLeftArm, double pEndPlaneAngle, double pXtg_BPM_tr, 
-				  double pHRSMomentum, int iFieldRotation, int iExperiment,
-				  double* pV5tg_tr, double* pV5fp_tr);
-void ReconstructHRS(int pIsLeftArm, double pEndPlaneAngle, double pX0_tg_m, 
-				  double pHRSMomentum, int iFieldRotation, int iExperiment,
-                    double* pV5_tg, double* pV5_fp);
-
-//input:
-//iExperiment=10: g2p normal, 11: g2p 484816_shim; 12 g2p 403216_shim; 13 g2p 400016_shim 
-//iSmearX0=0,1,2,3 means Xtg_BPM_tr=0, Xtg_BPM_tr, 1mm_gaussian_smeared_XBMP_tr, 0-2.5mm_gaussian_smeared_XBMP_tr
-//iSourceDistr=0,1,2 means pV5tg_tr[5] is in delta, flat, gaussian distribution
-//iArm = 0,1,2 means random, left, right
-void TestSNAKE(int iNEvent, int iExperiment, int iSmearX0, int iSourceDistr, int iArm)
-{	
-	srand(time(0));
-    ifstream fin;
-    
-    if(iSourceDistr==3){
-        fin.open("input.dat");
-    }
-    
-	const double deg=acos(0.0)/90;
+    const double deg = TMath::Pi()/180.0;
 
 	int    Index=0;
 	int    iLeftArm=1;
-	double pHRSAngle=5.682*deg;  //6 deg
+	double pHRSAngle=5.767*deg;  // Set the same value to optics setting
 	double pXtg_BPM_tr=0;
-	double pHRSMomentum=2.251;
-	int    iFieldRotation=90;  //90 deg	
 	double pV5fp_tr[5]={0,0,0,0,0};
 	double pV5tg_tr[5]={0,0,0,0,0};
 	double pV5rec_tr[5]={0,0,0,0,0};
 	double pV5tg_lab[5]={0,0,0,0,0};
-	double pV5rec_lab[5]={0,0,0,0,0};
-	double pBPMRes=0.0005;  // 0.5 mm 
+    double pV5rec_lab[5]={0,0,0,0,0};
 
 	TFile* pFile= new TFile(Form("snake_Exp%02d_X%d_Distr%d.root",
 		iExperiment,iSmearX0,iSourceDistr),"recreate");
@@ -231,68 +166,4 @@ void TestSNAKE(int iNEvent, int iExperiment, int iSmearX0, int iSourceDistr, int
 	cout<<"\n"<<Index<<"/"<<NThrown<<" events saved into ntuple"<<endl;
 	pFile->Delete();
     if (iSourceDistr==3) fin.close();
-}
-
-void ReconstructHRS(int pIsLeftArm, double pEndPlaneAngle, double pX0_tg_m, 
-				  double pHRSMomentum, int iFieldRotation, int iExperiment,
-				  double* pV5_tg, double* pV5_fp)
-{
-    const double deg = acos(0.0)/90.0;
-    int iSnakeFlag=(iExperiment%10);
-    double pV5_rec[5];
-    for(int k=0;k<4;k++)pV5_rec[k]=pV5_fp[k];
-    pV5_rec[4]=pX0_tg_m;
-
-    if( iExperiment>=1 && iExperiment<20) {
-        //use the transportation without target field, which is delta dependent, not momentum dependent
-        if(pIsLeftArm) {
-            if(cos(pEndPlaneAngle)>cos(12.0*deg)) {//with septa
-                if(iSnakeFlag==0) ReconstructLeftHRS_g2_(pV5_rec);  //from JLL, No shim, Wrong Bx
-                else if(iSnakeFlag==1) ReconstructLeftHRS_Shim_484816(pV5_rec);    //By John, 3cm raster,
-                else if(iSnakeFlag==2) ReconstructLeftHRS_Shim_403216(pV5_rec);
-                else if(iSnakeFlag==3) ReconstructLeftHRS_Shim_400016(pV5_rec);
-                else if(iSnakeFlag==9) ReconstructLeftHRS_Shim_484816_WrongBx(pV5_rec);   //using Min's 5.69 version, 2 cm raster and Wrong Bx
-            }
-            else {//no septa
-                //John does not provide 12.5 degree resonstruction for g2p
-                if(iSnakeFlag==9) ReconstructLeftHRS_12p5_Min_(pV5_rec);  //using Min's tuned reconstruction, this package need to be updated
-                else ReconstructLeftHRS(pV5_rec);
-            }
-        }
-        else {
-            if(cos(pEndPlaneAngle)>cos(12.0*deg)) {
-                if(iSnakeFlag==0) ReconstructRightHRS_g2_(pV5_rec);  //from JLL, No shim, Wrong Bx
-                else if(iSnakeFlag==1) ReconstructRightHRS_Shim_484816(pV5_rec);    //By John, 3cm raster,
-                else if(iSnakeFlag==2) ReconstructRightHRS_Shim_403216(pV5_rec);
-                else if(iSnakeFlag==3) ReconstructRightHRS_Shim_400016(pV5_rec);
-                else if(iSnakeFlag==9) ReconstructRightHRS_Shim_484816_WrongBx(pV5_rec);   //using Min's 5.69 version, 2 cm raster and Wrong Bx
-            }
-            else { //John does not provide 12.5 degree resonstruction for g2p
-                if(iSnakeFlag==9) ReconstructRightHRS_12p5_Min_(pV5_rec);  //using Min's tuned reconstruction, this package need to be updated
-                else ReconstructRightHRS(pV5_rec);
-            }
-        }
-    }
-    else if( iExperiment == 20 ) {
-        if(pIsLeftArm) {
-            if(pEndPlaneAngle/deg<12.0)	ReconstructLeftHRS6_LargeX0(pV5_rec);
-            else ReconstructLeftHRS(pV5_rec);
-        }
-        else {
-            if(pEndPlaneAngle/deg<12.0)	ReconstructRightHRS6_LargeX0(pV5_rec);
-            else ReconstructRightHRS(pV5_rec);
-        }
-    }
-    else {
-        if(pIsLeftArm) {
-            if(pEndPlaneAngle/deg<12.0)	ReconstructLeftHRS6(pV5_rec);
-            else ReconstructLeftHRS(pV5_rec);
-        }
-        else {
-            if(pEndPlaneAngle/deg<12.0)	ReconstructRightHRS6(pV5_rec);
-            else ReconstructRightHRS(pV5_rec);
-        }
-    }
-    
-    for(int k=0;k<5;k++)  pV5_tg[k]=pV5_rec[k];
 }

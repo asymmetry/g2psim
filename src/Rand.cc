@@ -35,3 +35,17 @@ double fLinearRand(double a = 1.0, double c = 0.0 , double low = 0.0, double hig
 
     return x;
 }
+
+double fFuncRand(func f, double low, double high, double ylow, double yhigh)
+{
+    double x,y;
+
+    do {
+        x = low + (high-low)*fRand();
+        y = ylow + (yhigh-ylow)*fRand();
+    } while (f(x)<y);
+
+    return x;
+}
+
+
