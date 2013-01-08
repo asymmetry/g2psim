@@ -17,7 +17,12 @@ SRCDIR   := src
 INCDIR   := include 
 
 OTHERINC := 
+ifeq ($(MYOS),Darwin)
 OTHERLIBS := -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran -LHRSTransport/obj.${ARCH} -lHRSTransport
+else
+OTHERLIBS := -lgfortran -LHRSTransport/obj.${ARCH} -lHRSTransport
+endif
+
 
 ###################################################################
 TARGETLIB = $(TARGET)_v$(VERSION)
