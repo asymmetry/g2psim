@@ -14,7 +14,7 @@
 
 *.d
 update.sh
-TestSNAKE
+g2pSim
 obj.*
 *.bak
 *.root

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "TROOT.h"
 #include "TRandom2.h"
 
 #include "Rand.hh"

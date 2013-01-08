@@ -19,7 +19,7 @@ const double deg = acos(0.0)/90.0;
 // 19: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
 // May add more HRS packages later
 
-bool SNAKEForward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp)
+bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp)
 {
     // Definition of variables
     // pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
@@ -39,7 +39,7 @@ bool SNAKEForward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV
 
     bool bGoodParticle=false;
 
-    switch (pIsLeftArm*100+iSetting) {
+    switch (((pIsLeftArm)?1:0)*100+iSetting) {
     case 10: // No shim, Wrong Bx, by JLL
         bGoodParticle=TransportRightHRS_g2_(pV5);
         break;
@@ -86,10 +86,10 @@ bool SNAKEForward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV
     return bGoodParticle;
 }
 
-bool SNAKEBackward(int pIsLeftArm, int iSetting, const double* pV5_fp, double* pV5_tg)
+bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_fp, double* pV5_tg)
 {
     // Definition of variables
-    // pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, x_tg};
+    // pV5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
     // pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
     // x_tg does not change
     
@@ -105,7 +105,7 @@ bool SNAKEBackward(int pIsLeftArm, int iSetting, const double* pV5_fp, double* p
 	printf("IN:  %8.4f %8.4f %8.4f %8.4f %8.4f", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 
-    switch (pIsLeftArm*100+iSetting) {
+    switch (((pIsLeftArm)?1:0)*100+iSetting) {
     case 10: // No shim, Wrong Bx, by JLL
         ReconstructRightHRS_g2_(pV5);
         break;
@@ -148,8 +148,12 @@ bool SNAKEBackward(int pIsLeftArm, int iSetting, const double* pV5_fp, double* p
     pV5_tg[2]=pV5[2];
     pV5_tg[3]=atan(pV5[3]);
     pV5_tg[4]=pV5[4];
+
+    bool bGoodParticle = false;
+
+    if (pV5_tg[4]<1.0) bGoodParticle = true;
     
-    return true;
+    return bGoodParticle;
 }
 
 void DeltaCorrection(double &pDelta, double &pP_rec){;}

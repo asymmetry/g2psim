@@ -130,9 +130,9 @@
 // 19: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
 // May add more HRS packages later
 
-bool SNAKEForward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
+bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
 
-bool SNAKEBackward(int pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
+bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
 
 void DeltaCorrection(double &pDelta, double &pP_rec);
 void XtgCorrection(double &pX,double pP_rec);

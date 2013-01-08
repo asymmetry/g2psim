@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#include "TestSNAKE.hh"
+#include "g2pSim.hh"
 
 void usage(int argc, char** argv);
 
@@ -73,8 +73,21 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    TestSNAKE(iNEvent, iArm, iSetting, iSource, iDirection, pHRSMomentum ,pBPMRes);
+    g2pSim *run= new g2pSim();
 
+    run->SetNEvent(iNEvent);
+    if (iArm==0) run->SetArm("L");
+    else if (iArm==1) run->SetArm("R");
+    run->SetHRSMomentum(2.251);
+    run->SetHRSSetting(iSetting);
+    run->SetDATASource(iSource);
+    run->SetSimDirection(iDirection);
+
+    run->Init();
+    run->Run();
+
+    delete[] run;
+    
 	return 0;
 }
 

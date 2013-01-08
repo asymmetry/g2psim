@@ -11,13 +11,13 @@ MYHOST   := $(shell hostname -s)
 ##################################################################
 VERSION   = 1.1
 TARGET    = SNAKE
-EXECFILE  = TestSNAKE
+EXECFILE  = g2pSim
 
 SRCDIR   := src
 INCDIR   := include 
 
 OTHERINC := 
-OTHERLIBS := -lgfortran -LHRSTransport/obj.${ARCH} -lHRSTransport
+OTHERLIBS := -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran -LHRSTransport/obj.${ARCH} -lHRSTransport
 
 ###################################################################
 TARGETLIB = $(TARGET)_v$(VERSION)
