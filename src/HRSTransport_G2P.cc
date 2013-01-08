@@ -747,12 +747,23 @@ void ReconstructRightHRS_Shim_484816(double *pV5)
 
 void ReconstructLeftHRS_Shim_484816(double *pV5)
 {
-	//in order to call right arm routines, need to flip y, phi 
-	pV5[2]*=-1;
-	pV5[3]*=-1;
-	ReconstructRightHRS_Shim_484816(pV5);
-	pV5[2]*=-1;
-	pV5[3]*=-1;
+	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
+	int ii=5;
+
+	vector_jjl[1]   = vector_jjl[1] - txfit_sl5p65_484816_unrastered(vector_jjl,ii);
+
+	float x_or      = vector_jjl[4];
+	float delta_rec = delta_sl5p65_484816_unrastered(vector_jjl,ii);
+	float theta_rec = theta_sl5p65_484816_unrastered(vector_jjl,ii);
+	float phi_rec   = phi_sl5p65_484816_unrastered(vector_jjl,ii); 
+	float y_rec     = 0.; 
+
+	//reset the vector and return it back to the caller
+	pV5[0] = (double)x_or;
+	pV5[1] = (double)theta_rec;
+	pV5[2] = (double)y_rec;
+	pV5[3] = (double)phi_rec;
+	pV5[4] = (double)delta_rec;
 }
 
 

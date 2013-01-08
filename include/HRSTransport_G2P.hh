@@ -152,6 +152,14 @@ float y_sl5p65_484816_unrastered_fp           (float *x,int m);
 float p_sl5p65_484816_unrastered_fp           (float *x,int m);
 float l_sl5p65_484816_unrastered_fp           (float *x,int m);
 
+//the source code can be found in Rwd_sl5p65_unraster_484816.cpp
+//M.Huang 01/07/2013
+//No y00 function here because y_tg is 0
+float txfit_sl5p65_484816_unrastered          (float *x,int m);
+float delta_sl5p65_484816_unrastered          (float *x,int m);
+float theta_sl5p65_484816_unrastered          (float *x,int m);
+float phi_sl5p65_484816_unrastered            (float *x,int m);
+
 
 /////////////////////////////////////////////
 
