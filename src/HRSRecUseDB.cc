@@ -9,6 +9,7 @@
 
 #include "TROOT.h"
 #include "TString.h"
+#include "TMath.h"
 
 #include "HRSRecUseDB.hh"
 
@@ -75,6 +76,9 @@ int HRSRecUseDB::LoadDataBase()
     ifs.getline(buff, LEN);
     ifs.getline(buff, LEN); // skip 2 comment line
 
+    ftMatrixElems.clear();
+    fyMatrixElems.clear();
+    fpMatrixElems.clear();
     fTMatrixElems.clear();
     fDMatrixElems.clear();
 	fPMatrixElems.clear();
@@ -102,8 +106,11 @@ int HRSRecUseDB::LoadDataBase()
 	power["YF"] = 5;
     
 	map<string,vector<THaMatrixElement>*> matrix_map;
+    matrix_map["t"] = &fDMatrixElems;
+	matrix_map["y"] = &fTMatrixElems;
+	matrix_map["p"] = &fYMatrixElems;
 	matrix_map["D"] = &fDMatrixElems;
-	matrix_map["T"] = &fTMatrixElems;
+    matrix_map["T"] = &fTMatrixElems;
 	matrix_map["Y"] = &fYMatrixElems;
 	matrix_map["YTA"] = &fYTAMatrixElems;
 	matrix_map["P"] = &fPMatrixElems;
@@ -173,24 +180,30 @@ int HRSRecUseDB::LoadDataBase()
 void HRSRecUseDB::PrintDataBase()
 {
     map<int,vector<THaMatrixElement>*> matrix_map;
-	matrix_map[1] = &fDMatrixElems;
-	matrix_map[2] = &fTMatrixElems;
-	matrix_map[3] = &fPMatrixElems;
-	matrix_map[4] = &fYMatrixElems;
-	matrix_map[5] = &fPTAMatrixElems;
-	matrix_map[6] = &fYTAMatrixElems;
+    matrix_map[1] = &ftMatrixElems;
+	matrix_map[2] = &fyMatrixElems;
+	matrix_map[3] = &fpMatrixElems;
+	matrix_map[4] = &fDMatrixElems;
+	matrix_map[5] = &fTMatrixElems;
+	matrix_map[6] = &fPMatrixElems;
+	matrix_map[7] = &fYMatrixElems;
+	matrix_map[8] = &fPTAMatrixElems;
+	matrix_map[9] = &fYTAMatrixElems;
 
     map<int,const char*> name_map;
-    name_map[1] = "D";
-    name_map[2] = "T";
-    name_map[3] = "P";
-    name_map[4] = "Y";
-    name_map[5] = "PTA";
-    name_map[6] = "YTA";
+    name_map[1] = "t";
+    name_map[2] = "y";
+    name_map[3] = "p";
+    name_map[4] = "D";
+    name_map[5] = "T";
+    name_map[6] = "P";
+    name_map[7] = "Y";
+    name_map[8] = "PTA";
+    name_map[9] = "YTA";
 
     cout << "Reconstruction database: " << endl;
     
-    for (int i = 1; i <= 6; i++) {
+    for (int i = 1; i <= 9; i++) {
         vector<THaMatrixElement> *mat = matrix_map[i];
         if (mat->size() > 0) {
             for (vector<THaMatrixElement>::iterator it = mat->begin(); it != mat->end(); it++){
@@ -201,17 +214,17 @@ void HRSRecUseDB::PrintDataBase()
     }
 }
 
-void HRSRecUseDB::CalcTargetCoords(const double *fpcoords, double *tgcoords)
+void HRSRecUseDB::CalcTargetCoords(const double *pV5fp_rot, double *pV5tg_tr)
 {
     // Calculate target coordinates from focal plane coordinates
     double x_fp, y_fp, th_fp, ph_fp;
     double powers[kNUM_PRECOMP_POW][5];
     double x, y, theta, phi, dp;
 
-    x_fp = fpcoords[0];
-    th_fp = fpcoords[1];
-    y_fp = fpcoords[2];
-    ph_fp = fpcoords[3];
+    x_fp = pV5fp_rot[0];
+    th_fp = pV5fp_rot[1];
+    y_fp = pV5fp_rot[2];
+    ph_fp = pV5fp_rot[3];
 
     for (int i = 0; i < kNUM_PRECOMP_POW; i++) {
         powers[i][0] = pow(x_fp, i);
@@ -228,21 +241,96 @@ void HRSRecUseDB::CalcTargetCoords(const double *fpcoords, double *tgcoords)
     CalcMatrix(x_fp, fPTAMatrixElems);
     CalcMatrix(x_fp, fYTAMatrixElems);
 
-    theta = CalcTargetVar(powers, fTMatrixElems);
-    phi   = CalcTargetVar(powers, fPMatrixElems);
-    y     = CalcTargetVar(powers, fYMatrixElems);
-    dp    = CalcTargetVar(powers, fDMatrixElems);
+    theta = CalcVar(powers, fTMatrixElems);
+    phi   = CalcVar(powers, fPMatrixElems);
+    y     = CalcVar(powers, fYMatrixElems);
+    dp    = CalcVar(powers, fDMatrixElems);
 
     x = 0.0;
     
-    tgcoords[0] = x;
-    tgcoords[1] = theta;
-    tgcoords[2] = y;
-    tgcoords[3] = phi;
-    tgcoords[4] = dp;
+    pV5tg_tr[0] = x;
+    pV5tg_tr[1] = theta;
+    pV5tg_tr[2] = y;
+    pV5tg_tr[3] = phi;
+    pV5tg_tr[4] = dp;
 }
 
-double HRSRecUseDB::CalcTargetVar(const double powers[][5], const vector<THaMatrixElement> &matrix)
+void HRSRecUseDB::CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot)
+{
+    double x, y, theta, phi;
+    
+    double pV5fp_det[5];
+
+    double rho_0 = -TMath::Pi()/4.0;
+
+    CalcDetectorCoords(pV5fp_tr, pV5fp_det);
+
+    double x_det = pV5fp_det[0];
+    double th_det = pV5fp_det[2];
+    double ph_det = pV5fp_det[3];
+
+    double x_tr = pV5fp_tr[0];
+    double y_tr = pV5fp_tr[1];
+
+    x = x_tr;
+
+    CalcMatrix(x, ftMatrixElems);
+    CalcMatrix(x, fyMatrixElems);
+    CalcMatrix(x, fpMatrixElems);
+
+    double rho = ftMatrixElems[0].v;
+
+    y = y_tr - fyMatrixElems[0].v;
+    theta = (x_det+rho)/(1-th_det*rho);
+    phi = (ph_det-fpMatrixElems[0].v)/(cos(rho_0)-th_det*sin(rho_0));
+
+    pV5fp_rot[0] = x;
+    pV5fp_rot[1] = theta;
+    pV5fp_rot[2] = y;
+    pV5fp_rot[3] = phi;
+}
+
+void HRSRecUseDB::CalcTransCoords(const double *pV5fp_det, double *pV5fp_tr)
+{
+    double rho_0 = -TMath::Pi()/4.0;
+
+    double x_det = pV5fp_det[0];
+    double y_det = pV5fp_det[1];
+    double th_det = pV5fp_det[2];
+    double ph_det = pV5fp_det[3];
+
+    double th_tr = (th_det+tan(rho_0))/(1-th_det*tan(rho_0));
+    double ph_tr = ph_det/(cos(rho_0)-th_det*sin(rho_0));
+    double x_tr = x_det*cos(rho_0)*(1+th_tr*tan(rho_0));
+    double y_tr = y_det+sin(rho_0)*ph_tr*x_det;
+
+    pV5fp_tr[0] = x_tr;
+    pV5fp_tr[1] = th_tr;
+    pV5fp_tr[2] = y_tr;
+    pV5fp_tr[3] = ph_tr;    
+}
+
+void HRSRecUseDB::CalcDetectorCoords(const double *pV5fp_tr, double *pV5fp_det)
+{
+    double rho_0 = -TMath::Pi()/4.0;
+
+    double x_tr = pV5fp_tr[0];
+    double y_tr = pV5fp_tr[1];
+    double th_tr = pV5fp_tr[2];
+    double ph_tr = pV5fp_tr[3];
+
+    double x_det = x_tr/(cos(rho_0)*(1+th_tr*tan(rho_0)));
+    double y_det = y_tr-sin(rho_0)*ph_tr*x_det;
+    double th_det = (th_tr-tan(rho_0))/(1+th_tr*tan(rho_0));
+    double ph_det = ph_tr*(cos(rho_0)-th_det*sin(rho_0));
+
+    pV5fp_det[0] = x_det;
+    pV5fp_det[1] = th_det;
+    pV5fp_det[2] = y_det;
+    pV5fp_det[3] = ph_det;
+}
+
+double HRSRecUseDB::CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a variable at the target
     // Must already have x values for the matrix elements

@@ -15,7 +15,10 @@ public:
     int LoadDataBase();
     void PrintDataBase();
 
-    void CalcTargetCoords(const double *fpcoords, double *tgcoords);
+    void CalcTargetCoords(const double *pV5fp_rot, double *pV5tg_tr);
+    void CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot);
+    void CalcTransCoords(const double *pV5fp_det, double *pV5fp_tr);
+    void CalcDetectorCoords(const double *pV5fp_tr, double *pV5fp_det);
     
     bool IsInit() {return fIsInit;}
     int SetPrefix(const char* prefix) {fPrefix = prefix; return 0;}
@@ -30,10 +33,13 @@ private:
     bool fIsInit;
 
     void CalcMatrix(const double x, std::vector<THaMatrixElement> &matrix);
-    double CalcTargetVar(const double powers[][5], const std::vector<THaMatrixElement> &matrix);
+    double CalcVar(const double powers[][5], const std::vector<THaMatrixElement> &matrix);
 
     friend class THaMatrixElement;
     std::vector<THaMatrixElement> *fCurrentMatrixElems;
+    std::vector<THaMatrixElement> ftMatrixElems;
+    std::vector<THaMatrixElement> fyMatrixElems;
+    std::vector<THaMatrixElement> fpMatrixElems;
     std::vector<THaMatrixElement> fTMatrixElems;
     std::vector<THaMatrixElement> fDMatrixElems;
     std::vector<THaMatrixElement> fPMatrixElems;
