@@ -1,8 +1,8 @@
-#include "HRSTransport_G2P.hh"
-
 #include <iostream>
 #include <iomanip>
-#include <math.h>
+#include <cmath>
+
+#include "HRSTransport_G2P.hh"
 
 using namespace std;
 

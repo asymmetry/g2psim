@@ -1,8 +1,8 @@
 #ifndef G2PSIM_H
 #define G2PSIM_H
 
-#include "stdio.h"
-#include "string.h"
+#include <cstdio>
+#include <cstring>
 
 #include "TROOT.h"
 #include "TFile.h"

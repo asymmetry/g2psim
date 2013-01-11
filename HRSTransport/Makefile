@@ -1,194 +1,219 @@
-# By Jixie Zhang
-# Makefile for fortran program, you can specify your executable by command line: 
-# "make PROG=your_exe"
-# Will look for program file itself under current dir, make sure remove
-# all unrelavant source file out of current dir
-#
-MYOS := $(shell uname -s)
-ARCH := $(shell arch)
-KEY  := $(ARCH)
-ifeq ($(ARCH),x86_64)
-  ifeq ($(COMPILER_BIT),32)
-    KEY := $(ARCH)_m32
-  endif
-endif
-#####################################################
-PROG   :=HRSTransport
-SRCDIR := .
-INCDIR := .
-#OBJDIR := obj.$(KEY)
-OBJDIR := obj.$(ARCH)
-MYOS   := $(shell uname)
-#####################################################
-CC = g++
-FF = f77
-LD = f77
-FFLAGS = -I$(INCDIR) -O2
-CFLAGS = -I$(INCDIR) -O2
-AR = ar r
+##################################################################
+#   This Makefile shows how to compile all C++, C and Fortran
+#   files found in $(SRCDIR) directory.
+#   Linking is done with g++. Need to have $ROOTSYS defined
+##################################################################
 
-#for 64-bit mac
+##################################################################
+MYOS        := $(shell uname)
+ARCH        := $(shell arch)
+USER        := $(shell whoami)
+MYHOST      := $(shell hostname -s)
+
+##################################################################
+VERSION     := 1.2
+LIBFILE     := HRSTransport.$(VERSION)
+
+##################################################################
+SRCDIR      := .
+INCDIR      := .
+OBJDIR      := obj.$(ARCH)
+OTHERINC    := 
+
+###################################################################
+# Compiler
 ifeq ($(MYOS),Darwin)
-    FF = gfortran
-    LD = gfortran
-    FFLAGS += -m64
-    CFLAGS += -m64
-    AR = libtool -static -o
+    AR      := libtool -static -o
+else
+    AR      := ar r
 endif
+CXX         := g++
+FF          := gfortran
+LD          := g++
 
-ifeq ($(ARCH),x86_64)
-  ifeq ($(COMPILER_BIT),32)
-    FFLAGS += -m32
-    CFLAGS += -m32
-  else
-    FF = gfortran
-    LD = gfortran
-    FFLAGS += -m64
-    CFLAGS += -m64
-  endif
+###################################################################
+# Flags
+ifeq ($(ARCH),i686)
+    MODE    := -m32
+else
+    MODE    := -m64
 endif
-
-#fortran options are crutial, some of them should not be included here
-#depends on what options have been used in the cernlib 
-ifeq ($(FF),gfortran)
-  ifeq ($(MYOS),Darwin)
-    FFLAGS  += -fno-second-underscore \
- -fno-automatic -fbounds-check -fno-range-check\
- -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
- -Wunused -Wuninitialized 
-# -finit-local-zero #this one is not recgonized now
-#-Wno-globals , this one is not recgoganized
-#-fno-leading-underscore 
+CFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+               $(MODE) -I$(INCDIR) $(OTHERINC) 
+CXXFLAGS    := -Wall -Wno-unused-variable -O3 -g -Wno-deprecated \
+               $(MODE) -I$(INCDIR) $(OTHERINC) 
+FFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+               $(MODE) -I$(INCDIR) $(OTHERINC)
+ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
-  else
-     FFLAGS += -fno-leading-underscore -fno-second-underscore \
- -fno-automatic -fbounds-check \
- -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
- -Wunused -Wuninitialized \
- -fno-range-check
-  endif 
+    FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
+               -fno-range-check -funroll-all-loops -fdollar-ok \
+               -ffixed-line-length-none
 else
-  FFLAGS  += -fno-leading-underscore -fno-second-underscore \
- -fno-automatic -fbounds-check \
- -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
- -Wunused -Wuninitialized \
- -finit-local-zero -Wno-globals 
-endif
+    FFLAGS  += -fno-leading-underscore -fno-second-underscore \
+               -fno-automatic -fbounds-check -funroll-all-loops \
+               -fdollar-ok -ffixed-line-length-none -fno-range-check
+endif 
+GPPFLAGS    := -M
+LDFLAGS     := -O3 -g $(MODE)
 
-ifdef DEBUG
- FFLAGS += -g	
- CFLAGS += -g	
-endif
+###################################################################
+# Generate obj file list
+FSOURCES    := $(wildcard $(SRCDIR)/*.[Ff])
+CSOURCES    := $(wildcard $(SRCDIR)/*.[Cc])
+CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][Cc])
+CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][XxPp][XxPp])
+SOURCES     := $(FSOURCES) $(CSOURCES)
+#add .o to all the source files
+#######OBJS  = $(OBJS:.f=.o)#######
+OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
+OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
+#do not make dependence for fortran code
+COBJS       := $(addsuffix .o, $(basename $(CSOURCES)))
+COBJS       := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(COBJS))
+DEPS        := $(subst .o,.d,$(COBJS))
 
-
-################################ Libraries
-ifndef SYSLIBS
- SYSLIBS  = -lnsl -lX11 -lstdc++
-endif
-
-#for SunOS, cernlib 2001 need libsocket.a
-ifeq ($(MYOS),SunOS)
- SYSLIBS  += -lsocket
-endif
-
-ifndef CERNLIBS
- #this program used 2001 cernlib /apps/cernlib/sun4_solaris8/2001 in jlabs2,
- ifndef CERN_ROOT
-  CERN_ROOT := /apps/cernlib/i386_rhel3/2003
- endif
- CERNLIBS = -L$(CERN_ROOT)/lib -lpdflib804 -lmathlib -lphtools \
- -lgeant321 -lpawlib -lgraflib -lgrafX11 -lpacklib -lkernlib 
-endif
-
-#if you are a clas member ......
-ifdef USE_CLAS_LIB
- ifndef CLASLIBS
-  CLASLIBS = -L$(CLAS_LIB) -lbankdefs -lc_bos_io -lfputil  -lrecutl \
-  -lbos -lfpack -lcc -lmapmanager -lclasutil
- endif
+###################################################################
+# Libs
+SYSLIBS     := -lstdc++
+ifeq ($(MYOS),Darwin) # Assume using homebrew
+    SYSLIBS += -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran
 else
- CLASLIBS =  # use this # to set a space  
+    SYSLIBS += -lgfortran
 endif
 
-LIBS = $(SYSLIBS) $(CLASLIBS) $(CERNLIBS)
-#===========================
+###################################################################
+# ROOT configure
+ROOTCFLAGS  := $(shell root-config --cflags)
+ROOTLIBS    := $(shell root-config --libs)
+ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
 
-###################################
-ifndef PROG
-#  NFILES = $(shell ls -1 *.[fF] | wc -l | sed s/\ //g)   
-#  ifeq ($(NFILES),1)
-#    PROG = $(shell grep -i program *.[fF] | awk '$$1=="program"&&$$3==""{print $$2}' | sed s/\ //g) 
-#  else
-#    PROG = $(shell grep -i program *.[fF] | awk '$$2=="program"&&$$4==""{print $$3}' | sed s/\ //g)
-#  endif
-  PROG = $(shell grep -i program *.[fF] | awk '$$2=="program"&&$$4==""{print $$3}' | sed s/\ //g)
+CXXFLAGS    += $(ROOTCFLAGS) 
+LIBS        := $(SYSLIBS) $(ROOTLIBS) $(OTHERLIBS)
+GLIBS       := $(SYSLIBS) $(ROOTGLIBS) $(OTHERLIBS)
+
+
+###################################################################
+# You can specify the .SUFFIXES
+.SUFFIXES: .C .c .CC .cc .CPP .cpp .CXX .cxx .F .f
+.PHONY: all clean test
+VPATH    := $(SRCDIR):$(INCDIR):$(OTHERINC) 
+
+###################################################################
+all: lib
+
+###################################################################
+# Make the $(TARGET).d file and include it.
+$(OBJDIR)/%.d: %.c 
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(CXX) $(GPPFLAGS) $(CXXFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@
+
+$(OBJDIR)/%.d: %.C 
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(CXX) $(GPPFLAGS) $(CXXFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@
+
+$(OBJDIR)/%.d: %.cc
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(CXX) $(GPPFLAGS) $(CXXFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@
+
+$(OBJDIR)/%.d: %.cpp 
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(CXX) $(GPPFLAGS) $(CXXFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@
+$(OBJDIR)/%.d: %.cxx
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(CXX) $(GPPFLAGS) $(CXXFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@
+
+#there is a problem to build dependency for fortran code...
+$(OBJDIR)/%.d: %.f 
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(FF) $(GPPFLAGS) $(FFLAGS) -w  $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@ 
+	@-rm -f $*.o 
+
+$(OBJDIR)/%.d: %.F 
+	@echo Making dependency for file $< ......
+	@set -e;\
+	$(FF) $(GPPFLAGS) $(FFLAGS) -w $< |\
+	sed 's!$*\.o!$(OBJDIR)/& $@!' >$@;\
+	[ -s $@ ] || rm -f $@ 
+	@-rm -f $*.o 
+
+ifneq ($(DEPS),)
+-include $(DEPS)
 endif
-ifeq ($(PROG),) 
-  PROG = $(shell grep -i program *.[fF] | awk '$$1=="program"&&$$3==""{print $$2}' | sed s/\ //g)  
-endif
 
-PROG := $(shell echo ${PROG} | sed s/\ //g)
-EXE   = $(PROG)_$(KEY)
-ifdef DEBUG
-EXE  :=$(EXE)_debug
-endif
+##########################################################
+lib: $(OBJDIR) $(OBJS)
+	@$(AR) $(OBJDIR)/lib$(LIBFILE).a $(OBJS)
+	@echo "Linking lib$(LIBFILE).a ... done!"
 
-SOURCES  := $(wildcard $(SRCDIR)/*.[fF])
-SOURCES  += $(wildcard $(SRCDIR)/*.cc)
-SOURCES  += $(wildcard $(SRCDIR)/*.cpp)
-#OBJS     = $(shell echo $(SOURCES) | sed s/f\ /o\ /g)
-OBJS    := $(addsuffix .o, $(basename $(SOURCES)))
-OBJS    := $(patsubst $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
+##########################################################
+$(OBJDIR)/%.o: %.F
+	@echo Compiling $< ......
+	@$(FF) -c $< -o $@  $(FFLAGS)
 
-###################################
-$(OBJDIR)/%.o:%.f
-	$(FF) $(FFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: %.f
+	@echo Compiling $< ......
+	@$(FF) -c $< -o $@  $(FFLAGS)
 
-$(OBJDIR)/%.o:%.F
-	$(FF) $(FFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: %.c
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
-$(OBJDIR)/%.o:%.cc
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: %.C
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
-$(OBJDIR)/%.o:%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: %.cxx
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
-###################################
-.PHONY: lib exe clean
+$(OBJDIR)/%.o: %.cc
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
-all:  $(OBJDIR) lib #$(EXE)
+$(OBJDIR)/%.o: %.cpp
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 $(OBJDIR):
 	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
 
-$(EXE): $(OBJDIR) $(OBJS) 
-	$(FF) -o $(EXE) $(OBJS) $(LIBS) $(FFLAGS)
-	@echo "Linking $(EXE) ... done!"
-
-#this part is to support CLAS_PACK make mechanism
-exe: lib
-	$(FF) -o $(EXE) $(OBJS) -L$(OBJDIR) -l$(PROG) $(LIBS) $(FFLAGS)
-	@echo "Linking $(EXE) ... done!"
-
-#this part is to support CLAS_PACK make mechanism
-lib: $(OBJDIR) $(OBJS)
-#	@rm -f $(OBJDIR)/lib$(PROG).a
-	@$(AR) $(OBJDIR)/lib$(PROG).a $(OBJS)
-#	@if [ -e $(OBJDIR)/lib$(PROG).a ] ; then echo "Finish creating target lib"  $(OBJDIR)/lib$(PROG).a ;fi
-#	@libtool -static  -o $(OBJDIR)/lib$(PROG).a $(OBJS)
-#	@ar r $(OBJDIR)/lib$(PROG).a $(OBJS)
-
+##########################################################
 clean:
-	rm -f $(OBJS) $(OBJDIR)/lib${PROG}.a core *~ *#
+	@rm -f $(OBJS) $(DEPS)
+	@rm -f *~ *# $(OBJDIR)/lib$(LIBFILE).a */*~ */*#
 
-delete:
-	rm -f $(EXE)
+test:	
+	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
+	@echo \\CFLAGS\:$(CFLAGS)	
+	@echo \\CXXFLAGS\:$(CXXFLAGS)        
+	@echo \\FFLAGS\:$(FFLAGS)
+	@echo \\LDFLAGS\:$(LDFLAGS)
+	@echo \\SYSLIBS\:$(SYSLIBS)
+	@echo \\fsources\: $(FSOURCES)	
+	@echo \\sources\: $(SOURCES)	
+	@echo \\objs\: $(OBJS)	
+	@echo \\dependencies: \$(DEPS)
 
-help:
-	@echo PROG = ${PROG}
-	@echo SOURCES = ${SOURCES}
-	@echo OBJS = ${OBJS}
-	@echo EXE = ${EXE}
-	@echo LIBS = ${LIBS}
-	@echo FFLAGS = ${FFLAGS}
-	@echo CLASLIBS = ${CLASLIBS}
+help: test
+
+env: test
+

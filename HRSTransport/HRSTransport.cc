@@ -1,11 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+
+#include "TMath.h"
+
+#include "HRSTransport_G2P.hh"
 
 #include "HRSTransport.hh"
-#include "Rand.hh"
 
-const double deg = acos(0.0)/90.0;
+const double deg = TMath::Pi()/180.0;
 
 //#define DEBUG_HRS_FORWARD
 //#define DEBUG_HRS_BACKWARD
