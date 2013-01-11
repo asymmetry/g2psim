@@ -16,6 +16,7 @@
 update.sh
 g2pSim
 obj.*
+plots/
 *.bak
 *.root
 *.png
