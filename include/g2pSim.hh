@@ -26,28 +26,27 @@ public:
     g2pSim();
     ~g2pSim();
 
-    void SetNEvent(int n) { iNEvent = n; }
-    void SetArm(const char *label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
+    void SetNEvent(int n) { pNEvent = n; }
+    void SetArm(const char *label) { pIsLeftArm = (strcmp(label,"L")==0)?true:false; }
     void SetHRSAngle(double angle) { pHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { pHRSMomentum = momentum; }
     void SetBPMRes(double res) { pBPMRes = res; }
-    void SetHRSSetting(int setting) { iSetting = setting; }
-    void SetDATASource(int setting) { iSource = setting; }
-    void SetSimDirection(int setting) { iDirection = setting; }
+    void SetHRSSetting(int setting) { pSetting = setting; }
+    void SetDATASource(int setting) { pSource = setting; }
+    void SetSimDirection(int setting) { pDirection = setting; }
 
     void Init();
     void Run();
 
 private:
     void Clear();
-    void ReadData(double *pV5);
     
-    int    Index;
-    int    iNEvent;
-	bool   bIsLeftArm;
-    int    iSource;
-    int    iDirection;
-    int    iSetting;
+    int    pIndex;
+    int    pNEvent;
+	bool   pIsLeftArm;
+    int    pSource;
+    int    pDirection;
+    int    pSetting;
     
 	double pHRSAngle;  // Set the same value to optics setting
     double pHRSMomentum;
@@ -69,8 +68,6 @@ private:
     TTree *pTree;
     TTree *pConfig;
     TFile *pFile;
-
-    FILE *fp;
 };
 
 #endif

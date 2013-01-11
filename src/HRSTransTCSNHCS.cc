@@ -4,11 +4,11 @@
 // GEANT4 tag $Name: geant4-09-04 $ 
 //
 //..............................................................................
-#include "stdio.h"
-#include "stdlib.h"
-#include "math.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
 
-#include "TransTCSNHCS.hh"
+#include "HRSTransTCSNHCS.hh"
 
 //#define TRANSFORM_DEBUG 1
 

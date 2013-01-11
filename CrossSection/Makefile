@@ -162,7 +162,7 @@ endif
 ##########################################################
 lib: $(OBJDIR) $(OBJS)
 	@$(AR) $(OBJDIR)/lib$(LIBFILE).$(VERSION).a $(OBJS)
-	@cd $(OBJDIR); ln -s lib$(LIBFILE).$(VERSION).a lib$(LIBFILE).a; cd ..
+	@cd $(OBJDIR); ln -sf lib$(LIBFILE).$(VERSION).a lib$(LIBFILE).a; cd ..
 	@echo "Linking lib$(LIBFILE).a ... done!"
 
 ##########################################################
