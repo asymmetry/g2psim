@@ -10,7 +10,8 @@
 
 #include "HRSRecUseDB.hh"
 #include "HRSTransport.hh"
-#include "HRSTransform_TCSNHCS.hh"
+#include "TransTCSNHCS.hh"
+#include "CrossSection.hh"
 #include "Rand.hh"
 
 #include "g2pSim.hh"

@@ -11,8 +11,8 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ##################################################################
-VERSION     := 1.3.0
-LIBFILE     := HRSTransport
+VERSION     := 1.0.0
+LIBFILE     := CrossSection
 
 ##################################################################
 SRCDIR      := .
@@ -162,7 +162,7 @@ endif
 ##########################################################
 lib: $(OBJDIR) $(OBJS)
 	@$(AR) $(OBJDIR)/lib$(LIBFILE).$(VERSION).a $(OBJS)
-	@cd $(OBJDIR); ln -sf lib$(LIBFILE).$(VERSION).a lib$(LIBFILE).a; cd ..
+	@cd $(OBJDIR); ln -s lib$(LIBFILE).$(VERSION).a lib$(LIBFILE).a; cd ..
 	@echo "Linking lib$(LIBFILE).a ... done!"
 
 ##########################################################

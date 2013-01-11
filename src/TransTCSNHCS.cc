@@ -8,7 +8,7 @@
 #include "stdlib.h"
 #include "math.h"
 
-#include "HRSTransform_TCSNHCS.hh"
+#include "TransTCSNHCS.hh"
 
 //#define TRANSFORM_DEBUG 1
 

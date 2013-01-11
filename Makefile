@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ##################################################################
-VERSION     := 1.2
+VERSION     := 1.0.0
 EXECFILE    := g2pSim
 
 ##################################################################
@@ -81,7 +81,8 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
-OTHERLIBS := -LHRSTransport/obj.${ARCH} -lHRSTransport.$(VERSION)
+OTHERLIBS   := -LHRSTransport/obj.${ARCH} -lHRSTransport \
+               -LCrossSection/obj.${ARCH} -lCrossSection
 
 ###################################################################
 # ROOT configure
@@ -163,6 +164,7 @@ endif
 ##########################################################
 exe: $(OBJDIR) $(OBJS)
 	@make -C HRSTransport lib
+	@make -C CrossSection lib
 	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJS) $(LIBS)
 	@echo "Linking $(EXECFILE) ... done!"
 
@@ -205,6 +207,7 @@ clean:
 
 distclean: clean
 	@cd HRSTransport; make clean; cd ..
+	@cd CrossSection; make clean; cd ..
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
