@@ -1,3 +1,12 @@
+// This file defined a class HRSRand.
+// It is the rand of the whole simulation package.
+// It use TRandom2 as Uniform random number generator. TRandom2 is fastest.
+// All member functions are virtual so they can be overwrite.
+//
+// History:
+// By C. Gu, Jan 12, 2013, First public version.
+//
+
 #include <cstdlib>
 #include <cmath>
 
@@ -8,28 +17,28 @@
 
 HRSRand::HRSRand()
 {
-    iRG = new TRandom2(0);
+    pRG = new TRandom2(0);
 }
 
 HRSRand::~HRSRand()
 {
-    delete[] iRG;
-    iRG = NULL;
+    delete[] pRG;
+    pRG = NULL;
 }
 
 double HRSRand::Uniform()
 {
-    return iRG->Uniform();
+    return pRG->Uniform();
 }
 
 double HRSRand::Uniform(double low, double high)
 {
-    return low+(high-low)*iRG->Uniform();
+    return low+(high-low)*pRG->Uniform();
 }
 
 double HRSRand::Gaus(double mean = 0.0, double sigma = 1.0)
 {
-    return iRG->Gaus(mean, sigma);
+    return pRG->Gaus(mean, sigma);
 }
 
 double HRSRand::Linear(double a = 1.0, double c = 0.0 , double low = 0.0, double high = 1.0)

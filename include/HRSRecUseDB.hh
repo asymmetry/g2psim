@@ -1,7 +1,9 @@
-#ifndef HRSRecUseDB_h
-#define HRSRecUseDB_h 1
+#ifndef HRS_RECUSEDB_H
+#define HRS_RECUSEDB_H
 
-#include "TString.h"
+#include <vector>
+
+using namespace std;
 
 class THaMatrixElement;
 
@@ -16,15 +18,16 @@ public:
     void PrintDataBase();
 
     void CalcTargetCoords(const double *pV5fp_rot, double *pV5tg_tr);
-    void CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot);
-    void CalcTransCoords(const double *pV5fp_det, double *pV5fp_tr);
-    void CalcDetectorCoords(const double *pV5fp_tr, double *pV5fp_det);
+    void TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot);
+    void TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr);
+    void TransTr2Det(const double *pV5fp_tr, double *pV5fp_det);
+    void TransDet2Tr(const double *pV5fp_det, double *pV5fp_tr);
     
-    bool IsInit() {return fIsInit;}
-    int SetPrefix(const char* prefix) {fPrefix = prefix; return 0;}
-    int SetDBName(const char* dbname) {fDBName = dbname; return 0;}
+    bool IsInit() { return fIsInit; }
+    void SetPrefix(const char* prefix) { fPrefix = prefix; }
+    void SetDBName(const char* dbname) { fDBName = dbname; }
 
-    enum {kPORDER = 7, kNUM_PRECOMP_POW = 10}; // constants
+    enum { kPORDER = 7, kNUM_PRECOMP_POW = 10 }; // constants
 
 private:
     const char* fPrefix;
@@ -32,23 +35,23 @@ private:
 
     bool fIsInit;
 
-    void CalcMatrix(const double x, std::vector<THaMatrixElement> &matrix);
-    double CalcVar(const double powers[][5], const std::vector<THaMatrixElement> &matrix);
+    void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
+    double CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix);
 
     friend class THaMatrixElement;
-    std::vector<THaMatrixElement> *fCurrentMatrixElems;
-    std::vector<THaMatrixElement> ftMatrixElems;
-    std::vector<THaMatrixElement> fyMatrixElems;
-    std::vector<THaMatrixElement> fpMatrixElems;
-    std::vector<THaMatrixElement> fTMatrixElems;
-    std::vector<THaMatrixElement> fDMatrixElems;
-    std::vector<THaMatrixElement> fPMatrixElems;
-    std::vector<THaMatrixElement> fPTAMatrixElems; // involves abs(theta_fp)
-    std::vector<THaMatrixElement> fYMatrixElems;
-    std::vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
+    vector<THaMatrixElement> *fCurrentMatrixElems;
+    vector<THaMatrixElement> ftMatrixElems;
+    vector<THaMatrixElement> fyMatrixElems;
+    vector<THaMatrixElement> fpMatrixElems;
+    vector<THaMatrixElement> fTMatrixElems;
+    vector<THaMatrixElement> fDMatrixElems;
+    vector<THaMatrixElement> fPMatrixElems;
+    vector<THaMatrixElement> fPTAMatrixElems; // involves abs(theta_fp)
+    vector<THaMatrixElement> fYMatrixElems;
+    vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 };
 
-// class for storing matrix element data
+// Class for storing matrix element data
 class THaMatrixElement
 {
 public:
@@ -56,15 +59,15 @@ public:
 
     void Print();
     
-    bool iszero;              // whether the element is zero
-    std::vector<int> pw;      // exponents of matrix element, e.g. D100 = { 1, 0, 0 }
+    bool iszero;         // whether the element is zero
+    vector<int> pw;      // exponents of matrix element, e.g. D100 = { 1, 0, 0 }
     bool match( const THaMatrixElement& rhs ) const;
 
-    int  order;
-    std::vector<double> poly; // the associated polynomial
-    void SkimPoly();          // reduce order to highest non-zero poly
+    int order;
+    vector<double> poly; // the associated polynomial
+    void SkimPoly();     // reduce order to highest non-zero poly
 
-    double v;                 // the final value of this matrix element once x is given
+    double v;            // the final value once x is given
 };
 
 #endif

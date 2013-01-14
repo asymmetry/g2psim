@@ -255,7 +255,7 @@ void HRSRecUseDB::CalcTargetCoords(const double *pV5fp_rot, double *pV5tg_tr)
     pV5tg_tr[4] = dp;
 }
 
-void HRSRecUseDB::CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot)
+void HRSRecUseDB::TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot)
 {
     double x, y, theta, phi;
     
@@ -263,7 +263,7 @@ void HRSRecUseDB::CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot)
 
     double rho_0 = -TMath::Pi()/4.0;
 
-    CalcDetectorCoords(pV5fp_tr, pV5fp_det);
+    TransTr2Det(pV5fp_tr, pV5fp_det);
 
     double x_det = pV5fp_det[0];
     double th_det = pV5fp_det[2];
@@ -290,27 +290,12 @@ void HRSRecUseDB::CalcRotateCoords(const double *pV5fp_tr, double *pV5fp_rot)
     pV5fp_rot[3] = phi;
 }
 
-void HRSRecUseDB::CalcTransCoords(const double *pV5fp_det, double *pV5fp_tr)
+void HRSRecUseDB::TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr)
 {
-    double rho_0 = -TMath::Pi()/4.0;
 
-    double x_det = pV5fp_det[0];
-    double y_det = pV5fp_det[1];
-    double th_det = pV5fp_det[2];
-    double ph_det = pV5fp_det[3];
-
-    double th_tr = (th_det+tan(rho_0))/(1-th_det*tan(rho_0));
-    double ph_tr = ph_det/(cos(rho_0)-th_det*sin(rho_0));
-    double x_tr = x_det*cos(rho_0)*(1+th_tr*tan(rho_0));
-    double y_tr = y_det+sin(rho_0)*ph_tr*x_det;
-
-    pV5fp_tr[0] = x_tr;
-    pV5fp_tr[1] = th_tr;
-    pV5fp_tr[2] = y_tr;
-    pV5fp_tr[3] = ph_tr;    
 }
 
-void HRSRecUseDB::CalcDetectorCoords(const double *pV5fp_tr, double *pV5fp_det)
+void HRSRecUseDB::TransTr2Det(const double *pV5fp_tr, double *pV5fp_det)
 {
     double rho_0 = -TMath::Pi()/4.0;
 
@@ -328,6 +313,26 @@ void HRSRecUseDB::CalcDetectorCoords(const double *pV5fp_tr, double *pV5fp_det)
     pV5fp_det[1] = th_det;
     pV5fp_det[2] = y_det;
     pV5fp_det[3] = ph_det;
+}
+
+void HRSRecUseDB::TransDet2Tr(const double *pV5fp_det, double *pV5fp_tr)
+{
+    double rho_0 = -TMath::Pi()/4.0;
+
+    double x_det = pV5fp_det[0];
+    double y_det = pV5fp_det[1];
+    double th_det = pV5fp_det[2];
+    double ph_det = pV5fp_det[3];
+
+    double th_tr = (th_det+tan(rho_0))/(1-th_det*tan(rho_0));
+    double ph_tr = ph_det/(cos(rho_0)-th_det*sin(rho_0));
+    double x_tr = x_det*cos(rho_0)*(1+th_tr*tan(rho_0));
+    double y_tr = y_det+sin(rho_0)*ph_tr*x_det;
+
+    pV5fp_tr[0] = x_tr;
+    pV5fp_tr[1] = th_tr;
+    pV5fp_tr[2] = y_tr;
+    pV5fp_tr[3] = ph_tr;    
 }
 
 double HRSRecUseDB::CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix)

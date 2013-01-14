@@ -1,18 +1,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
-#include <ctime>
 
 #include "TROOT.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TMath.h"
 
+#include "HRSGun.hh"
 #include "HRSRecUseDB.hh"
-#include "HRSTransport.hh"
 #include "HRSTransTCSNHCS.hh"
-#include "CrossSection.hh"
 #include "HRSRand.hh"
+
+#include "HRSTransport.hh"
+#include "CrossSection.hh"
 
 #include "g2pSim.hh"
 
@@ -42,51 +43,155 @@ const double deg = TMath::Pi()/180.0;
 // septa with shim
 
 g2pSim::g2pSim()
-    :pIndex(0), pIsLeftArm(true), pSource(0), pDirection(0),
-     pSetting(11), pHRSMomentum(2.251), pBPMRes(0.0), pRecDB(NULL)
+    :pIsInit(false), pIndex(1), pNEvent(10000), pIsLeftArm(true),
+     pSetting(11), pHRSAngle(5.767*deg), pHRSMomentum(2.251),
+     pCrossSection(0), pRecDB(NULL), pGun(NULL), pRand(NULL)
 {
-    pHRSAngle = 5.767*deg;
-    pXtg_BPM_tr = 0.0;
-
+    pGunList.clear();
     Clear();
 }
 
 g2pSim::~g2pSim()
 {
-    pFile->Write();
-    pFile->Close();
+    // Nothing to be done
 }
 
 void g2pSim::Init()
 {
-    if (pIsLeftArm) {
-        pRecDB = new HRSRecUseDB("L","db_vdc.L.dat");
+    pIsInit = true;
+    
+    pRand = new HRSRand();
+
+    pGun->SetRand(pRand);
+    pGun->SetHRSAngle(pHRSAngle);
+    pGun->Init();
+
+    if (pGun->IsInit()) {
+        if (pIsLeftArm)
+            pRecDB = new HRSRecUseDB("L","db_vdc.L.dat");
+        else
+            pRecDB = new HRSRecUseDB("R","db_vdc.R.dat");
+
+        InitTree();
+
+        if (pGun->IsUsingData())
+            pRunSelector = &g2pSim::RunData;
+        else
+            pRunSelector = &g2pSim::RunSim;
+    }
+}
+
+void Run()
+{
+    if (pGun==NULL) {
+        //
     }
     else{
-        pRecDB = new HRSRecUseDB("R","db_vdc.R.dat");
+        Init();
+        if (IsInit()) {
+            (this->*pRunSelector)();
+            End();
+        }
     }
+}
 
-    pFile = new TFile(Form("result_E%02d_S%d.root", pSetting, pSource), "recreate");
+void g2pSim::RunSim()
+{
+    while (pIndex<=pNEvent) {
+        if ((pIndex%10000)==0) prinf("%d\n", pIndex);
+        
+        pGun->Shoot(pV3bpm_lab, pV5tg_tr);
+
+        bool bGoodParticle;
+
+        bGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
+
+        pV5fp_tr[4] = pV5tg_tr[0];
+        
+        bGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5tg_tr);
+        
+        pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
+        pRecDB->CalcTargetCoords(pV5fp_rot, pV5recdb_tr);
+
+        pTree->Fill();
+        pIndex++;
+    }
+}
+
+void g2pSim::RunData()
+{
+    while (pIndex<=pNEvent) {
+        if ((pIndex%10000)==0) prinf("%d\n", pIndex);
+        
+        pGun->Shoot(pV3bpm_lab, pV5fpdata_tr);
+
+        pRecDB->TransTr2Rot(pV5fpdata_tr, pV5fpdata_rot);
+        pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5tg_tr);
+
+        bool bGoodParticle;
+
+        bGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
+
+        pV5fp_tr[4] = pV5tg_tr[0];
+        
+        bGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fpdata_tr, pV5rec_tr);
+        pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5recdb_tr);
+
+        pTree->Fill();
+        pIndex++;
+    }
+}
+
+void g2pSim::End()
+{
+    pFile->Write();
+    pFile->Close();
+}
+
+void g2pSim::InitTree()
+{
+    pFile = new TFile(pFileName, "recreate");
 	pTree = new TTree("T", "sim result");
-    pConfig = new TTree("config", "sim configuration");
+    pConfig = new TTree("config", "sim configure");
 
-	pConfig->Branch("BPMRes",&pBPMRes,"BPMRes/D");
-	pConfig->Branch("Left",&pIsLeftArm,"Left/B");
-	pConfig->Branch("HRSAngle",&pHRSAngle,"HRSAngle/D");
-	pConfig->Branch("P0",&pHRSMomentum,"P0/D");
-	pConfig->Branch("Xtg_BPM_tr",&pXtg_BPM_tr,"Xtg_BPM_tr/D");
-    pConfig->Branch("pSource",&pSource,"DATASource/D");
-	pConfig->Branch("pDirection",&pDirection,"SimDirection/D");
-	pConfig->Branch("pSetting",&pSetting,"HRSSetting/D");
+    pConfig->Branch("N", &pNEvent, "N/I");
+    pConfig->Branch("HRSSetting", &pSetting, "HRSSetting/I");
+ 	pConfig->Branch("IsLeftArm", &pIsLeftArm, "IsLeftArm/O");   
+    pConfig->Branch("HRSAngle", &pHRSAngle, "HRSAngle/D");
+    pConfig->Branch("HRSMomentum", &pHRSMomentum, "HRSMomentum/D");
+
+    pGunSetting = pGun->GetSetting();
+    double posres = pGun->GetPosResolution();
+    double angleres = pGun->GetAngleResolution();
+    double deltares = pGun->GetDeltaResolution();
+    pConfig->Branch("GunSetting", &pGunSetting, "GunSetting/I");
+	pConfig->Branch("GunPosRes", &posres, "GunPosRes/D");
+	pConfig->Branch("GunAngleRes", &angleres, "GunAngleRes/D");
+	pConfig->Branch("GunDeltaRes", &deltares, "GunDeltaRes/D");
 
     pConfig->Fill();
 
-    pTree->Branch("pIndex",&pIndex,"pIndex/I");
-
+    pTree->Branch("Index",&pIndex,"Index/I");
+    
 	pTree->Branch("Xfp_tr",&pV5fp_tr[0],"Xfp_tr/D");
 	pTree->Branch("Thetafp_tr",&pV5fp_tr[1],"Thetafp_tr/D");
 	pTree->Branch("Yfp_tr",&pV5fp_tr[2],"Yfp_tr/D");
 	pTree->Branch("Phifp_tr",&pV5fp_tr[3],"Phifp_tr/D");
+
+    pTree->Branch("Xfp_rot",&pV5fp_rot[0],"Xfp_rot/D");
+	pTree->Branch("Thetafp_rot",&pV5fp_rot[1],"Thetafp_rot/D");
+	pTree->Branch("Yfp_rot",&pV5fp_rot[2],"Yfp_rot/D");
+	pTree->Branch("Phifp_rot",&pV5fp_rot[3],"Phifp_rot/D");
+
+    pTree->Branch("Xfpdata_tr",&pV5fpdata_tr[0],"Xfpdata_tr/D");
+	pTree->Branch("Thetafpdata_tr",&pV5fpdata_tr[1],"Thetafpdata_tr/D");
+	pTree->Branch("Yfpdata_tr",&pV5fpdata_tr[2],"Yfpdata_tr/D");
+	pTree->Branch("Phifpdata_tr",&pV5fpdata_tr[3],"Phifpdata_tr/D");
+
+    pTree->Branch("Xfpdata_rot",&pV5fpdata_rot[0],"Xfpdata_rot/D");
+	pTree->Branch("Thetafpdata_rot",&pV5fpdata_rot[1],"Thetafpdata_rot/D");
+	pTree->Branch("Yfpdata_rot",&pV5fpdata_rot[2],"Yfpdata_rot/D");
+	pTree->Branch("Phifpdata_rot",&pV5fpdata_rot[3],"Phifpdata_rot/D");
 
 	pTree->Branch("Xtg_tr",&pV5tg_tr[0],"Xtg_tr/D");
 	pTree->Branch("Thetatg_tr",&pV5tg_tr[1],"Thetatg_tr/D");
@@ -100,6 +205,12 @@ void g2pSim::Init()
 	pTree->Branch("Phirec_tr",&pV5rec_tr[3],"Phirec_tr/D");
 	pTree->Branch("Deltarec",&pV5rec_tr[4],"Deltarec/D");
 
+    pTree->Branch("Xrecdb_tr",&pV5recdb_tr[0],"Xrecdb_tr/D");
+	pTree->Branch("Thetarecdb_tr",&pV5recdb_tr[1],"Thetarecdb_tr/D");
+	pTree->Branch("Yrecdb_tr",&pV5recdb_tr[2],"Yrecdb_tr/D");
+	pTree->Branch("Phirecdb_tr",&pV5recdb_tr[3],"Phirecdb_tr/D");
+	pTree->Branch("Deltarecdb",&pV5recdb_tr[4],"Deltarecdb/D");
+
 	pTree->Branch("Xtg_lab",&pV5tg_lab[0],"Xtg_lab/D");
 	pTree->Branch("Thetatg_lab",&pV5tg_lab[1],"Thetatg_lab/D");
 	pTree->Branch("Ytg_lab",&pV5tg_lab[2],"Ytg_lab/D");
@@ -111,61 +222,25 @@ void g2pSim::Init()
 	pTree->Branch("Yrec_lab",&pV5rec_lab[2],"Yrec_lab/D");
 	pTree->Branch("Phirec_lab",&pV5rec_lab[3],"Phirec_lab/D");
 	pTree->Branch("Zrec_lab",&pV5tg_lab[4],"Zrec_lab/D");
-    
-	pTree->Branch("Xdbrec_tr",&pV5dbrec_tr[0],"Xdbrec_tr/D");
-	pTree->Branch("Thetadbrec_tr",&pV5dbrec_tr[1],"Thetadbrec_tr/D");
-	pTree->Branch("Ydbrec_tr",&pV5dbrec_tr[2],"Ydbrec_tr/D");
-	pTree->Branch("Phidbrec_tr",&pV5dbrec_tr[3],"Phidbrec_tr/D");
-	pTree->Branch("Deltadbrec",&pV5dbrec_tr[4],"Deltadbrec/D");
-}
 
-void g2pSim::Run()
-{
-    int NThrown=0;
-    while (pIndex<pNEvent) {
+    pTree->Branch("Xrecdb_lab",&pV5recdb_lab[0],"Xrecdb_lab/D");
+	pTree->Branch("Thetarecdb_lab",&pV5recdb_lab[1],"Thetarecdb_lab/D");
+	pTree->Branch("Yrecdb_lab",&pV5recdb_lab[2],"Yrecdb_lab/D");
+	pTree->Branch("Phirecdb_lab",&pV5recdb_lab[3],"Phirecdb_lab/D");
+    pTree->Branch("Zrecdb_lab",&pV5recdb_lab[3],"Zrecdb_lab/D");
 
-        bool bGoodParticle;
-
-        bGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
-
-        if (pDirection==0) {
-            pTree->Fill();
-            continue;
-        }
-
-        if (pDirection==1) {
-            pV5fp_tr[4] = 0.0;
-        }
-        
-        bGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5tg_tr);
-        pRecDB->CalcTargetCoords(pV5fp_tr, pV5dbrec_tr);
-
-        if (bGoodParticle) {
-            pTree->Fill();
-            pIndex++;
-        }
-
-        NThrown++;
-    }
-
-    printf("%d/%d event saved into root file", pIndex, NThrown);
+    pTree->Branch("XS", &pCrossSection, "XS/D");
 }
 
 void g2pSim::Clear()
 {
-    for(int i=0; i<3; i++) {
-        pV3bpm_tr[i] = 0.0;
-        pV3bpm_lab[i] = 0.0;
-    }
-
-    for(int i=0; i<5; i++) {
-        pV5fp_tr[i] = 0.0;
-        pV5tg_tr[i] = 0.0;
-        pV5rec_tr[i] = 0.0;
-        pV5tg_lab[i] = 0.0;
-        pV5rec_lab[i] = 0.0;
-        pV5dbrec_tr[i] = 0.0;
-    }
+    memset(pV3bpm_lab, 0, sizeof(pV3bpm_lab));
+    memset(pV5fp_tr, 0, sizeof(pV5fp_tr));
+    memset(pV5tg_tr, 0, sizeof(pV5tg_tr));
+    memset(pV5rec_tr, 0, sizeof(pV5rec_tr));
+    memset(pV5tg_lab, 0, sizeof(pV5tg_lab));
+    memset(pV5rec_lab, 0, sizeof(pV5rec_lab));
+    memset(pV5recdb_tr, 0, sizeof(pV5recdb_tr));
 }
         
 		//throw away this event if delta_rec>=1.0
