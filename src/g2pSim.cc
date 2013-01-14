@@ -47,7 +47,6 @@ g2pSim::g2pSim()
      pSetting(11), pHRSAngle(5.767*deg), pHRSMomentum(2.251),
      pCrossSection(0), pRecDB(NULL), pGun(NULL), pRand(NULL)
 {
-    pGunList.clear();
     Clear();
 }
 
@@ -68,9 +67,9 @@ void g2pSim::Init()
 
     if (pGun->IsInit()) {
         if (pIsLeftArm)
-            pRecDB = new HRSRecUseDB("L","db_vdc.L.dat");
+            pRecDB = new HRSRecUseDB("L","db_L.vdc.dat");
         else
-            pRecDB = new HRSRecUseDB("R","db_vdc.R.dat");
+            pRecDB = new HRSRecUseDB("R","db_R.vdc.dat");
 
         InitTree();
 
@@ -81,7 +80,7 @@ void g2pSim::Init()
     }
 }
 
-void Run()
+void g2pSim::Run()
 {
     if (pGun==NULL) {
         //
@@ -98,22 +97,24 @@ void Run()
 void g2pSim::RunSim()
 {
     while (pIndex<=pNEvent) {
-        if ((pIndex%10000)==0) prinf("%d\n", pIndex);
+        
         
         pGun->Shoot(pV3bpm_lab, pV5tg_tr);
 
-        bool bGoodParticle;
-
-        bGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
+        pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
 
         pV5fp_tr[4] = pV5tg_tr[0];
         
-        bGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5tg_tr);
-        
+        pGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5rec_tr);
+        pGoodParticle = true;
         pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
         pRecDB->CalcTargetCoords(pV5fp_rot, pV5recdb_tr);
 
+        pGoodParticle = true;
+
         pTree->Fill();
+
+        if ((pIndex%10000)==0) printf("%d\n", pIndex);
         pIndex++;
     }
 }
@@ -121,23 +122,25 @@ void g2pSim::RunSim()
 void g2pSim::RunData()
 {
     while (pIndex<=pNEvent) {
-        if ((pIndex%10000)==0) prinf("%d\n", pIndex);
-        
         pGun->Shoot(pV3bpm_lab, pV5fpdata_tr);
+        if (!pGun->IsInit()) break;
 
         pRecDB->TransTr2Rot(pV5fpdata_tr, pV5fpdata_rot);
         pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5tg_tr);
 
-        bool bGoodParticle;
+        pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
 
-        bGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
+        pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
 
         pV5fp_tr[4] = pV5tg_tr[0];
         
-        bGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fpdata_tr, pV5rec_tr);
+        SNAKEBackward(pIsLeftArm, pSetting, pV5fpdata_tr, pV5rec_tr);
+
         pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5recdb_tr);
 
         pTree->Fill();
+
+        if ((pIndex%10000)==0) printf("%d\n", pIndex);
         pIndex++;
     }
 }
@@ -171,7 +174,8 @@ void g2pSim::InitTree()
 
     pConfig->Fill();
 
-    pTree->Branch("Index",&pIndex,"Index/I");
+    pTree->Branch("Index", &pIndex,"Index/I");
+    pTree->Branch("IsGood", &pGoodParticle, "IsGood/O");
     
 	pTree->Branch("Xfp_tr",&pV5fp_tr[0],"Xfp_tr/D");
 	pTree->Branch("Thetafp_tr",&pV5fp_tr[1],"Thetafp_tr/D");
@@ -241,6 +245,8 @@ void g2pSim::Clear()
     memset(pV5tg_lab, 0, sizeof(pV5tg_lab));
     memset(pV5rec_lab, 0, sizeof(pV5rec_lab));
     memset(pV5recdb_tr, 0, sizeof(pV5recdb_tr));
+    pCrossSection = 0;
+    pGoodParticle = false;
 }
         
 		//throw away this event if delta_rec>=1.0

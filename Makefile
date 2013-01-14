@@ -14,6 +14,7 @@ MYHOST      := $(shell hostname -s)
 VERSION     := 1.0.1
 EXECFILE    := g2pSim
 LIBFILE     := g2pSim
+#USERDICT    := $(LIBFILE)_Dict
 
 ##################################################################
 SRCDIR      := src
@@ -23,7 +24,11 @@ OTHERINC    :=
 
 ###################################################################
 # Compiler
-AR          := g++ -shared
+ifeq ($(MYOS),Darwin)
+    AR      := libtool -static -o
+else 
+    AR      := ar r
+endif
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -53,6 +58,7 @@ else
 endif 
 GPPFLAGS    := -M
 LDFLAGS     := -O3 -g $(MODE)
+SOFLAGS     := -shared
 
 ###################################################################
 # Generate obj file list
@@ -88,8 +94,8 @@ ROOTLIBS    := $(shell root-config --libs)
 ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
 
 CXXFLAGS    += $(ROOTCFLAGS) 
-LIBS        := $(SYSLIBS) $(ROOTLIBS) $(OTHERLIBS)
-GLIBS       := $(SYSLIBS) $(ROOTGLIBS) $(OTHERLIBS)
+LIBS        := $(SYSLIBS) $(ROOTLIBS)
+GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 
 
 ###################################################################
@@ -159,17 +165,30 @@ ifneq ($(DEPS),)
 endif
 
 ##########################################################
-exe: lib $(OBJDIR) $(OBJS)
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) -l lib$(LIBFILE).so $(LIBS)
+exe: lib $(OBJDIR)/Main.o
+	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./lib$(LIBFILE).so $(LIBS)
 	@echo "Linking $(EXECFILE) ... done!"
 
+$(OBJDIR)/Main.o: Main.cc
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+
 ##########################################################
-lib: $(OBJDIR) $(OBJS)
+lib: $(OBJDIR) $(OBJS) # $(OBJDIR)/$(USERDICT).o
 	@make -C HRSTransport lib
 	@make -C CrossSection lib
-	@$(AR) $(LDFLAGS) -o lib$(LIBFILE).$(VERSION).so $(OBJS) $(LIBS)
+	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
+           $(OBJS) $(OTHERLIBS) # $(OBJDIR)/$(USERDICT).o $(OTHERLIBS)
 	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
 	@echo "Linking lib$(LIBFILE).so ... done!"
+
+#$(USERDICT).cxx: $(wildcard include/*.hh) $(LIBFILE)_LinkDef.h
+#		@echo "Generating dictionary $(USERDICT)..."
+#		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
+
+#$(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
+#	@echo Compiling $< ......
+#	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 ##########################################################
 $(OBJDIR)/%.o: %.F

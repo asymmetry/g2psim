@@ -22,17 +22,19 @@
 
 #include "HRSGun.hh"
 
+//#define GUN_DEBUG 1
+
 using namespace std;
 using namespace Transform;
 
 const double deg = TMath::Pi()/180.0;
 
 HRSGun::HRSGun()
-    :pIsInit(false), pSetting(1), pTargetX_lab(0), pTargetY_lab(0),
-     pTargetZLow_lab(0), pTargetZHigh_lab(0), pTargetR_lab(0.015),
-     pTargetThetaLow_tr(0), pTargetThetaHigh_tr(0), pTargetPhiLow_tr(0),
-     pTargetPhiHigh_tr(0), pDeltaLow(0), pDeltaHigh(0), pPosRes(0.0001),
-     pAngleRes(0.01), pDeltaRes(0.03), pHRSAngle(5.767*deg), pUseData(false),
+    :pIsInit(false), pUseData(false), pSetting(1), pTargetX_lab(0),
+     pTargetY_lab(0), pTargetZLow_lab(0), pTargetZHigh_lab(0),
+     pTargetR_lab(0.015), pTargetThetaLow_tr(0), pTargetThetaHigh_tr(0),
+     pTargetPhiLow_tr(0), pTargetPhiHigh_tr(0), pDeltaLow(0), pDeltaHigh(0),
+     pPosRes(0.0001), pAngleRes(0.01), pDeltaRes(0.03), pHRSAngle(5.767*deg),
      pGunSelector(NULL), pFilePtr(NULL), pFileName(NULL), pRand(NULL)
 {
     memset(pV3bpm_lab, 0, sizeof(pV3bpm_lab));
@@ -44,11 +46,11 @@ HRSGun::HRSGun()
 }
 
 HRSGun::HRSGun(const char* dist)
-    :pIsInit(false), pSetting(1), pTargetX_lab(0), pTargetY_lab(0),
-     pTargetZLow_lab(0), pTargetZHigh_lab(0), pTargetR_lab(0.015),
-     pTargetThetaLow_tr(0), pTargetThetaHigh_tr(0), pTargetPhiLow_tr(0),
-     pTargetPhiHigh_tr(0), pDeltaLow(0), pDeltaHigh(0), pPosRes(0.0001),
-     pAngleRes(0.01), pDeltaRes(0.03), pHRSAngle(5.767*deg), pUseData(false),
+    :pIsInit(false), pUseData(false), pSetting(1), pTargetX_lab(0),
+     pTargetY_lab(0), pTargetZLow_lab(0), pTargetZHigh_lab(0),
+     pTargetR_lab(0.015), pTargetThetaLow_tr(0), pTargetThetaHigh_tr(0),
+     pTargetPhiLow_tr(0), pTargetPhiHigh_tr(0), pDeltaLow(0), pDeltaHigh(0),
+     pPosRes(0.0001), pAngleRes(0.01), pDeltaRes(0.03), pHRSAngle(5.767*deg),
      pGunSelector(NULL), pFilePtr(NULL), pFileName(NULL), pRand(NULL)
 {
     memset(pV3bpm_lab, 0, sizeof(pV3bpm_lab));
@@ -142,6 +144,10 @@ void HRSGun::ShootDelta(double *pV3, double *pV5)
     pV5[2] = Ytg_tr;
     pV5[3] = Phitg_tr;
     pV5[4] = Deltatg;
+
+#ifdef GUN_DEBUG
+    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+#endif
 }
 
 void HRSGun::ShootGaus(double *pV3, double *pV5)
@@ -170,6 +176,10 @@ void HRSGun::ShootGaus(double *pV3, double *pV5)
     pV5[2] = Ytg_tr;
     pV5[3] = Phitg_tr;
     pV5[4] = Deltatg;
+
+#ifdef GUN_DEBUG
+    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+#endif
 }
 
 void HRSGun::ShootFlat(double *pV3, double *pV5)
@@ -202,6 +212,10 @@ void HRSGun::ShootFlat(double *pV3, double *pV5)
     pV5[2] = Ytg_tr;
     pV5[3] = Phitg_tr;
     pV5[4] = Deltatg;
+
+#ifdef GUN_DEBUG
+    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+#endif
 }
 
 void HRSGun::ShootSieve(double *pV3, double *pV5)
@@ -234,15 +248,28 @@ void HRSGun::ShootSieve(double *pV3, double *pV5)
     pV5[2] = Ytg_tr;
     pV5[3] = Phitg_tr;
     pV5[4] = Deltatg;
+
+#ifdef GUN_DEBUG
+    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+#endif
 }
 
 void HRSGun::ShootData(double *pV3, double *pV5)
 {
     int temp;
-    
-    // index, bpm_x, bpm_y, thetatg_tr, ytg_tr, phitg_tr, deltatg 
-    fscanf(pFilePtr, "%d%lf%lf%lf%lf%lf%lf", &temp, &pV3[0], &pV3[1], &pV5[0], &pV5[1], &pV5[2], &pV5[3]);
+
+    if (!feof(pFilePtr)) {
+        // index, bpm_x, bpm_y, thetatg_tr, ytg_tr, phitg_tr, deltatg
+        fscanf(pFilePtr, "%d%lf%lf%lf%lf%lf%lf", &temp, &pV3[0], &pV3[1], &pV5[0], &pV5[1], &pV5[2], &pV5[3]);
+    }
+    else{
+        pIsInit = false;
+    }
 
     pV3[2] = 0;
     pV5[4] = 0;
+
+#ifdef GUN_DEBUG
+    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+#endif
 }

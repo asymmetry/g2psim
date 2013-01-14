@@ -49,8 +49,8 @@ public:
 
     void SetRand(HRSRand * rand) { pRand = rand; }
 
-    bool IsInit() { return pIsInit(); }
-    bool IsUsingData() { return UseData(); }
+    bool IsInit() { return pIsInit; }
+    bool IsUsingData() { return pUseData; }
 
     int GetSetting() { return pSetting; }
     double GetPosResolution() { return pPosRes; }

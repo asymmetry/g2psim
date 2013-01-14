@@ -13,6 +13,8 @@
 
 #include "HRSRecUseDB.hh"
 
+//#define RECUSEDB_DEBUG 1
+
 using namespace std;
 
 HRSRecUseDB::HRSRecUseDB()
@@ -106,9 +108,9 @@ int HRSRecUseDB::LoadDataBase()
 	power["YF"] = 5;
     
 	map<string,vector<THaMatrixElement>*> matrix_map;
-    matrix_map["t"] = &fDMatrixElems;
-	matrix_map["y"] = &fTMatrixElems;
-	matrix_map["p"] = &fYMatrixElems;
+    matrix_map["t"] = &ftMatrixElems;
+	matrix_map["y"] = &fyMatrixElems;
+	matrix_map["p"] = &fpMatrixElems;
 	matrix_map["D"] = &fDMatrixElems;
     matrix_map["T"] = &fTMatrixElems;
 	matrix_map["Y"] = &fYMatrixElems;
@@ -174,6 +176,11 @@ int HRSRecUseDB::LoadDataBase()
 
     fIsInit = true;
     ifs.close();
+
+#ifdef RECUSEDB_DEBUG
+    PrintDataBase();
+#endif
+    
     return 0;
 }
 
@@ -261,16 +268,16 @@ void HRSRecUseDB::TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot)
     
     double pV5fp_det[5];
 
-    double rho_0 = -TMath::Pi()/4.0;
+    double rho_0 = atan(ftMatrixElems[0].poly[0]);
 
     TransTr2Det(pV5fp_tr, pV5fp_det);
 
     double x_det = pV5fp_det[0];
-    double th_det = pV5fp_det[2];
+    double th_det = pV5fp_det[1];
     double ph_det = pV5fp_det[3];
 
     double x_tr = pV5fp_tr[0];
-    double y_tr = pV5fp_tr[1];
+    double y_tr = pV5fp_tr[2];
 
     x = x_tr;
 
@@ -278,16 +285,23 @@ void HRSRecUseDB::TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot)
     CalcMatrix(x, fyMatrixElems);
     CalcMatrix(x, fpMatrixElems);
 
-    double rho = ftMatrixElems[0].v;
+    double tan_rho = ftMatrixElems[0].v;
+    double cos_rho = 1.0/sqrt(1.0+tan_rho*tan_rho);
 
     y = y_tr - fyMatrixElems[0].v;
-    theta = (x_det+rho)/(1-th_det*rho);
-    phi = (ph_det-fpMatrixElems[0].v)/(cos(rho_0)-th_det*sin(rho_0));
+    theta = (th_det+tan_rho)/(1-th_det*tan_rho);
+    phi = (ph_det-fpMatrixElems[0].v)*cos_rho/(1.0-th_det*tan_rho);
 
     pV5fp_rot[0] = x;
     pV5fp_rot[1] = theta;
     pV5fp_rot[2] = y;
     pV5fp_rot[3] = phi;
+
+#ifdef RECUSEDB_DEBUG
+    printf("%e\t%e\t%e\t%e\n", pV5fp_tr[0], pV5fp_tr[1], pV5fp_tr[2], pV5fp_tr[3]);
+    printf("%e\t%e\t%e\t%e\n", pV5fp_det[0], pV5fp_det[1], pV5fp_det[2], pV5fp_det[3]);
+    printf("%e\t%e\t%e\t%e\n", pV5fp_rot[0], pV5fp_rot[1], pV5fp_rot[2], pV5fp_rot[3]);
+#endif
 }
 
 void HRSRecUseDB::TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr)
@@ -297,11 +311,11 @@ void HRSRecUseDB::TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr)
 
 void HRSRecUseDB::TransTr2Det(const double *pV5fp_tr, double *pV5fp_det)
 {
-    double rho_0 = -TMath::Pi()/4.0;
+    double rho_0 = atan(ftMatrixElems[0].poly[0]);
 
     double x_tr = pV5fp_tr[0];
-    double y_tr = pV5fp_tr[1];
-    double th_tr = pV5fp_tr[2];
+    double th_tr = pV5fp_tr[1];
+    double y_tr = pV5fp_tr[2];
     double ph_tr = pV5fp_tr[3];
 
     double x_det = x_tr/(cos(rho_0)*(1+th_tr*tan(rho_0)));
@@ -317,22 +331,22 @@ void HRSRecUseDB::TransTr2Det(const double *pV5fp_tr, double *pV5fp_det)
 
 void HRSRecUseDB::TransDet2Tr(const double *pV5fp_det, double *pV5fp_tr)
 {
-    double rho_0 = -TMath::Pi()/4.0;
+    double rho_0 = atan(ftMatrixElems[0].poly[0]);
 
     double x_det = pV5fp_det[0];
-    double y_det = pV5fp_det[1];
-    double th_det = pV5fp_det[2];
+    double th_det = pV5fp_det[1];
+    double y_det = pV5fp_det[2];
     double ph_det = pV5fp_det[3];
 
     double th_tr = (th_det+tan(rho_0))/(1-th_det*tan(rho_0));
-    double ph_tr = ph_det/(cos(rho_0)-th_det*sin(rho_0));
+    double ph_tr = ph_det*cos(rho_0)/(1-th_det*tan(rho_0));
     double x_tr = x_det*cos(rho_0)*(1+th_tr*tan(rho_0));
     double y_tr = y_det+sin(rho_0)*ph_tr*x_det;
 
     pV5fp_tr[0] = x_tr;
     pV5fp_tr[1] = th_tr;
     pV5fp_tr[2] = y_tr;
-    pV5fp_tr[3] = ph_tr;    
+    pV5fp_tr[3] = ph_tr;
 }
 
 double HRSRecUseDB::CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix)

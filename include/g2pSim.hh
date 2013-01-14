@@ -32,13 +32,13 @@ public:
     
     void SetNEvent(int n) { pNEvent = n; }
     void SetArm(const char *label) { pIsLeftArm = (strcmp(label,"L")==0)?true:false; }
-    void SetHRSAngle(double angle) { pHRSAngel = angle; }
+    void SetHRSAngle(double angle) { pHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { pHRSMomentum = momentum; }
     void SetHRSSetting(int setting) { pSetting = setting; }
 
-    void SetRootFile(const char *name) { pFileName = name; }
+    void SetRootName(const char *name) { pFileName = name; }
 
-    void SetGun(HRSGun &gun) { pGun = &gun; }
+    void SetGun(HRSGun *gun) { pGun = gun; }
 
     bool IsInit() { return pIsInit; }
 
@@ -79,6 +79,8 @@ private:
     double pV5recdb_lab[5];
 
     double pCrossSection;
+
+    bool pGoodParticle;
 
     HRSRecUseDB *pRecDB;
     
