@@ -38,11 +38,11 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g \
                $(MODE) -I$(INCDIR) $(OTHERINC) 
-CXXFLAGS    := -Wall -Wno-unused-variable -O3 -g -Wno-deprecated \
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g -Wno-deprecated \
                $(MODE) -I$(INCDIR) $(OTHERINC) 
-FFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g \
                $(MODE) -I$(INCDIR) $(OTHERINC)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore

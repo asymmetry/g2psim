@@ -11,8 +11,9 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ##################################################################
-VERSION     := 1.0.0
+VERSION     := 1.0.1
 EXECFILE    := g2pSim
+LIBFILE     := g2pSim
 
 ##################################################################
 SRCDIR      := src
@@ -22,11 +23,7 @@ OTHERINC    :=
 
 ###################################################################
 # Compiler
-ifeq ($(MYOS),Darwin)
-    AR      := libtool -static -o
-else
-    AR      := ar r
-endif
+AR          := g++ -shared
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -38,11 +35,11 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g \
                $(MODE) -I$(INCDIR) $(OTHERINC) 
-CXXFLAGS    := -Wall -Wno-unused-variable -O3 -g -Wno-deprecated \
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g -Wno-deprecated \
                $(MODE) -I$(INCDIR) $(OTHERINC) 
-FFLAGS      := -Wall -Wno-unused-variable -O3 -g \
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g \
                $(MODE) -I$(INCDIR) $(OTHERINC)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
@@ -162,11 +159,17 @@ ifneq ($(DEPS),)
 endif
 
 ##########################################################
-exe: $(OBJDIR) $(OBJS)
+exe: lib $(OBJDIR) $(OBJS)
+	@$(LD) $(LDFLAGS) -o $(EXECFILE) -l lib$(LIBFILE).so $(LIBS)
+	@echo "Linking $(EXECFILE) ... done!"
+
+##########################################################
+lib: $(OBJDIR) $(OBJS)
 	@make -C HRSTransport lib
 	@make -C CrossSection lib
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJS) $(LIBS)
-	@echo "Linking $(EXECFILE) ... done!"
+	@$(AR) $(LDFLAGS) -o lib$(LIBFILE).$(VERSION).so $(OBJS) $(LIBS)
+	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
+	@echo "Linking lib$(LIBFILE).so ... done!"
 
 ##########################################################
 $(OBJDIR)/%.o: %.F
