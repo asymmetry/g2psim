@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ##################################################################
-VERSION     := 1.0.1
+VERSION     := 1.1.0
 EXECFILE    := g2pSim
 LIBFILE     := g2pSim
 #USERDICT    := $(LIBFILE)_Dict
@@ -166,7 +166,8 @@ endif
 
 ##########################################################
 exe: lib $(OBJDIR)/Main.o
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./lib$(LIBFILE).so $(LIBS)
+	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./lib$(LIBFILE).so \
+           $(LIBS)
 	@echo "Linking $(EXECFILE) ... done!"
 
 $(OBJDIR)/Main.o: Main.cc
@@ -174,11 +175,11 @@ $(OBJDIR)/Main.o: Main.cc
 	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 ##########################################################
-lib: $(OBJDIR) $(OBJS) # $(OBJDIR)/$(USERDICT).o
+lib: $(OBJDIR) $(OBJS)
 	@make -C HRSTransport lib
 	@make -C CrossSection lib
 	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
-           $(OBJS) $(OTHERLIBS) # $(OBJDIR)/$(USERDICT).o $(OTHERLIBS)
+           $(OBJS) $(LIBS) $(OTHERLIBS)
 	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
 	@echo "Linking lib$(LIBFILE).so ... done!"
 
@@ -225,7 +226,8 @@ $(OBJDIR):
 ##########################################################
 clean:
 	@rm -f $(OBJS) $(DEPS)
-	@rm -f *~ *# $(EXECFILE) */*~ */*#
+	@rm -f $(EXECFILE) lib$(LIBFILE).*.so lib$(LIBFILE).so
+	@rm -f *~ *# */*~ */*#
 
 distclean: clean
 	@cd HRSTransport; make clean; cd ..
