@@ -18,12 +18,12 @@
 using namespace std;
 
 HRSRecUseDB::HRSRecUseDB()
-    : fIsInit(false)
+    :fIsInit(false)
 {
 }
 
 HRSRecUseDB::HRSRecUseDB(const char* prefix, const char* dbname)
-    : fIsInit(false)
+    :fIsInit(false)
 {
     SetPrefix(prefix);
     SetDBName(dbname);
@@ -286,7 +286,7 @@ void HRSRecUseDB::TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot)
     double tan_rho = ftMatrixElems[0].v;
     double cos_rho = 1.0/sqrt(1.0+tan_rho*tan_rho);
 
-    y = y_tr - fyMatrixElems[0].v;
+    y = y_tr-fyMatrixElems[0].v;
     theta = (th_det+tan_rho)/(1.0-th_det*tan_rho);
     phi = (ph_det-fpMatrixElems[0].v)/((1.0-th_det*tan_rho)*cos_rho);
 
@@ -304,7 +304,36 @@ void HRSRecUseDB::TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot)
 
 void HRSRecUseDB::TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr)
 {
+    double x = pV5fp_rot[0];
+    double t = pV5fp_rot[1];
+    double y = pV5fp_rot[2];
+    double p = pV5fp_rot[3];
 
+    CalcMatrix(x, ftMatrixElems);
+    CalcMatrix(x, fyMatrixElems);
+    CalcMatrix(x, fpMatrixElems);
+
+    double tan_rho = ftMatrixElems[0].v;
+    double cos_rho = 1.0/sqrt(1.0+tan_rho*tan_rho);
+    
+    double x_tr = x;
+    double y_tr = y+fyMatrixElems[0].v;
+    double t_det = (t-tan_rho)/(1.0+t*tan_rho);
+    double p_det = p*(1.0-t_det*tan_rho)*cos_rho+fpMatrixElems[0].v;
+
+    double tan_rho_0 = ftMatrixElems[0].poly[0];
+    double cos_rho_0 = 1.0/sqrt(1.0+tan_rho_0*tan_rho_0);
+
+    double t_tr = (t_det+tan_rho_0)/(1.0-t_det*tan_rho_0);
+    double p_tr = p_det/(cos_rho_0*(1.0-t_det*tan_rho_0));
+    
+    // double t_tr = -.004791569093294506*x*x*x+.02738386993285832*t*x*x-.005985192096309318*x*x+.1654807057996422*t*t*x+7.303642171752202e-9*t*x+.1654807236128732*x-1.9502726995405434e-8*t*t*t+3.3240723379493026e-8*t*t+.9999999874969879*t-1.0003328907469393e-9;
+    // double p_tr = 6.0069583028972e-4*x*x*x-.005906841761909994*t*x*x+.01369193472004655*p*x*x+.006232486773147315*x*x+3.35069502985833e-4*t*t*x+.1654807212124184*p*t*x+.001746885379624117*t*x-1.8523424201065353e-9*p*x-0.00140983544384478*x-3.948960621821237e-11*t*t*t+6.730664265432982e-11*t*t+.002024824822383892*t+p-.002022529283042846;
+
+    pV5fp_tr[0] = x_tr;
+    pV5fp_tr[1] = t_tr;
+    pV5fp_tr[2] = y_tr;
+    pV5fp_tr[3] = p_tr;
 }
 
 void HRSRecUseDB::TransTr2Det(const double *pV5fp_tr, double *pV5fp_det)

@@ -17,6 +17,10 @@
 
 #include "g2pSim.hh"
 
+//#define G2PSIM_DEBUG 1
+
+using namespace Transform;
+
 const double deg = TMath::Pi()/180.0;
 
 // void VDCSmearing(double* pV5_fp)
@@ -104,11 +108,17 @@ void g2pSim::RunSim()
 
         pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
         pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
+#ifdef G2PSIM_DEBUG
+        printf("%e\t%e\t%e\t%e\t%e\n", pV5fp_rot[0], pV5fp_rot[1], pV5fp_rot[2], pV5fp_rot[3],pV5fp_rot[4]);
+#endif
 
         pV5fp_tr[4] = pV5tg_tr[0];
         pGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5rec_tr);
-
         pRecDB->CalcTargetCoords(pV5fp_rot, pV5recdb_tr);
+#ifdef G2PSIM_DEBUG
+        printf("%e\t%e\t%e\t%e\t%e\n", pV5rec_tr[0], pV5rec_tr[1], pV5rec_tr[2], pV5rec_tr[3],pV5rec_tr[4]);
+        printf("%e\t%e\t%e\t%e\t%e\n\n", pV5recdb_tr[0], pV5recdb_tr[1], pV5recdb_tr[2], pV5recdb_tr[3],pV5recdb_tr[4]);
+#endif
 
         pTree->Fill();
 
@@ -128,12 +138,20 @@ void g2pSim::RunData()
 
         pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
         pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
+#ifdef G2PSIM_DEBUG
+        printf("%e\t%e\t%e\t%e\t%e\n", pV5fp_rot[0], pV5fp_rot[1], pV5fp_rot[2], pV5fp_rot[3],pV5fp_rot[4]);
+#endif
 
-        pV5fpdata_tr[4] = pV5tg_tr[0];
+        double pV3[3];
+        X_HCS2TCS(pV3bpm_lab[0], pV3bpm_lab[1], pV3bpm_lab[2], pHRSAngle, pV3[0], pV3[1], pV3[2]);
+        pV5fpdata_tr[4] = pV3[0];
         
         SNAKEBackward(pIsLeftArm, pSetting, pV5fpdata_tr, pV5rec_tr);
-
         pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5recdb_tr);
+#ifdef G2PSIM_DEBUG
+        printf("%e\t%e\t%e\t%e\t%e\n", pV5rec_tr[0], pV5rec_tr[1], pV5rec_tr[2], pV5rec_tr[3],pV5rec_tr[4]);
+        printf("%e\t%e\t%e\t%e\t%e\n\n", pV5recdb_tr[0], pV5recdb_tr[1], pV5recdb_tr[2], pV5recdb_tr[3],pV5recdb_tr[4]);
+#endif
 
         pTree->Fill();
 
