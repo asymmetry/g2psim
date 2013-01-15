@@ -97,20 +97,18 @@ void g2pSim::Run()
 void g2pSim::RunSim()
 {
     while (pIndex<=pNEvent) {
-        
-        
         pGun->Shoot(pV3bpm_lab, pV5tg_tr);
 
+        pV5tg_tr[1] = tan(pV5tg_tr[1]);
+        pV5tg_tr[3] = tan(pV5tg_tr[3]);
+
         pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
+        pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
 
         pV5fp_tr[4] = pV5tg_tr[0];
-        
         pGoodParticle &= SNAKEBackward(pIsLeftArm, pSetting, pV5fp_tr, pV5rec_tr);
-        pGoodParticle = true;
-        pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
-        pRecDB->CalcTargetCoords(pV5fp_rot, pV5recdb_tr);
 
-        pGoodParticle = true;
+        pRecDB->CalcTargetCoords(pV5fp_rot, pV5recdb_tr);
 
         pTree->Fill();
 
@@ -129,10 +127,9 @@ void g2pSim::RunData()
         pRecDB->CalcTargetCoords(pV5fpdata_rot, pV5tg_tr);
 
         pGoodParticle = SNAKEForward(pIsLeftArm, pSetting, pV5tg_tr, pV5fp_tr);
-
         pRecDB->TransTr2Rot(pV5fp_tr, pV5fp_rot);
 
-        pV5fp_tr[4] = pV5tg_tr[0];
+        pV5fpdata_tr[4] = pV5tg_tr[0];
         
         SNAKEBackward(pIsLeftArm, pSetting, pV5fpdata_tr, pV5rec_tr);
 

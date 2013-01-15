@@ -74,16 +74,16 @@ int main(int argc, char** argv)
     }
 
     g2pSim *run= new g2pSim();
-    HRSGun *gun= new HRSGun("data");
+    HRSGun *gun= new HRSGun("sieve");
     gun->SetDataFile("input_fp_tr.dat");
 
     run->SetGun(gun);
     run->SetNEvent(iNEvent);
-    run->SetRootName("result_E11_G5.root");
+    run->SetRootName("result_E11_G4.root");
     if (iArm==0) run->SetArm("L");
     else if (iArm==1) run->SetArm("R");
     run->SetHRSMomentum(2.251);
-    run->SetHRSSetting(19);
+    run->SetHRSSetting(11);
     
     run->Run();
     

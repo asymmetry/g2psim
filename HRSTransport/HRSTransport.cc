@@ -31,9 +31,9 @@ bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* p
     double pV5[5];
     
     pV5[0]=pV5_tg[0];
-    pV5[1]=tan(pV5_tg[1]);
+    pV5[1]=pV5_tg[1];
     pV5[2]=pV5_tg[2];
-    pV5[3]=tan(pV5_tg[3]);
+    pV5[3]=pV5_tg[3];
     pV5[4]=pV5_tg[4];
 
 #ifdef DEBUG_HRS_FORWARD
@@ -81,9 +81,9 @@ bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* p
     }
 
     pV5_fp[0]=pV5[0];
-    pV5_fp[1]=atan(pV5[1]);
+    pV5_fp[1]=pV5[1];
     pV5_fp[2]=pV5[2];
-    pV5_fp[3]=atan(pV5[3]);
+    pV5_fp[3]=pV5[3];
     pV5_fp[4]=pV5[4];
     
     return bGoodParticle;
@@ -99,9 +99,9 @@ bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_fp, double* 
     double pV5[5];
     
     pV5[0]=pV5_fp[0];
-    pV5[1]=tan(pV5_fp[1]);
+    pV5[1]=pV5_fp[1];
     pV5[2]=pV5_fp[2];
-    pV5[3]=tan(pV5_fp[3]);
+    pV5[3]=pV5_fp[3];
     pV5[4]=pV5_fp[4];
 
 #ifdef DEBUG_HRS_BACKWARD
@@ -147,9 +147,9 @@ bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_fp, double* 
     }
 
     pV5_tg[0]=pV5[0];
-    pV5_tg[1]=atan(pV5[1]);
+    pV5_tg[1]=pV5[1];
     pV5_tg[2]=pV5[2];
-    pV5_tg[3]=atan(pV5[3]);
+    pV5_tg[3]=pV5[3];
     pV5_tg[4]=pV5[4];
 
     bool bGoodParticle = false;
