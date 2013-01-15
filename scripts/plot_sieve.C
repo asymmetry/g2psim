@@ -6,9 +6,9 @@ TTree *T;
 double fphlowlimit = -0.04, fphhilimit = 0.04;
 double fthlowlimit = -0.03, fthhilimit = 0.03;
 double fylowlimit  = -60.0, fyhilimit  = 60.0;
-double phlowlimit  = -0.04, phhilimit  = 0.04;
-double thlowlimit  = -0.08, thhilimit = 0.08;
-double dplowlimit  = -0.01, dphilimit = 0.01;
+double phlowlimit  = -0.03, phhilimit  = 0.03;
+double thlowlimit  = -0.06, thhilimit  = 0.06;
+double dplowlimit  = -0.01, dphilimit  = 0.01;
 
 void PlotFPThPh(){
     TCanvas *c1 = new TCanvas("c1","FP Th vs Ph", 1200, 600);
