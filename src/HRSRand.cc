@@ -26,6 +26,11 @@ HRSRand::~HRSRand()
     pRG = NULL;
 }
 
+int HRSRand::Integer(int max)
+{
+    return pRG->Integer(max);
+}
+
 double HRSRand::Uniform()
 {
     return pRG->Uniform();

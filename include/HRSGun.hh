@@ -45,7 +45,7 @@ public:
     void SetAngleRes(double value) { pAngleRes = value; }
     void SetDeltaRes(double value) { pDeltaRes = value; }
     
-    void SetDataFile(const char *name) { pFileName = name; pUseData = true; }
+    void SetDataFile(const char *name) { pFileName = name; }
 
     void SetRand(HRSRand * rand) { pRand = rand; }
 

@@ -20,7 +20,8 @@ class HRSRand
 public:
     HRSRand();
     ~HRSRand();
-    
+
+    virtual int Integer(int max);
     virtual double Uniform();
     virtual double Uniform(double low, double high);
     virtual double Gaus(double mean, double sigma);

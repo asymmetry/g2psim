@@ -73,6 +73,8 @@ HRSGun::HRSGun(const char* dist)
         SetGun(dist_map[dist]);
         pSetting=dist_map[dist];
     }
+
+    if (pSetting==5) pUseData = true;
 }
 
 HRSGun::~HRSGun()
@@ -146,7 +148,7 @@ void HRSGun::ShootDelta(double *pV3, double *pV5)
     pV5[4] = Deltatg;
 
 #ifdef GUN_DEBUG
-    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+    printf("%e\t%e\t%e\t%e\t%e\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 }
 
@@ -178,7 +180,7 @@ void HRSGun::ShootGaus(double *pV3, double *pV5)
     pV5[4] = Deltatg;
 
 #ifdef GUN_DEBUG
-    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+    printf("%e\t%e\t%e\t%e\t%e\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 }
 
@@ -214,34 +216,76 @@ void HRSGun::ShootFlat(double *pV3, double *pV5)
     pV5[4] = Deltatg;
 
 #ifdef GUN_DEBUG
-    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+    printf("%e\t%e\t%e\t%e\t%e\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 }
 
 void HRSGun::ShootSieve(double *pV3, double *pV5)
 {
-    double Xtg_lab, Ytg_lab;
-    do {
-        Xtg_lab = pRand->Uniform(-pTargetR_lab, pTargetR_lab);
-        Ytg_lab = pRand->Uniform(-pTargetR_lab, pTargetR_lab);
-    } while (Xtg_lab*Xtg_lab+Ytg_lab*Ytg_lab>pTargetR_lab*pTargetR_lab);
-    
-    double Ztg_lab = pRand->Uniform(pTargetZLow_lab, pTargetZHigh_lab);
+    int selector = pRand->Integer(17);
+    double Xtg_lab = 0, Ytg_lab = 0;
+    double Ztg_lab = 0;
 
-    pV3[0] = Xtg_lab + pTargetX_lab;
-    pV3[1] = Ytg_lab + pTargetY_lab;
+    pV3[0] = Xtg_lab;
+    pV3[1] = Ytg_lab;
     pV3[2] = Ztg_lab;
 
     double Xtg_tr, Ytg_tr, Ztg_tr;
     
     X_HCS2TCS(Xtg_lab, Ytg_lab, Ztg_lab, pHRSAngle, Xtg_tr, Ytg_tr, Ztg_tr);
-
-    double Thetatg_tr = pRand->Uniform(pTargetThetaLow_tr, pTargetThetaHigh_tr);
-    double Phitg_tr = pRand->Uniform(pTargetPhiLow_tr, pTargetPhiHigh_tr);
-
+    
+    double Thetatg_tr = 0, Phitg_tr = 0;
+    switch (selector) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        Thetatg_tr = pRand->Gaus(0, 0.0005);
+        Phitg_tr = pRand->Gaus(0, 0.0005);
+        break;
+    case 5:
+        Thetatg_tr = pRand->Gaus(0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(0, 0.0005);
+        break;
+    case 6:
+        Thetatg_tr = pRand->Gaus(-0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(0, 0.0005);
+        break;
+    case 7:
+        Thetatg_tr = pRand->Gaus(0, 0.0005);
+        Phitg_tr = pRand->Gaus(0.01, 0.0005);
+        break;
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+        Thetatg_tr = pRand->Gaus(0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(0.01, 0.0005);
+        break;
+    case 13:
+        Thetatg_tr = pRand->Gaus(-0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(0.01, 0.0005);
+        break;
+    case 14:
+        Thetatg_tr = pRand->Gaus(0, 0.0005);
+        Phitg_tr = pRand->Gaus(-0.01, 0.0005);
+        break;
+    case 15:
+        Thetatg_tr = pRand->Gaus(0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(-0.01, 0.0005);
+        break;
+    case 16:
+        Thetatg_tr = pRand->Gaus(-0.02, 0.0005);
+        Phitg_tr = pRand->Gaus(-0.01, 0.0005);
+        break;
+    }
+    
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, Thetatg_tr, Phitg_tr);
 
-    double Deltatg = pRand->Uniform(pDeltaLow, pDeltaHigh);
+    //double Deltatg = pRand->Gaus(0, pDeltaRes);
+    double Deltatg = 0.0;
 
     pV5[0] = Xtg_tr;
     pV5[1] = Thetatg_tr;
@@ -250,7 +294,7 @@ void HRSGun::ShootSieve(double *pV3, double *pV5)
     pV5[4] = Deltatg;
 
 #ifdef GUN_DEBUG
-    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+    printf("%e\t%e\t%e\t%e\t%e\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 }
 
@@ -270,6 +314,6 @@ void HRSGun::ShootData(double *pV3, double *pV5)
     pV5[4] = 0;
 
 #ifdef GUN_DEBUG
-    printf("%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\t%8.5lf\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+    printf("%e\t%e\t%e\t%e\t%e\n", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
 #endif
 }
