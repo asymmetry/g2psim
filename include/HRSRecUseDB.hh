@@ -5,7 +5,25 @@
 
 using namespace std;
 
-class THaMatrixElement;
+// Class for storing matrix element data
+class THaMatrixElement
+{
+public:
+    THaMatrixElement();
+    ~THaMatrixElement();
+
+    void Print();
+    
+    bool bIsZero;        // whether the element is zero
+    vector<int> iPower;      // exponents of matrix element, e.g. D100 = { 1, 0, 0 }
+    bool IsMatch( const THaMatrixElement& rhs ) const;
+
+    int iOrder;
+    vector<double> fPoly; // the associated polynomial
+    void SkimPoly();     // reduce order to highest non-zero poly
+
+    double fValue;            // the final value once x is given
+};
 
 class HRSRecUseDB
 {
@@ -17,11 +35,11 @@ public:
     int LoadDataBase();
     void PrintDataBase();
 
-    void CalcTargetCoords(const double *pV5fp_rot, double *pV5tg_tr);
-    void TransTr2Rot(const double *pV5fp_tr, double *pV5fp_rot);
-    void TransRot2Tr(const double *pV5fp_rot, double *pV5fp_tr);
-    void TransTr2Det(const double *pV5fp_tr, double *pV5fp_det);
-    void TransDet2Tr(const double *pV5fp_det, double *pV5fp_tr);
+    void CalcTargetCoords(const double *V5fp_rot, double *V5tg_tr);
+    void TransTr2Rot(const double *V5fp_tr, double *V5fp_rot);
+    void TransRot2Tr(const double *V5fp_rot, double *V5fp_tr);
+    void TransTr2Det(const double *V5fp_tr, double *V5fp_det);
+    void TransDet2Tr(const double *V5fp_det, double *V5fp_tr);
     
     bool IsInit() { return fIsInit; }
     void SetPrefix(const char* prefix) { fPrefix = prefix; }
@@ -37,8 +55,7 @@ private:
 
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix);
-
-    friend class THaMatrixElement;
+    
     vector<THaMatrixElement> *fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;
     vector<THaMatrixElement> fyMatrixElems;
@@ -49,25 +66,6 @@ private:
     vector<THaMatrixElement> fPTAMatrixElems; // involves abs(theta_fp)
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
-};
-
-// Class for storing matrix element data
-class THaMatrixElement
-{
-public:
-    THaMatrixElement() : iszero(true), pw(3), order(0), poly(HRSRecUseDB::kPORDER) {}
-
-    void Print();
-    
-    bool iszero;         // whether the element is zero
-    vector<int> pw;      // exponents of matrix element, e.g. D100 = { 1, 0, 0 }
-    bool match( const THaMatrixElement& rhs ) const;
-
-    int order;
-    vector<double> poly; // the associated polynomial
-    void SkimPoly();     // reduce order to highest non-zero poly
-
-    double v;            // the final value once x is given
 };
 
 #endif

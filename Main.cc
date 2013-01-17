@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#include "g2pSim.hh"
+#include "G2PSim.hh"
 
 void usage(int argc, char** argv);
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    g2pSim *run= new g2pSim();
+    G2PSim *run= new G2PSim();
     HRSGun *gun= new HRSGun("data");
     gun->SetDataFile("input_fp_tr.dat");
 

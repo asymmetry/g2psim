@@ -13,20 +13,20 @@
 #include "TROOT.h"
 #include "TRandom2.h"
 
-typedef double (*func)(double);
-
 class HRSRand
 {
 public:
     HRSRand();
     ~HRSRand();
+    
+    typedef double (*pf_Func1D)(double);
 
     virtual int Integer(int max);
     virtual double Uniform();
     virtual double Uniform(double low, double high);
     virtual double Gaus(double mean, double sigma);
     virtual double Linear(double a, double c, double low, double high);
-    virtual double Func(func f, double low, double high, double ylow, double yhigh);
+    virtual double Func(pf_Func1D f, double low, double high, double ylow, double yhigh);
 
 private:
     TRandom2 *pRG;

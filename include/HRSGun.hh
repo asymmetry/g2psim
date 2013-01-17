@@ -23,87 +23,83 @@ public:
     HRSGun(const char * dist);
     ~HRSGun();
 
-    typedef void (HRSGun::*gun_ptr)(double *, double *);
+    typedef bool (HRSGun::*pf_Gun)(double *, double *);
+    
+    void SetHRSAngle(double value) { fHRSAngle = value; }
+    void SetTargetX(double value) { fTargetX_lab = value; }
+    void SetTargetY(double value) { fTargetY_lab = value; }
+    void SetTargetZ(double value) { fTargetZLow_lab = value; }
+    void SetTargetZRange(double low, double high) { fTargetZLow_lab = low; fTargetZHigh_lab = high; }
+    void SetTargetR(double value) { fTargetR_lab = value; }
 
-    void SetTargetX(double value) { pTargetX_lab = value; }
-    void SetTargetY(double value) { pTargetY_lab = value; }
-    void SetTargetZ(double value) { pTargetZLow_lab = value; }
-    void SetTargetZRange(double low, double high) { pTargetZLow_lab = low; pTargetZHigh_lab = high; }
-    void SetTargetR(double value) { pTargetR_lab = value; }
+    void SetTheta(double value) { fTargetThLow_tr = value; }
+    void SetThetaRange(double low, double high) { fTargetThLow_tr = low; fTargetThHigh_tr = high; }
+    void SetPhi(double value) { fTargetPhLow_tr = value; }
+    void SetPhiRange(double low, double high) { fTargetPhLow_tr = low; fTargetPhHigh_tr = high; }
 
-    void SetTheta(double value) { pTargetThetaLow_tr = value; }
-    void SetThetaRange(double low, double high) { pTargetThetaLow_tr = low; pTargetThetaHigh_tr = high; }
-    void SetPhi(double value) { pTargetPhiLow_tr = value; }
-    void SetPhiRange(double low, double high) { pTargetPhiLow_tr = low; pTargetPhiHigh_tr = high; }
-
-    void SetDelta(double value) { pDeltaLow = value; }
-    void SetDeltaRange(double low, double high) { pDeltaLow = low; pDeltaHigh = high; }
-
-    void SetHRSAngle(double value) { pHRSAngle = value; }
-
-    void SetPositionRes(double value) { pPosRes = value; }
-    void SetAngleRes(double value) { pAngleRes = value; }
-    void SetDeltaRes(double value) { pDeltaRes = value; }
+    void SetDelta(double value) { fDeltaLow = value; }
+    void SetDeltaRange(double low, double high) { fDeltaLow = low; fDeltaHigh = high; }
+    
+    void SetPositionRes(double value) { fPosRes = value; }
+    void SetAngleRes(double value) { fAngleRes = value; }
+    void SetDeltaRes(double value) { fDeltaRes = value; }
     
     void SetDataFile(const char *name) { pFileName = name; }
 
     void SetRand(HRSRand * rand) { pRand = rand; }
 
-    bool IsInit() { return pIsInit; }
-    bool IsUsingData() { return pUseData; }
+    bool IsInit() { return bIsInit; }
+    bool IsUsingData() { return bUseData; }
 
-    int GetSetting() { return pSetting; }
-    double GetPosResolution() { return pPosRes; }
-    double GetAngleResolution() { return pAngleRes; }
-    double GetDeltaResolution() { return pDeltaRes; }
+    int GetSetting() { return iSetting; }
+    double GetPosResolution() { return fPosRes; }
+    double GetAngleResolution() { return fAngleRes; }
+    double GetDeltaResolution() { return fDeltaRes; }
 
     virtual void Init();
-    virtual void Shoot(double *pV3, double *pV5) { (this->*pGunSelector)(pV3, pV5); }
+    virtual bool Shoot(double *V3bpm, double *V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
     virtual void End();
 
 private:
-    void SetGun(int dist);
-    void ShootDelta(double *pV3, double *pV5);
-    void ShootGaus(double *pV3, double *pV5);
-    void ShootFlat(double *pV3, double *pV5);
-    void ShootSieve(double *pV3, double *pV5);
-    void ShootData(double *pV3, double *pV5);
+    void SetGun(int setting);
 
-    bool pIsInit;
-    bool pUseData;
+    bool ShootDelta(double *V3bpm, double *V5tg);
+    bool ShootGaus(double *V3bpm, double *V5tg);
+    bool ShootFlat(double *V3bpm, double *V5tg);
+    bool ShootSieve(double *V3bpm, double *V5tg);
+    bool ShootData(double *V3bpm, double *V5tg);
 
-    int pSetting;
+    bool bIsInit;
+    
+    int iSetting;
+    bool bUseData;
 
-    double pV3bpm_lab[3];
-    double pV5tg_tr[5];
-    double pV5fp_tr[5];
+    double fHRSAngle;
 
-    double pTargetX_lab;
-    double pTargetY_lab;
-    double pTargetZLow_lab;
-    double pTargetZHigh_lab;
-    double pTargetR_lab;
+    double fTargetX_lab;
+    double fTargetY_lab;
+    double fTargetZLow_lab;
+    double fTargetZHigh_lab;
+    double fTargetR_lab;
 
-    double pTargetThetaLow_tr;
-    double pTargetThetaHigh_tr;
-    double pTargetPhiLow_tr;
-    double pTargetPhiHigh_tr;
+    double fTargetThLow_tr;
+    double fTargetThHigh_tr;
+    double fTargetPhLow_tr;
+    double fTargetPhHigh_tr;
 
-    double pDeltaLow; // in the unit of delta
-    double pDeltaHigh;
+    double fDeltaLow; // in the unit of delta
+    double fDeltaHigh;
 
-    double pPosRes;
-    double pAngleRes;
-    double pDeltaRes;
-
-    double pHRSAngle;
-
-    gun_ptr pGunSelector;
+    double fPosRes;
+    double fAngleRes;
+    double fDeltaRes;
 
     FILE *pFilePtr;
     const char *pFileName;
 
     HRSRand *pRand;
+    
+    pf_Gun pfGunSelector;
 };
 
 #endif

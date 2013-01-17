@@ -85,7 +85,7 @@ else
     SYSLIBS += -lgfortran
 endif
 OTHERLIBS   := -LHRSTransport/obj.${ARCH} -lHRSTransport \
-               -LCrossSection/obj.${ARCH} -lCrossSection
+               -LG2PXSection/obj.${ARCH} -lG2PXSection
 
 ###################################################################
 # ROOT configure
@@ -177,7 +177,7 @@ $(OBJDIR)/Main.o: Main.cc
 ##########################################################
 lib: $(OBJDIR) $(OBJS)
 	@make -C HRSTransport lib
-	@make -C CrossSection lib
+	@make -C G2PXSection lib
 	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
            $(OBJS) $(LIBS) $(OTHERLIBS)
 	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
@@ -248,4 +248,3 @@ test:
 help: test
 
 env: test
-

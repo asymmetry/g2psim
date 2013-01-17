@@ -64,7 +64,7 @@ double HRSRand::Linear(double a = 1.0, double c = 0.0 , double low = 0.0, double
     return x;
 }
 
-double HRSRand::Func(func f, double low, double high, double ylow, double yhigh)
+double HRSRand::Func(pf_Func1D f, double low, double high, double ylow, double yhigh)
 {
     double x,y;
 
