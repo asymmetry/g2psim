@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TMath.h"
@@ -46,6 +47,8 @@ const double cDeg = TMath::Pi()/180.0;
 // 484816 septa with shim, 12 means 403216 septa with shim, 13 means 400016
 // septa with shim
 
+ClassImp(G2PSim);
+
 G2PSim::G2PSim()
     :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
      nEvent(10000), bIsLeftArm(true), iSetting(11), fHRSAngle(5.767*cDeg),
@@ -76,7 +79,6 @@ void G2PSim::Init()
         pRecUseDB = new HRSRecUseDB("R","db_R.vdc.dat");
 
     if (!pGun->IsInit()) noerror = false;
-
 
     if (noerror) {
         InitTree();
@@ -227,6 +229,8 @@ void G2PSim::RunSim()
         fV5tg_tr[3] = tan(fV5tg_tr[3]);
 
         bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
+        //bIsGoodParticle = true;
+        
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
@@ -258,6 +262,7 @@ void G2PSim::RunData()
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
 
         bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
+        bIsGoodParticle = true;
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 #ifdef G2PSIM_DEBUG
         printf("%e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);

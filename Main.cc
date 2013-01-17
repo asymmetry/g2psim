@@ -3,6 +3,7 @@
 #include <getopt.h>
 
 #include "G2PSim.hh"
+#include "HRSGun.hh"
 
 void usage(int argc, char** argv);
 

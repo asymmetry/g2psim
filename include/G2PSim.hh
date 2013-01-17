@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -22,7 +23,7 @@
 
 //void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double fHRSMomentum, double pBPMRes);
 
-class G2PSim
+class G2PSim : public TObject
 {
 public:
     G2PSim();
@@ -58,7 +59,7 @@ private:
     bool bIsInit;
 
     TFile *pFile;
-    const char *pFileName;
+    const char *pFileName; //!
 
     int nIndex;
     int nEvent;
@@ -96,6 +97,8 @@ private:
     HRSRand *pRand;
     
     pf_Run pfRunSelector;
+
+    ClassDef(G2PSim,1);
 };
 
 #endif

@@ -11,9 +11,12 @@
 #include <cmath>
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TRandom2.h"
 
 #include "HRSRand.hh"
+
+ClassImp(HRSRand);
 
 HRSRand::HRSRand()
 {

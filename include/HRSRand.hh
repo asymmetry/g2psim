@@ -11,9 +11,10 @@
 #define HRS_RAND_H
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TRandom2.h"
 
-class HRSRand
+class HRSRand : public TObject
 {
 public:
     HRSRand();
@@ -30,6 +31,7 @@ public:
 
 private:
     TRandom2 *pRG;
+    ClassDef(HRSRand,1);
 };
 
 #endif

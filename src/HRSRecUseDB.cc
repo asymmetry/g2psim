@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TString.h"
 #include "TMath.h"
 
@@ -16,6 +17,8 @@
 //#define RECUSEDB_DEBUG 1
 
 using namespace std;
+
+ClassImp(HRSRecUseDB);
 
 HRSRecUseDB::HRSRecUseDB()
     :fIsInit(false)
@@ -419,19 +422,19 @@ void HRSRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
     }   
 }
 
-THaMatrixElement::THaMatrixElement()
+HRSRecUseDB::THaMatrixElement::THaMatrixElement()
     :bIsZero(true), iPower(3), iOrder(0), fPoly(HRSRecUseDB::kPORDER),
      fValue(0)
 {
     // Nothing to do
 }
 
-THaMatrixElement::~THaMatrixElement()
+HRSRecUseDB::THaMatrixElement::~THaMatrixElement()
 {
     // Nothing to do
 }
 
-bool THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
+bool HRSRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
 {
     // Compare coefficients of this matrix element to another
     if (iPower.size() != rhs.iPower.size()) return false;
@@ -441,7 +444,7 @@ bool THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
     return true;
 }
 
-void THaMatrixElement::SkimPoly()
+void HRSRecUseDB::THaMatrixElement::SkimPoly()
 {
     if (bIsZero) return;
 
@@ -452,7 +455,7 @@ void THaMatrixElement::SkimPoly()
     if (iOrder == 0) bIsZero = true;
 }
 
-void THaMatrixElement::Print()
+void HRSRecUseDB::THaMatrixElement::Print()
 {
     if (bIsZero) {
         cout << "This element is zero" << endl;

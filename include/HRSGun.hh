@@ -14,9 +14,11 @@
 
 #include <cstdio>
 
+#include "TObject.h"
+
 #include "HRSRand.hh"
 
-class HRSGun
+class HRSGun : public TObject
 {
 public:
     HRSGun();
@@ -94,12 +96,14 @@ private:
     double fAngleRes;
     double fDeltaRes;
 
-    FILE *pFilePtr;
-    const char *pFileName;
+    FILE *pFilePtr; //!
+    const char *pFileName; //!
 
     HRSRand *pRand;
     
     pf_Gun pfGunSelector;
+    
+    ClassDef(HRSGun,1);
 };
 
 #endif

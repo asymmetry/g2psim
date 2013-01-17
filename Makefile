@@ -12,9 +12,9 @@ MYHOST      := $(shell hostname -s)
 
 ##################################################################
 VERSION     := 1.1.0
-EXECFILE    := g2pSim
-LIBFILE     := g2pSim
-#USERDICT    := $(LIBFILE)_Dict
+EXECFILE    := G2PSim
+LIBFILE     := G2PSim
+USERDICT    := $(LIBFILE)_Dict
 
 ##################################################################
 SRCDIR      := src
@@ -175,21 +175,21 @@ $(OBJDIR)/Main.o: Main.cc
 	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 ##########################################################
-lib: $(OBJDIR) $(OBJS)
+lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@make -C HRSTransport lib
 	@make -C G2PXSection lib
 	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
-           $(OBJS) $(LIBS) $(OTHERLIBS)
+           $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
 	@echo "Linking lib$(LIBFILE).so ... done!"
 
-#$(USERDICT).cxx: $(wildcard include/*.hh) $(LIBFILE)_LinkDef.h
-#		@echo "Generating dictionary $(USERDICT)..."
-#		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
+$(USERDICT).cxx: $(wildcard $(INCDIR)/*.hh) $(LIBFILE)_LinkDef.h
+		@echo "Generating dictionary $(USERDICT)..."
+		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
 
-#$(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
-#	@echo Compiling $< ......
-#	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+$(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 ##########################################################
 $(OBJDIR)/%.o: %.F
@@ -226,12 +226,13 @@ $(OBJDIR):
 ##########################################################
 clean:
 	@rm -f $(OBJS) $(DEPS)
+	@rm -f $(USERDICT).cxx $(USERDICT).h
 	@rm -f $(EXECFILE) lib$(LIBFILE).*.so lib$(LIBFILE).so
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
 	@cd HRSTransport; make clean; cd ..
-	@cd CrossSection; make clean; cd ..
+	@cd G2PXSection; make clean; cd ..
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)

@@ -15,6 +15,7 @@
 #include <map>
 
 #include "TROOT.h"
+#include "TObject.h"
 #include "TMath.h"
 
 #include "HRSRand.hh"
@@ -22,12 +23,14 @@
 
 #include "HRSGun.hh"
 
-//#define GUN_DEBUG 1
+#define GUN_DEBUG 1
 
 using namespace std;
 using namespace Transform;
 
 const double cDeg = TMath::Pi()/180.0;
+
+ClassImp(HRSGun);
 
 HRSGun::HRSGun()
     :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),

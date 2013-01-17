@@ -14,7 +14,8 @@
 
 *.d
 update.sh
-g2pSim
+G2PSim
+*_Dict.*
 obj.*
 plots/
 *.bak
