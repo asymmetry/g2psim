@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ##################################################################
-VERSION     := 1.1.0
+VERSION     := 1.2.0
 EXECFILE    := G2PSim
 LIBFILE     := G2PSim
 USERDICT    := $(LIBFILE)_Dict

@@ -1,28 +1,65 @@
-V1.2 By Jixie Zhang @ 20121105
+G2PSim
 
-  Added Min's 5T longitudial target field + septum 400016 left arm snake model.
+Release version: 1.2.0
+git@asymmetry.zapto.org:g2psim.git
+Author: Chao Gu, Jixie Zhang, Min Huang
 
-V1.1 By Jixie Zhang @ 20121008
+Useage:
 
-  John provided a new snake model for 3cm raster, 5.65 deg and 484816+shim septum. 
-  I added this model into HRSTransport and renamed several files in that dir.
-  The result shows that this version have better resolution on each variables, especially in Ytr.
+    Run.C could be used to debug and test. This root script use the shared library directly with ROOT support.
+    Once finished debug, the script could be copied into Main.cc and be compiled to an executable to increase the speed.
+    Main.cc is written with supports of a simple set of commandline parameters as well as a fully functional configure file. Use it as a template to generate your own executable.
+
+History:
+
+v1.2
+    Add all of the focus plane coordinate transformations.
+    Add ROOT support to use the shared library in a script.
+
+v1.1, git snapshot c836551 @ 01152013
+
+    Rewrite the main structure to do simulation.
+    The gun of this simulation is started like a 
+
+v1.0, git snapshot 41b06ff @ 12202012
+
+    First version developed from Jixie's TestSNAKE package.
+    Add the function to reconstruct target variable using analyzer database.
+
+
 
 //////////////////////////////////////////////////////////////////////////////
-V1.0  By Jixie Zhang @ 20120918
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+Below is the develop log for Jixie's TestSNAKE package
+I will call this v1.0 of G2PSim package
+//////////////////////////////////////////////////////////////////////////////
 
-  This project was developed to test the snake transportation packages, which should be provided by either John L.L. or Min Huang. It was upgraded later to test the dependence on BPM resolution.
+v1.0.2 By Jixie Zhang @ 20121105
 
-  This project can thrown x_tr,y_tr,theta_tr,phi_tr and delta randomly in 3 distributions: delta, flat and gaussian. One can select the distribution by choose the 4th argument 'iSourceDistr' as 0, 1, and 2. The width of these 5 variables (x_tr, y_tr, theta_tr, phi_tr and delta) are: 0.012,0.012,0.070,0.035 and 0.05, respectively. When iSourceDistr=2, the sigma of the these 5 variables are one half of the above values.
+    Added Min's 5T longitudial target field + septum 400016 left arm snake model.
 
-  The 3rd argument of this program,'iSmearX0', was used to test how the BPM resolution affect the reconstruction resolution. Here is the detail of this argument:
+v1.0.1 By Jixie Zhang @ 20121008
+
+    John provided a new snake model for 3cm raster, 5.65 deg and 484816+shim septum. 
+    I added this model into HRSTransport and renamed several files in that dir.
+    The result shows that this version have better resolution on each variables, especially in Ytr.
+
+//////////////////////////////////////////////////////////////////////////////
+v1.0.0  By Jixie Zhang @ 20120918
+
+    This project was developed to test the snake transportation packages, which should be provided by either John L.L. or Min Huang. It was upgraded later to test the dependence on BPM resolution.
+
+    This project can thrown x_tr,y_tr,theta_tr,phi_tr and delta randomly in 3 distributions: delta, flat and gaussian. One can select the distribution by choose the 4th argument 'iSourceDistr' as 0, 1, and 2. The width of these 5 variables (x_tr, y_tr, theta_tr, phi_tr and delta) are: 0.012,0.012,0.070,0.035 and 0.05, respectively. When iSourceDistr=2, the sigma of the these 5 variables are one half of the above values.
+
+    The 3rd argument of this program,'iSmearX0', was used to test how the BPM resolution affect the reconstruction resolution. Here is the detail of this argument:
 If iSmearX0=0, the Xtg_BMP_tr will also set to zero;
 If iSmearX0=1, no smearing on Xtg_BMP_tr; 
 If iSmearX0=2, 1 mm gaussian smearing to Xtg_BMP_tr; 
 If iSmearX0=3, 10 BPM resolution, from 0 to 2.5 mm with step of 0.25mm, will be 
 used to smear the Xtg_BMP_tr;
 
-  The 2nd argument, 'iExperiment', is used to tell which snake model will be tested. iExperiment==[10,20), 10 is for g2p, 20 for E97110 GDH iExperiment. Here is a list of experiment candidates:
+    The 2nd argument, 'iExperiment', is used to tell which snake model will be tested. iExperiment==[10,20), 10 is for g2p, 20 for E97110 GDH iExperiment. Here is a list of experiment candidates:
 experiment=10: g2p septum without shim, 5.65 deg, Created by John, use this for g2p test run
 experiment=11: g2p septum 484816+shim, 5.65 deg, Created by Min, 
 experiment=12: g2p septum 403216+shim, 5.65 deg, SNAKE Model not ready yet 
@@ -31,94 +68,94 @@ experiment=19: g2p septum 403216+shim, 5.65 deg, Min's version for normal septum
 experiment=20: GDH exp with large X0 version
 experiment=all other values: Standard HRS seting, no septum field, no target field
 
-  The output of this program will be a ntuple and some graph plot based on it. The tree leaves include the following:
-   Int_t           Index;
-   Double_t        BPMRes;
-   Int_t           Left;
-   Int_t           FieldRotation;
-   Double_t        HRSAngle;
-   Double_t        P0;
-   Double_t        Xtg_BPM_tr;
-   Double_t        Xfp_tr;
-   Double_t        Thetafp_tr;
-   Double_t        Yfp_tr;
-   Double_t        Phifp_tr;
-   Double_t        Xtg_tr;
-   Double_t        Thetatg_tr;
-   Double_t        Ytg_tr;
-   Double_t        Phitg_tr;
-   Double_t        Delta;
-   Double_t        Xrec_tr;
-   Double_t        Thetarec_tr;
-   Double_t        Yrec_tr;
-   Double_t        Phirec_tr;
-   Double_t        Deltarec;
-   Double_t        Xtg_lab;
-   Double_t        Thetatg_lab;
-   Double_t        Ytg_lab;
-   Double_t        Phitg_lab;
-   Double_t        Ztg_lab;
-   Double_t        Xrec_lab;
-   Double_t        Thetarec_lab;
-   Double_t        Yrec_lab;
-   Double_t        Phirec_lab;
-   Double_t        Zrec_lab;
+    The output of this program will be a ntuple and some graph plot based on it. The tree leaves include the following:
+    Int_t           Index;
+    Double_t        BPMRes;
+    Int_t           Left;
+    Int_t           FieldRotation;
+    Double_t        HRSAngle;
+    Double_t        P0;
+    Double_t        Xtg_BPM_tr;
+    Double_t        Xfp_tr;
+    Double_t        Thetafp_tr;
+    Double_t        Yfp_tr;
+    Double_t        Phifp_tr;
+    Double_t        Xtg_tr;
+    Double_t        Thetatg_tr;
+    Double_t        Ytg_tr;
+    Double_t        Phitg_tr;
+    Double_t        Delta;
+    Double_t        Xrec_tr;
+    Double_t        Thetarec_tr;
+    Double_t        Yrec_tr;
+    Double_t        Phirec_tr;
+    Double_t        Deltarec;
+    Double_t        Xtg_lab;
+    Double_t        Thetatg_lab;
+    Double_t        Ytg_lab;
+    Double_t        Phitg_lab;
+    Double_t        Ztg_lab;
+    Double_t        Xrec_lab;
+    Double_t        Thetarec_lab;
+    Double_t        Yrec_lab;
+    Double_t        Phirec_lab;
+    Double_t        Zrec_lab;
 
-  Conclusion from the tested results:
+    Conclusion from the tested results:
 
-For iexperiment=10:
+    For iexperiment=10:
 
-1) For 1mm BPM resolution, the resolution are:
-Sigma_X_tr     =  1.0  
-Sigma_Y_tr     =  0.8
-Sigma_Theta_tr =  1.3
-Sigma_Phi_tr   =  1.3
-Sigma_Delta    =  2.5 x 10^-4
+    1) For 1mm BPM resolution, the resolution are:
+    Sigma_X_tr     =  1.0  
+    Sigma_Y_tr     =  0.8
+    Sigma_Theta_tr =  1.3
+    Sigma_Phi_tr   =  1.3
+    Sigma_Delta    =  2.5 x 10^-4
 
-Sigma_X_lab    =  0.8
-Sigma_Y_lab    =  1.0
-Sigma_Theta_lab=  1.2
-Sigma_Phi_lab  =  13.2
+    Sigma_X_lab    =  0.8
+    Sigma_Y_lab    =  1.0
+    Sigma_Theta_lab=  1.2
+    Sigma_Phi_lab  =  13.2
 
-2) X_tr,Theta_tr and Delta have very strong BPM resolution dependence:
-dX_tr/dSigma_BPM     = 1.0
-dY_tr/dSigma_BPM     = 0.075
-dTheta_tr/dSigma_BPM = 0.38
-dPhi_tr/dSigma_BPM   = 0.023
-dDelta/dSigma_BPM    = 1.97
+    2) X_tr,Theta_tr and Delta have very strong BPM resolution dependence:
+    dX_tr/dSigma_BPM     = 1.0
+    dY_tr/dSigma_BPM     = 0.075
+    dTheta_tr/dSigma_BPM = 0.38
+    dPhi_tr/dSigma_BPM   = 0.023
+    dDelta/dSigma_BPM    = 1.97
 
-3) Y_lab, and Phi_lab have very strong BPM resolution dependence:
-dX_lab/dSigma_BPM     = 0.07
-dY_lab/dSigma_BPM     = 1.0
-dTheta_lab/dSigma_BPM = -0.0023
-dPhi_lab/dSigma_BPM   = 3.74
+    3) Y_lab, and Phi_lab have very strong BPM resolution dependence:
+    dX_lab/dSigma_BPM     = 0.07
+    dY_lab/dSigma_BPM     = 1.0
+    dTheta_lab/dSigma_BPM = -0.0023
+    dPhi_lab/dSigma_BPM   = 3.74
 
-For iexperiment=11:
+    For iexperiment=11:
 
-1) For 1mm BPM resolution, the resolution are:
-Sigma_X_tr     =  1.0  
-Sigma_Y_tr     =  1.5
-Sigma_Theta_tr =  1.0
-Sigma_Phi_tr   =  0.7
-Sigma_Delta    =  2.0 x 10^-4
+    1) For 1mm BPM resolution, the resolution are:
+    Sigma_X_tr     =  1.0  
+    Sigma_Y_tr     =  1.5
+    Sigma_Theta_tr =  1.0
+    Sigma_Phi_tr   =  0.7
+    Sigma_Delta    =  2.0 x 10^-4
 
-Sigma_X_lab    =  1.5
-Sigma_Y_lab    =  1.0
-Sigma_Theta_lab=  0.7
-Sigma_Phi_lab  =  9.8
+    Sigma_X_lab    =  1.5
+    Sigma_Y_lab    =  1.0
+    Sigma_Theta_lab=  0.7
+    Sigma_Phi_lab  =  9.8
 
-2) X_tr,Theta_tr and Delta have very strong BPM resolution dependence:
-dX_tr/dSigma_BPM     = 1.0
-dY_tr/dSigma_BPM     = 0.055
-dTheta_tr/dSigma_BPM = 0.21
-dPhi_tr/dSigma_BPM   = 0.003
-dDelta/dSigma_BPM    = 1.64
+    2) X_tr,Theta_tr and Delta have very strong BPM resolution dependence:
+    dX_tr/dSigma_BPM     = 1.0
+    dY_tr/dSigma_BPM     = 0.055
+    dTheta_tr/dSigma_BPM = 0.21
+    dPhi_tr/dSigma_BPM   = 0.003
+    dDelta/dSigma_BPM    = 1.64
 
-3) Y_lab, and Phi_lab have very strong BPM resolution dependence:
-dX_lab/dSigma_BPM     = 0.05
-dY_lab/dSigma_BPM     = 1.0
-dTheta_lab/dSigma_BPM = 0.004
-dPhi_lab/dSigma_BPM   = 2.0
+    3) Y_lab, and Phi_lab have very strong BPM resolution dependence:
+    dX_lab/dSigma_BPM     = 0.05
+    dY_lab/dSigma_BPM     = 1.0
+    dTheta_lab/dSigma_BPM = 0.004
+    dPhi_lab/dSigma_BPM   = 2.0
 
-4) Ytg reconstruction turns bad when abs(Ytg_tr)>10mm
-We just do not have any way to make the correction.
+    4) Ytg reconstruction turns bad when abs(Ytg_tr)>10mm
+    We just do not have any way to make the correction.
