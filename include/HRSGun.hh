@@ -63,11 +63,12 @@ public:
     virtual void End();
 
 private:
-    void SetGun(int setting);
+    void SetGun(int setting);   
 
     bool ShootDelta(double *V3bpm, double *V5tg);
     bool ShootGaus(double *V3bpm, double *V5tg);
     bool ShootFlat(double *V3bpm, double *V5tg);
+    bool ShootTest(double *V3bpm, double *V5tg);
     bool ShootSieve(double *V3bpm, double *V5tg);
     bool ShootData(double *V3bpm, double *V5tg);
 

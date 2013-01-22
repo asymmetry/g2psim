@@ -23,7 +23,7 @@
 
 #include "HRSGun.hh"
 
-#define GUN_DEBUG 1
+//#define GUN_DEBUG 1
 
 using namespace std;
 using namespace Transform;
@@ -37,8 +37,8 @@ HRSGun::HRSGun()
      fTargetX_lab(0), fTargetY_lab(0), fTargetZLow_lab(0),
      fTargetZHigh_lab(0), fTargetR_lab(0.015), fTargetThLow_tr(0),
      fTargetThHigh_tr(0), fTargetPhLow_tr(0), fTargetPhHigh_tr(0),
-     fDeltaLow(0), fDeltaHigh(0), fPosRes(0.0001), fAngleRes(0.001),
-     fDeltaRes(0.01), pFilePtr(NULL), pFileName(NULL), pRand(NULL),
+     fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001), fAngleRes(0.001),
+     fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL), pRand(NULL),
      pfGunSelector(NULL)
 {
     // Nothing to do
@@ -108,6 +108,8 @@ void HRSGun::SetGun(int setting)
         pfGunSelector = &HRSGun::ShootFlat;
         break;
     case 4:
+        pfGunSelector = &HRSGun::ShootTest;
+        break;
     case 5:
         pfGunSelector = &HRSGun::ShootSieve;
         break;
@@ -137,7 +139,7 @@ bool HRSGun::ShootDelta(double *V3bpm, double *V5tg)
     V5tg[4] = fDeltaLow;
 
 #ifdef GUN_DEBUG
-    printf("%e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
 #endif
 
     return true;
@@ -163,7 +165,7 @@ bool HRSGun::ShootGaus(double *V3bpm, double *V5tg)
     V5tg[4] = pRand->Gaus(fDeltaLow, fDeltaRes);
 
 #ifdef GUN_DEBUG
-    printf("%e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
 #endif
 
     return true;
@@ -197,13 +199,13 @@ bool HRSGun::ShootFlat(double *V3bpm, double *V5tg)
     V5tg[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);
 
 #ifdef GUN_DEBUG
-    printf("%e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
 #endif
 
     return true;
 }
 
-bool HRSGun::ShootSieve(double *V3bpm, double *V5tg)
+bool HRSGun::ShootTest(double *V3bpm, double *V5tg)
 {
     int selector = pRand->Integer(17);
     
@@ -273,7 +275,71 @@ bool HRSGun::ShootSieve(double *V3bpm, double *V5tg)
     V5tg[4] = pRand->Gaus(0, fDeltaRes);
 
 #ifdef GUN_DEBUG
-    printf("%e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+#endif
+
+    return true;
+}
+
+bool HRSGun::ShootSieve(double *V3bpm, double *V5tg)
+{
+    const int nsieverow = 7;
+    const int nsievecol = 7;
+    const int arearatio = 10.0;
+    const double thr = (arearatio-1.0)/(arearatio*2+47.0);
+
+    const double sievex[] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
+    const double sievey[] = { 3*6.1214e-3, 2*6.1214e-3, 1*6.1214e-3, 0.0, -1*4.7752e-3, -2*4.7752e-3, -3*4.7752e-3 };
+    const double sievez = 799.60e-3;
+
+    const double sieveoffx = 0.0;
+    const double sieveoffy = 0.0;
+
+    int selector = pRand->Integer(49);
+    double temp = pRand->Uniform();
+    if (temp<thr) selector = 24;
+    else if (temp<2*thr) selector = 15;
+
+    printf("%d\n", selector);
+
+    V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
+    V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
+    V3bpm[2] = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
+
+    double Xtg_tr, Ytg_tr, Ztg_tr;
+    
+    X_HCS2TCS(V3bpm[0], V3bpm[1], V3bpm[2], fHRSAngle, Xtg_tr, Ytg_tr, Ztg_tr);
+    
+    double Thetatg_tr = 0.0;
+    double Phitg_tr = 0.0;
+
+    int col = selector/(nsieverow);
+    int row = selector%(nsieverow);
+
+    double V3sieve_tr[3];
+    double V3momdirection_tr[3];
+
+    V3sieve_tr[0] = sieveoffx + sievex[row];
+    V3sieve_tr[1] = sieveoffy + sievey[col];
+    V3sieve_tr[2] = sievez;
+
+    V3momdirection_tr[0] = V3sieve_tr[0]-Xtg_tr;
+    V3momdirection_tr[1] = V3sieve_tr[1]-Ytg_tr;
+    V3momdirection_tr[2] = V3sieve_tr[2]-Ztg_tr;
+
+    Thetatg_tr = V3momdirection_tr[0]/V3momdirection_tr[2];
+    Phitg_tr = V3momdirection_tr[1]/V3momdirection_tr[2];
+    
+    Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, Thetatg_tr, Phitg_tr);
+
+    V5tg[0] = Xtg_tr;
+    V5tg[1] = Thetatg_tr;
+    V5tg[2] = Ytg_tr;
+    V5tg[3] = Phitg_tr;
+    V5tg[4] = pRand->Gaus(fDeltaLow, fDeltaRes);
+
+#ifdef GUN_DEBUG
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
 #endif
 
     return true;
@@ -296,7 +362,7 @@ bool HRSGun::ShootData(double *V3bpm, double *V5tg)
     V5tg[4] = 0;
 
 #ifdef GUN_DEBUG
-    printf("%e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("HRSGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
 #endif
 
     return noerror;

@@ -46,6 +46,7 @@ public:
 
     void Init();
     void Run();
+    void Run(int n) { nEvent = n; Run(); }
     void End();
 
 private:

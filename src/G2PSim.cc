@@ -229,12 +229,10 @@ void G2PSim::RunSim()
         fV5tg_tr[3] = tan(fV5tg_tr[3]);
 
         bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
-        //bIsGoodParticle = true;
-        
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
-        printf("%e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
 #endif
 
         fV5fp_tr[4] = fV5tg_tr[0];
@@ -242,8 +240,9 @@ void G2PSim::RunSim()
         pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5recdb_tr);
 
 #ifdef G2PSIM_DEBUG
-        printf("%e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
-        printf("%e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
+        bIsGoodParticle = true;
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();
@@ -264,8 +263,9 @@ void G2PSim::RunData()
         bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
         bIsGoodParticle = true;
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
+
 #ifdef G2PSIM_DEBUG
-        printf("%e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
 #endif
 
         double pV3[3];
@@ -373,8 +373,9 @@ void G2PSim::RunData()
         // printf("%e\t%e\t%e\n", theta, phi, delta);
         
 #ifdef G2PSIM_DEBUG
-        printf("%e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
-        printf("%e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
+        bIsGoodParticle = true;
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();
