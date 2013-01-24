@@ -1,13 +1,88 @@
+#ifndef HRS_TRANSPORT_H
+#define HRS_TRANSPORT_H
+
+#include <map>
+
+#include "TROOT.h"
+#include "TObject.h"
+
+#include "G2PTrans.hh"
+
+using namespace std;
+
+class HRSTransport : public TObject
+{
+public:
+    HRSTransport();
+    HRSTransport(const char *name);
+    HRSTransport(int setting);
+    ~HRSTransport();
+    
+    virtual void RegisterModel();
+
+    void SetArm(bool isleftarm) { bIsLeftArm = isleftarm; }
+
+    int GetModelIndex() { return iModelIndex; }
+    
+///////////////////////////////////////////////////////////////////////////
+// Definition of variables
+// forward:
+// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+// V5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
+// delta does not change
+// backward:
+// V5_fp = {x_fg, theta_fp, y_fp, phi_fp, x_tg};
+// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+// x_tg does not change
+//
+// Transport particles through HRS using SNAKE model
+// Use iModelIndex to identify which SNAKE model to be used
+// 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
+// 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
+// 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
+// Index > 10 means test
+// 11: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
+// 12: 484816 with shim, 5.76 deg, no raster, by Min
+// 13: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
+// May add more HRS packages later
+///////////////////////////////////////////////////////////////////////////
+
+    bool Forward(const double* V5_tg, double* V5_fp);
+    bool Backward(const double* V5_fp, double* V5_tg);
+
+    void DeltaCorrection();
+    void XtgCorrection();
+    void ThetatgCorrection();
+    void YtgCorrection();
+    void PhitgCorrection();
+
+private:
+    int iModelIndex;
+    bool bIsLeftArm;
+
+    map<int, G2PTrans *> mModel;
+    map<const char *, int> mModelIndex;
+    G2PTrans *pModel;
+
+    ClassDef(HRSTransport,1);
+};
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////
+// Original comments
+///////////////////////////////////////////////////////////////////////////
 //C++ interface to call JLL's Fortran transportation routines
 //By Jixie Zhang
 //Jixie has tested and verified that one can use the right arm routines to
-//do the transportation and reconstruction. One only need to flip y_tr and phi_tr
+//do the transportation and reconstruction. One only need to flip y_tr
+//and phi_tr
 //at the following pposition:
 //1) flip y_tg and phi_tg then call transportation
 //2) flip y_fp and phi_fp in the focus plane then call the reconstruction
-//3) need to flip y_rec and phi_rec again 
-
-//C Forward transfer float s for left hrs with septum based on Leftseptum_dir.dat
+//3) need to flip y_rec and phi_rec again
+//C Forward transfer float s for left hrs with septum based on
+//c Leftseptum_dir.dat
 //c                     -JJL 4/4/04
 //
 //
@@ -61,14 +136,13 @@
 //c     q1ex is a circle of radius 0.1492 m
 //c     dent is a trapazoid:
 //c                                   -5.22008 < x < -4.98099
-//c             -(-0.192436784*x -0.192436784) < y < -0.192436784*x -0.192436784  
+//c             -(-0.192436784*x -0.192436784) < y < -0.192436784*x -0.192436784
 //c     dext is also a trapazoid: 
 //c                                   -0.46188 < x < 0.46188
 //c                   -(-0.01610808*x + 0.125) < y < -0.01610808*x + 0.125
 //c     q3en is a circle of radius 0.3 m
 //c     q3ex is a circle of radius 0.3 m
 //c
-
 //In each file there are 5 fortran functions:
 //
 //TXFIT(x,m)
@@ -79,7 +153,7 @@
 //
 //phi(x,m)
 //
-//y00(x,m)
+//y0(x,m)
 //
 //Calling convention is as follows. x is an array in which x(1->5) are 
 //xf, thetaf, yf, phif, and x0 (the detector coordinates in the transport 
@@ -102,40 +176,6 @@
 //
 //phi0=phi(x,5)
 //
-//y0=y00(x,5)
+//y0=y0(x,5)
 //
-
-#ifndef HRS_TRANSPORT_H
-#define HRS_TRANSPORT_H	
-
 ///////////////////////////////////////////////////////////////////////////
-// Definition of variables
-// forward:
-// pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
-// pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
-// delta does not change
-// backward:
-// pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, x_tg};
-// pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
-// x_tg does not change
-
-// Transport particles through HRS using SNAKE model
-// Use iSetting to identify which SNAKE model to be used
-// 10: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
-// 11: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
-// 12: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 13: 400016 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 19: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
-// May add more HRS packages later
-
-bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
-
-bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp);
-
-void DeltaCorrection(double &pDelta, double &pP_rec);
-void XtgCorrection(double &pX,double pP_rec);
-void ThetatgCorrection(double &pTheta,double pP_rec);
-void YtgCorrection(double &pY,double pP_rec);
-void PhitgCorrection(double &pPhi,double pP_rec);
-
-#endif

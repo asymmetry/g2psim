@@ -1,166 +1,182 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <map>
 
+#include "TROOT.h"
+#include "TObject.h"
 #include "TMath.h"
 
-#include "HRSTransport_G2P.hh"
+#include "G2PTrans.hh"
+#include "G2PTrans400016/G2PTrans400016.hh"
+#include "G2PTrans484816R00/G2PTrans484816R00.hh"
+#include "G2PTrans484816R20/G2PTrans484816R20.hh"
 
 #include "HRSTransport.hh"
+
+using namespace std;
 
 const double deg = TMath::Pi()/180.0;
 
 //#define DEBUG_HRS_FORWARD
 //#define DEBUG_HRS_BACKWARD
 
-// Transport particles through HRS using SNAKE model
-// Use iSetting to identify which SNAKE model to be used
-// 10: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
-// 11: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
-// 12: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 13: 400016 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 19: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
-// May add more HRS packages later
+ClassImp(HRSTransport);
 
-bool SNAKEForward(bool pIsLeftArm, int iSetting, const double* pV5_tg, double* pV5_fp)
+HRSTransport::HRSTransport()
+    :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
+{
+    mModel.clear();
+    mModelIndex.clear();
+
+    RegisterModel();
+}
+
+HRSTransport::HRSTransport(const char *name)
+    :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
+{
+    mModel.clear();
+    mModelIndex.clear();
+
+    RegisterModel();
+    pModel = mModel[mModelIndex[name]];
+    iModelIndex = mModelIndex[name];
+}
+
+HRSTransport::HRSTransport(int setting)
+    :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
+{
+    mModel.clear();
+    mModelIndex.clear();
+
+    RegisterModel();
+    pModel = mModel[setting];
+    iModelIndex = setting;
+}
+
+HRSTransport::~HRSTransport()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Transport particles through HRS using SNAKE model
+// Use iModelIndex to identify which SNAKE model to be used
+// 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
+// 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
+// 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
+// Index > 10 means test
+// 11: 484816 with shim, 5.76 deg, no raster, by Min
+// 12: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
+// 13: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
+// May add more HRS packages later
+///////////////////////////////////////////////////////////////////////////
+
+void HRSTransport::RegisterModel()
+{
+    G2PTrans * temp;
+    temp = new G2PTrans400016();
+    mModelIndex["400016"] = 3;
+    mModel[3] = temp;
+
+    temp = new G2PTrans484816R00();
+    mModelIndex["484816R00"] = 11;
+    mModel[11] = temp;
+
+    temp = new G2PTrans484816R20();
+    mModelIndex["484816R20"] = 12;
+    mModel[12] = temp;
+}
+
+bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
 {
     // Definition of variables
-    // pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
-    // pV5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
+    // V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+    // V5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
     // delta does not change
-    double pV5[5];
+    double V5[5];
     
-    pV5[0]=pV5_tg[0];
-    pV5[1]=pV5_tg[1];
-    pV5[2]=pV5_tg[2];
-    pV5[3]=pV5_tg[3];
-    pV5[4]=pV5_tg[4];
+    V5[0] = V5_tg[0];
+    V5[1] = V5_tg[1];
+    V5[2] = V5_tg[2];
+    V5[3] = V5_tg[3];
+    V5[4] = V5_tg[4];
 
 #ifdef DEBUG_HRS_FORWARD
-	printf("FORWARDIN:  %8.4f %8.4f %8.4f %8.4f %8.4f", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+	printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
 #endif
 
     bool bGoodParticle=false;
 
-    switch (((pIsLeftArm)?1:0)*100+iSetting) {
-    case 10: // No shim, Wrong Bx, by JLL
-        bGoodParticle=TransportRightHRS_g2_(pV5);
-        break;
-    case 11: // 484816 with shim, 3cm raster, by JLL
-        bGoodParticle=TransportRightHRS_Shim_484816(pV5); 
-        break;
-    case 12: // 403216 with shim
-        bGoodParticle=TransportRightHRS_Shim_403216(pV5);
-        break;
-    case 13: // 400016 with shim
-        bGoodParticle=TransportRightHRS_Shim_400016(pV5);
-        break;
-    case 19: // 484816 with shim, Wrong Bx, 2cm raster, by Min
-        bGoodParticle=TransportRightHRS_Shim_484816_WrongBx(pV5);
-        break;
-
-    case 110: // No shim, Wrong Bx, by JLL
-        bGoodParticle=TransportLeftHRS_g2_(pV5);
-        break;
-    case 111: // 484816 with shim, 3cm raster, by JLL
-        bGoodParticle=TransportLeftHRS_Shim_484816(pV5); 
-        break;
-    case 112: // 403216 with shim
-        bGoodParticle=TransportLeftHRS_Shim_403216(pV5);
-        break;
-    case 113: // 400016 with shim
-        bGoodParticle=TransportLeftHRS_Shim_400016(pV5);
-        break;
-    case 119: // 484816 with shim, Wrong Bx, 2cm raster, by Min
-        bGoodParticle=TransportLeftHRS_Shim_484816_WrongBx(pV5);
-        break;
-
-    default:
-        printf("iSetting = %d, which is not valid.\n", iSetting);
-        exit(0);
+    if (bIsLeftArm) {
+        bGoodParticle = pModel->TransLeftHRS(V5);
+    }
+    else {
+        bGoodParticle = pModel->TransRightHRS(V5);
     }
 
-    pV5_fp[0]=pV5[0];
-    pV5_fp[1]=pV5[1];
-    pV5_fp[2]=pV5[2];
-    pV5_fp[3]=pV5[3];
-    pV5_fp[4]=pV5[4];
+    V5_fp[0] = V5[0];
+    V5_fp[1] = V5[1];
+    V5_fp[2] = V5[2];
+    V5_fp[3] = V5[3];
+    V5_fp[4] = V5[4];
     
     return bGoodParticle;
 }
 
-bool SNAKEBackward(bool pIsLeftArm, int iSetting, const double* pV5_fp, double* pV5_tg)
+bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
 {
     // Definition of variables
-    // pV5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
-    // pV5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+    // V5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
+    // V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
     // x_tg does not change
     
-    double pV5[5];
+    double V5[5];
     
-    pV5[0]=pV5_fp[0];
-    pV5[1]=pV5_fp[1];
-    pV5[2]=pV5_fp[2];
-    pV5[3]=pV5_fp[3];
-    pV5[4]=pV5_fp[4];
+    V5[0] = V5_fp[0];
+    V5[1] = V5_fp[1];
+    V5[2] = V5_fp[2];
+    V5[3] = V5_fp[3];
+    V5[4] = V5_fp[4];
 
 #ifdef DEBUG_HRS_BACKWARD
-	printf("IN:  %8.4f %8.4f %8.4f %8.4f %8.4f", pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]);
+	printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
 #endif
-
-    switch (((pIsLeftArm)?1:0)*100+iSetting) {
-    case 10: // No shim, Wrong Bx, by JLL
-        ReconstructRightHRS_g2_(pV5);
-        break;
-    case 11: // 484816 with shim, 3cm raster, by JLL
-        ReconstructRightHRS_Shim_484816(pV5); 
-        break;
-    case 12: // 403216 with shim
-        ReconstructRightHRS_Shim_403216(pV5);
-        break;
-    case 13: // 400016 with shim
-        ReconstructRightHRS_Shim_400016(pV5);
-        break;
-    case 19: // 484816 with shim, Wrong Bx, 2cm raster, by Min
-        ReconstructRightHRS_Shim_484816_WrongBx(pV5);
-        break;
-
-    case 110: // No shim, Wrong Bx, by JLL
-        ReconstructLeftHRS_g2_(pV5);
-        break;
-    case 111: // 484816 with shim, 3cm raster, by JLL
-        ReconstructLeftHRS_Shim_484816(pV5); 
-        break;
-    case 112: // 403216 with shim
-        ReconstructLeftHRS_Shim_403216(pV5);
-        break;
-    case 113: // 400016 with shim
-        ReconstructLeftHRS_Shim_400016(pV5);
-        break;
-    case 119: // 484816 with shim, Wrong Bx, 2cm raster, by Min
-        ReconstructLeftHRS_Shim_484816_WrongBx(pV5);
-        break;
-
-    default:
-        printf("iSetting = %d, which is not valid.\n", iSetting);
-        exit(0);
+    
+    if (bIsLeftArm) {
+        pModel->ReconLeftHRS(V5);
+    }
+    else {
+        pModel->ReconRightHRS(V5);
     }
 
-    pV5_tg[0]=pV5[0];
-    pV5_tg[1]=pV5[1];
-    pV5_tg[2]=pV5[2];
-    pV5_tg[3]=pV5[3];
-    pV5_tg[4]=pV5[4];
+    V5_tg[0] = V5[0];
+    V5_tg[1] = V5[1];
+    V5_tg[2] = V5[2];
+    V5_tg[3] = V5[3];
+    V5_tg[4] = V5[4];
 
     bool bGoodParticle = false;
 
-    if (pV5_tg[4]<1.0) bGoodParticle = true;
+    if (V5_tg[4]<1.0) bGoodParticle = true;
     
     return bGoodParticle;
 }
 
-void DeltaCorrection(double &pDelta, double &pP_rec){;}
-void XtgCorrection(double &pX,double pP_rec){;}
-void ThetatgCorrection(double &pTheta,double pP_rec){;}
-void YtgCorrection(double &pY,double pP_rec){;}
-void PhitgCorrection(double &pPhi,double pP_rec){;}
+void HRSTransport::DeltaCorrection() { }
+void HRSTransport::XtgCorrection() { }
+void HRSTransport::ThetatgCorrection() { }
+void HRSTransport::YtgCorrection() { }
+void HRSTransport::PhitgCorrection() { }
+
+// void VDCSmearing(double* fV5_fp)
+// {
+//     double mWireChamberRes_x = 0.0013; //m;
+//     double mWireChamberRes_y = 0.0013; //m;
+//     double mWireChamberRes_theta = 0.0003; //rad;
+//     double mWireChamberRes_phi = 0.0003; //rad;
+
+//     fV5_fp[0] += fGausRand(0, mWireChamberRes_x);
+//     fV5_fp[2] += fGausRand(0, mWireChamberRes_y);
+//     fV5_fp[1] += fGausRand(0, mWireChamberRes_theta);
+//     fV5_fp[3] += fGausRand(0, mWireChamberRes_phi);
+// }

@@ -3,7 +3,8 @@
 #include <getopt.h>
 
 #include "G2PSim.hh"
-#include "HRSGun.hh"
+#include "G2PGun.hh"
+#include "HRSTransport.hh"
 
 void usage(int argc, char** argv);
 
@@ -11,30 +12,21 @@ int main(int argc, char** argv)
 {
     int c;
 
-    int iNEvent = 50000;   // default 50000
+    int nEvent = 50000;    // default 50000
     int iSetting = 11;     // default 484816 septa with shim
-    double pBPMRes = 0.0;  // default no smear
-    double pHRSMomentum=2.251;
-                           // default 2.251 GeV
-    int iSource = 1;       // default delta distribution
-    int iDirection = 0;    // default forward direction
     int iArm = 0;          // default left arm
 
     while (1) {
         static struct option long_options[] = {
             {"help",        no_argument,       0, 'h'},
-            {"momentum",    required_argument, 0, 'm'},
-            {"inputsource", required_argument, 0, 'i'},
-            {"direction",   required_argument, 0, 'd'},
             {"setting",     required_argument, 0, 's'},
-            {"bpm",         required_argument, 0, 'b'},
             {"arm",         required_argument, 0, 'a'},
             {0, 0, 0, 0}
         };
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "a:b:d:hi:m:s:", long_options, &option_index);
+        c = getopt_long(argc, argv, "a:hs:", long_options, &option_index);
 
         if (c==-1) break;
 
@@ -42,20 +34,8 @@ int main(int argc, char** argv)
         case 'a':
             iArm = atoi(optarg);
             break;
-        case 'b':
-            pBPMRes = atof(optarg);
-            break;
-        case 'd':
-            iDirection = atoi(optarg);
-            break;
         case 'h':
             usage(argc, argv);
-            break;
-        case 'i':
-            iSource = atoi(optarg);
-            break;
-        case 'm':
-            pHRSMomentum = atof(optarg);
             break;
         case 's':
             iSetting = atoi(optarg);
@@ -67,7 +47,7 @@ int main(int argc, char** argv)
     }
 
     if (optind<argc) {
-        iNEvent = atoi(argv[optind++]);
+        nEvent = atoi(argv[optind++]);
     }
     else {
         usage(argc, argv);
@@ -75,16 +55,17 @@ int main(int argc, char** argv)
     }
 
     G2PSim *run= new G2PSim();
-    HRSGun *gun= new HRSGun("data");
+    G2PGun *gun= new G2PGun("data");
     gun->SetDataFile("input_fp_tr.dat");
+    HRSTransport *model = new HRSTransport(iSetting);
 
     run->SetGun(gun);
-    run->SetNEvent(iNEvent);
+    run->SetHRSModel(model);
+    run->SetNEvent(nEvent);
     run->SetRootName("result_test.root");
     if (iArm==0) run->SetArm("L");
     else if (iArm==1) run->SetArm("R");
     run->SetHRSMomentum(2.251);
-    run->SetHRSSetting(11);
     
     run->Run();
     

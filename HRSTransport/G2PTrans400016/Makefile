@@ -11,14 +11,8 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.2.1
-EXECFILE    := G2PSim
-LIBFILE     := G2PSim
-USERDICT    := $(LIBFILE)_Dict
-
-########################################################################
-SRCDIR      := src
-INCDIR      := include
+SRCDIR      := .
+INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
@@ -39,9 +33,9 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR) 
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR) 
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
@@ -54,7 +48,6 @@ else
 endif
 GPPFLAGS    := -MM
 LDFLAGS     := -O3 -g $(MODE)
-SOFLAGS     := -shared
 
 ########################################################################
 # Generate obj file list
@@ -76,8 +69,6 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
-OTHERLIBS   := -LHRSTransport -lHRSTransport \
-               -LG2PXSection/obj.${ARCH} -lG2PXSection
 
 ########################################################################
 # ROOT configure
@@ -96,7 +87,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 VPATH       := $(SRCDIR):$(INCDIR) 
 
 ########################################################################
-all: exe
+all: lib
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
@@ -161,31 +152,7 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-exe: lib $(OBJDIR)/Main.o
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./lib$(LIBFILE).so \
-           $(LIBS)
-	@echo "Linking $(EXECFILE) ... done!"
-
-$(OBJDIR)/Main.o: Main.cc
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
-
-########################################################################
-lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o
-	@make -C HRSTransport lib
-	@make -C G2PXSection lib
-	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
-           $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
-	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
-	@echo "Linking lib$(LIBFILE).so ... done!"
-
-$(USERDICT).cxx: $(wildcard $(INCDIR)/*.hh) $(LIBFILE)_LinkDef.h
-		@echo "Generating dictionary $(USERDICT)..."
-		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
-
-$(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+lib: $(OBJDIR) $(OBJS)
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -226,13 +193,7 @@ $(OBJDIR):
 ########################################################################
 clean: $(OBJDIR)
 	@rm -f $(OBJDIR)/*
-	@rm -f $(USERDICT).cxx $(USERDICT).h
-	@rm -f $(EXECFILE) lib$(LIBFILE).*.so lib$(LIBFILE).so
 	@rm -f *~ *# */*~ */*#
-
-distclean: clean
-	@make clean -s -C HRSTransport
-	@make clean -s -C G2PXSection
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
@@ -249,3 +210,4 @@ test:
 help: test
 
 env: test
+

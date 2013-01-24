@@ -1,5 +1,5 @@
-#ifndef G2PSIM_H
-#define G2PSIM_H
+#ifndef G2P_SIM_H
+#define G2P_SIM_H
 
 #include <cstdio>
 #include <cstring>
@@ -10,8 +10,9 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "HRSGun.hh"
+#include "G2PGun.hh"
 #include "HRSRecUseDB.hh"
+#include "../HRSTransport/HRSTransport.hh"
 
 // definition:
 // iArm: Set Arm 0 means left arm, 1 means right arm
@@ -36,9 +37,10 @@ public:
     void SetArm(const char *label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
     void SetHRSAngle(double angle) { fHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
-    void SetHRSSetting(int setting) { iSetting = setting; }
 
-    void SetGun(HRSGun *gun) { pGun = gun; }
+    void SetHRSModel(HRSTransport *model) { pHRS = model; }
+
+    void SetGun(G2PGun *gun) { pGun = gun; }
     
     void SetRootName(const char *name) { pFileName = name; }
 
@@ -66,19 +68,17 @@ private:
     int nEvent;
 
     bool bIsLeftArm;
-    int iSetting;
     double fHRSAngle;  // Set the same value to optics setting
     double fHRSMomentum;
 
-    HRSGun *pGun;
-    int iGunSetting;
+    G2PGun *pGun;
     double fV3bpm_lab[3];
     double fV5tg_tr[5];
     double fV5tg_lab[5];
     double fV5fpdata_tr[5];
     double fV5fpdata_rot[5];
 
-    //HRSTransport *pTransport;
+    HRSTransport *pHRS;
     bool bIsGoodParticle;
     double fV5fp_tr[5];
     double fV5fp_rot[5];
@@ -95,7 +95,7 @@ private:
     TTree *pTree;
     TTree *pConfig;
 
-    HRSRand *pRand;
+    G2PRand *pRand;
     
     pf_Run pfRunSelector;
 

@@ -5,8 +5,9 @@
 #pragma link off all functions; 
 
 #pragma link C++ class G2PSim+;
-#pragma link C++ class HRSGun+;
-#pragma link C++ class HRSRand+;
+#pragma link C++ class G2PGun+;
+#pragma link C++ class G2PRand+;
 #pragma link C++ class HRSRecUseDB+;
+#pragma link C++ class HRSTransport+;
 
 #endif

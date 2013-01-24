@@ -284,8 +284,7 @@ void HRSRecUseDB::TransTr2Rot(const double *V5fp_tr, double *V5fp_rot)
     double V5fp_det[5];
 
     TransTr2Det(V5fp_tr, V5fp_det);
-
-    double x_det = V5fp_det[0];
+    
     double th_det = V5fp_det[1];
     double ph_det = V5fp_det[3];
 

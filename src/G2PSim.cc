@@ -8,13 +8,13 @@
 #include "TTree.h"
 #include "TMath.h"
 
-#include "HRSGun.hh"
+#include "G2PGun.hh"
+#include "G2PRand.hh"
 #include "HRSRecUseDB.hh"
 #include "HRSTransTCSNHCS.hh"
-#include "HRSRand.hh"
 
-#include "HRSTransport.hh"
 #include "G2PXSection.hh"
+#include "../HRSTransport/HRSTransport.hh"
 
 #include "G2PSim.hh"
 
@@ -24,35 +24,12 @@ using namespace Transform;
 
 const double cDeg = TMath::Pi()/180.0;
 
-// void VDCSmearing(double* fV5_fp)
-// {
-//     double mWireChamberRes_x = 0.0013; //m;
-//     double mWireChamberRes_y = 0.0013; //m;
-//     double mWireChamberRes_theta = 0.0003; //rad;
-//     double mWireChamberRes_phi = 0.0003; //rad;
-
-//     fV5_fp[0] += fGausRand(0, mWireChamberRes_x);
-//     fV5_fp[2] += fGausRand(0, mWireChamberRes_y);
-//     fV5_fp[1] += fGausRand(0, mWireChamberRes_theta);
-//     fV5_fp[3] += fGausRand(0, mWireChamberRes_phi);
-// }
-
-// definition:
-// iArm: Set Arm 0 means left arm, 1 means right arm
-// pBPMRes: Set bpm resolution
-// fHRSMomentum: Set up HRS Momentum
-// pDirection: Set sim direction: 0 means forward, 1 means backward, 2 means both
-// iSource: Set data source: 1,2,3 means use delta, gaussian, flat distribution for input position and angle, 0 means use real data in file input_tg.dat and input_fp.dat
-// iSetting: Set experiment setting: 10 means normal 484816 septa, 11 means
-// 484816 septa with shim, 12 means 403216 septa with shim, 13 means 400016
-// septa with shim
-
 ClassImp(G2PSim);
 
 G2PSim::G2PSim()
     :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
-     nEvent(10000), bIsLeftArm(true), iSetting(11), fHRSAngle(5.767*cDeg),
-     fHRSMomentum(2.251), pGun(NULL), iGunSetting(0), pRecUseDB(NULL),
+     nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
+     fHRSMomentum(2.251), pGun(NULL), pHRS(NULL), pRecUseDB(NULL),
      pTree(NULL), pConfig(NULL), pRand(NULL), pfRunSelector(NULL)
 {
     Clear();
@@ -67,11 +44,13 @@ void G2PSim::Init()
 {
     bool noerror = true;
     
-    pRand = new HRSRand();
+    pRand = new G2PRand();
 
     pGun->SetRand(pRand);
     pGun->SetHRSAngle(fHRSAngle);
     pGun->Init();
+
+    pHRS->SetArm(bIsLeftArm);
 
     if (bIsLeftArm)
         pRecUseDB = new HRSRecUseDB("L","db_L.vdc.dat");
@@ -93,10 +72,10 @@ void G2PSim::Init()
 
 void G2PSim::Run()
 {
-    if (pGun==NULL) {
+    if ((pGun==NULL)||(pHRS==NULL)) {
         //
     }
-    else{
+    else {
         Init();
         if (bIsInit) {
             (this->*pfRunSelector)();
@@ -138,16 +117,19 @@ void G2PSim::InitTree()
     pConfig = new TTree("config", "sim configure");
 
     pConfig->Branch("NEvent", &nEvent, "NEvent/I");
-    pConfig->Branch("HRSSetting", &iSetting, "HRSSetting/I");
+
  	pConfig->Branch("IsLeftArm", &bIsLeftArm, "IsLeftArm/O");   
     pConfig->Branch("HRSAngle", &fHRSAngle, "HRSAngle/D");
     pConfig->Branch("HRSMomentum", &fHRSMomentum, "HRSMomentum/D");
 
-    iGunSetting = pGun->GetSetting();
+    int hrssetting = pHRS->GetModelIndex();
+    pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
+    
+    int gunsetting = pGun->GetSetting();
     double posres = pGun->GetPosResolution();
     double angleres = pGun->GetAngleResolution();
     double deltares = pGun->GetDeltaResolution();
-    pConfig->Branch("GunSetting", &iGunSetting, "GunSetting/I");
+    pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
 	pConfig->Branch("GunPosRes", &posres, "GunPosRes/D");
 	pConfig->Branch("GunAngleRes", &angleres, "GunAngleRes/D");
 	pConfig->Branch("GunDeltaRes", &deltares, "GunDeltaRes/D");
@@ -228,7 +210,7 @@ void G2PSim::RunSim()
         fV5tg_tr[1] = tan(fV5tg_tr[1]);
         fV5tg_tr[3] = tan(fV5tg_tr[3]);
 
-        bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
+        bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
@@ -236,7 +218,7 @@ void G2PSim::RunSim()
 #endif
 
         fV5fp_tr[4] = fV5tg_tr[0];
-        bIsGoodParticle &= SNAKEBackward(bIsLeftArm, iSetting, fV5fp_tr, fV5rec_tr);
+        bIsGoodParticle &= pHRS->Backward(fV5fp_tr, fV5rec_tr);
         pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5recdb_tr);
 
 #ifdef G2PSIM_DEBUG
@@ -260,7 +242,7 @@ void G2PSim::RunData()
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
 
-        bIsGoodParticle = SNAKEForward(bIsLeftArm, iSetting, fV5tg_tr, fV5fp_tr);
+        bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
         bIsGoodParticle = true;
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
@@ -272,7 +254,7 @@ void G2PSim::RunData()
         X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
         fV5fpdata_tr[4] = pV3[0];
         
-        SNAKEBackward(bIsLeftArm, iSetting, fV5fpdata_tr, fV5rec_tr);
+        bIsGoodParticle &= pHRS->Backward(fV5fpdata_tr, fV5rec_tr);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5recdb_tr);
 
         // debug first order matrix
