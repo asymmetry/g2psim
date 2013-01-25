@@ -56,6 +56,13 @@ HRSTransport::HRSTransport(int setting)
 
 HRSTransport::~HRSTransport()
 {
+    map<int, G2PTrans *>::iterator it = mModel.begin();
+    while (it!=mModel.end()) {
+        delete it->second;
+        it++;
+    }
+    mModel.clear();
+    mModelIndex.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////

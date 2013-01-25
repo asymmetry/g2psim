@@ -48,6 +48,7 @@ void G2PSim::Init()
 
     pGun->SetRand(pRand);
     pGun->SetHRSAngle(fHRSAngle);
+    pGun->SetHRSMomentum(fHRSMomentum);
     pGun->Init();
 
     pHRS->SetArm(bIsLeftArm);

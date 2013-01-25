@@ -34,24 +34,24 @@ ClassImp(G2PGun);
 
 G2PGun::G2PGun()
     :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
-     fTargetX_lab(0), fTargetY_lab(0), fTargetZLow_lab(0),
-     fTargetZHigh_lab(0), fTargetR_lab(0.015), fTargetThLow_tr(0),
-     fTargetThHigh_tr(0), fTargetPhLow_tr(0), fTargetPhHigh_tr(0),
-     fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001), fAngleRes(0.001),
-     fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL), pRand(NULL),
-     pfGunSelector(NULL)
+     fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
+     fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
+     fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
+     fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001),
+     fAngleRes(0.001), fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL),
+     pRand(NULL), pfGunSelector(NULL)
 {
     // Nothing to do
 }
 
 G2PGun::G2PGun(const char* dist)
     :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
-     fTargetX_lab(0), fTargetY_lab(0), fTargetZLow_lab(0),
-     fTargetZHigh_lab(0), fTargetR_lab(0.015), fTargetThLow_tr(0),
-     fTargetThHigh_tr(0), fTargetPhLow_tr(0), fTargetPhHigh_tr(0),
-     fDeltaLow(0), fDeltaHigh(0), fPosRes(0.0001), fAngleRes(0.001),
-     fDeltaRes(0.01), pFilePtr(NULL), pFileName(NULL), pRand(NULL),
-     pfGunSelector(NULL)
+     fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
+     fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
+     fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
+     fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001),
+     fAngleRes(0.001), fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL),
+     pRand(NULL), pfGunSelector(NULL)
 {
     map<string, int> dist_map;
     dist_map["delta"] = 1;
@@ -284,7 +284,7 @@ bool G2PGun::ShootTest(double *V3bpm, double *V5tg)
 bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
 {
     const int nsieverow = 7;
-    const int arearatio = 10.0;
+    const int arearatio = 4.0;
     const double thr = (arearatio-1.0)/(arearatio*2+47.0);
 
     const double sievex[] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
@@ -294,13 +294,40 @@ bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
     const double sieveoffx = 0.0;
     const double sieveoffy = 0.0;
 
-    int selector = pRand->Integer(49);
-    double temp = pRand->Uniform();
-    if (temp<thr) selector = 24;
-    else if (temp<2*thr) selector = 15;
+    const double targetmass = 12.0107*0.931494028;
+    const double energyloss = 1.009711e-3+0.501422e-3;
 
-    printf("%d\n", selector);
+    const int sieveon[7][7] ={
+        { 0, 0, 0, 0, 1, 1, 1 } ,
+        { 0, 0, 1, 1, 1, 1, 1 } ,
+        { 0, 0, 1, 1, 1, 1, 1 } ,
+        { 0, 0, 1, 1, 1, 1, 1 } ,
+        { 0, 0, 1, 1, 1, 1, 1 } ,
+        { 0, 0, 0, 1, 1, 1, 0 } ,
+        { 0, 0, 0, 0, 0, 0, 0 }
+    };
 
+    // const int sieveon[7][7] ={
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 } ,
+    //     { 1, 1, 1, 1, 1, 1, 1 }
+    // };
+
+    int selector;
+    int col, row;
+    do {
+        selector = pRand->Integer(49);
+        double temp = pRand->Uniform();
+        if (temp<thr) selector = 24;
+        else if (temp<2*thr) selector = 15;
+        col = selector/(nsieverow);
+        row = selector%(nsieverow);
+    } while (sieveon[row][col]==0);
+    
     V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
     V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
     V3bpm[2] = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
@@ -312,30 +339,40 @@ bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
     double Thetatg_tr = 0.0;
     double Phitg_tr = 0.0;
 
-    int col = selector/(nsieverow);
-    int row = selector%(nsieverow);
-
     double V3sieve_tr[3];
-    double V3momdirection_tr[3];
+    double V3pd_tr[3];
 
     V3sieve_tr[0] = sieveoffx + sievex[row];
     V3sieve_tr[1] = sieveoffy + sievey[col];
     V3sieve_tr[2] = sievez;
 
-    V3momdirection_tr[0] = V3sieve_tr[0]-Xtg_tr;
-    V3momdirection_tr[1] = V3sieve_tr[1]-Ytg_tr;
-    V3momdirection_tr[2] = V3sieve_tr[2]-Ztg_tr;
+    V3pd_tr[0] = V3sieve_tr[0]-Xtg_tr;
+    V3pd_tr[1] = V3sieve_tr[1]-Ytg_tr;
+    V3pd_tr[2] = V3sieve_tr[2]-Ztg_tr;
 
-    Thetatg_tr = V3momdirection_tr[0]/V3momdirection_tr[2];
-    Phitg_tr = V3momdirection_tr[1]/V3momdirection_tr[2];
+    Thetatg_tr = pRand->Gaus(V3pd_tr[0]/V3pd_tr[2],fAngleRes);
+    Phitg_tr = pRand->Gaus(V3pd_tr[1]/V3pd_tr[2],fAngleRes);
     
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, Thetatg_tr, Phitg_tr);
+
+    // Calculate delta based on angle
+    double V3pd_lab[3];
+    X_TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], fHRSAngle, V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
+
+    double cosscatangle = V3pd_lab[2]/(sqrt(V3pd_lab[0]*V3pd_lab[0]+V3pd_lab[1]*V3pd_lab[1]+V3pd_lab[2]*V3pd_lab[2]));
+
+    double scatmom = (targetmass*fBeamEnergy)/(targetmass+fBeamEnergy-fBeamEnergy*cosscatangle);
+    double censcatmom = (targetmass*fBeamEnergy)/(targetmass+fBeamEnergy-fBeamEnergy*cos(fHRSAngle));
+
+    double dpkinoffset = (scatmom-censcatmom)/fHRSMomentum;
+
+    double dpkin = censcatmom/fHRSMomentum-1-energyloss/fHRSMomentum;
 
     V5tg[0] = Xtg_tr;
     V5tg[1] = Thetatg_tr;
     V5tg[2] = Ytg_tr;
     V5tg[3] = Phitg_tr;
-    V5tg[4] = pRand->Gaus(fDeltaLow, fDeltaRes);
+    V5tg[4] = dpkin + dpkinoffset;
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);

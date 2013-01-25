@@ -97,7 +97,14 @@ bool G2PTrans400016::TransLeftHRS(double* pV5)
 
 bool G2PTrans400016::TransRightHRS(double* pV5)
 {
-    return true;
+    //use right arm routines for left arm before left arm is ready
+	//return TransportLeftHRS(pV5);
+	pV5[2]*=-1.;
+	pV5[3]*=-1.;
+	bool bGoodParticle=TransLeftHRS(pV5);
+	pV5[2]*=-1.;
+	pV5[3]*=-1.;
+	return bGoodParticle;
 }
 
 void G2PTrans400016::ReconLeftHRS(double* pV5)
@@ -123,5 +130,10 @@ void G2PTrans400016::ReconLeftHRS(double* pV5)
 
 void G2PTrans400016::ReconRightHRS(double* pV5)
 {
-    //
+    //in order to call right arm routines, need to flip y, phi 
+	pV5[2]*=-1;
+	pV5[3]*=-1;
+	ReconLeftHRS(pV5);
+	pV5[2]*=-1;
+	pV5[3]*=-1;
 } 

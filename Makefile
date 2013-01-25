@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.2.2
+VERSION     := 1.3.0
 EXECFILE    := G2PSim
 LIBFILE     := libG2PSim.so
 LIBNAME     := G2PSim

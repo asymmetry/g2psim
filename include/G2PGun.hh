@@ -28,6 +28,9 @@ public:
     typedef bool (G2PGun::*pf_Gun)(double *, double *);
     
     void SetHRSAngle(double value) { fHRSAngle = value; }
+    void SetHRSMomentum(double value) { fHRSMomentum = value; }
+    void SetBeamEnergy(double value) { fBeamEnergy = value; }
+    
     void SetTargetX(double value) { fTargetX_lab = value; }
     void SetTargetY(double value) { fTargetY_lab = value; }
     void SetTargetZ(double value) { fTargetZLow_lab = value; }
@@ -78,6 +81,8 @@ private:
     bool bUseData;
 
     double fHRSAngle;
+    double fHRSMomentum;
+    double fBeamEnergy;
 
     double fTargetX_lab;
     double fTargetY_lab;
