@@ -11,10 +11,11 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.2.1
+VERSION     := 1.2.2
 EXECFILE    := G2PSim
-LIBFILE     := G2PSim
-USERDICT    := $(LIBFILE)_Dict
+LIBFILE     := libG2PSim.so
+LIBNAME     := G2PSim
+USERDICT    := $(LIBNAME)_Dict
 
 ########################################################################
 SRCDIR      := src
@@ -23,11 +24,7 @@ OBJDIR      := obj.$(ARCH)
 
 ########################################################################
 # Compiler
-ifeq ($(MYOS),Darwin)
-    AR      := libtool -static -o
-else
-    AR      := ar r
-endif
+AR          := ar
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -54,7 +51,6 @@ else
 endif
 GPPFLAGS    := -MM
 LDFLAGS     := -O3 -g $(MODE)
-SOFLAGS     := -shared
 
 ########################################################################
 # Generate obj file list
@@ -63,6 +59,10 @@ CSOURCES    := $(wildcard $(SRCDIR)/*.[Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][XxPp][XxPp])
 SOURCES     := $(FSOURCES) $(CSOURCES)
+# header files
+HEADERS     := $(wildcard $(INCDIR)/*.hh)
+HEADERS     += $(wildcard HRSTransport/*.hh)
+HEADERS     += $(wildcard G2PXSection/*.hh)
 # add .o to all the source files
 OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
 OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
@@ -76,8 +76,7 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
-OTHERLIBS   := -LHRSTransport -lHRSTransport \
-               -LG2PXSection/obj.${ARCH} -lG2PXSection
+OTHERLIBS   := -LHRSTransport -lHRSTransport -LG2PXSection -lG2PXSection
 
 ########################################################################
 # ROOT configure
@@ -162,8 +161,7 @@ endif
 
 ########################################################################
 exe: lib $(OBJDIR)/Main.o
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./lib$(LIBFILE).so \
-           $(LIBS)
+	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./$(LIBFILE) $(LIBS)
 	@echo "Linking $(EXECFILE) ... done!"
 
 $(OBJDIR)/Main.o: Main.cc
@@ -172,14 +170,14 @@ $(OBJDIR)/Main.o: Main.cc
 
 ########################################################################
 lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o
-	@make -C HRSTransport lib
-	@make -C G2PXSection lib
-	@$(LD) $(LDFLAGS) $(SOFLAGS) -o lib$(LIBFILE).$(VERSION).so \
+	@make -s -C HRSTransport
+	@make -s -C G2PXSection
+	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
-	@ln -sf lib$(LIBFILE).$(VERSION).so lib$(LIBFILE).so
+	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
 	@echo "Linking lib$(LIBFILE).so ... done!"
 
-$(USERDICT).cxx: $(wildcard $(INCDIR)/*.hh) $(LIBFILE)_LinkDef.h
+$(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT)..."
 		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
 
@@ -227,12 +225,12 @@ $(OBJDIR):
 clean: $(OBJDIR)
 	@rm -f $(OBJDIR)/*
 	@rm -f $(USERDICT).cxx $(USERDICT).h
-	@rm -f $(EXECFILE) lib$(LIBFILE).*.so lib$(LIBFILE).so
+	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).*
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
-	@make clean -s -C HRSTransport
-	@make clean -s -C G2PXSection
+	@make distclean -s -C HRSTransport
+	@make distclean -s -C G2PXSection
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)

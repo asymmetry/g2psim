@@ -13,12 +13,18 @@
 *.a
 
 *.d
-update.sh
-G2PSim
-*_Dict.*
+*.so.*
+*.a.*
+
 obj.*
+
+*_Dict.*
+
 plots/
 *.bak
 *.root
 *.png
 *.dat
+
+G2PSim
+update.sh

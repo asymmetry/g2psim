@@ -11,17 +11,16 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
+LIBFILE     := G2PTrans400016
+
+########################################################################
 SRCDIR      := .
 INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
 # Compiler
-ifeq ($(MYOS),Darwin)
-    AR      := libtool -static -o
-else
-    AR      := ar r
-endif
+AR          := ar
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -153,6 +152,8 @@ endif
 
 ########################################################################
 lib: $(OBJDIR) $(OBJS)
+	@$(AR) -r lib$(LIBFILE).a $(OBJS) &>/dev/null
+	@echo "Linking lib$(LIBFILE).a ...... done!"
 
 ########################################################################
 $(OBJDIR)/%.o: %.c

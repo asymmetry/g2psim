@@ -13,7 +13,7 @@
 #include "HRSRecUseDB.hh"
 #include "HRSTransTCSNHCS.hh"
 
-#include "G2PXSection.hh"
+#include "../G2PXSection/G2PXSection.hh"
 #include "../HRSTransport/HRSTransport.hh"
 
 #include "G2PSim.hh"

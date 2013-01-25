@@ -4,7 +4,7 @@
 
 #include "G2PSim.hh"
 #include "G2PGun.hh"
-#include "HRSTransport.hh"
+#include "HRSTransport/HRSTransport.hh"
 
 void usage(int argc, char** argv);
 

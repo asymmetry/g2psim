@@ -22,8 +22,12 @@ Meaning of parameters:
  theta: scattering angle for outgoing particle in radian;
  pf: outgoing particle momentum in GeV/c;
  
- EPS,EPSD,FP: nucleus parameters, which used in the QFS code. EPS - seperation energy in MeV, EPSD - delta seperation energy in MeV, FP - Fermi momentum in MeV/c; their values can be changed to fit experimetal results, they will be set with the recommended value if not provided (EPS=10, EPSD=-10, FP=220);
- Tb,Ta: target parameters, Tb - total radiative length before scattering, Ta - total radiative length after scattering, both in the unit of Radiation Length, if they are not provided, they will be set with 0, which means not taking target radiative length into account;
+ EPS,EPSD,FP: nucleus parameters, which used in the QFS code. EPS - seperation energy in MeV, 
+ EPSD - delta seperation energy in MeV, FP - Fermi momentum in MeV/c; their values can be changed 
+ to fit experimetal results, they will be set with the recommended value if not provided (EPS=10, EPSD=-10, FP=220);
+ Tb,Ta: target parameters, Tb - total radiative length before scattering, Ta - total radiative 
+ length after scattering, both in the unit of Radiation Length, if they are not provided, they will 
+ be set with 0, which means not taking target radiative length into account;
 */
 
 double getQElXS(int PID, int Z, int N, double Eb, double theta, double pf);

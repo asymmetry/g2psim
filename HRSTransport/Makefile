@@ -12,7 +12,7 @@ MYHOST      := $(shell hostname -s)
 
 ########################################################################
 VERSION     := 1.0.1
-LIBFILE     := HRSTransport
+LIBFILE     := libHRSTransport.a
 
 ########################################################################
 SRCDIR      := .
@@ -25,11 +25,7 @@ MODELLIST   := G2PTrans400016 \
 
 ########################################################################
 # Compiler
-ifeq ($(MYOS),Darwin)
-    AR      := libtool -static -o
-else
-    AR      := ar r
-endif
+AR          := ar
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -68,8 +64,6 @@ SOURCES     := $(FSOURCES) $(CSOURCES)
 OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
 OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
 DEPS        := $(subst .o,.d,$(OBJS))
-OTHERDIRS   := $(addsuffix /$(OBJDIR), $(MODELLIST))
-OTHEROBJS   := $(foreach DIR, $(OTHERDIRS), $(wildcard $(DIR)/*.o))
 
 ########################################################################
 # Libs
@@ -79,6 +73,11 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
+OTHERDIRS   := $(addsuffix /, $(MODELLIST))
+OTHERLIBS   := $(addprefix lib, $(MODELLIST))
+OTHERLIBS   := $(addsuffix .a, $(OTHERLIBS))
+OTHERLIBS   := $(join $(OTHERDIRS), $(OTHERLIBS))
+OTHERLIBS   := $(addprefix ../../, $(OTHERLIBS))
 
 ########################################################################
 # ROOT configure
@@ -164,13 +163,20 @@ endif
 ########################################################################
 lib: $(OBJDIR) $(OBJS)
 	@for model in $(MODELLIST); do \
-		if [[ -d $$model ]]; then \
+		if [ -d $$model ]; then \
 			make -s -C $$model; \
 		fi; \
-	done; 
-	@echo "Linking lib$(LIBFILE).a ...... done!"
-	@$(AR) lib$(LIBFILE).$(VERSION).a $(OBJS) $(OTHEROBJS) &>/dev/null
-	@ln -sf lib$(LIBFILE).$(VERSION).a lib$(LIBFILE).a
+	done;
+	@if [[ ! -d $(OBJDIR)/obj.extra ]]; then mkdir $(OBJDIR)/obj.extra; fi
+	@cd $(OBJDIR)/obj.extra; rm -rf *; \
+	for archive in $(OTHERLIBS); do \
+		$(AR) -x $$archive; \
+	done; \
+	cd ../..
+	@$(AR) -r $(LIBFILE).$(VERSION) $(OBJS) $(OBJDIR)/obj.extra/*.o &>/dev/null
+	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
+	@rm -rf $(OBJDIR)/obj.extra
+	@echo "Linking $(LIBFILE) ...... done!"
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -211,7 +217,7 @@ $(OBJDIR):
 ########################################################################
 clean: $(OBJDIR)
 	@rm -f $(OBJDIR)/*
-	@rm -f lib$(LIBFILE).a lib$(LIBFILE).$(VERSION).a
+	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
