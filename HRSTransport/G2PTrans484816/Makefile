@@ -11,17 +11,12 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.0.1
-LIBFILE     := libHRSTransport.a
+LIBFILE     := G2PTrans484816
 
 ########################################################################
 SRCDIR      := .
 INCDIR      := .
 OBJDIR      := obj.$(ARCH)
-
-########################################################################
-MODELLIST   := G2PTrans400016 G2PTrans484816\
-               G2PTrans484816R00 G2PTrans484816R20
 
 ########################################################################
 # Compiler
@@ -37,9 +32,9 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR) 
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR) 
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
@@ -73,11 +68,6 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
-OTHERDIRS   := $(addsuffix /, $(MODELLIST))
-OTHERLIBS   := $(addprefix lib, $(MODELLIST))
-OTHERLIBS   := $(addsuffix .a, $(OTHERLIBS))
-OTHERLIBS   := $(join $(OTHERDIRS), $(OTHERLIBS))
-OTHERLIBS   := $(addprefix ../../, $(OTHERLIBS))
 
 ########################################################################
 # ROOT configure
@@ -162,21 +152,8 @@ endif
 
 ########################################################################
 lib: $(OBJDIR) $(OBJS)
-	@for model in $(MODELLIST); do \
-		if [ -d $$model ]; then \
-			make -s -C $$model; \
-		fi; \
-	done;
-	@if [[ ! -d $(OBJDIR)/obj.extra ]]; then mkdir $(OBJDIR)/obj.extra; fi
-	@cd $(OBJDIR)/obj.extra; rm -rf *; \
-	for archive in $(OTHERLIBS); do \
-		$(AR) -x $$archive; \
-	done; \
-	cd ../..
-	@$(AR) -r $(LIBFILE).$(VERSION) $(OBJS) $(OBJDIR)/obj.extra/*.o &>/dev/null
-	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@rm -rf $(OBJDIR)/obj.extra
-	@echo "Linking $(LIBFILE) ...... done!"
+	@$(AR) -r lib$(LIBFILE).a $(OBJS) &>/dev/null
+	@echo "Linking lib$(LIBFILE).a ...... done!"
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -217,15 +194,7 @@ $(OBJDIR):
 ########################################################################
 clean: $(OBJDIR)
 	@rm -f $(OBJDIR)/*
-	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
-
-distclean: clean
-	@for model in $(MODELLIST); do \
-		if [[ -d $$model ]]; then \
-			make clean -s -C $$model; \
-		fi; \
-	done;
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)

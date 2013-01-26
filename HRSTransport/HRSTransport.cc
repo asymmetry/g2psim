@@ -9,6 +9,7 @@
 
 #include "G2PTrans.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
+#include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816R00/G2PTrans484816R00.hh"
 #include "G2PTrans484816R20/G2PTrans484816R20.hh"
 
@@ -81,6 +82,10 @@ HRSTransport::~HRSTransport()
 void HRSTransport::RegisterModel()
 {
     G2PTrans * temp;
+    temp = new G2PTrans484816();
+    mModelIndex["484816"] = 1;
+    mModel[1] = temp;
+
     temp = new G2PTrans400016();
     mModelIndex["400016"] = 3;
     mModel[3] = temp;

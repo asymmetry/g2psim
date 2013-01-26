@@ -359,7 +359,7 @@ namespace S484816R20
      
         return v_phi_r5p65                               ;
     }
-    float y0_r5p65                               (float *x,int m){
+    float y00_r5p65                               (float *x,int m){
         int ncoeff= 60;
         float avdat=  0.3318688E-04;
         float xmin[10]={
@@ -419,7 +419,7 @@ namespace S484816R20
      
     //                 function
      
-        float v_y0_r5p65                               =avdat
+        float v_y00_r5p65                               =avdat
             +coeff[  0]                    
             +coeff[  1]        *x31        
             +coeff[  2]            *x41    
@@ -429,7 +429,7 @@ namespace S484816R20
             +coeff[  6]    *x21*x31        
             +coeff[  7]        *x32        
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[  8]*x11        *x41    
             +coeff[  9]    *x21    *x41    
             +coeff[ 10]        *x31*x41    
@@ -440,7 +440,7 @@ namespace S484816R20
             +coeff[ 15]    *x23            
             +coeff[ 16]*x12    *x31        
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[ 17]*x11*x21*x31        
             +coeff[ 18]    *x22*x31        
             +coeff[ 19]*x11    *x32        
@@ -451,7 +451,7 @@ namespace S484816R20
             +coeff[ 24]    *x22    *x41    
             +coeff[ 25]    *x21*x31*x41    
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[ 26]        *x32*x41    
             +coeff[ 27]*x11        *x42    
             +coeff[ 28]    *x21    *x42    
@@ -462,7 +462,7 @@ namespace S484816R20
             +coeff[ 33]*x11*x23            
             +coeff[ 34]    *x24            
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[ 35]*x13    *x31        
             +coeff[ 36]*x12*x21*x31        
             +coeff[ 37]*x11*x22*x31        
@@ -473,7 +473,7 @@ namespace S484816R20
             +coeff[ 42]        *x34        
             +coeff[ 43]*x13        *x41    
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[ 44]*x12*x21    *x41    
             +coeff[ 45]*x11*x22    *x41    
             +coeff[ 46]    *x23    *x41    
@@ -484,7 +484,7 @@ namespace S484816R20
             +coeff[ 51]    *x22    *x42    
             +coeff[ 52]    *x21*x31*x42    
         ;
-        v_y0_r5p65                               =v_y0_r5p65                               
+        v_y00_r5p65                               =v_y00_r5p65                               
             +coeff[ 53]*x11        *x43    
             +coeff[ 54]*x13*x22            
             +coeff[ 55]*x12*x23            
@@ -494,6 +494,6 @@ namespace S484816R20
             +coeff[ 59]    *x24*x31        
             ;
      
-        return v_y0_r5p65                               ;
+        return v_y00_r5p65                               ;
     }
 }

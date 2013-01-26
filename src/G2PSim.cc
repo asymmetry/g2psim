@@ -108,7 +108,7 @@ void G2PSim::Clear()
     memset(fV5recdb_tr, 0, sizeof(fV5recdb_tr));
     memset(fV5recdb_lab, 0, sizeof(fV5recdb_lab));
 
-    fXS = 0;
+    fXS = 1;
 }
 
 void G2PSim::InitTree()

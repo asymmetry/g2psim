@@ -175,7 +175,7 @@ lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@echo "Linking lib$(LIBFILE).so ... done!"
+	@echo "Linking $(LIBFILE) ... done!"
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT)..."

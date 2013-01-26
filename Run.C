@@ -10,9 +10,9 @@
 int Run()
 {
     G2PSim *run = new G2PSim();
-    G2PGun *gun = new G2PGun("test");
+    //G2PGun *gun = new G2PGun("test");
     //G2PGun *gun = new G2PGun("data");
-    //G2PGun *gun = new G2PGun("sieve");
+    G2PGun *gun = new G2PGun("sieve");
     HRSTransport *model = new HRSTransport(11);
     gun->SetDataFile("input_fp_tr.dat");
     gun->SetTargetX(0.0e-3);
@@ -24,9 +24,9 @@ int Run()
     
     run->SetGun(gun);
     run->SetHRSModel(model);
-    //run->SetRootName("result_G5_S11.root");
-    //run->SetRootName("result_G6_S11.root");
-    run->SetRootName("result_G4_S11.root");
+    run->SetRootName("result_G5_S11.root");
+    //run->SetRootName("result_G6_S11.root"); // data
+    //run->SetRootName("result_G4_S11.root");
     run->SetArm("L");
     run->SetHRSMomentum(2.24949710);
     

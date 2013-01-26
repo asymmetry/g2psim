@@ -8,7 +8,7 @@ TTree *T;
 
 double fphlowlimit = -0.04, fphhilimit = 0.04;
 double fthlowlimit = -0.03, fthhilimit = 0.03;
-double fylowlimit  = -60.0, fyhilimit  = 60.0;
+double fylowlimit  = -0.06, fyhilimit  = 0.06;
 double phlowlimit  = -0.03, phhilimit  = 0.03;
 double thlowlimit  = -0.06, thhilimit  = 0.06;
 double dplowlimit  = -0.01, dphilimit  = 0.01;
@@ -38,14 +38,14 @@ void PlotFPThY(){
     gPad->SetGrid();
     TH2F* h21 = new TH2F("h21", "FP Th vs Y (SNAKE)", 200, fylowlimit, fyhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafp_rot:Yfp_rot>>h2","IsGood","COLZ");
+    T->Draw("Thetafp_rot:Yfp_rot>>h21","IsGood","COLZ");
     c2->Update();
 
     c2->cd(2);
     gPad->SetGrid();
-    TH2F* h21 = new TH2F("h22", "FP Th vs Y (Data)", 200, fylowlimit, fyhilimit, 200, fthlowlimit, fthhilimit);
+    TH2F* h22 = new TH2F("h22", "FP Th vs Y (Data)", 200, fylowlimit, fyhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafpdata_rot:Yfpdata_rot>>h2","IsGood","COLZ");
+    T->Draw("Thetafpdata_rot:Yfpdata_rot>>h22","IsGood","COLZ");
     c2->Update();
 }
 
@@ -72,16 +72,14 @@ void PlotTPDp(){
     c4->cd();
     gPad->SetGrid();
     TH1F* h41 = new TH1F("h41", "TP Dp", 200, dplowlimit, dphilimit);
-    
     h41->SetLineColor(2);
     
     T->Draw("Deltarecdb>>h41","IsGood");
     c4->Update();
     
     TH1F* h42 = new TH1F("h42", "TP Dp", 200, dplowlimit, dphilimit);
-
     h42->SetLineColor(1);
-    
+
     T->Draw("Delta_rec>>h42","IsGood","same");
     c4->Update();
 }
