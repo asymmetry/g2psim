@@ -34,7 +34,7 @@ HRSTransport::HRSTransport()
     RegisterModel();
 }
 
-HRSTransport::HRSTransport(const char *name)
+HRSTransport::HRSTransport(const char* name)
     :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
 {
     mModel.clear();
@@ -42,7 +42,6 @@ HRSTransport::HRSTransport(const char *name)
 
     RegisterModel();
     pModel = mModel[mModelIndex[name]];
-    printf("%d", mModelIndex[name]);
     iModelIndex = mModelIndex[name];
 }
 
@@ -59,7 +58,7 @@ HRSTransport::HRSTransport(int setting)
 
 HRSTransport::~HRSTransport()
 {
-    map<int, G2PTrans *>::iterator it = mModel.begin();
+    map<int, G2PTrans*>::iterator it = mModel.begin();
     while (it!=mModel.end()) {
         delete it->second;
         it++;
@@ -83,7 +82,7 @@ HRSTransport::~HRSTransport()
 
 void HRSTransport::RegisterModel()
 {
-    G2PTrans * temp;
+    G2PTrans* temp;
     temp = new G2PTrans484816();
     mModelIndex["484816"] = 1;
     mModel[1] = temp;

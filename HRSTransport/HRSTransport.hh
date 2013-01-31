@@ -15,7 +15,7 @@ class HRSTransport : public TObject
 {
 public:
     HRSTransport();
-    HRSTransport(const char *name);
+    HRSTransport(const char* name);
     HRSTransport(int setting);
     ~HRSTransport();
     
@@ -32,7 +32,7 @@ public:
 // V5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
 // delta does not change
 // backward:
-// V5_fp = {x_fg, theta_fp, y_fp, phi_fp, x_tg};
+// V5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
 // V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
 // x_tg does not change
 //
@@ -61,9 +61,9 @@ private:
     int iModelIndex;
     bool bIsLeftArm;
 
-    map<int, G2PTrans *> mModel;
+    map<int, G2PTrans*> mModel;
     map<string, int> mModelIndex;
-    G2PTrans *pModel;
+    G2PTrans* pModel;
 
     ClassDef(HRSTransport,1);
 };

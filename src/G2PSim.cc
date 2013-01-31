@@ -38,7 +38,7 @@ G2PSim::G2PSim()
 
 G2PSim::~G2PSim()
 {
-    // Nothing to be done
+    // Nothing to do
 }
 
 void G2PSim::Init()
@@ -216,7 +216,7 @@ void G2PSim::RunSim()
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3], fV5fp_rot[4]);
 #endif
 
         fV5fp_tr[4] = fV5tg_tr[0];
@@ -225,8 +225,8 @@ void G2PSim::RunSim()
 
 #ifdef G2PSIM_DEBUG
         bIsGoodParticle = true;
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();
@@ -241,19 +241,21 @@ void G2PSim::RunData()
     while (nIndex<=nEvent) {
         if (!pGun->Shoot(fV3bpm_lab, fV5fpdata_tr)) break;
 
+        double pV3[3];
+        X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
+
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
 
+        fV5tg_tr[0] = pV3[0];
+
         bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
-        bIsGoodParticle = true;
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3],fV5fp_rot[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3], fV5fp_rot[4]);
 #endif
 
-        double pV3[3];
-        X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
         fV5fpdata_tr[4] = pV3[0];
         
         bIsGoodParticle &= pHRS->Backward(fV5fpdata_tr, fV5rec_tr);
@@ -358,8 +360,8 @@ void G2PSim::RunData()
         
 #ifdef G2PSIM_DEBUG
         bIsGoodParticle = true;
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3],fV5rec_tr[4]);
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3],fV5recdb_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();

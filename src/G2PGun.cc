@@ -381,24 +381,24 @@ bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootData(double *V3bpm, double *V5tg)
+bool G2PGun::ShootData(double *V3bpm, double *V5fp)
 {
     int temp;
     bool noerror = true;
 
     if (!feof(pFilePtr)) {
         // index, bpm_x, bpm_y, thetatg_tr, ytg_tr, phitg_tr, deltatg
-        fscanf(pFilePtr, "%d%lf%lf%lf%lf%lf%lf", &temp, &V3bpm[0], &V3bpm[1], &V5tg[0], &V5tg[1], &V5tg[2], &V5tg[3]);
+        fscanf(pFilePtr, "%d%lf%lf%lf%lf%lf%lf", &temp, &V3bpm[0], &V3bpm[1], &V5fp[0], &V5fp[1], &V5fp[2], &V5fp[3]);
     }
     else{
         noerror = false;
     }
 
     V3bpm[2] = 0;
-    V5tg[4] = 0;
+    V5fp[4] = 0;
 
 #ifdef GUN_DEBUG
-    printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
+    printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5fp[0], V5fp[1], V5fp[2], V5fp[3], V5fp[4]);
 #endif
 
     return noerror;

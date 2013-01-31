@@ -6,6 +6,9 @@
 
 #include <cmath>
 
+#include "TROOT.h"
+#include "TMath.h"
+
 #include "Fwd_r5p65_484816.h"
 #include "Bwd_r5p65_484816.h"
 
@@ -14,17 +17,22 @@
 //using namespace S484816; //unfortunately fortran does not support namespace
 
 const float m2cm = 100.0;
+const double cDeg = TMath::Pi()/180.0;
 
 G2PTrans484816::G2PTrans484816()
 {
+    // Nothing to do
 }
 
 G2PTrans484816::~G2PTrans484816()
 {
+    // Nothing to do
 }
 
 bool G2PTrans484816::TransLeftHRS(double* pV5)
 {
+    RotateX(0.117*cDeg, pV5); // 5.767->5.650
+    
     //use right arm routines for left arm before left arm is ready
     //return TransportLeftHRS(pV5);
     pV5[2]*=-1.;
@@ -32,13 +40,18 @@ bool G2PTrans484816::TransLeftHRS(double* pV5)
     bool bGoodParticle=TransRightHRS(pV5);
     pV5[2]*=-1.;
     pV5[3]*=-1.;
+
+    RotateX(-0.117*cDeg, pV5);
+
     return bGoodParticle;
 }
 
 bool G2PTrans484816::TransRightHRS(double* pV5)
 {
+    RotateX(-0.117*cDeg, pV5);
+    
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int;
+    int *ii = new int; (*ii) = 5;
 
     float x_test, y_test;
 
@@ -48,7 +61,6 @@ bool G2PTrans484816::TransRightHRS(double* pV5)
     y_test = y_r5p65_484816_sepex_(vector_jjl, ii)*m2cm;
     if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 ) 
         return false;
-
 
     //Target to Q1 en 
     //y,-200., 0.,none,150.,150.,0.,0.,0.,0.
@@ -112,6 +124,8 @@ bool G2PTrans484816::TransRightHRS(double* pV5)
     pV5[3] = (double)phi_fp;
     //pV5[4] = (double)delta_fp;  // delta is not change
 
+    RotateX(0.117*cDeg, pV5);
+
     delete ii;
 
     return true;
@@ -119,18 +133,24 @@ bool G2PTrans484816::TransRightHRS(double* pV5)
 
 void G2PTrans484816::ReconLeftHRS(double* pV5)
 {
+    RotateX(0.117*cDeg, pV5);
+    
     //in order to call right arm routines, need to flip y, phi 
     pV5[2]*=-1;
     pV5[3]*=-1;
     ReconRightHRS(pV5);
     pV5[2]*=-1;
     pV5[3]*=-1;
+
+    RotateX(-0.117*cDeg, pV5);
 }
 
 void G2PTrans484816::ReconRightHRS(double* pV5)
 {
+    RotateX(-0.117*cDeg, pV5);
+    
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int;
+    int *ii = new int; (*ii) = 5;
 
     vector_jjl[1]   = vector_jjl[1] - txfit_r5p65_484816_(vector_jjl,ii);
 
@@ -146,6 +166,8 @@ void G2PTrans484816::ReconRightHRS(double* pV5)
     pV5[2] = (double)y_rec;
     pV5[3] = (double)phi_rec;
     pV5[4] = (double)delta_rec;
+    
+    RotateX(0.117*cDeg, pV5);
 
     delete ii;
 }
