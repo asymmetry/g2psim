@@ -9,5 +9,6 @@
 #pragma link C++ class G2PRand+;
 #pragma link C++ class HRSRecUseDB+;
 #pragma link C++ class HRSTransport+;
+#pragma link C++ class G2PXS+;
 
 #endif

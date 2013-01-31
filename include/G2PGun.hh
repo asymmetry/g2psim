@@ -22,7 +22,7 @@ class G2PGun : public TObject
 {
 public:
     G2PGun();
-    G2PGun(const char * dist);
+    G2PGun(const char *dist);
     ~G2PGun();
 
     typedef bool (G2PGun::*pf_Gun)(double *, double *);
@@ -51,7 +51,7 @@ public:
     
     void SetDataFile(const char *name) { pFileName = name; }
 
-    void SetRand(G2PRand * rand) { pRand = rand; }
+    void SetRand(G2PRand *rand) { pRand = rand; }
 
     bool IsInit() { return bIsInit; }
     bool IsUsingData() { return bUseData; }
@@ -66,7 +66,7 @@ public:
     virtual void End();
 
 private:
-    void SetGun(int setting);   
+    void SetGun();   
 
     bool ShootDelta(double *V3bpm, double *V5tg);
     bool ShootGaus(double *V3bpm, double *V5tg);

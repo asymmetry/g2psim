@@ -13,7 +13,7 @@
 #include "HRSRecUseDB.hh"
 #include "HRSTransTCSNHCS.hh"
 
-#include "../G2PXSection/G2PXSection.hh"
+#include "../G2PXSection/G2PXS.hh"
 #include "../HRSTransport/HRSTransport.hh"
 
 #include "G2PSim.hh"
@@ -30,7 +30,8 @@ G2PSim::G2PSim()
     :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
      nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
      fHRSMomentum(2.251), pGun(NULL), pHRS(NULL), pRecUseDB(NULL),
-     pTree(NULL), pConfig(NULL), pRand(NULL), pfRunSelector(NULL)
+     pXS(NULL), pTree(NULL), pConfig(NULL), pRand(NULL),
+     pfRunSelector(NULL)
 {
     Clear();
 }

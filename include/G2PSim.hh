@@ -11,7 +11,10 @@
 #include "TTree.h"
 
 #include "G2PGun.hh"
+#include "G2PRand.hh"
 #include "HRSRecUseDB.hh"
+
+#include "../G2PXSection/G2PXS.hh"
 #include "../HRSTransport/HRSTransport.hh"
 
 // definition:
@@ -38,10 +41,10 @@ public:
     void SetHRSAngle(double angle) { fHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
 
-    void SetHRSModel(HRSTransport *model) { pHRS = model; }
-
     void SetGun(G2PGun *gun) { pGun = gun; }
-    
+    void SetHRSModel(HRSTransport *model) { pHRS = model; }
+    void SetPhysModel(G2PXS *model) { pXS = model; }
+
     void SetRootName(const char *name) { pFileName = name; }
 
     bool IsInit() { return bIsInit; }
@@ -89,7 +92,7 @@ private:
     double fV5recdb_tr[5];
     double fV5recdb_lab[5];
 
-    //HRSXSection *pXSection;
+    G2PXS *pXS;
     double fXS;
     
     TTree *pTree;

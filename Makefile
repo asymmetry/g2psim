@@ -76,7 +76,7 @@ ifeq ($(MYOS),Darwin) # Assume using homebrew
 else
     SYSLIBS += -lgfortran
 endif
-OTHERLIBS   := -LHRSTransport -lHRSTransport -LG2PXSection -lG2PXSection
+OTHERLIBS   := -LHRSTransport -lHRSTransport -LG2PXSection -lG2PXS
 
 ########################################################################
 # ROOT configure
@@ -160,13 +160,17 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-exe: lib $(OBJDIR)/Main.o
+exe: lib script $(OBJDIR)/Main.o
 	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./$(LIBFILE) $(LIBS)
 	@echo "Linking $(EXECFILE) ... done!"
 
 $(OBJDIR)/Main.o: Main.cc
 	@echo Compiling $< ......
 	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+
+script:
+	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/RunTmp.C" "Run.C" ; \
+	echo "Generate Run.C ... done!"; fi
 
 ########################################################################
 lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o

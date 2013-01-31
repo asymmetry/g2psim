@@ -27,4 +27,5 @@ plots/
 *.dat
 
 G2PSim
+Run.C
 update.sh

@@ -44,7 +44,7 @@ G2PGun::G2PGun()
     // Nothing to do
 }
 
-G2PGun::G2PGun(const char* dist)
+G2PGun::G2PGun(const char *dist)
     :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
      fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
      fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
@@ -80,7 +80,7 @@ G2PGun::~G2PGun()
 void G2PGun::Init()
 {
     bool noerror = true;
-    SetGun(iSetting);
+    SetGun();
     if (bUseData) {
         if ((pFilePtr=fopen(pFileName, "r"))==NULL) noerror = false;
     }
@@ -95,9 +95,9 @@ void G2PGun::End()
     bIsInit = false;
 }
 
-void G2PGun::SetGun(int setting)
+void G2PGun::SetGun()
 {
-    switch (setting) {
+    switch (iSetting) {
     case 1:
         pfGunSelector = &G2PGun::ShootDelta;
         break;
