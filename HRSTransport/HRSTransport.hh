@@ -1,6 +1,7 @@
 #ifndef HRS_TRANSPORT_H
 #define HRS_TRANSPORT_H
 
+#include <cstring>
 #include <map>
 
 #include "TROOT.h"
@@ -61,7 +62,7 @@ private:
     bool bIsLeftArm;
 
     map<int, G2PTrans *> mModel;
-    map<const char *, int> mModelIndex;
+    map<string, int> mModelIndex;
     G2PTrans *pModel;
 
     ClassDef(HRSTransport,1);

@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
+#include <cstring>
 #include <map>
 
 #include "TROOT.h"
@@ -41,6 +42,7 @@ HRSTransport::HRSTransport(const char *name)
 
     RegisterModel();
     pModel = mModel[mModelIndex[name]];
+    printf("%d", mModelIndex[name]);
     iModelIndex = mModelIndex[name];
 }
 
