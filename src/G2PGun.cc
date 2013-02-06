@@ -394,7 +394,7 @@ bool G2PGun::ShootData(double *V3bpm, double *V5fp)
         noerror = false;
     }
 
-    V3bpm[2] = 0;
+    V3bpm[2] = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
     V5fp[4] = 0;
 
 #ifdef GUN_DEBUG

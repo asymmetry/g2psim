@@ -23,6 +23,8 @@ public:
     void TransRot2Tr(const double *V5fp_rot, double *V5fp_tr);
     void TransTr2Det(const double *V5fp_tr, double *V5fp_det);
     void TransDet2Tr(const double *V5fp_det, double *V5fp_tr);
+    void TransRot2Det(const double *V5fp_rot, double *V5fp_det);
+    void TransDet2Rot(const double *V5fp_det, double *V5fp_rot);
     
     bool IsInit() { return fIsInit; }
     void SetPrefix(const char* prefix) { fPrefix = prefix; }

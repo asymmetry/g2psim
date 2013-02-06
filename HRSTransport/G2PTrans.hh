@@ -7,6 +7,8 @@ public:
     G2PTrans();
     virtual ~G2PTrans();
 
+    void SetHRSAngle(double value) { fHRSAngle = value; } 
+
     virtual bool TransLeftHRS(double* v) = 0;
     virtual bool TransRightHRS(double* v) = 0;
     virtual void ReconLeftHRS(double* v) = 0;
@@ -17,6 +19,8 @@ protected:
     // Notice the positive direction is anti-clockwise
     // Z is assumed to be 0
     void RotateX(double angle, double* v);
+
+    double fHRSAngle;
 };
 
 #endif

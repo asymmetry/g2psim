@@ -18,8 +18,6 @@
 
 using namespace std;
 
-const double deg = TMath::Pi()/180.0;
-
 //#define DEBUG_HRS_FORWARD
 //#define DEBUG_HRS_BACKWARD
 
@@ -65,6 +63,16 @@ HRSTransport::~HRSTransport()
     }
     mModel.clear();
     mModelIndex.clear();
+}
+
+void HRSTransport::SetHRSAngle(double value)
+{
+    fHRSAngle = value;
+    map<int, G2PTrans*>::iterator it = mModel.begin();
+    while (it!=mModel.end()) {
+        it->second->SetHRSAngle(value);
+        it++;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////

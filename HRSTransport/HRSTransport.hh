@@ -22,6 +22,7 @@ public:
     virtual void RegisterModel();
 
     void SetArm(bool isleftarm) { bIsLeftArm = isleftarm; }
+    void SetHRSAngle(double value);
 
     int GetModelIndex() { return iModelIndex; }
     
@@ -60,6 +61,7 @@ public:
 private:
     int iModelIndex;
     bool bIsLeftArm;
+    double fHRSAngle;
 
     map<int, G2PTrans*> mModel;
     map<string, int> mModelIndex;

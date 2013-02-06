@@ -395,6 +395,22 @@ void HRSRecUseDB::TransDet2Tr(const double *V5fp_det, double *V5fp_tr)
     V5fp_tr[3] = ph_tr;
 }
 
+void HRSRecUseDB::TransRot2Det(const double *V5fp_rot, double *V5fp_det)
+{
+    double V5fp_tr[5];
+    
+    TransRot2Tr(V5fp_rot, V5fp_tr);
+    TransTr2Det(V5fp_tr, V5fp_det);
+}
+
+void HRSRecUseDB::TransDet2Rot(const double *V5fp_det, double *V5fp_rot)
+{
+    double V5fp_tr[5];
+    
+    TransDet2Tr(V5fp_det, V5fp_tr);
+    TransTr2Rot(V5fp_tr, V5fp_rot);
+}
+
 double HRSRecUseDB::CalcVar(const double powers[][5], const vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a variable at the target
