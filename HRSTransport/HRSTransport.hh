@@ -22,7 +22,7 @@ public:
     virtual void RegisterModel();
 
     void SetArm(bool isleftarm) { bIsLeftArm = isleftarm; }
-    void SetHRSAngle(double value);
+    void SetHRSAngle(double value) { fHRSAngle = value; }
 
     int GetModelIndex() { return iModelIndex; }
     
@@ -52,16 +52,11 @@ public:
     bool Forward(const double* V5_tg, double* V5_fp);
     bool Backward(const double* V5_fp, double* V5_tg);
 
-    void DeltaCorrection();
-    void XtgCorrection();
-    void ThetatgCorrection();
-    void YtgCorrection();
-    void PhitgCorrection();
-
 private:
     int iModelIndex;
     bool bIsLeftArm;
     double fHRSAngle;
+    double fModelAngle;
 
     map<int, G2PTrans*> mModel;
     map<string, int> mModelIndex;

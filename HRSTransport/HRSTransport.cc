@@ -23,8 +23,11 @@ using namespace std;
 
 ClassImp(HRSTransport);
 
+const double cDeg = TMath::Pi()/180.0;
+
 HRSTransport::HRSTransport()
-    :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
+    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
+     fModelAngle(5.767*cDeg), pModel(NULL)
 {
     mModel.clear();
     mModelIndex.clear();
@@ -33,7 +36,8 @@ HRSTransport::HRSTransport()
 }
 
 HRSTransport::HRSTransport(const char* name)
-    :iModelIndex(0), bIsLeftArm(true), pModel(NULL)
+    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
+     fModelAngle(5.767*cDeg), pModel(NULL)
 {
     mModel.clear();
     mModelIndex.clear();
@@ -41,6 +45,7 @@ HRSTransport::HRSTransport(const char* name)
     RegisterModel();
     pModel = mModel[mModelIndex[name]];
     iModelIndex = mModelIndex[name];
+    fModelAngle = pModel->GetAngle();
 }
 
 HRSTransport::HRSTransport(int setting)
@@ -52,6 +57,7 @@ HRSTransport::HRSTransport(int setting)
     RegisterModel();
     pModel = mModel[setting];
     iModelIndex = setting;
+    fModelAngle = pModel->GetAngle();
 }
 
 HRSTransport::~HRSTransport()
@@ -63,16 +69,6 @@ HRSTransport::~HRSTransport()
     }
     mModel.clear();
     mModelIndex.clear();
-}
-
-void HRSTransport::SetHRSAngle(double value)
-{
-    fHRSAngle = value;
-    map<int, G2PTrans*>::iterator it = mModel.begin();
-    while (it!=mModel.end()) {
-        it->second->SetHRSAngle(value);
-        it++;
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -129,10 +125,14 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     bool bGoodParticle=false;
 
     if (bIsLeftArm) {
+        pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         bGoodParticle = pModel->TransLeftHRS(V5);
+        pModel->FPCorrection(V5);
     }
     else {
+        pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         bGoodParticle = pModel->TransRightHRS(V5);
+        pModel->FPCorrection(V5);
     }
 
     V5_fp[0] = V5[0];
@@ -165,9 +165,11 @@ bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
     
     if (bIsLeftArm) {
         pModel->ReconLeftHRS(V5);
+        pModel->CoordsCorrection(fModelAngle-fHRSAngle, V5);
     }
     else {
         pModel->ReconRightHRS(V5);
+        pModel->CoordsCorrection(-fModelAngle-fHRSAngle, V5);
     }
 
     V5_tg[0] = V5[0];
@@ -182,22 +184,3 @@ bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
     
     return bGoodParticle;
 }
-
-void HRSTransport::DeltaCorrection() { }
-void HRSTransport::XtgCorrection() { }
-void HRSTransport::ThetatgCorrection() { }
-void HRSTransport::YtgCorrection() { }
-void HRSTransport::PhitgCorrection() { }
-
-// void VDCSmearing(double* fV5_fp)
-// {
-//     double mWireChamberRes_x = 0.0013; //m;
-//     double mWireChamberRes_y = 0.0013; //m;
-//     double mWireChamberRes_theta = 0.0003; //rad;
-//     double mWireChamberRes_phi = 0.0003; //rad;
-
-//     fV5_fp[0] += fGausRand(0, mWireChamberRes_x);
-//     fV5_fp[2] += fGausRand(0, mWireChamberRes_y);
-//     fV5_fp[1] += fGausRand(0, mWireChamberRes_theta);
-//     fV5_fp[3] += fGausRand(0, mWireChamberRes_phi);
-// }

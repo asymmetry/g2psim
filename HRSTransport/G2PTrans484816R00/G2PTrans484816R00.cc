@@ -1,10 +1,13 @@
 ////////////////////////////////////////////////////////////////////////
-// 484816 septum with shims, 5.76 central ray
+// 484816 septum with shims, 5.767 central ray
 // no target field, no raster 
 // by M. Huang 1/7/2013
 ////////////////////////////////////////////////////////////////////////
 
 #include <cmath>
+
+#include "TROOT.h"
+#include "TMath.h"
 
 #include "Fwd_l5p77_484816R00.h"
 #include "Bwd_l5p77_484816R00.h"
@@ -16,11 +19,14 @@ using namespace S484816R00;
 const float m2cm = 100.0;
 
 G2PTrans484816R00::G2PTrans484816R00()
+    :cModelAngle(5.767*TMath::Pi()/180.0)
 {
+    // Nothing to do
 }
 
 G2PTrans484816R00::~G2PTrans484816R00()
 {
+    // Nothing to do
 }
 
 bool G2PTrans484816R00::TransLeftHRS(double* pV5)
@@ -149,4 +155,12 @@ void G2PTrans484816R00::ReconRightHRS(double* pV5)
     ReconLeftHRS(pV5);
     pV5[2]*=-1;
     pV5[3]*=-1;
+}
+
+void G2PTrans484816R00::FPCorrection(double *v)
+{
+    v[0]+=-0.0062;
+    v[1]+=0.00015;
+    v[2]+=-0.014;
+    v[3]+=-0.0063;
 }

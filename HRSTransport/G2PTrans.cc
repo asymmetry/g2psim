@@ -12,7 +12,12 @@ G2PTrans::~G2PTrans()
     // Nothing to do
 }
 
-void G2PTrans::RotateX(double angle, double* v)
+void G2PTrans::FPCorrection(double *v)
+{
+    // Nothing to do
+}
+
+void G2PTrans::CoordsCorrection(double angle, double* v)
 {
     double cosangle = cos(angle);
     double sinangle = sin(angle);

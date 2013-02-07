@@ -6,6 +6,9 @@
 
 #include <cmath>
 
+#include "TROOT.h"
+#include "TMath.h"
+
 #include "Fwd_r5p65_484816R20.h"
 #include "Bwd_r5p65_484816R20.h"
 
@@ -16,11 +19,14 @@ using namespace S484816R20;
 const float m2cm = 100.0;
 
 G2PTrans484816R20::G2PTrans484816R20()
+    :cModelAngle(5.65*TMath::Pi()/180.0)
 {
+    // Nothing to do
 }
 
 G2PTrans484816R20::~G2PTrans484816R20()
 {
+    // Nothing to do
 }
 
 bool G2PTrans484816R20::TransLeftHRS(double* pV5)

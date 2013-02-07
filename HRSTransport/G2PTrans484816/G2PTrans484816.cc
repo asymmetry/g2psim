@@ -17,9 +17,9 @@
 //using namespace S484816; //unfortunately fortran does not support namespace
 
 const float m2cm = 100.0;
-const double cDeg = TMath::Pi()/180.0;
 
 G2PTrans484816::G2PTrans484816()
+    :cModelAngle(5.65*TMath::Pi()/180.0)
 {
     // Nothing to do
 }
@@ -30,9 +30,7 @@ G2PTrans484816::~G2PTrans484816()
 }
 
 bool G2PTrans484816::TransLeftHRS(double* pV5)
-{
-    RotateX(0.117*cDeg, pV5); // 5.767->5.650
-    
+{   
     //use right arm routines for left arm before left arm is ready
     //return TransportLeftHRS(pV5);
     pV5[2]*=-1.;
@@ -41,15 +39,11 @@ bool G2PTrans484816::TransLeftHRS(double* pV5)
     pV5[2]*=-1.;
     pV5[3]*=-1.;
 
-    RotateX(-0.117*cDeg, pV5);
-
     return bGoodParticle;
 }
 
 bool G2PTrans484816::TransRightHRS(double* pV5)
-{
-    RotateX(-0.117*cDeg, pV5);
-    
+{    
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
     int *ii = new int; (*ii) = 5;
 
@@ -124,31 +118,23 @@ bool G2PTrans484816::TransRightHRS(double* pV5)
     pV5[3] = (double)phi_fp;
     //pV5[4] = (double)delta_fp;  // delta is not change
 
-    RotateX(0.117*cDeg, pV5);
-
     delete ii;
 
     return true;
 }
 
 void G2PTrans484816::ReconLeftHRS(double* pV5)
-{
-    RotateX(0.117*cDeg, pV5);
-    
+{   
     //in order to call right arm routines, need to flip y, phi 
     pV5[2]*=-1;
     pV5[3]*=-1;
     ReconRightHRS(pV5);
     pV5[2]*=-1;
     pV5[3]*=-1;
-
-    RotateX(-0.117*cDeg, pV5);
 }
 
 void G2PTrans484816::ReconRightHRS(double* pV5)
-{
-    RotateX(-0.117*cDeg, pV5);
-    
+{   
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
     int *ii = new int; (*ii) = 5;
 
@@ -166,8 +152,6 @@ void G2PTrans484816::ReconRightHRS(double* pV5)
     pV5[2] = (double)y_rec;
     pV5[3] = (double)phi_rec;
     pV5[4] = (double)delta_rec;
-    
-    RotateX(0.117*cDeg, pV5);
-
+ 
     delete ii;
 }

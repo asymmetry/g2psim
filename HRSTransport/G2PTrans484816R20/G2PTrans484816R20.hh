@@ -13,6 +13,11 @@ public:
     bool TransRightHRS(double* vector_jjl);
     void ReconLeftHRS(double* vector_jjl);
     void ReconRightHRS(double* vector_jjl);
+
+    double GetAngle() { return cModelAngle; }
+
+private:
+    const double cModelAngle;
 };
 
 #endif
