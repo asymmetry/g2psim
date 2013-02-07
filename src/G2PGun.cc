@@ -1,12 +1,14 @@
-// This file defined a class G2PGun.
-// This class will be used in G2PSim class as particle gun.
-// It has 5 standard gun: ShootDelta(), ShootGaus(), ShootFlat(), ShootSieve()
-//+and ShootData(). They can be chosen when initializing this class.
-// g2pSim class will call Shoot() to get kinematic variables. It is a virtual
+// This file defines a class G2PGun.
+// This class is used in G2PSim class as particle gun.
+// It has 6 standard gun: ShootDelta(), ShootGaus(), ShootFlat(), ShootTest(),
+//+ShootSieve() and ShootData().
+// The active gun is chosen during initializing.
+// G2PSim class will call Shoot() to get kinematic variables. It is a virtual
 //+function so you can rewrite it by inheriting this class.
 //
 // History:
-// By C. Gu, Jan 12, 2013, First public version.
+//   Jan 2013, C. Gu, First public version.
+//   Jan 2013, C. Gu, Add ShootSieve() method.
 //
 
 #include <cstdio>
@@ -44,7 +46,7 @@ G2PGun::G2PGun()
     // Nothing to do
 }
 
-G2PGun::G2PGun(const char *dist)
+G2PGun::G2PGun(const char* dist)
     :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
      fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
      fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
@@ -119,7 +121,7 @@ void G2PGun::SetGun()
     }
 }
 
-bool G2PGun::ShootDelta(double *V3bpm, double *V5tg)
+bool G2PGun::ShootDelta(double* V3bpm, double* V5tg)
 {
     V3bpm[0] = fTargetX_lab;
     V3bpm[1] = fTargetY_lab;
@@ -145,7 +147,7 @@ bool G2PGun::ShootDelta(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootGaus(double *V3bpm, double *V5tg)
+bool G2PGun::ShootGaus(double* V3bpm, double* V5tg)
 {
     V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
     V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
@@ -171,7 +173,7 @@ bool G2PGun::ShootGaus(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootFlat(double *V3bpm, double *V5tg)
+bool G2PGun::ShootFlat(double* V3bpm, double* V5tg)
 {
     double Xtg_lab, Ytg_lab;
     do {
@@ -205,7 +207,7 @@ bool G2PGun::ShootFlat(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootTest(double *V3bpm, double *V5tg)
+bool G2PGun::ShootTest(double* V3bpm, double* V5tg)
 {
     int selector = pRand->Integer(17);
     
@@ -281,7 +283,7 @@ bool G2PGun::ShootTest(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
+bool G2PGun::ShootSieve(double* V3bpm, double* V5tg)
 {
     const int nsieverow = 7;
     const int arearatio = 4.0;
@@ -381,7 +383,7 @@ bool G2PGun::ShootSieve(double *V3bpm, double *V5tg)
     return true;
 }
 
-bool G2PGun::ShootData(double *V3bpm, double *V5fp)
+bool G2PGun::ShootData(double* V3bpm, double* V5fp)
 {
     int temp;
     bool noerror = true;

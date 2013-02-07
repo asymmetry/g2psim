@@ -1,3 +1,10 @@
+// This file defines a class G2PSim.
+// This class is the main class for this sim package.
+//
+// History:
+//   Jan 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_SIM_H
 #define G2P_SIM_H
 
@@ -17,16 +24,6 @@
 #include "../G2PXSection/G2PXS.hh"
 #include "../HRSTransport/HRSTransport.hh"
 
-// definition:
-// iArm: Set Arm 0 means left arm, 1 means right arm
-// pBPMRes: Set bpm resolution
-// fHRSMomentum: Set up HRS Momentum
-// iDirection: Set sim direction: 0 means forward, 1 means backward, 2 means both
-// iSource: Set data source: 1,2,3 means use delta,flat,gaussian distribution for input position and angle, 0 means use real data in file input_tg.dat and input_fp.dat
-// iSetting: Set experiment setting: 10 means normal 484816 septa, 11 means 484816 septa with shim, 12 means 403216 septa with shim, 13 means 400016 septa with shim
-
-//void TestSNAKE(int iNEvent, int iArm, int iSetting, int iSource, int iDirection, double fHRSMomentum, double pBPMRes);
-
 class G2PSim : public TObject
 {
 public:
@@ -37,15 +34,16 @@ public:
     
     void SetNEvent(int n) { nEvent = n; }
 
-    void SetArm(const char *label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
+    void SetArm(const char* label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
     void SetHRSAngle(double angle) { fHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
 
-    void SetGun(G2PGun *gun) { pGun = gun; }
-    void SetHRSModel(HRSTransport *model) { pHRS = model; }
-    void SetPhysModel(G2PXS *model) { pXS = model; }
+    void AddGun(G2PGun* gun) { pGunList.push_back(gun); }
+    
+    void SetHRSModel(HRSTransport* model) { pHRS = model; }
+    void SetPhysModel(G2PXS* model) { pPhys=model; }
 
-    void SetRootName(const char *name) { pFileName = name; }
+    void SetRootName(const char* name) { pFileName = name; }
 
     bool IsInit() { return bIsInit; }
 
@@ -56,16 +54,17 @@ public:
 
 private:
     void Clear();
-
     void InitTree();
 
     void RunSim();
     void RunData();
 
+    void VDCSmearing(double* V5_fp);
+
     bool bIsInit;
 
-    TFile *pFile;
-    const char *pFileName; //!
+    TFile* pFile;
+    const char* pFileName;
 
     int nIndex;
     int nEvent;
@@ -74,31 +73,33 @@ private:
     double fHRSAngle;  // Set the same value to optics setting
     double fHRSMomentum;
 
-    G2PGun *pGun;
+    vector<G2PGun*> pGunList;
+    G2PGun* pGun;
+    int iGunSetting;
     double fV3bpm_lab[3];
     double fV5tg_tr[5];
     double fV5tg_lab[5];
     double fV5fpdata_tr[5];
     double fV5fpdata_rot[5];
 
-    HRSTransport *pHRS;
+    HRSTransport* pHRS;
     bool bIsGoodParticle;
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 	double fV5rec_tr[5];
     double fV5rec_lab[5];
 
-    HRSRecUseDB *pRecUseDB;
+    HRSRecUseDB* pRecUseDB;
     double fV5recdb_tr[5];
     double fV5recdb_lab[5];
-
-    G2PXS *pXS;
+    
+    G2PXS* pPhys;
     double fXS;
     
-    TTree *pTree;
-    TTree *pConfig;
+    TTree* pTree;
+    TTree* pConfig;
 
-    G2PRand *pRand;
+    G2PRand* pRand;
     
     pf_Run pfRunSelector;
 

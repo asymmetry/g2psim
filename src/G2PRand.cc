@@ -1,10 +1,10 @@
-// This file defined a class G2PRand.
+// This file defines a class G2PRand.
 // It is the rand of the whole simulation package.
-// It use TRandom2 as Uniform random number generator. TRandom2 is fastest.
+// It uses TRandom2 as uniform random number generator. TRandom2 is fastest.
 // All member functions are virtual so they can be overwrite.
 //
 // History:
-// By C. Gu, Jan 12, 2013, First public version.
+//   Jan 2013, C. Gu, First public version.
 //
 
 #include <cstdlib>

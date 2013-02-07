@@ -59,7 +59,7 @@ int main(int argc, char** argv)
     gun->SetDataFile("input_fp_tr.dat");
     HRSTransport *model = new HRSTransport(iSetting);
 
-    run->SetGun(gun);
+    run->AddGun(gun);
     run->SetHRSModel(model);
     run->SetNEvent(nEvent);
     run->SetRootName("result_test.root");

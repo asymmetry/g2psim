@@ -1,5 +1,13 @@
+// This file defines a class G2PSim.
+// This class is the main class for this sim package.
+//
+// History:
+//   Jan 2013, C. Gu, First public version.
+//
+
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
 #include <cmath>
 
 #include "TROOT.h"
@@ -20,19 +28,21 @@
 
 //#define G2PSIM_DEBUG 1
 
-using namespace Transform;
+using namespace std;
 
-const double cDeg = TMath::Pi()/180.0;
+const double kDEG = TMath::Pi()/180.0;
 
 ClassImp(G2PSim);
 
 G2PSim::G2PSim()
     :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
-     nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
-     fHRSMomentum(2.251), pGun(NULL), pHRS(NULL), pRecUseDB(NULL),
-     pXS(NULL), pTree(NULL), pConfig(NULL), pRand(NULL),
+     nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
+     fHRSMomentum(2.251), pGun(NULL),  pHRS(NULL), pRecUseDB(NULL),
+     pPhys(NULL), pTree(NULL), pConfig(NULL), pRand(NULL),
      pfRunSelector(NULL)
 {
+    pGunList.clear();
+    
     Clear();
 }
 
@@ -47,49 +57,63 @@ void G2PSim::Init()
     
     pRand = new G2PRand();
 
-    pGun->SetRand(pRand);
-    pGun->SetHRSAngle(fHRSAngle);
-    pGun->SetHRSMomentum(fHRSMomentum);
-    pGun->Init();
+    vector<G2PGun*>::iterator it = pGunList.begin();
+    while (it!=pGunList.end()){
+        (*it)->SetRand(pRand);
+        (*it)->SetHRSAngle(fHRSAngle);
+        (*it)->SetHRSMomentum(fHRSMomentum);
+        (*it)->Init();
+        if (!(*it)->IsInit()) noerror = false;
+        it++;
+    }
 
     pHRS->SetArm(bIsLeftArm);
+    pHRS->SetHRSAngle(fHRSAngle);
 
     if (bIsLeftArm)
         pRecUseDB = new HRSRecUseDB("L","db_L.vdc.dat");
     else
         pRecUseDB = new HRSRecUseDB("R","db_R.vdc.dat");
 
-    if (!pGun->IsInit()) noerror = false;
-
-    if (noerror) {
-        InitTree();
-        if (pGun->IsUsingData())
-            pfRunSelector = &G2PSim::RunData;
-        else
-            pfRunSelector = &G2PSim::RunSim;
-    }
+    if (noerror) InitTree();
 
     bIsInit = noerror;
 }
 
 void G2PSim::Run()
 {
-    if ((pGun==NULL)||(pHRS==NULL)) {
-        //
-    }
-    else {
-        Init();
-        if (bIsInit) {
+    if (pGunList.empty()) { printf("No particle gun!\n"); exit(-1); }
+    if (pHRS==NULL) { printf("No HRS Model!\n"); exit(-1); }
+
+    Init();
+
+    if (bIsInit) {
+        vector<G2PGun*>::iterator it = pGunList.begin();
+        while (it!=pGunList.end()){
+            Clear();
+            pGun = (*it);
+            iGunSetting=pGun->GetSetting();
+            if (pGun->IsUsingData())
+                pfRunSelector = &G2PSim::RunData;
+            else
+                pfRunSelector = &G2PSim::RunSim;
+            nIndex = 1;
             (this->*pfRunSelector)();
-            End();
+            it++;
         }
+        End();
     }
 }
 
 void G2PSim::End()
 {
-    pFile->Write();
+    pFile->Write("", TObject::kOverwrite);
     pFile->Close();
+
+    delete pRand;
+    delete pRecUseDB;
+    delete pFile;
+    delete pTree;
 }
 
 void G2PSim::Clear()
@@ -116,30 +140,43 @@ void G2PSim::InitTree()
 {
     pFile = new TFile(pFileName, "recreate");
 	pTree = new TTree("T", "sim result");
-    pConfig = new TTree("config", "sim configure");
 
-    pConfig->Branch("NEvent", &nEvent, "NEvent/I");
+    vector<G2PGun*>::iterator it = pGunList.begin();
+    int i = 0;
+    while (it!=pGunList.end()){
+        pGun = (*it);
+        pConfig = new TTree(Form("config%d", i), "sim configure");
 
- 	pConfig->Branch("IsLeftArm", &bIsLeftArm, "IsLeftArm/O");   
-    pConfig->Branch("HRSAngle", &fHRSAngle, "HRSAngle/D");
-    pConfig->Branch("HRSMomentum", &fHRSMomentum, "HRSMomentum/D");
+        pConfig->Branch("NEvent", &nEvent, "NEvent/I");
 
-    int hrssetting = pHRS->GetModelIndex();
-    pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
+        pConfig->Branch("IsLeftArm", &bIsLeftArm, "IsLeftArm/O");
+        pConfig->Branch("HRSAngle", &fHRSAngle, "HRSAngle/D");
+        pConfig->Branch("HRSMomentum", &fHRSMomentum, "HRSMomentum/D");
+
+        int hrssetting = pHRS->GetModelIndex();
+        pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
+
+        int gunsetting = pGun->GetSetting();
+        double posres = pGun->GetPosResolution();
+        double angleres = pGun->GetAngleResolution();
+        double deltares = pGun->GetDeltaResolution();
+        pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
+        pConfig->Branch("GunPosRes", &posres, "GunPosRes/D");
+        pConfig->Branch("GunAngleRes", &angleres, "GunAngleRes/D");
+        pConfig->Branch("GunDeltaRes", &deltares, "GunDeltaRes/D");
+
+        pConfig->Fill();
+
+        pFile->Write("", TObject::kOverwrite);
+
+        delete pConfig;
+        
+        it++; i++;
+    }
     
-    int gunsetting = pGun->GetSetting();
-    double posres = pGun->GetPosResolution();
-    double angleres = pGun->GetAngleResolution();
-    double deltares = pGun->GetDeltaResolution();
-    pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
-	pConfig->Branch("GunPosRes", &posres, "GunPosRes/D");
-	pConfig->Branch("GunAngleRes", &angleres, "GunAngleRes/D");
-	pConfig->Branch("GunDeltaRes", &deltares, "GunDeltaRes/D");
-
-    pConfig->Fill();
-
     pTree->Branch("Index", &nIndex,"Index/I");
     pTree->Branch("IsGood", &bIsGoodParticle, "IsGood/O");
+    pTree->Branch("Gun", &iGunSetting, "Gun/I");
 
     pTree->Branch("Xbpm_lab", &fV3bpm_lab[0],"Xbpm_lab/D");
 	pTree->Branch("Ybpm_lab", &fV3bpm_lab[1],"Ybpm_lab/D");
@@ -226,7 +263,7 @@ void G2PSim::RunSim()
 #ifdef G2PSIM_DEBUG
         bIsGoodParticle = true;
         printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();
@@ -242,12 +279,12 @@ void G2PSim::RunData()
         if (!pGun->Shoot(fV3bpm_lab, fV5fpdata_tr)) break;
 
         double pV3[3];
-        X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
+        Transform::X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
 
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
 
-        Project(pV3[0], pV3[1], pV3[2], -pV3[2], fV5tg_tr[1], fV5tg_tr[3]);
+        Transform::Project(pV3[0], pV3[1], pV3[2], -pV3[2], fV5tg_tr[1], fV5tg_tr[3]);
         fV5fpdata_tr[4] = pV3[0];
         fV5tg_tr[0] = pV3[0];
 
@@ -264,7 +301,7 @@ void G2PSim::RunData()
 #ifdef G2PSIM_DEBUG
         bIsGoodParticle = true;
         printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
-        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
+        printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5recdb_tr[0], fV5recdb_tr[1], fV5recdb_tr[2], fV5recdb_tr[3], fV5recdb_tr[4]);
 #endif
 
         pTree->Fill();
@@ -272,6 +309,19 @@ void G2PSim::RunData()
         if ((nIndex%10000)==0) printf("%d\n", nIndex);
         nIndex++;
     }
+}
+
+void G2PSim::VDCSmearing(double* V5_fp)
+{
+    double WireChamberResX = 0.0013; //m;
+    double WireChamberResY = 0.0013; //m;
+    double WireChamberResT = 0.0003; //rad;
+    double WireChamberResP = 0.0003; //rad;
+
+    V5_fp[0] += pRand->Gaus(0, WireChamberResX);
+    V5_fp[2] += pRand->Gaus(0, WireChamberResY);
+    V5_fp[1] += pRand->Gaus(0, WireChamberResT);
+    V5_fp[3] += pRand->Gaus(0, WireChamberResP);
 }
 
         //throw away this event if delta_rec>=1.0

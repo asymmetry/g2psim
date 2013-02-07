@@ -1,12 +1,14 @@
-// This file defined a class G2PGun.
-// This class will be used in G2PSim class as particle gun.
-// It has 5 standard gun: ShootDelta(), ShootGaus(), ShootFlat(), ShootSieve()
-//+and ShootData(). They can be chosen when initializing this class.
-// g2pSim class will call Shoot() to get kinematic variables. It is a virtual
+// This file defines a class G2PGun.
+// This class is used in G2PSim class as particle gun.
+// It has 6 standard gun: ShootDelta(), ShootGaus(), ShootFlat(), ShootTest(),
+//+ShootSieve() and ShootData().
+// The active gun is chosen during initializing.
+// G2PSim class will call Shoot() to get kinematic variables. It is a virtual
 //+function so you can rewrite it by inheriting this class.
 //
 // History:
-// By C. Gu, Jan 12, 2013, First public version.
+//   Jan 2013, C. Gu, First public version.
+//   Jan 2013, C. Gu, Add ShootSieve() method.
 //
 
 #ifndef G2P_GUN_H
@@ -22,10 +24,10 @@ class G2PGun : public TObject
 {
 public:
     G2PGun();
-    G2PGun(const char *dist);
+    G2PGun(const char* dist);
     ~G2PGun();
 
-    typedef bool (G2PGun::*pf_Gun)(double *, double *);
+    typedef bool (G2PGun::*pf_Gun)(double*, double*);
     
     void SetHRSAngle(double value) { fHRSAngle = value; }
     void SetHRSMomentum(double value) { fHRSMomentum = value; }
@@ -49,9 +51,9 @@ public:
     void SetAngleRes(double value) { fAngleRes = value; }
     void SetDeltaRes(double value) { fDeltaRes = value; }
     
-    void SetDataFile(const char *name) { pFileName = name; }
+    void SetDataFile(const char* name) { pFileName = name; }
 
-    void SetRand(G2PRand *rand) { pRand = rand; }
+    void SetRand(G2PRand* rand) { pRand = rand; }
 
     bool IsInit() { return bIsInit; }
     bool IsUsingData() { return bUseData; }
@@ -62,18 +64,18 @@ public:
     double GetDeltaResolution() { return fDeltaRes; }
 
     virtual void Init();
-    virtual bool Shoot(double *V3bpm, double *V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
+    virtual bool Shoot(double* V3bpm, double* V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
     virtual void End();
 
 private:
     void SetGun();   
 
-    bool ShootDelta(double *V3bpm, double *V5tg);
-    bool ShootGaus(double *V3bpm, double *V5tg);
-    bool ShootFlat(double *V3bpm, double *V5tg);
-    bool ShootTest(double *V3bpm, double *V5tg);
-    bool ShootSieve(double *V3bpm, double *V5tg);
-    bool ShootData(double *V3bpm, double *V5tg);
+    bool ShootDelta(double* V3bpm, double* V5tg);
+    bool ShootGaus(double* V3bpm, double* V5tg);
+    bool ShootFlat(double* V3bpm, double* V5tg);
+    bool ShootTest(double* V3bpm, double* V5tg);
+    bool ShootSieve(double* V3bpm, double* V5tg);
+    bool ShootData(double* V3bpm, double* V5tg);
 
     bool bIsInit;
     
@@ -102,10 +104,10 @@ private:
     double fAngleRes;
     double fDeltaRes;
 
-    FILE *pFilePtr; //!
-    const char *pFileName; //!
+    FILE* pFilePtr; //!
+    const char* pFileName; //!
 
-    G2PRand *pRand;
+    G2PRand* pRand;
     
     pf_Gun pfGunSelector;
     
