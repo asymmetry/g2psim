@@ -19,7 +19,7 @@ using namespace S484816R00;
 const float m2cm = 100.0;
 
 G2PTrans484816R00::G2PTrans484816R00()
-    :cModelAngle(5.767*TMath::Pi()/180.0)
+    :cModelAngle(5.77*TMath::Pi()/180.0)
 {
     // Nothing to do
 }
@@ -159,8 +159,8 @@ void G2PTrans484816R00::ReconRightHRS(double* pV5)
 
 void G2PTrans484816R00::FPCorrection(double *v)
 {
-    v[0]+=-0.0062;
-    v[1]+=0.00015;
-    v[2]+=-0.014;
-    v[3]+=-0.0063;
+    // v[0]+=-0.00591361;
+    // v[1]+=-0.0000659499;
+    // v[2]+=-0.0190684;
+    // v[3]+=-0.011203;
 }

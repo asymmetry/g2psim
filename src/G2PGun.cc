@@ -30,12 +30,12 @@
 using namespace std;
 using namespace Transform;
 
-const double cDeg = TMath::Pi()/180.0;
+const double kDEG = TMath::Pi()/180.0;
 
 ClassImp(G2PGun);
 
 G2PGun::G2PGun()
-    :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
+    :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*kDEG),
      fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
      fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
@@ -47,7 +47,7 @@ G2PGun::G2PGun()
 }
 
 G2PGun::G2PGun(const char* dist)
-    :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*cDeg),
+    :bIsInit(false), iSetting(1), bUseData(false), fHRSAngle(5.767*kDEG),
      fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetX_lab(0), fTargetY_lab(0),
      fTargetZLow_lab(0), fTargetZHigh_lab(0), fTargetR_lab(0.015),
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
@@ -352,8 +352,8 @@ bool G2PGun::ShootSieve(double* V3bpm, double* V5tg)
     V3pd_tr[1] = V3sieve_tr[1]-Ytg_tr;
     V3pd_tr[2] = V3sieve_tr[2]-Ztg_tr;
 
-    Thetatg_tr = pRand->Gaus(V3pd_tr[0]/V3pd_tr[2],fAngleRes);
-    Phitg_tr = pRand->Gaus(V3pd_tr[1]/V3pd_tr[2],fAngleRes);
+    Thetatg_tr = pRand->Gaus(V3pd_tr[0]/V3pd_tr[2], fAngleRes);
+    Phitg_tr = pRand->Gaus(V3pd_tr[1]/V3pd_tr[2], fAngleRes);
     
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, Thetatg_tr, Phitg_tr);
 

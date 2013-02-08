@@ -1,3 +1,13 @@
+// This file defines a class HRSTransport.
+// This class is used in G2PSim class as HRS model.
+// The definition of variables and the list of available models can be found in
+//+the comments in the body
+// The active model is chosen during constructing.
+// 
+// History:
+//   Jan 2013, C. Gu, First public version.
+//
+
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -23,11 +33,11 @@ using namespace std;
 
 ClassImp(HRSTransport);
 
-const double cDeg = TMath::Pi()/180.0;
+const double kDEG = TMath::Pi()/180.0;
 
 HRSTransport::HRSTransport()
-    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
-     fModelAngle(5.767*cDeg), pModel(NULL)
+    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
+     fModelAngle(5.767*kDEG), pModel(NULL)
 {
     mModel.clear();
     mModelIndex.clear();
@@ -36,8 +46,8 @@ HRSTransport::HRSTransport()
 }
 
 HRSTransport::HRSTransport(const char* name)
-    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*cDeg),
-     fModelAngle(5.767*cDeg), pModel(NULL)
+    :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
+     fModelAngle(5.767*kDEG), pModel(NULL)
 {
     mModel.clear();
     mModelIndex.clear();
@@ -80,7 +90,6 @@ HRSTransport::~HRSTransport()
 // Index > 10 means test
 // 11: 484816 with shim, 5.76 deg, no raster, by Min
 // 12: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
-// 13: 484816 no shim, 5.65 deg, Wrong Bx, by JJL (g2p test run)
 // May add more HRS packages later
 ///////////////////////////////////////////////////////////////////////////
 
@@ -125,12 +134,12 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     bool bGoodParticle=false;
 
     if (bIsLeftArm) {
-        pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
+        //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         bGoodParticle = pModel->TransLeftHRS(V5);
         pModel->FPCorrection(V5);
     }
     else {
-        pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
+        //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         bGoodParticle = pModel->TransRightHRS(V5);
         pModel->FPCorrection(V5);
     }

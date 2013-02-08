@@ -112,8 +112,6 @@ void G2PSim::End()
 
     delete pRand;
     delete pRecUseDB;
-    delete pFile;
-    delete pTree;
 }
 
 void G2PSim::Clear()

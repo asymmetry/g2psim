@@ -25,7 +25,7 @@ G2PRand::G2PRand()
 
 G2PRand::~G2PRand()
 {
-    delete[] pRG;
+    delete pRG;
     pRG = NULL;
 }
 
