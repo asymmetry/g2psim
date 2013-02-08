@@ -21,6 +21,7 @@ int Run()
     gun1->SetAngleRes(0.6e-3);
     gun1->SetBeamEnergy(2.253207);    
     G2PGun *gun2 = new G2PGun("data");
+    //gun2->SetDataFile("input_fp_tr_200.dat");
     gun2->SetDataFile("input_fp_tr.dat");
     gun2->SetTargetZRange(-14.135e-3,-10.960e-3);
     run->AddGun(gun1);
@@ -35,11 +36,13 @@ int Run()
     run->SetArm("L");
     run->SetHRSMomentum(2.24949710);
 
-    //run->SetRootName("result_G4_484816R00.root"); //test
-    run->SetRootName("result_G5G6_484816R00.root"); //data
+    run->SetRootName("result_G5G6_484816R00.root");
+    //run->SetRootName("result_G5G6_484816R00_noc.root"); // no correction
+    //run->SetRootName("result_G5G6_484816R00_noc_200.root"); // fit
 
-    //run->SetRootName("result_G4_484816.root"); //test
-    //run->SetRootName("result_G5G6_484816_noc.root"); //data
+    //run->SetRootName("result_G5G6_484816.root");
+    //run->SetRootName("result_G5G6_484816_noc.root"); // no correction
+    //run->SetRootName("result_G5G6_484816_noc_200.root"); // fit
 
     run->Run(30000);
 

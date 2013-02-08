@@ -21,25 +21,53 @@ void PlotFPThPh(){
     gPad->SetGrid();
     TH2F* h11 = new TH2F("h11", "FP Th vs Ph (Data)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    //T->Draw("Thetafpdata_tr:Phifpdata_tr>>h11","IsGood&&Gun==6","COLZ");
-    T->Draw("Thetafpdata_tr:Phifpdata_tr>>h11","IsGood","COLZ");
+    T->Draw("Thetafpdata_rot:Phifpdata_rot>>h11","IsGood&&Gun==6","COLZ");
+    //T->Draw("Thetafpdata_tr:Phifpdata_tr>>h11","IsGood","COLZ");
     c1->Update();
 
     c1->cd(2);
     gPad->SetGrid();
     TH2F* h12 = new TH2F("h12", "FP Th vs Ph (SNAKE, Data Source)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    //T->Draw("Thetafp_tr:Phifp_tr>>h12","IsGood&&Gun==6","COLZ");
-    T->Draw("Thetafp_tr:Phifp_tr>>h12","IsGood","COLZ");
+    T->Draw("Thetafp_rot:Phifp_rot>>h12","IsGood&&Gun==6","COLZ");
+    //T->Draw("Thetafp_tr:Phifp_tr>>h12","IsGood","COLZ");
     c1->Update();
 
     c1->cd(3);
     gPad->SetGrid();
     TH2F* h13 = new TH2F("h13", "FP Th vs Ph (SNAKE, Sim)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    //T->Draw("Thetafp_tr:Phifp_tr>>h13","IsGood&&Gun==5","COLZ");
-    T->Draw("Thetafp_tr:Phifp_tr>>h13","IsGood","COLZ");
+    T->Draw("Thetafp_rot:Phifp_rot>>h13","IsGood&&Gun==5","COLZ");
+    //T->Draw("Thetafp_tr:Phifp_tr>>h13","IsGood","COLZ");
     c1->Update();
+}
+
+void PlotFPThPhTR(){
+    TCanvas *c10 = new TCanvas("c10","FP Th vs Ph", 1200, 1200);
+    c10->Divide(2,2);
+    c10->cd(1);
+    gPad->SetGrid();
+    TH2F* h101 = new TH2F("h101", "FP Th vs Ph (Data)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
+
+    //T->Draw("Thetafpdata_tr:Phifpdata_tr>>h101","IsGood&&Gun==6","COLZ");
+    T->Draw("Thetafpdata_tr:Phifpdata_tr>>h101","IsGood","COLZ");
+    c10->Update();
+
+    c10->cd(2);
+    gPad->SetGrid();
+    TH2F* h102 = new TH2F("h102", "FP Th vs Ph (SNAKE, Data Source)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
+
+    //T->Draw("Thetafp_tr:Phifp_tr>>h102","IsGood&&Gun==6","COLZ");
+    T->Draw("Thetafp_tr:Phifp_tr>>h102","IsGood","COLZ");
+    c10->Update();
+
+    c10->cd(3);
+    gPad->SetGrid();
+    TH2F* h103 = new TH2F("h103", "FP Th vs Ph (SNAKE, Sim)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
+
+    //T->Draw("Thetafp_tr:Phifp_tr>>h103","IsGood&&Gun==5","COLZ");
+    T->Draw("Thetafp_tr:Phifp_tr>>h103","IsGood","COLZ");
+    c10->Update();
 }
 
 void PlotFPThY(){
@@ -68,8 +96,8 @@ void PlotFPThY(){
 }
 
 void PlotFPXY(){
-    TCanvas *c8 = new TCanvas("c8","FP X vs Y", 1200, 1200);
-    c8->Divide(2,2);
+    TCanvas *c8 = new TCanvas("c8","FP X vs Y", 1200, 600);
+    c8->Divide(2,1);
     c8->cd(1);
     gPad->SetGrid();
     TH2F* h81 = new TH2F("h81", "FP X vs Y (SNAKE)", 200, fylowlimit, fyhilimit, 200, fxlowlimit, fxhilimit);
@@ -84,12 +112,12 @@ void PlotFPXY(){
     T->Draw("Xfp_rot:Yfp_rot>>h82","IsGood&&Gun==6","COLZ");
     c8->Update();
 
-    c8->cd(3);
-    gPad->SetGrid();
-    TH2F* h83 = new TH2F("h83", "FP Th vs Y (SNAKE, Sim)", 200, fylowlimit, fyhilimit, 200, fxlowlimit, fxhilimit);
+    // c8->cd(3);
+    // gPad->SetGrid();
+    // TH2F* h83 = new TH2F("h83", "FP Th vs Y (SNAKE, Sim)", 200, fylowlimit, fyhilimit, 200, fxlowlimit, fxhilimit);
 
-    T->Draw("Xfp_rot:Yfp_rot>>h83","IsGood&&Gun==5","COLZ");
-    c8->Update();
+    // T->Draw("Xfp_rot:Yfp_rot>>h83","IsGood&&Gun==5","COLZ");
+    // c8->Update();
 }
 
 void PlotTPThPh(){

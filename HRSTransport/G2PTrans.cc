@@ -12,7 +12,7 @@ G2PTrans::~G2PTrans()
     // Nothing to do
 }
 
-void G2PTrans::FPCorrection(double *v)
+void G2PTrans::FPCorrection(const double* V5tg, double* V5fp)
 {
     // Nothing to do
 }

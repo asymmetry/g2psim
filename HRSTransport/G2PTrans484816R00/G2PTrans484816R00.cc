@@ -14,6 +14,8 @@
 
 #include "G2PTrans484816R00.hh"
 
+#define CORRECTION_ORDER 1
+
 using namespace S484816R00;
 
 const float m2cm = 100.0;
@@ -157,10 +159,18 @@ void G2PTrans484816R00::ReconRightHRS(double* pV5)
     pV5[3]*=-1;
 }
 
-void G2PTrans484816R00::FPCorrection(double *v)
+void G2PTrans484816R00::FPCorrection(const double* V5tg, double* V5fp)
 {
-    // v[0]+=-0.00591361;
-    // v[1]+=-0.0000659499;
-    // v[2]+=-0.0190684;
-    // v[3]+=-0.011203;
+#if CORRECTION_ORDER == 0
+    V5fp[0]+=(-5.91123e-03);
+    V5fp[1]+=(-6.76146e-05);
+    V5fp[2]+=(-1.89684e-02);
+    V5fp[3]+=(-1.11524e-02);
+#endif
+#if CORRECTION_ORDER == 1
+    V5fp[0]+=(-5.91123e-03)+(-9.98542e-02)*V5tg[0]+(-2.96956e-02)*V5tg[1]+(0.00000e+00)*V5tg[2]+(0.00000e+00)*V5tg[3]+(-3.22433e-03)*V5tg[4];
+    V5fp[1]+=(-6.76146e-05)+(7.34029e-02)*V5tg[0]+(1.78179e-02)*V5tg[1]+(0.00000e+00)*V5tg[2]+(0.00000e+00)*V5tg[3]+(9.88179e-02)*V5tg[4];
+    V5fp[2]+=(-1.89684e-02)+(0.00000e+00)*V5tg[0]+(0.00000e+00)*V5tg[1]+(3.54528e-02)*V5tg[2]+(-9.47126e-04)*V5tg[3]+(-6.55867e-02)*V5tg[4];
+    V5fp[3]+=(-1.11524e-02)+(0.00000e+00)*V5tg[0]+(0.00000e+00)*V5tg[1]+(4.73617e-02)*V5tg[2]+(1.11894e-03)*V5tg[3]+(-6.39965e-02)*V5tg[4];
+#endif
 }

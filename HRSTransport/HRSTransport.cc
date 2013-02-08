@@ -134,14 +134,14 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     bool bGoodParticle=false;
 
     if (bIsLeftArm) {
-        //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
+        pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         bGoodParticle = pModel->TransLeftHRS(V5);
-        pModel->FPCorrection(V5);
+        pModel->FPCorrection(V5_tg, V5);
     }
     else {
-        //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
+        pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         bGoodParticle = pModel->TransRightHRS(V5);
-        pModel->FPCorrection(V5);
+        pModel->FPCorrection(V5_tg, V5);
     }
 
     V5_fp[0] = V5[0];

@@ -14,6 +14,8 @@
 
 #include "G2PTrans484816.hh"
 
+#define CORRECTION_ORDER 1
+
 //using namespace S484816; //unfortunately fortran does not support namespace
 
 const float m2cm = 100.0;
@@ -154,4 +156,20 @@ void G2PTrans484816::ReconRightHRS(double* pV5)
     pV5[4] = (double)delta_rec;
  
     delete ii;
+}
+
+void G2PTrans484816::FPCorrection(const double* V5tg, double* V5fp)
+{
+#if CORRECTION_ORDER == 0
+    V5fp[0]+=(1.99661e-03);
+    V5fp[1]+=(6.63373e-04);
+    V5fp[2]+=(-2.41468e-02);
+    V5fp[3]+=(-1.48819e-02);
+#endif
+#if CORRECTION_ORDER == 1
+    V5fp[0]+=(1.99661e-03)+(-9.66663e-02)*V5tg[0]+(6.91887e-02)*V5tg[1]+(0.00000e+00)*V5tg[2]+(0.00000e+00)*V5tg[3]+(8.91337e-02)*V5tg[4];
+    V5fp[1]+=(6.63373e-04)+(-1.38583e-02)*V5tg[0]+(1.64156e-02)*V5tg[1]+(0.00000e+00)*V5tg[2]+(0.00000e+00)*V5tg[3]+(5.99316e-02)*V5tg[4];
+    V5fp[2]+=(-2.41468e-02)+(0.00000e+00)*V5tg[0]+(0.00000e+00)*V5tg[1]+(4.53343e-02)*V5tg[2]+(1.95084e-02)*V5tg[3]+(-4.89414e-02)*V5tg[4];
+    V5fp[3]+=(-1.48819e-02)+(0.00000e+00)*V5tg[0]+(0.00000e+00)*V5tg[1]+(-3.48790e-02)*V5tg[2]+(1.72860e-03)*V5tg[3]+(8.37687e-02)*V5tg[4];
+#endif
 }
