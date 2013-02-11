@@ -38,8 +38,7 @@ G2PSim::G2PSim()
     :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
      nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
      fHRSMomentum(2.251), pGun(NULL),  pHRS(NULL), pRecUseDB(NULL),
-     pPhys(NULL), pTree(NULL), pConfig(NULL), pRand(NULL),
-     pfRunSelector(NULL)
+     pPhys(NULL), pTree(NULL), pConfig(NULL), pfRunSelector(NULL)
 {
     pGunList.clear();
     
@@ -54,12 +53,9 @@ G2PSim::~G2PSim()
 void G2PSim::Init()
 {
     bool noerror = true;
-    
-    pRand = new G2PRand();
 
     vector<G2PGun*>::iterator it = pGunList.begin();
     while (it!=pGunList.end()){
-        (*it)->SetRand(pRand);
         (*it)->SetHRSAngle(fHRSAngle);
         (*it)->SetHRSMomentum(fHRSMomentum);
         (*it)->Init();
@@ -109,8 +105,7 @@ void G2PSim::End()
 {
     pFile->Write("", TObject::kOverwrite);
     pFile->Close();
-
-    delete pRand;
+    
     delete pRecUseDB;
 }
 
@@ -277,12 +272,12 @@ void G2PSim::RunData()
         if (!pGun->Shoot(fV3bpm_lab, fV5fpdata_tr)) break;
 
         double pV3[3];
-        Transform::X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
+        HRSTransTCSNHCS::X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
 
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
 
-        Transform::Project(pV3[0], pV3[1], pV3[2], -pV3[2], fV5tg_tr[1], fV5tg_tr[3]);
+        HRSTransTCSNHCS::Project(pV3[0], pV3[1], pV3[2], -pV3[2], fV5tg_tr[1], fV5tg_tr[3]);
         fV5fpdata_tr[4] = pV3[0];
         fV5tg_tr[0] = pV3[0];
 
@@ -316,19 +311,19 @@ void G2PSim::VDCSmearing(double* V5_fp)
     double WireChamberResT = 0.0003; //rad;
     double WireChamberResP = 0.0003; //rad;
 
-    V5_fp[0] += pRand->Gaus(0, WireChamberResX);
-    V5_fp[2] += pRand->Gaus(0, WireChamberResY);
-    V5_fp[1] += pRand->Gaus(0, WireChamberResT);
-    V5_fp[3] += pRand->Gaus(0, WireChamberResP);
+    V5_fp[0] += G2PRand::Gaus(0, WireChamberResX);
+    V5_fp[2] += G2PRand::Gaus(0, WireChamberResY);
+    V5_fp[1] += G2PRand::Gaus(0, WireChamberResT);
+    V5_fp[3] += G2PRand::Gaus(0, WireChamberResP);
 }
 
         //throw away this event if delta_rec>=1.0
 		// {
-		// 	Transform::X_TCS2HCS(fV5tg_tr[0],fV5tg_tr[2],0.0,fHRSAngle,fV5tg_lab[0],fV5tg_lab[2],fV5tg_lab[4]);
-		// 	Transform::P_TCS2HCS(fV5tg_tr[1],fV5tg_tr[3],fHRSAngle,fV5tg_lab[1],fV5tg_lab[3]);
+		// 	HRSTransTCSNHCS::X_TCS2HCS(fV5tg_tr[0],fV5tg_tr[2],0.0,fHRSAngle,fV5tg_lab[0],fV5tg_lab[2],fV5tg_lab[4]);
+		// 	HRSTransTCSNHCS::P_TCS2HCS(fV5tg_tr[1],fV5tg_tr[3],fHRSAngle,fV5tg_lab[1],fV5tg_lab[3]);
 
-		// 	Transform::X_TCS2HCS(fV5rec_tr[0],fV5rec_tr[2],0.0,fHRSAngle,fV5rec_lab[0],fV5rec_lab[2],fV5rec_lab[4]);
-		// 	Transform::P_TCS2HCS(fV5rec_tr[1],fV5rec_tr[3],fHRSAngle,fV5rec_lab[1],fV5rec_lab[3]);
+		// 	HRSTransTCSNHCS::X_TCS2HCS(fV5rec_tr[0],fV5rec_tr[2],0.0,fHRSAngle,fV5rec_lab[0],fV5rec_lab[2],fV5rec_lab[4]);
+		// 	HRSTransTCSNHCS::P_TCS2HCS(fV5rec_tr[1],fV5rec_tr[3],fHRSAngle,fV5rec_lab[1],fV5rec_lab[3]);
             
 		// 	//Reconstruct use optics database
 		// 	pRecUseDB->CalcTargetCoords(fV5fp_tr,fV5rec_db_tr);

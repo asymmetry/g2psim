@@ -28,7 +28,7 @@
 //#define GUN_DEBUG 1
 
 using namespace std;
-using namespace Transform;
+using namespace HRSTransTCSNHCS;
 
 const double kDEG = TMath::Pi()/180.0;
 
@@ -41,7 +41,7 @@ G2PGun::G2PGun()
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
      fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001),
      fAngleRes(0.001), fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL),
-     pRand(NULL), pfGunSelector(NULL)
+     pfGunSelector(NULL)
 {
     // Nothing to do
 }
@@ -53,7 +53,7 @@ G2PGun::G2PGun(const char* dist)
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
      fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0), fPosRes(0.001),
      fAngleRes(0.001), fDeltaRes(0.0002), pFilePtr(NULL), pFileName(NULL),
-     pRand(NULL), pfGunSelector(NULL)
+     pfGunSelector(NULL)
 {
     map<string, int> dist_map;
     dist_map["delta"] = 1;
@@ -149,22 +149,22 @@ bool G2PGun::ShootDelta(double* V3bpm, double* V5tg)
 
 bool G2PGun::ShootGaus(double* V3bpm, double* V5tg)
 {
-    V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
-    V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
-    V3bpm[2] = pRand->Gaus(fTargetZLow_lab, fPosRes);
+    V3bpm[0] = G2PRand::Gaus(fTargetX_lab, fPosRes);
+    V3bpm[1] = G2PRand::Gaus(fTargetY_lab, fPosRes);
+    V3bpm[2] = G2PRand::Gaus(fTargetZLow_lab, fPosRes);
 
     double Xtg_tr, Ytg_tr, Ztg_tr;
     
     X_HCS2TCS(V3bpm[0], V3bpm[1], V3bpm[2], fHRSAngle, Xtg_tr, Ytg_tr, Ztg_tr);
 
-    V5tg[1] = pRand->Gaus(fTargetThLow_tr, fAngleRes);
-    V5tg[3] = pRand->Gaus(fTargetPhLow_tr, fAngleRes);
+    V5tg[1] = G2PRand::Gaus(fTargetThLow_tr, fAngleRes);
+    V5tg[3] = G2PRand::Gaus(fTargetPhLow_tr, fAngleRes);
 
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, V5tg[1], V5tg[3]);
     
     V5tg[0] = Xtg_tr;
     V5tg[2] = Ytg_tr;
-    V5tg[4] = pRand->Gaus(fDeltaLow, fDeltaRes);
+    V5tg[4] = G2PRand::Gaus(fDeltaLow, fDeltaRes);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
@@ -177,11 +177,11 @@ bool G2PGun::ShootFlat(double* V3bpm, double* V5tg)
 {
     double Xtg_lab, Ytg_lab;
     do {
-        Xtg_lab = pRand->Uniform(-fTargetR_lab, fTargetR_lab);
-        Ytg_lab = pRand->Uniform(-fTargetR_lab, fTargetR_lab);
+        Xtg_lab = G2PRand::Uniform(-fTargetR_lab, fTargetR_lab);
+        Ytg_lab = G2PRand::Uniform(-fTargetR_lab, fTargetR_lab);
     } while (Xtg_lab*Xtg_lab+Ytg_lab*Ytg_lab>fTargetR_lab*fTargetR_lab);
     
-    double Ztg_lab = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
+    double Ztg_lab = G2PRand::Uniform(fTargetZLow_lab, fTargetZHigh_lab);
 
     V3bpm[0] = Xtg_lab + fTargetX_lab;
     V3bpm[1] = Ytg_lab + fTargetY_lab;
@@ -191,14 +191,14 @@ bool G2PGun::ShootFlat(double* V3bpm, double* V5tg)
     
     X_HCS2TCS(V3bpm[0], V3bpm[1], V3bpm[2], fHRSAngle, Xtg_tr, Ytg_tr, Ztg_tr);
 
-    V5tg[1] = pRand->Uniform(fTargetThLow_tr, fTargetThHigh_tr);
-    V5tg[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
+    V5tg[1] = G2PRand::Uniform(fTargetThLow_tr, fTargetThHigh_tr);
+    V5tg[3] = G2PRand::Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
 
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, V5tg[1], V5tg[3]);
 
     V5tg[0] = Xtg_tr;
     V5tg[2] = Ytg_tr;
-    V5tg[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);
+    V5tg[4] = G2PRand::Uniform(fDeltaLow, fDeltaHigh);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
@@ -209,11 +209,11 @@ bool G2PGun::ShootFlat(double* V3bpm, double* V5tg)
 
 bool G2PGun::ShootTest(double* V3bpm, double* V5tg)
 {
-    int selector = pRand->Integer(17);
+    int selector = G2PRand::Integer(17);
     
-    V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
-    V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
-    V3bpm[2] = pRand->Gaus(fTargetZLow_lab, fPosRes);
+    V3bpm[0] = G2PRand::Gaus(fTargetX_lab, fPosRes);
+    V3bpm[1] = G2PRand::Gaus(fTargetY_lab, fPosRes);
+    V3bpm[2] = G2PRand::Gaus(fTargetZLow_lab, fPosRes);
 
     double Xtg_tr, Ytg_tr, Ztg_tr;
     
@@ -227,44 +227,44 @@ bool G2PGun::ShootTest(double* V3bpm, double* V5tg)
     case 2:
     case 3:
     case 4:
-        Thetatg_tr = pRand->Gaus(0, fAngleRes);
-        Phitg_tr = pRand->Gaus(0, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0, fAngleRes);
         break;
     case 5:
-        Thetatg_tr = pRand->Gaus(0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(0, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0, fAngleRes);
         break;
     case 6:
-        Thetatg_tr = pRand->Gaus(-0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(0, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(-0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0, fAngleRes);
         break;
     case 7:
-        Thetatg_tr = pRand->Gaus(0, fAngleRes);
-        Phitg_tr = pRand->Gaus(0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0.01, fAngleRes);
         break;
     case 8:
     case 9:
     case 10:
     case 11:
     case 12:
-        Thetatg_tr = pRand->Gaus(0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0.01, fAngleRes);
         break;
     case 13:
-        Thetatg_tr = pRand->Gaus(-0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(-0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(0.01, fAngleRes);
         break;
     case 14:
-        Thetatg_tr = pRand->Gaus(0, fAngleRes);
-        Phitg_tr = pRand->Gaus(-0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(-0.01, fAngleRes);
         break;
     case 15:
-        Thetatg_tr = pRand->Gaus(0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(-0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(-0.01, fAngleRes);
         break;
     case 16:
-        Thetatg_tr = pRand->Gaus(-0.02, fAngleRes);
-        Phitg_tr = pRand->Gaus(-0.01, fAngleRes);
+        Thetatg_tr = G2PRand::Gaus(-0.02, fAngleRes);
+        Phitg_tr = G2PRand::Gaus(-0.01, fAngleRes);
         break;
     }
     
@@ -274,7 +274,7 @@ bool G2PGun::ShootTest(double* V3bpm, double* V5tg)
     V5tg[1] = Thetatg_tr;
     V5tg[2] = Ytg_tr;
     V5tg[3] = Phitg_tr;
-    V5tg[4] = pRand->Gaus(0, fDeltaRes);
+    V5tg[4] = G2PRand::Gaus(0, fDeltaRes);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg[0], V5tg[1], V5tg[2], V5tg[3], V5tg[4]);
@@ -322,17 +322,17 @@ bool G2PGun::ShootSieve(double* V3bpm, double* V5tg)
     int selector;
     int col, row;
     do {
-        selector = pRand->Integer(49);
-        double temp = pRand->Uniform();
+        selector = G2PRand::Integer(49);
+        double temp = G2PRand::Uniform();
         if (temp<thr) selector = 24;
         else if (temp<2*thr) selector = 15;
         col = selector/(nsieverow);
         row = selector%(nsieverow);
     } while (sieveon[row][col]==0);
     
-    V3bpm[0] = pRand->Gaus(fTargetX_lab, fPosRes);
-    V3bpm[1] = pRand->Gaus(fTargetY_lab, fPosRes);
-    V3bpm[2] = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
+    V3bpm[0] = G2PRand::Gaus(fTargetX_lab, fPosRes);
+    V3bpm[1] = G2PRand::Gaus(fTargetY_lab, fPosRes);
+    V3bpm[2] = G2PRand::Uniform(fTargetZLow_lab, fTargetZHigh_lab);
 
     double Xtg_tr, Ytg_tr, Ztg_tr;
     
@@ -352,8 +352,8 @@ bool G2PGun::ShootSieve(double* V3bpm, double* V5tg)
     V3pd_tr[1] = V3sieve_tr[1]-Ytg_tr;
     V3pd_tr[2] = V3sieve_tr[2]-Ztg_tr;
 
-    Thetatg_tr = pRand->Gaus(V3pd_tr[0]/V3pd_tr[2], fAngleRes);
-    Phitg_tr = pRand->Gaus(V3pd_tr[1]/V3pd_tr[2], fAngleRes);
+    Thetatg_tr = G2PRand::Gaus(V3pd_tr[0]/V3pd_tr[2], fAngleRes);
+    Phitg_tr = G2PRand::Gaus(V3pd_tr[1]/V3pd_tr[2], fAngleRes);
     
     Project(Xtg_tr, Ytg_tr, Ztg_tr, -Ztg_tr, Thetatg_tr, Phitg_tr);
 
@@ -396,7 +396,7 @@ bool G2PGun::ShootData(double* V3bpm, double* V5fp)
         noerror = false;
     }
 
-    V3bpm[2] = pRand->Uniform(fTargetZLow_lab, fTargetZHigh_lab);
+    V3bpm[2] = G2PRand::Uniform(fTargetZLow_lab, fTargetZHigh_lab);
     V5fp[4] = 0;
 
 #ifdef GUN_DEBUG

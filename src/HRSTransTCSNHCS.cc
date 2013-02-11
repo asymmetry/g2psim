@@ -23,7 +23,7 @@
 
 const double cDeg = TMath::Pi()/180.0;
 
-namespace Transform
+namespace HRSTransTCSNHCS
 {
     // Transform from Hall Coordinate to Transport Coordinate 
 	// Assuming the center of Transport Coordinate is at hall center

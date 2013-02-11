@@ -18,7 +18,6 @@
 #include "TTree.h"
 
 #include "G2PGun.hh"
-#include "G2PRand.hh"
 #include "HRSRecUseDB.hh"
 
 #include "../G2PXSection/G2PXS.hh"
@@ -98,8 +97,6 @@ private:
     
     TTree* pTree;
     TTree* pConfig;
-
-    G2PRand* pRand;
     
     pf_Run pfRunSelector;
 

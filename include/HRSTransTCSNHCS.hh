@@ -13,7 +13,7 @@
 #ifndef HRS_TRANSFORM_H
 #define HRS_TRANSFORM_H
 
-namespace Transform
+namespace HRSTransTCSNHCS
 {
 	// Transform from Hall Coordinate to Transport Coordinate 
 	// Assuming the center of Transport Coordinate is at hall center

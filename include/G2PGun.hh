@@ -18,8 +18,6 @@
 
 #include "TObject.h"
 
-#include "G2PRand.hh"
-
 class G2PGun : public TObject
 {
 public:
@@ -52,8 +50,6 @@ public:
     void SetDeltaRes(double value) { fDeltaRes = value; }
     
     void SetDataFile(const char* name) { pFileName = name; }
-
-    void SetRand(G2PRand* rand) { pRand = rand; }
 
     bool IsInit() { return bIsInit; }
     bool IsUsingData() { return bUseData; }
@@ -104,10 +100,8 @@ private:
     double fAngleRes;
     double fDeltaRes;
 
-    FILE* pFilePtr; //!
-    const char* pFileName; //!
-
-    G2PRand* pRand;
+    FILE* pFilePtr;
+    const char* pFileName;
     
     pf_Gun pfGunSelector;
     
