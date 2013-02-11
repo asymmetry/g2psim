@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-LIBFILE     := G2PTrans484816R20
+LIBFILE     := G2PTransNoSepta
 
 ########################################################################
 SRCDIR      := .
@@ -83,7 +83,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 # You can specify the .SUFFIXES
 .SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
 .PHONY: all clean test
-VPATH    := $(SRCDIR):$(INCDIR) 
+VPATH       := $(SRCDIR):$(INCDIR) 
 
 ########################################################################
 all: lib

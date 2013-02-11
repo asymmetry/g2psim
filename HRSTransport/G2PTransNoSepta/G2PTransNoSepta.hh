@@ -1,14 +1,14 @@
-#ifndef G2P_TRANS484816R20_H
-#define G2P_TRANS484816R20_H
+#ifndef G2P_TRANSNOSEPTA_H
+#define G2P_TRANSNOSEPTA_H
 
 #include "../G2PTrans.hh"
 
-class G2PTrans484816R20 : public G2PTrans
+class G2PTransNoSepta : public G2PTrans
 {
 public:
-    G2PTrans484816R20();
-    ~G2PTrans484816R20();
-    
+    G2PTransNoSepta();
+    ~G2PTransNoSepta();
+
     bool TransLeftHRS(double* vector_jjl);
     bool TransRightHRS(double* vector_jjl);
     void ReconLeftHRS(double* vector_jjl);

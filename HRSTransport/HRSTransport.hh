@@ -6,6 +6,7 @@
 // 
 // History:
 //   Jan 2013, C. Gu, First public version.
+//   Feb 2013, C. Gu, Add correction function.
 //
 
 #ifndef HRS_TRANSPORT_H
@@ -49,12 +50,12 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // Transport particles through HRS using SNAKE model
 // Use iModelIndex to identify which SNAKE model to be used
+// 0: No Septa, 12.0 deg
 // 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
 // 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
 // 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
 // Index > 10 means test
 // 11: 484816 with shim, 5.76 deg, no raster, by Min
-// 12: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
 // May add more HRS packages later
 ///////////////////////////////////////////////////////////////////////////
 

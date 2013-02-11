@@ -6,6 +6,7 @@
 // 
 // History:
 //   Jan 2013, C. Gu, First public version.
+//   Feb 2013, C. Gu, Add correction function.
 //
 
 #include <cstdio>
@@ -19,10 +20,10 @@
 #include "TMath.h"
 
 #include "G2PTrans.hh"
+#include "G2PTransNoSepta/G2PTransNoSepta.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816R00/G2PTrans484816R00.hh"
-#include "G2PTrans484816R20/G2PTrans484816R20.hh"
 
 #include "HRSTransport.hh"
 
@@ -84,18 +85,22 @@ HRSTransport::~HRSTransport()
 ///////////////////////////////////////////////////////////////////////////
 // Transport particles through HRS using SNAKE model
 // Use iModelIndex to identify which SNAKE model to be used
+// 0: No Septa, 12.0 deg
 // 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
 // 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
 // 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
 // Index > 10 means test
 // 11: 484816 with shim, 5.76 deg, no raster, by Min
-// 12: 484816 with shim, 5.65 deg, Wrong Bx, 2 cm raster, by Min
 // May add more HRS packages later
 ///////////////////////////////////////////////////////////////////////////
 
 void HRSTransport::RegisterModel()
 {
     G2PTrans* temp;
+    temp = new G2PTransNoSepta();
+    mModelIndex["NoSepta"] = 0;
+    mModel[0] = temp;
+
     temp = new G2PTrans484816();
     mModelIndex["484816"] = 1;
     mModel[1] = temp;
@@ -107,10 +112,6 @@ void HRSTransport::RegisterModel()
     temp = new G2PTrans484816R00();
     mModelIndex["484816R00"] = 11;
     mModel[11] = temp;
-
-    temp = new G2PTrans484816R20();
-    mModelIndex["484816R20"] = 12;
-    mModel[12] = temp;
 }
 
 bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)

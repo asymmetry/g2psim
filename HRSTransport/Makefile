@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.1.2
+VERSION     := 1.2.2
 LIBFILE     := libHRSTransport.a
 
 ########################################################################
@@ -20,8 +20,9 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELLIST   := G2PTrans400016 G2PTrans484816\
-               G2PTrans484816R00 G2PTrans484816R20
+MODELLIST   := G2PTransNoSepta\
+               G2PTrans400016 G2PTrans484816\
+               G2PTrans484816R00
 
 ########################################################################
 # Compiler
