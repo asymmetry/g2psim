@@ -1,5 +1,5 @@
-#ifndef G2P_XSECTION_HH
-#define G2P_XSECTION_HH
+#ifndef G2P_XSECTION_H
+#define G2P_XSECTION_H
 
 #include "TROOT.h"
 #include "TObject.h"

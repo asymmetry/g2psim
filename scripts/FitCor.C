@@ -97,7 +97,7 @@ void myfcn0(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
         }
     }
 
-    Double_t f = ( 0.0
+    f = ( 0.0
         +result[0]/(scale[0]*scale[0])
         +result[1]/(scale[1]*scale[1])
         +result[2]/(scale[2]*scale[2])
@@ -143,7 +143,7 @@ void myfcn1(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
         }
     }
     
-    Double_t f = ( 0.0
+    f = ( 0.0
         +result[0]/(scale[0]*scale[0])
         +result[1]/(scale[1]*scale[1])
         +result[2]/(scale[2]*scale[2])

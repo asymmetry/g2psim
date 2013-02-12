@@ -1,5 +1,5 @@
-#ifndef G2P_PMODSQFS_HH
-#define G2P_PMODSQFS_HH
+#ifndef G2P_PMODSQFS_H
+#define G2P_PMODSQFS_H
 
 class G2PPModsQFS
 {
