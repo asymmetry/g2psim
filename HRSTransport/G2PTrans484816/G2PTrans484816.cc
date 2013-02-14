@@ -6,9 +6,6 @@
 
 #include <cmath>
 
-#include "TROOT.h"
-#include "TMath.h"
-
 #include "Fwd_r5p65_484816.h"
 #include "Bwd_r5p65_484816.h"
 
@@ -19,9 +16,10 @@
 //using namespace S484816; //unfortunately fortran does not support namespace
 
 const float m2cm = 100.0;
+const double kDEG = 3.14159265358979323846/180.0;
 
 G2PTrans484816::G2PTrans484816()
-    :cModelAngle(5.65*TMath::Pi()/180.0)
+    :cModelAngle(5.65*kDEG)
 {
     // Nothing to do
 }

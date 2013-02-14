@@ -6,9 +6,6 @@
 
 #include <cmath>
 
-#include "TROOT.h"
-#include "TMath.h"
-
 #include "Fwd_l5p65_400016.h"
 #include "Bwd_l5p65_400016.h"
 
@@ -17,9 +14,10 @@
 using namespace S400016;
 
 const float m2cm = 100.0;
+const double kDEG = 3.14159265358979323846/180.0;
 
 G2PTrans400016::G2PTrans400016()
-    :cModelAngle(5.65*TMath::Pi()/180.0)
+    :cModelAngle(5.65*kDEG)
 {
     // Nothing to do
 }

@@ -1,7 +1,7 @@
 #ifndef G2P_TRANSNOSEPTA_H
 #define G2P_TRANSNOSEPTA_H
 
-#include "../G2PTrans.hh"
+#include "G2PTrans.hh"
 
 class G2PTransNoSepta : public G2PTrans
 {

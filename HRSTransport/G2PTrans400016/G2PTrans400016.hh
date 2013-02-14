@@ -1,7 +1,7 @@
 #ifndef G2P_TRANS400016_H
 #define G2P_TRANS400016_H
 
-#include "../G2PTrans.hh"
+#include "G2PTrans.hh"
 
 class G2PTrans400016 : public G2PTrans
 {

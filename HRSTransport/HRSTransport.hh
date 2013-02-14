@@ -71,8 +71,10 @@ private:
     map<int, G2PTrans*> mModel;
     map<string, int> mModelIndex;
     G2PTrans* pModel;
-
+    
+#ifndef WIN32
     ClassDef(HRSTransport,1);
+#endif
 };
 
 #endif

@@ -17,7 +17,6 @@
 
 #include "TROOT.h"
 #include "TObject.h"
-#include "TMath.h"
 
 #include "G2PTrans.hh"
 #include "G2PTransNoSepta/G2PTransNoSepta.hh"
@@ -32,9 +31,11 @@ using namespace std;
 //#define DEBUG_HRS_FORWARD
 //#define DEBUG_HRS_BACKWARD
 
+#ifndef WIN32
 ClassImp(HRSTransport);
+#endif
 
-const double kDEG = TMath::Pi()/180.0;
+const double kDEG = 3.14159265358979323846/180.0;
 
 HRSTransport::HRSTransport()
     :iModelIndex(0), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
