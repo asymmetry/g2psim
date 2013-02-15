@@ -11,7 +11,7 @@
 
 #include "G2PTrans484816R00.hh"
 
-#define CORRECTION_ORDER 1
+#define CORRECTION_ORDER -1
 
 using namespace S484816R00;
 

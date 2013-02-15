@@ -124,9 +124,9 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     double V5[5];
     
     V5[0] = V5_tg[0];
-    V5[1] = V5_tg[1];
+    V5[1] = tan(V5_tg[1]);
     V5[2] = V5_tg[2];
-    V5[3] = V5_tg[3];
+    V5[3] = tan(V5_tg[3]);
     V5[4] = V5_tg[4];
 
 #ifdef DEBUG_HRS_FORWARD
@@ -147,9 +147,9 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     }
 
     V5_fp[0] = V5[0];
-    V5_fp[1] = V5[1];
+    V5_fp[1] = atan(V5[1]);
     V5_fp[2] = V5[2];
-    V5_fp[3] = V5[3];
+    V5_fp[3] = atan(V5[3]);
     V5_fp[4] = V5[4];
     
     return bGoodParticle;
@@ -165,9 +165,9 @@ bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
     double V5[5];
     
     V5[0] = V5_fp[0];
-    V5[1] = V5_fp[1];
+    V5[1] = tan(V5_fp[1]);
     V5[2] = V5_fp[2];
-    V5[3] = V5_fp[3];
+    V5[3] = tan(V5_fp[3]);
     V5[4] = V5_fp[4];
 
 #ifdef DEBUG_HRS_BACKWARD
@@ -184,9 +184,9 @@ bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
     }
 
     V5_tg[0] = V5[0];
-    V5_tg[1] = V5[1];
+    V5_tg[1] = atan(V5[1]);
     V5_tg[2] = V5[2];
-    V5_tg[3] = V5[3];
+    V5_tg[3] = atan(V5[3]);
     V5_tg[4] = V5[4];
 
     bool bGoodParticle = false;

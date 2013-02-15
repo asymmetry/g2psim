@@ -14,7 +14,6 @@
 #include "TObject.h"
 #include "TFile.h"
 #include "TTree.h"
-#include "TMath.h"
 
 #include "G2PGun.hh"
 #include "G2PRand.hh"
@@ -30,7 +29,7 @@
 
 using namespace std;
 
-const double kDEG = TMath::Pi()/180.0;
+const double kDEG = 3.14159265358979323846/180.0;
 
 ClassImp(G2PSim);
 
@@ -239,9 +238,6 @@ void G2PSim::RunSim()
     while (nIndex<=nEvent) {
         if (!pGun->Shoot(fV3bpm_lab, fV5tg_tr)) break;
 
-        fV5tg_tr[1] = tan(fV5tg_tr[1]);
-        fV5tg_tr[3] = tan(fV5tg_tr[3]);
-
         bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
@@ -269,19 +265,15 @@ void G2PSim::RunSim()
 void G2PSim::RunData()
 {
     while (nIndex<=nEvent) {
-        if (!pGun->Shoot(fV3bpm_lab, fV5fpdata_tr)) break;
+        if (!pGun->ShootData(fV3bpm_lab, fV5tg_tr, fV5fpdata_tr)) break;
 
-        double pV3[3];
-        HRSTransTCSNHCS::X_HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, pV3[0], pV3[1], pV3[2]);
+        fV5fpdata_tr[4] = fV5tg_tr[0];
 
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
-        pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5tg_tr);
+        pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5recdb_tr);
 
-        HRSTransTCSNHCS::Project(pV3[0], pV3[1], pV3[2], -pV3[2], fV5tg_tr[1], fV5tg_tr[3]);
-        fV5fpdata_tr[4] = pV3[0];
-        fV5tg_tr[0] = pV3[0];
-
-        bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
+        fV5recdb_tr[0] = fV5tg_tr[0];
+        bIsGoodParticle = pHRS->Forward(fV5recdb_tr, fV5fp_tr);
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
@@ -289,7 +281,6 @@ void G2PSim::RunData()
 #endif
 
         bIsGoodParticle &= pHRS->Backward(fV5fpdata_tr, fV5rec_tr);
-        pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5recdb_tr);
         
 #ifdef G2PSIM_DEBUG
         bIsGoodParticle = true;

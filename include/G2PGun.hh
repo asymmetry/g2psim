@@ -61,6 +61,7 @@ public:
 
     virtual void Init();
     virtual bool Shoot(double* V3bpm, double* V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
+    virtual bool ShootData(double* V3bpm, double* V5tg, double* V5fp);
     virtual void End();
 
 private:
@@ -71,7 +72,6 @@ private:
     bool ShootFlat(double* V3bpm, double* V5tg);
     bool ShootTest(double* V3bpm, double* V5tg);
     bool ShootSieve(double* V3bpm, double* V5tg);
-    bool ShootData(double* V3bpm, double* V5tg);
 
     bool bIsInit;
     

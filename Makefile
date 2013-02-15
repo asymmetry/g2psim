@@ -161,7 +161,7 @@ endif
 ########################################################################
 exe: lib script $(OBJDIR)/Main.o
 	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./$(LIBFILE) $(LIBS)
-	@echo "Linking $(EXECFILE) ... done!"
+	@echo "Linking $(EXECFILE) ...... done!"
 
 $(OBJDIR)/Main.o: Main.cc
 	@echo Compiling $< ......
@@ -169,7 +169,7 @@ $(OBJDIR)/Main.o: Main.cc
 
 script:
 	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/RunTmp.C" "Run.C" ; \
-	echo "Generate Run.C ... done!"; fi
+	echo "Generate Run.C ...... done!"; fi
 
 ########################################################################
 lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
@@ -178,10 +178,10 @@ lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@echo "Linking $(LIBFILE) ... done!"
+	@echo "Linking $(LIBFILE) ...... done!"
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
-		@echo "Generating dictionary $(USERDICT)..."
+		@echo "Generating dictionary $(USERDICT).cxx ......"
 		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
 
 $(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx

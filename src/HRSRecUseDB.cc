@@ -14,7 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <vector>
 #include <map>
 #include <cstdlib>
@@ -247,9 +247,9 @@ void HRSRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     double x, y, theta, phi, dp;
 
     x_fp = V5fp_rot[0];
-    th_fp = V5fp_rot[1];
+    th_fp = tan(V5fp_rot[1]);
     y_fp = V5fp_rot[2];
-    ph_fp = V5fp_rot[3];
+    ph_fp = tan(V5fp_rot[3]);
 
     for (int i = 0; i<kNUM_PRECOMP_POW; i++) {
         powers[i][0] = pow(x_fp, i);
@@ -274,9 +274,9 @@ void HRSRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     x = 0.0;
     
     V5tg_tr[0] = x;
-    V5tg_tr[1] = theta;
+    V5tg_tr[1] = atan(theta);
     V5tg_tr[2] = y;
-    V5tg_tr[3] = phi;
+    V5tg_tr[3] = atan(phi);
     V5tg_tr[4] = dp;
     
 #ifdef RECUSEDB_DEBUG
@@ -298,8 +298,8 @@ void HRSRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
 
     TransTr2Det(V5fp_tr, V5fp_det);
     
-    double th_det = V5fp_det[1];
-    double ph_det = V5fp_det[3];
+    double th_det = tan(V5fp_det[1]);
+    double ph_det = tan(V5fp_det[3]);
 
     double x_tr = V5fp_tr[0];
     double y_tr = V5fp_tr[2];
@@ -318,17 +318,17 @@ void HRSRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
     phi = (ph_det-fpMatrixElems[0].fValue)/((1.0-th_det*tan_rho)*cos_rho);
 
     V5fp_rot[0] = x;
-    V5fp_rot[1] = theta;
+    V5fp_rot[1] = atan(theta);
     V5fp_rot[2] = y;
-    V5fp_rot[3] = phi;
+    V5fp_rot[3] = atan(phi);
 }
 
 void HRSRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
 {
     double x = V5fp_rot[0];
-    double t = V5fp_rot[1];
+    double t = tan(V5fp_rot[1]);
     double y = V5fp_rot[2];
-    double p = V5fp_rot[3];
+    double p = tan(V5fp_rot[3]);
 
     CalcMatrix(x, ftMatrixElems);
     CalcMatrix(x, fyMatrixElems);
@@ -349,9 +349,9 @@ void HRSRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
     double p_tr = p_det/(cos_rho_0*(1.0-t_det*tan_rho_0));
 
     V5fp_tr[0] = x_tr;
-    V5fp_tr[1] = t_tr;
+    V5fp_tr[1] = atan(t_tr);
     V5fp_tr[2] = y_tr;
-    V5fp_tr[3] = p_tr;
+    V5fp_tr[3] = atan(p_tr);
 }
 
 void HRSRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
@@ -360,9 +360,9 @@ void HRSRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
     double cos_rho_0 = 1.0/sqrt(1.0+tan_rho_0*tan_rho_0);
 
     double x_tr = V5fp_tr[0];
-    double th_tr = V5fp_tr[1];
+    double th_tr = tan(V5fp_tr[1]);
     double y_tr = V5fp_tr[2];
-    double ph_tr = V5fp_tr[3];
+    double ph_tr = tan(V5fp_tr[3]);
 
     double x_det = x_tr/(cos_rho_0*(1+th_tr*tan_rho_0));
     double y_det = y_tr-tan_rho_0*cos_rho_0*ph_tr*x_det;
@@ -370,9 +370,9 @@ void HRSRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
     double ph_det = ph_tr*(1.0-th_det*tan_rho_0)*cos_rho_0;
 
     V5fp_det[0] = x_det;
-    V5fp_det[1] = th_det;
+    V5fp_det[1] = atan(th_det);
     V5fp_det[2] = y_det;
-    V5fp_det[3] = ph_det;
+    V5fp_det[3] = atan(ph_det);
 }
 
 void HRSRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
@@ -381,9 +381,9 @@ void HRSRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
     double cos_rho_0 = 1.0/sqrt(1.0+tan_rho_0*tan_rho_0);
 
     double x_det = V5fp_det[0];
-    double th_det = V5fp_det[1];
+    double th_det = tan(V5fp_det[1]);
     double y_det = V5fp_det[2];
-    double ph_det = V5fp_det[3];
+    double ph_det = tan(V5fp_det[3]);
 
     double th_tr = (th_det+tan_rho_0)/(1.0-th_det*tan_rho_0);
     double ph_tr = ph_det/(cos_rho_0*(1.0-th_det*tan_rho_0));
@@ -391,9 +391,9 @@ void HRSRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
     double y_tr = y_det+tan_rho_0*cos_rho_0*ph_tr*x_det;
 
     V5fp_tr[0] = x_tr;
-    V5fp_tr[1] = th_tr;
+    V5fp_tr[1] = atan(th_tr);
     V5fp_tr[2] = y_tr;
-    V5fp_tr[3] = ph_tr;
+    V5fp_tr[3] = atan(ph_tr);
 }
 
 void HRSRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
