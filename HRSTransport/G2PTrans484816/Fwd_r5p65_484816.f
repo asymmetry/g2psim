@@ -521,7 +521,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_sepex(x,m)
+      function sl_r5p65_484816_sepex(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 11)
@@ -566,7 +566,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_sepex=avdat
+      sl_r5p65_484816_sepex=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)        *x31        
@@ -575,7 +575,7 @@ c
      6  +coeff(  6)    *x22            
      7  +coeff(  7)        *x31*x41    
      8  +coeff(  8)            *x42    
-      l_r5p65_484816_sepex=l_r5p65_484816_sepex
+      sl_r5p65_484816_sepex=sl_r5p65_484816_sepex
      9  +coeff(  9)*x11*x21            
      1  +coeff( 10)            *x41*x51
 c
@@ -1094,7 +1094,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_q1ent(x,m)
+      function sl_r5p65_484816_q1ent(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 15)
@@ -1140,7 +1140,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_q1ent=avdat
+      sl_r5p65_484816_q1ent=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)        *x31        
@@ -1149,7 +1149,7 @@ c
      6  +coeff(  6)    *x22            
      7  +coeff(  7)        *x31*x41    
      8  +coeff(  8)            *x42    
-      l_r5p65_484816_q1ent=l_r5p65_484816_q1ent
+      sl_r5p65_484816_q1ent=sl_r5p65_484816_q1ent
      9  +coeff(  9)    *x22    *x41    
      1  +coeff( 10)            *x41*x51
      2  +coeff( 11)*x11*x21            
@@ -1798,7 +1798,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_q1ext(x,m)
+      function sl_r5p65_484816_q1ext(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 28)
@@ -1852,7 +1852,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_q1ext=avdat
+      sl_r5p65_484816_q1ext=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -1861,7 +1861,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)            *x41*x51
-      l_r5p65_484816_q1ext=l_r5p65_484816_q1ext
+      sl_r5p65_484816_q1ext=sl_r5p65_484816_q1ext
      9  +coeff(  9)*x11*x21            
      1  +coeff( 10)    *x23            
      2  +coeff( 11)    *x22    *x41    
@@ -1871,7 +1871,7 @@ c
      6  +coeff( 15)    *x22*x31        
      7  +coeff( 16)    *x21            
      8  +coeff( 17)                *x52
-      l_r5p65_484816_q1ext=l_r5p65_484816_q1ext
+      sl_r5p65_484816_q1ext=sl_r5p65_484816_q1ext
      9  +coeff( 18)            *x43    
      1  +coeff( 19)    *x22        *x51
      2  +coeff( 20)            *x42*x51
@@ -1881,7 +1881,7 @@ c
      6  +coeff( 24)*x11*x21    *x42    
      7  +coeff( 25)        *x31*x44    
      8  +coeff( 26)*x11*x23*x31        
-      l_r5p65_484816_q1ext=l_r5p65_484816_q1ext
+      sl_r5p65_484816_q1ext=sl_r5p65_484816_q1ext
      9  +coeff( 27)    *x24*x31*x41    
 c
       return
@@ -2543,7 +2543,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_q2ext(x,m)
+      function sl_r5p65_484816_q2ext(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -2600,7 +2600,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_q2ext=avdat
+      sl_r5p65_484816_q2ext=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -2609,7 +2609,7 @@ c
      6  +coeff(  6)        *x32        
      7  +coeff(  7)        *x31*x41    
      8  +coeff(  8)            *x42    
-      l_r5p65_484816_q2ext=l_r5p65_484816_q2ext
+      sl_r5p65_484816_q2ext=sl_r5p65_484816_q2ext
      9  +coeff(  9)        *x31    *x51
      1  +coeff( 10)            *x41*x51
      2  +coeff( 11)*x11*x21            
@@ -2619,7 +2619,7 @@ c
      6  +coeff( 15)*x11*x21    *x41    
      7  +coeff( 16)    *x21    *x43    
      8  +coeff( 17)    *x24*x31        
-      l_r5p65_484816_q2ext=l_r5p65_484816_q2ext
+      sl_r5p65_484816_q2ext=sl_r5p65_484816_q2ext
      9  +coeff( 18)    *x21            
      1  +coeff( 19)    *x21    *x41    
      2  +coeff( 20)                *x52
@@ -2629,7 +2629,7 @@ c
      6  +coeff( 24)*x12                
      7  +coeff( 25)    *x22    *x42    
      8  +coeff( 26)        *x31*x44    
-      l_r5p65_484816_q2ext=l_r5p65_484816_q2ext
+      sl_r5p65_484816_q2ext=sl_r5p65_484816_q2ext
      9  +coeff( 27)    *x24*x31*x41    
      1  +coeff( 28)    *x21        *x51
      2  +coeff( 29)        *x31*x42    
@@ -3316,7 +3316,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_den(x,m)
+      function sl_r5p65_484816_den(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -3368,7 +3368,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_den=avdat
+      sl_r5p65_484816_den=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)            *x41    
@@ -3377,7 +3377,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21        *x51
      8  +coeff(  8)*x11        *x41    
-      l_r5p65_484816_den=l_r5p65_484816_den
+      sl_r5p65_484816_den=sl_r5p65_484816_den
      9  +coeff(  9)    *x23*x31        
      1  +coeff( 10)        *x31        
      2  +coeff( 11)    *x21*x31        
@@ -3387,7 +3387,7 @@ c
      6  +coeff( 15)*x11    *x31        
      7  +coeff( 16)    *x22    *x41    
      8  +coeff( 17)    *x21    *x42    
-      l_r5p65_484816_den=l_r5p65_484816_den
+      sl_r5p65_484816_den=sl_r5p65_484816_den
      9  +coeff( 18)*x11*x22            
      1  +coeff( 19)    *x23*x31*x41    
      2  +coeff( 20)    *x21*x31*x41    
@@ -3397,7 +3397,7 @@ c
      6  +coeff( 24)        *x31*x41    
      7  +coeff( 25)            *x41*x51
      8  +coeff( 26)    *x22*x31        
-      l_r5p65_484816_den=l_r5p65_484816_den
+      sl_r5p65_484816_den=sl_r5p65_484816_den
      9  +coeff( 27)    *x21*x32        
      1  +coeff( 28)*x11*x21    *x41    
      2  +coeff( 29)*x11        *x42    
@@ -4126,7 +4126,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_dex(x,m)
+      function sl_r5p65_484816_dex(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -4181,7 +4181,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_dex=avdat
+      sl_r5p65_484816_dex=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -4190,7 +4190,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21        *x51
      8  +coeff(  8)*x11        *x41    
-      l_r5p65_484816_dex=l_r5p65_484816_dex
+      sl_r5p65_484816_dex=sl_r5p65_484816_dex
      9  +coeff(  9)    *x23*x31        
      1  +coeff( 10)    *x21*x31        
      2  +coeff( 11)    *x23            
@@ -4200,7 +4200,7 @@ c
      6  +coeff( 15)    *x23*x31*x41    
      7  +coeff( 16)            *x41    
      8  +coeff( 17)    *x21*x31*x41    
-      l_r5p65_484816_dex=l_r5p65_484816_dex
+      sl_r5p65_484816_dex=sl_r5p65_484816_dex
      9  +coeff( 18)*x11            *x51
      1  +coeff( 19)    *x23    *x41    
      2  +coeff( 20)*x11*x22    *x41    
@@ -4210,7 +4210,7 @@ c
      6  +coeff( 24)    *x21*x32        
      7  +coeff( 25)*x11        *x42    
      8  +coeff( 26)*x12*x21            
-      l_r5p65_484816_dex=l_r5p65_484816_dex
+      sl_r5p65_484816_dex=sl_r5p65_484816_dex
      9  +coeff( 27)*x11*x22*x31        
      1  +coeff( 28)*x11    *x33*x41    
      2  +coeff( 29)*x12        *x42    
@@ -4937,7 +4937,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_q3ent(x,m)
+      function sl_r5p65_484816_q3ent(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -4990,7 +4990,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_q3ent=avdat
+      sl_r5p65_484816_q3ent=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -4999,7 +4999,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21        *x51
      8  +coeff(  8)*x11        *x41    
-      l_r5p65_484816_q3ent=l_r5p65_484816_q3ent
+      sl_r5p65_484816_q3ent=sl_r5p65_484816_q3ent
      9  +coeff(  9)    *x23*x31        
      1  +coeff( 10)    *x21*x31        
      2  +coeff( 11)    *x23            
@@ -5009,7 +5009,7 @@ c
      6  +coeff( 15)    *x23*x31*x41    
      7  +coeff( 16)            *x42    
      8  +coeff( 17)*x11*x21            
-      l_r5p65_484816_q3ent=l_r5p65_484816_q3ent
+      sl_r5p65_484816_q3ent=sl_r5p65_484816_q3ent
      9  +coeff( 18)    *x21*x31*x41    
      1  +coeff( 19)*x11            *x51
      2  +coeff( 20)    *x23    *x41    
@@ -5019,7 +5019,7 @@ c
      6  +coeff( 24)            *x41*x51
      7  +coeff( 25)    *x21*x32        
      8  +coeff( 26)    *x22    *x41    
-      l_r5p65_484816_q3ent=l_r5p65_484816_q3ent
+      sl_r5p65_484816_q3ent=sl_r5p65_484816_q3ent
      9  +coeff( 27)*x11        *x42    
      1  +coeff( 28)*x12*x21            
      2  +coeff( 29)*x11*x22*x31        
@@ -5718,7 +5718,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_q3ext(x,m)
+      function sl_r5p65_484816_q3ext(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -5773,7 +5773,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_q3ext=avdat
+      sl_r5p65_484816_q3ext=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -5782,7 +5782,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)*x11        *x41    
      8  +coeff(  8)    *x23*x31        
-      l_r5p65_484816_q3ext=l_r5p65_484816_q3ext
+      sl_r5p65_484816_q3ext=sl_r5p65_484816_q3ext
      9  +coeff(  9)    *x21*x31        
      1  +coeff( 10)    *x21        *x51
      2  +coeff( 11)                *x52
@@ -5792,7 +5792,7 @@ c
      6  +coeff( 15)    *x21    *x42    
      7  +coeff( 16)*x11*x22            
      8  +coeff( 17)    *x23*x31*x41    
-      l_r5p65_484816_q3ext=l_r5p65_484816_q3ext
+      sl_r5p65_484816_q3ext=sl_r5p65_484816_q3ext
      9  +coeff( 18)            *x42    
      1  +coeff( 19)    *x21*x31*x41    
      2  +coeff( 20)*x11            *x51
@@ -5802,7 +5802,7 @@ c
      6  +coeff( 24)        *x31        
      7  +coeff( 25)            *x41*x51
      8  +coeff( 26)    *x22*x31        
-      l_r5p65_484816_q3ext=l_r5p65_484816_q3ext
+      sl_r5p65_484816_q3ext=sl_r5p65_484816_q3ext
      9  +coeff( 27)    *x21*x32        
      1  +coeff( 28)*x11        *x42    
      2  +coeff( 29)*x12*x21            
@@ -6501,7 +6501,7 @@ c
 c
       return
       end
-      function l_r5p65_484816_fp(x,m)
+      function sl_r5p65_484816_fp(x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -6556,7 +6556,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_r5p65_484816_fp=avdat
+      sl_r5p65_484816_fp=avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -6565,7 +6565,7 @@ c
      6  +coeff(  6)    *x21*x31        
      7  +coeff(  7)    *x21    *x41    
      8  +coeff(  8)                *x52
-      l_r5p65_484816_fp=l_r5p65_484816_fp
+      sl_r5p65_484816_fp=sl_r5p65_484816_fp
      9  +coeff(  9)    *x23            
      1  +coeff( 10)*x11        *x41    
      2  +coeff( 11)            *x42    
@@ -6575,7 +6575,7 @@ c
      6  +coeff( 15)    *x23*x31*x41    
      7  +coeff( 16)            *x41*x51
      8  +coeff( 17)*x11*x21            
-      l_r5p65_484816_fp=l_r5p65_484816_fp
+      sl_r5p65_484816_fp=sl_r5p65_484816_fp
      9  +coeff( 18)    *x21*x31*x41    
      1  +coeff( 19)                *x53
      2  +coeff( 20)    *x23    *x41    
@@ -6585,7 +6585,7 @@ c
      6  +coeff( 24)    *x21*x32        
      7  +coeff( 25)    *x22    *x41    
      8  +coeff( 26)            *x43    
-      l_r5p65_484816_fp=l_r5p65_484816_fp
+      sl_r5p65_484816_fp=sl_r5p65_484816_fp
      9  +coeff( 27)*x11            *x51
      1  +coeff( 28)    *x23*x31        
      2  +coeff( 29)*x11        *x42    

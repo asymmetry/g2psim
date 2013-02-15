@@ -306,7 +306,7 @@ c
 c
       return
       end
-      function l_l12p5_q1ex    (x,m)
+      function sl_l12p5_q1ex    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff(  5)
@@ -345,7 +345,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_q1ex    =avdat
+      sl_l12p5_q1ex    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x22            
      3  +coeff(  3)        *x31*x41    
@@ -884,7 +884,7 @@ c
 c
       return
       end
-      function l_l12p5_dent    (x,m)
+      function sl_l12p5_dent    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff( 29)
@@ -939,7 +939,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_dent    =avdat
+      sl_l12p5_dent    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)*x11                
@@ -948,7 +948,7 @@ c
      6  +coeff(  6)    *x22            
      7  +coeff(  7)*x11*x21            
      8  +coeff(  8)*x12                
-      l_l12p5_dent    =l_l12p5_dent    
+      sl_l12p5_dent    =sl_l12p5_dent    
      9  +coeff(  9)            *x42    
      1  +coeff( 10)        *x33*x41    
      2  +coeff( 11)        *x32        
@@ -958,7 +958,7 @@ c
      6  +coeff( 15)*x11*x24            
      7  +coeff( 16)    *x21*x32        
      8  +coeff( 17)    *x21*x31*x41    
-      l_l12p5_dent    =l_l12p5_dent    
+      sl_l12p5_dent    =sl_l12p5_dent    
      9  +coeff( 18)    *x22        *x51
      1  +coeff( 19)            *x42*x51
      2  +coeff( 20)    *x21        *x52
@@ -968,7 +968,7 @@ c
      6  +coeff( 24)        *x31*x41*x51
      7  +coeff( 25)*x11*x22            
      8  +coeff( 26)*x11    *x31*x41    
-      l_l12p5_dent    =l_l12p5_dent    
+      sl_l12p5_dent    =sl_l12p5_dent    
      9  +coeff( 27)*x11        *x42    
      1  +coeff( 28)*x11            *x52
 c
@@ -1532,7 +1532,7 @@ c
 c
       return
       end
-      function l_l12p5_dext    (x,m)
+      function sl_l12p5_dext    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff( 25)
@@ -1586,7 +1586,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_dext    =avdat
+      sl_l12p5_dext    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -1595,7 +1595,7 @@ c
      6  +coeff(  6)    *x22            
      7  +coeff(  7)*x11*x21            
      8  +coeff(  8)*x11            *x51
-      l_l12p5_dext    =l_l12p5_dext    
+      sl_l12p5_dext    =sl_l12p5_dext    
      9  +coeff(  9)*x12                
      1  +coeff( 10)    *x21    *x42    
      2  +coeff( 11)*x11*x22            
@@ -1605,7 +1605,7 @@ c
      6  +coeff( 15)                *x52
      7  +coeff( 16)    *x21*x32        
      8  +coeff( 17)    *x21*x31*x41    
-      l_l12p5_dext    =l_l12p5_dext    
+      sl_l12p5_dext    =sl_l12p5_dext    
      9  +coeff( 18)    *x22        *x51
      1  +coeff( 19)        *x34        
      2  +coeff( 20)    *x23            
@@ -2172,7 +2172,7 @@ c
 c
       return
       end
-      function l_l12p5_q3en    (x,m)
+      function sl_l12p5_q3en    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff( 28)
@@ -2225,7 +2225,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_q3en    =avdat
+      sl_l12p5_q3en    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)*x11                
@@ -2234,7 +2234,7 @@ c
      6  +coeff(  6)    *x21        *x51
      7  +coeff(  7)*x11*x21            
      8  +coeff(  8)*x11            *x51
-      l_l12p5_q3en    =l_l12p5_q3en    
+      sl_l12p5_q3en    =sl_l12p5_q3en    
      9  +coeff(  9)*x12                
      1  +coeff( 10)        *x31*x41    
      2  +coeff( 11)            *x42    
@@ -2244,7 +2244,7 @@ c
      6  +coeff( 15)    *x23*x31*x41    
      7  +coeff( 16)        *x32        
      8  +coeff( 17)    *x21*x32        
-      l_l12p5_q3en    =l_l12p5_q3en    
+      sl_l12p5_q3en    =sl_l12p5_q3en    
      9  +coeff( 18)    *x21*x31*x41    
      1  +coeff( 19)    *x22        *x51
      2  +coeff( 20)    *x23    *x42    
@@ -2254,7 +2254,7 @@ c
      6  +coeff( 24)*x11    *x31*x41    
      7  +coeff( 25)*x11        *x42    
      8  +coeff( 26)*x11*x21        *x51
-      l_l12p5_q3en    =l_l12p5_q3en    
+      sl_l12p5_q3en    =sl_l12p5_q3en    
      9  +coeff( 27)*x11            *x52
 c
       return
@@ -2812,7 +2812,7 @@ c
 c
       return
       end
-      function l_l12p5_q3ex    (x,m)
+      function sl_l12p5_q3ex    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff( 29)
@@ -2866,7 +2866,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_q3ex    =avdat
+      sl_l12p5_q3ex    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)*x11                
@@ -2875,7 +2875,7 @@ c
      6  +coeff(  6)*x11*x21            
      7  +coeff(  7)*x11            *x51
      8  +coeff(  8)    *x21        *x51
-      l_l12p5_q3ex    =l_l12p5_q3ex    
+      sl_l12p5_q3ex    =sl_l12p5_q3ex    
      9  +coeff(  9)*x12                
      1  +coeff( 10)                *x52
      2  +coeff( 11)            *x42    
@@ -2885,7 +2885,7 @@ c
      6  +coeff( 15)        *x31*x41*x52
      7  +coeff( 16)    *x23*x31*x41    
      8  +coeff( 17)*x12            *x51
-      l_l12p5_q3ex    =l_l12p5_q3ex    
+      sl_l12p5_q3ex    =sl_l12p5_q3ex    
      9  +coeff( 18)        *x32        
      1  +coeff( 19)        *x31*x41    
      2  +coeff( 20)    *x21*x32        
@@ -2895,7 +2895,7 @@ c
      6  +coeff( 24)*x11    *x31*x41    
      7  +coeff( 25)        *x31*x41*x51
      8  +coeff( 26)*x11    *x32        
-      l_l12p5_q3ex    =l_l12p5_q3ex    
+      sl_l12p5_q3ex    =sl_l12p5_q3ex    
      9  +coeff( 27)*x11        *x42    
      1  +coeff( 28)*x11            *x52
 c
@@ -3519,7 +3519,7 @@ c
 c
       return
       end
-      function l_l12p5_fp      (x,m)
+      function sl_l12p5_fp      (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)!,xmean(10)
       dimension coeff( 28)
@@ -3572,7 +3572,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_l12p5_fp      =avdat
+      sl_l12p5_fp      =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)*x11                
@@ -3581,7 +3581,7 @@ c
      6  +coeff(  6)                *x52
      7  +coeff(  7)*x11*x21            
      8  +coeff(  8)*x11            *x51
-      l_l12p5_fp      =l_l12p5_fp      
+      sl_l12p5_fp      =sl_l12p5_fp      
      9  +coeff(  9)*x12                
      1  +coeff( 10)            *x42    
      2  +coeff( 11)    *x21        *x51
@@ -3591,7 +3591,7 @@ c
      6  +coeff( 15)    *x21*x31*x41    
      7  +coeff( 16)                *x53
      8  +coeff( 17)*x11*x22            
-      l_l12p5_fp      =l_l12p5_fp      
+      sl_l12p5_fp      =sl_l12p5_fp      
      9  +coeff( 18)*x11*x21        *x51
      1  +coeff( 19)*x12            *x51
      2  +coeff( 20)    *x21*x32        
@@ -3601,7 +3601,7 @@ c
      6  +coeff( 24)        *x32    *x51
      7  +coeff( 25)*x11    *x32        
      8  +coeff( 26)*x11        *x42    
-      l_l12p5_fp      =l_l12p5_fp      
+      sl_l12p5_fp      =sl_l12p5_fp      
      9  +coeff( 27)    *x21    *x42*x51
 c
       return
