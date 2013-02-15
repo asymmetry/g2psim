@@ -6,13 +6,13 @@
 
 ########################################################################
 MYOS        := $(shell uname)
-ARCH        := $(shell arch)
+ARCH        := $(shell uname -m)
 USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.0.1
 LIBFILE     := libG2PXS.a
+VERSION     := 1.0.2
 
 ########################################################################
 SRCDIR      := .
@@ -20,7 +20,8 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELLIST   := G2PPModsQFS
+MODELDIR    := G2PPModsQFS
+INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
 # Compiler
@@ -36,14 +37,15 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR) 
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
+INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
+CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
+CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS) 
+FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none
+               -ffixed-line-length-none -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -66,16 +68,15 @@ DEPS        := $(subst .o,.d,$(OBJS))
 
 ########################################################################
 # Libs
-SYSLIBS     := -lstdc++
-ifeq ($(MYOS),Darwin) # Assume using homebrew
-    SYSLIBS += -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran
-else
-    SYSLIBS += -lgfortran
-endif
-OTHERDIRS   := $(addsuffix /, $(MODELLIST))
-OTHERLIBS   := $(addprefix lib, $(MODELLIST))
-OTHERLIBS   := $(addsuffix .a, $(OTHERLIBS))
-OTHERLIBS   := $(join $(OTHERDIRS), $(OTHERLIBS))
+SYSLIBS     := -lstdc++ -lgfortran
+MODELLIST   := $(subst :, ,$(MODELDIR))
+OTHEROBJS   := $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
+               $(wildcard $(n)/*.[CcFf])))
+OTHEROBJS   += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
+               $(wildcard $(n)/*.[Cc][Cc])))
+OTHEROBJS   += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
+               $(wildcard $(n)/*.[Cc][XxPp][XxPp])))
+OTHEROBJS   := $(addsuffix .o, $(basename $(OTHEROBJS)))
 OTHERLIBS   := $(addprefix ../../, $(OTHERLIBS))
 
 ########################################################################
@@ -92,7 +93,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 # You can specify the .SUFFIXES
 .SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
 .PHONY: all clean test
-VPATH       := $(SRCDIR):$(INCDIR) 
+VPATH       := $(SRCDIR)
 
 ########################################################################
 all: lib
@@ -160,21 +161,14 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-lib: $(OBJDIR) $(OBJS)
+lib: dir $(OBJS)
 	@for model in $(MODELLIST); do \
 		if [ -d $$model ]; then \
 			make -s -C $$model; \
 		fi; \
 	done;
-	@if [[ ! -d $(OBJDIR)/obj.extra ]]; then mkdir $(OBJDIR)/obj.extra; fi
-	@cd $(OBJDIR)/obj.extra; rm -rf *; \
-	for archive in $(OTHERLIBS); do \
-		$(AR) -x $$archive; \
-	done; \
-	cd ../..
-	@$(AR) -r $(LIBFILE).$(VERSION) $(OBJS) $(OBJDIR)/obj.extra/*.o &>/dev/null
+	@$(AR) -r $(LIBFILE).$(VERSION) $(OBJS) $(OTHEROBJS) &>/dev/null
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@rm -rf $(OBJDIR)/obj.extra
 	@echo "Linking $(LIBFILE) ...... done!"
 
 ########################################################################
@@ -210,11 +204,11 @@ $(OBJDIR)/%.o: %.F
 	@echo Compiling $< ......
 	@$(FF) -c $< -o $@  $(FFLAGS)
 
-$(OBJDIR):
+dir:
 	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
 
 ########################################################################
-clean: $(OBJDIR)
+clean: dir
 	@rm -f $(OBJDIR)/*
 	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
@@ -235,9 +229,11 @@ test:
 	@echo \\SYSLIBS\:$(SYSLIBS)
 	@echo \\fsources\: $(FSOURCES)	
 	@echo \\sources\: $(SOURCES)	
-	@echo \\objs\: $(OBJS)	
+	@echo \\objs\: $(OBJS)
+	@echo \\otherobjs\: $(OTHEROBJS)	
 	@echo \\dependencies: \$(DEPS)
 
 help: test
 
 env: test
+

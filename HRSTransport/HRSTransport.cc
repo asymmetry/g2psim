@@ -18,11 +18,11 @@
 #include "TROOT.h"
 #include "TObject.h"
 
-#include "G2PTrans.hh"
-#include "G2PTransNoSepta/G2PTransNoSepta.hh"
-#include "G2PTrans400016/G2PTrans400016.hh"
-#include "G2PTrans484816/G2PTrans484816.hh"
-#include "G2PTrans484816R00/G2PTrans484816R00.hh"
+#include "HRSTransBase.hh"
+#include "HRSTransSTD.hh"
+#include "G2PTrans400016.hh"
+#include "G2PTrans484816.hh"
+#include "G2PTrans484816R00.hh"
 
 #include "HRSTransport.hh"
 
@@ -74,7 +74,7 @@ HRSTransport::HRSTransport(int setting)
 
 HRSTransport::~HRSTransport()
 {
-    map<int, G2PTrans*>::iterator it = mModel.begin();
+    map<int, HRSTransBase*>::iterator it = mModel.begin();
     while (it!=mModel.end()) {
         delete it->second;
         it++;
@@ -97,9 +97,9 @@ HRSTransport::~HRSTransport()
 
 void HRSTransport::RegisterModel()
 {
-    G2PTrans* temp;
-    temp = new G2PTransNoSepta();
-    mModelIndex["NoSepta"] = 0;
+    HRSTransBase* temp;
+    temp = new HRSTransSTD();
+    mModelIndex["STD"] = 0;
     mModel[0] = temp;
 
     temp = new G2PTrans484816();

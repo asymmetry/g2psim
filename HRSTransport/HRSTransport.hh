@@ -18,7 +18,7 @@
 #include "TROOT.h"
 #include "TObject.h"
 
-#include "G2PTrans.hh"
+#include "HRSTransBase.hh"
 
 using namespace std;
 
@@ -68,9 +68,9 @@ private:
     double fHRSAngle;
     double fModelAngle;
 
-    map<int, G2PTrans*> mModel;
+    map<int, HRSTransBase*> mModel;
     map<string, int> mModelIndex;
-    G2PTrans* pModel;
+    HRSTransBase* pModel;
     
 #ifndef WIN32
     ClassDef(HRSTransport,1);

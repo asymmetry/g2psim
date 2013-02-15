@@ -20,8 +20,8 @@
 #include "G2PGun.hh"
 #include "HRSRecUseDB.hh"
 
-#include "../G2PXSection/G2PXS.hh"
-#include "../HRSTransport/HRSTransport.hh"
+#include "G2PXS.hh"
+#include "HRSTransport.hh"
 
 class G2PSim : public TObject
 {

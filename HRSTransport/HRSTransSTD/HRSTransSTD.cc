@@ -5,30 +5,30 @@
 
 #include <cmath>
 
-#include "Fwd_l12p5_NoSepta.h"
-#include "Fwd_r12p5_NoSepta.h"
-#include "Bwd_l12p5_NoSepta.h"
-#include "Bwd_r12p5_NoSepta.h"
+#include "Fwd_l12p5_STD.h"
+#include "Fwd_r12p5_STD.h"
+#include "Bwd_l12p5_STD.h"
+#include "Bwd_r12p5_STD.h"
 
-#include "G2PTransNoSepta.hh"
+#include "HRSTransSTD.hh"
 
 //using namespace SNoSepta;
 
 const float m2cm = 100.0;
 const double kDEG = 3.14159265358979323846/180.0;
 
-G2PTransNoSepta::G2PTransNoSepta()
+HRSTransSTD::HRSTransSTD()
     :cModelAngle(12.50*kDEG)
 {
     // Nothing to do
 }
 
-G2PTransNoSepta::~G2PTransNoSepta()
+HRSTransSTD::~HRSTransSTD()
 {
     // Nothing to do
 }
 
-bool G2PTransNoSepta::TransLeftHRS(double* pV5)
+bool HRSTransSTD::TransLeftHRS(double* pV5)
 {
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
     int *ii = new int; (*ii) = 5;
@@ -85,7 +85,7 @@ bool G2PTransNoSepta::TransLeftHRS(double* pV5)
 	return true;
 }
 
-bool G2PTransNoSepta::TransRightHRS(double* pV5)
+bool HRSTransSTD::TransRightHRS(double* pV5)
 {
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
     int *ii = new int; (*ii) = 5;
@@ -144,7 +144,7 @@ bool G2PTransNoSepta::TransRightHRS(double* pV5)
 	return true;
 }
 
-void G2PTransNoSepta::ReconLeftHRS(double* pV5)
+void HRSTransSTD::ReconLeftHRS(double* pV5)
 {   
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
 	int *ii = new int; (*ii) = 5;
@@ -167,7 +167,7 @@ void G2PTransNoSepta::ReconLeftHRS(double* pV5)
     delete ii; delete jj;
 }
 
-void G2PTransNoSepta::ReconRightHRS(double* pV5)
+void HRSTransSTD::ReconRightHRS(double* pV5)
 {
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
 	int *ii = new int; (*ii) = 5;

@@ -1,23 +1,23 @@
 #include <cmath>
 
-#include "G2PTrans.hh"
+#include "HRSTransBase.hh"
 
-G2PTrans::G2PTrans()
+HRSTransBase::HRSTransBase()
 {
     // Nothing to do
 }
 
-G2PTrans::~G2PTrans()
+HRSTransBase::~HRSTransBase()
 {
     // Nothing to do
 }
 
-void G2PTrans::FPCorrection(const double* V5tg, double* V5fp)
+void HRSTransBase::FPCorrection(const double* V5tg, double* V5fp)
 {
     // Nothing to do
 }
 
-void G2PTrans::CoordsCorrection(double angle, double* v)
+void HRSTransBase::CoordsCorrection(double angle, double* v)
 {
     double cosangle = cos(angle);
     double sinangle = sin(angle);

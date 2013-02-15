@@ -1,9 +1,9 @@
 #ifndef G2P_TRANS400016_H
 #define G2P_TRANS400016_H
 
-#include "G2PTrans.hh"
+#include "HRSTransBase.hh"
 
-class G2PTrans400016 : public G2PTrans
+class G2PTrans400016 : public HRSTransBase
 {
 public:
     G2PTrans400016();

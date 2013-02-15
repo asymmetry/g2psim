@@ -6,12 +6,9 @@
 
 ########################################################################
 MYOS        := $(shell uname)
-ARCH        := $(shell arch)
+ARCH        := $(shell uname -m)
 USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
-
-########################################################################
-LIBFILE     := G2PTrans484816R00
 
 ########################################################################
 SRCDIR      := .
@@ -32,14 +29,15 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR) 
-CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
-FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) -I$(INCDIR)
+INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) $(INCDIRS) 
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) $(INCDIRS)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none
+               -ffixed-line-length-none -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -62,12 +60,7 @@ DEPS        := $(subst .o,.d,$(OBJS))
 
 ########################################################################
 # Libs
-SYSLIBS     := -lstdc++
-ifeq ($(MYOS),Darwin) # Assume using homebrew
-    SYSLIBS += -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran
-else
-    SYSLIBS += -lgfortran
-endif
+SYSLIBS     := -lstdc++ -lgfortran
 
 ########################################################################
 # ROOT configure
@@ -83,10 +76,10 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 # You can specify the .SUFFIXES
 .SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
 .PHONY: all clean test
-VPATH    := $(SRCDIR):$(INCDIR)
+VPATH       := $(SRCDIR)
 
 ########################################################################
-all: lib
+all: obj
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
@@ -112,11 +105,11 @@ $(OBJDIR)/%.d: %.cc
 	[ -s $@ ] || rm -f $@
 
 $(OBJDIR)/%.d: %.CC
-	@echo Making dependency for file $< ......
-	@set -e; \
+	set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
+	@echo Making dependency for file $< ......
 
 $(OBJDIR)/%.d: %.cpp 
 	@echo Making dependency for file $< ......
@@ -151,9 +144,7 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-lib: $(OBJDIR) $(OBJS)
-	@$(AR) -r lib$(LIBFILE).a $(OBJS) &>/dev/null
-	@echo "Linking lib$(LIBFILE).a ...... done!"
+obj: dir $(OBJS)
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -188,16 +179,15 @@ $(OBJDIR)/%.o: %.F
 	@echo Compiling $< ......
 	@$(FF) -c $< -o $@  $(FFLAGS)
 
-$(OBJDIR):
+dir:
 	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
 
 ########################################################################
-clean: $(OBJDIR)
-	@rm -f lib$(LIBFILE).a
+clean: dir
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#
 
-test:	
+test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
 	@echo \\CFLAGS\:$(CFLAGS)	
 	@echo \\CXXFLAGS\:$(CXXFLAGS)        

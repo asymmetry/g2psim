@@ -21,8 +21,8 @@
 #include "HRSRecUseDB.hh"
 #include "HRSTransTCSNHCS.hh"
 
-#include "../G2PXSection/G2PXS.hh"
-#include "../HRSTransport/HRSTransport.hh"
+#include "G2PXS.hh"
+#include "HRSTransport.hh"
 
 #include "G2PSim.hh"
 

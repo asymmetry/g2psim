@@ -6,21 +6,26 @@
 
 ########################################################################
 MYOS        := $(shell uname)
-ARCH        := $(shell arch)
+ARCH        := $(shell uname -m)
 USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-VERSION     := 1.3.1
 EXECFILE    := G2PSim
 LIBFILE     := libG2PSim.so
 LIBNAME     := G2PSim
 USERDICT    := $(LIBNAME)_Dict
+VERSION     := 1.3.1
 
 ########################################################################
 SRCDIR      := src
 INCDIR      := include
 OBJDIR      := obj.$(ARCH)
+
+########################################################################
+MODELDIR    := HRSTransport:G2PXSection
+MODELLIST   := HRSTransport G2PXS
+INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
 # Compiler
@@ -36,14 +41,15 @@ ifeq ($(ARCH),i686)
 else
     MODE    := -m64
 endif
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR) 
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) -I$(INCDIR)
+INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
+CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
+CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS) 
+FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none
+               -ffixed-line-length-none -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -60,9 +66,7 @@ CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][XxPp][XxPp])
 SOURCES     := $(FSOURCES) $(CSOURCES)
 # header files
-HEADERS     := $(wildcard $(INCDIR)/*.hh)
-HEADERS     += $(wildcard HRSTransport/*.hh)
-HEADERS     += $(wildcard G2PXSection/*.hh)
+HEADERS     := $(foreach n,$(subst :, ,$(INCDIR)),$(wildcard $(n)/*.hh))
 # add .o to all the source files
 OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
 OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
@@ -70,12 +74,7 @@ DEPS        := $(subst .o,.d,$(OBJS))
 
 ########################################################################
 # Libs
-SYSLIBS     := -lstdc++
-ifeq ($(MYOS),Darwin) # Assume using homebrew
-    SYSLIBS += -L/usr/local/Cellar/gfortran/4.7.2/gfortran/lib -lgfortran
-else
-    SYSLIBS += -lgfortran
-endif
+SYSLIBS     := -lstdc++ -lgfortran
 OTHERLIBS   := -LHRSTransport -lHRSTransport -LG2PXSection -lG2PXS
 
 ########################################################################
@@ -92,7 +91,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 # You can specify the .SUFFIXES
 .SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
 .PHONY: all clean test
-VPATH       := $(SRCDIR):$(INCDIR) 
+VPATH       := $(SRCDIR)
 
 ########################################################################
 all: exe
@@ -173,7 +172,7 @@ script:
 	echo "Generate Run.C ... done!"; fi
 
 ########################################################################
-lib: $(OBJDIR) $(OBJS) $(OBJDIR)/$(USERDICT).o
+lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@make -s -C HRSTransport
 	@make -s -C G2PXSection
 	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
@@ -222,11 +221,11 @@ $(OBJDIR)/%.o: %.F
 	@echo Compiling $< ......
 	@$(FF) -c $< -o $@  $(FFLAGS)
 
-$(OBJDIR):
+dir:
 	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
 
 ########################################################################
-clean: $(OBJDIR)
+clean: dir
 	@rm -f $(OBJDIR)/*
 	@rm -f $(USERDICT).cxx $(USERDICT).h
 	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).*
@@ -244,7 +243,8 @@ test:
 	@echo \\LDFLAGS\:$(LDFLAGS)
 	@echo \\SYSLIBS\:$(SYSLIBS)
 	@echo \\fsources\: $(FSOURCES)	
-	@echo \\sources\: $(SOURCES)	
+	@echo \\sources\: $(SOURCES)
+	@echo \\headers\: $(HEADERS)
 	@echo \\objs\: $(OBJS)	
 	@echo \\dependencies: \$(DEPS)
 

@@ -1,11 +1,11 @@
-#ifndef G2P_TRANS_H
-#define G2P_TRANS_H
+#ifndef HRS_TRANSBASE_H
+#define HRS_TRANSBASE_H
 
-class G2PTrans
+class HRSTransBase
 {
 public:
-    G2PTrans();
-    virtual ~G2PTrans();
+    HRSTransBase();
+    virtual ~HRSTransBase();
     
     virtual bool TransLeftHRS(double* v) = 0;
     virtual bool TransRightHRS(double* v) = 0;

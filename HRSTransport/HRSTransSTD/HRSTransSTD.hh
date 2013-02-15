@@ -1,13 +1,13 @@
 #ifndef G2P_TRANSNOSEPTA_H
 #define G2P_TRANSNOSEPTA_H
 
-#include "G2PTrans.hh"
+#include "HRSTransBase.hh"
 
-class G2PTransNoSepta : public G2PTrans
+class HRSTransSTD : public HRSTransBase
 {
 public:
-    G2PTransNoSepta();
-    ~G2PTransNoSepta();
+    HRSTransSTD();
+    ~HRSTransSTD();
 
     bool TransLeftHRS(double* vector_jjl);
     bool TransRightHRS(double* vector_jjl);
