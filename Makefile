@@ -94,7 +94,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 VPATH       := $(SRCDIR)
 
 ########################################################################
-all: exe
+all: lib script exe
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
@@ -159,17 +159,14 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-exe: lib script $(OBJDIR)/Main.o
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o ./$(LIBFILE) $(LIBS)
+exe: dir $(OBJS) $(OBJDIR)/Main.o $(OBJDIR)/$(USERDICT).o
+	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o $(OBJS)\
+           $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@echo "Linking $(EXECFILE) ...... done!"
 
 $(OBJDIR)/Main.o: Main.cc
 	@echo Compiling $< ......
 	@$(CXX) -c $< -o $@  $(CXXFLAGS)
-
-script:
-	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/RunTmp.C" "Run.C" ; \
-	echo "Generate Run.C ...... done!"; fi
 
 ########################################################################
 lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
@@ -179,6 +176,10 @@ lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
 	@echo "Linking $(LIBFILE) ...... done!"
+
+script:
+	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/RunTmp.C" "Run.C" ; \
+	echo "Generate Run.C ...... done!"; fi
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT).cxx ......"
