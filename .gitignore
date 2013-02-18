@@ -25,6 +25,7 @@ plots/
 *.root
 *.png
 *.dat
+*.map
 
 G2PSim
 Run.C
