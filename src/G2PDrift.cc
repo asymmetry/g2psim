@@ -3,27 +3,34 @@
 #include "TROOT.h"
 #include "TObject.h"
 
+#include "HRSTransTCSNHCS.hh"
 #include "G2PTargetField.hh"
 
 #include "G2PDrift.hh"
+
+//#define DRIFT_DEBUG 1
 
 using namespace std;
 
 ClassImp(G2PDrift);
 
-const double c = 2.99796458e+08;
-const double kGEV = 1.78261428e-27;
-const double e = 1.60217657e-19;
+// Convert everything to natual units
+const double c = 2.99792458e8;
+const double e = 1.60217656535e-19;
+const double kGEV = 1.0e9*e/c/c;
 const double kOneSixth = 1./6.;
+const double kDEG = 3.14159265358979323846/180.0;
 
 G2PDrift::G2PDrift()
-    :fM0(0.000510998928), fQ(-1.0*e), fStep(1.0e-3), pField(NULL)
+    :fM0(0.00051099893), fQ(-1.0*e), fStep(1.0e-5), fHRSAngle(5.767*kDEG),
+     fHRSMomentum(2.251), pField(NULL)
 {
     // Nothing to do
 }
 
 G2PDrift::G2PDrift(G2PTargetField *field)
-    :fM0(0.000510998928), fQ(-1.0*e), fStep(1.0e-3)
+    :fM0(0.00051099893), fQ(-1.0*e), fStep(1.0e-5), fHRSAngle(5.767*kDEG),
+     fHRSMomentum(2.251)
 {
     pField = field;
 }
@@ -33,16 +40,18 @@ G2PDrift::~G2PDrift()
     // Nothing to do
 }
 
-void G2PDrift::Drift(double* x, double* p, double zlimit, double llimit)
+void G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
 {
     double xi[6], xf[6];
 
     double M = sqrt(fM0*fM0+p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
     double v[3];
-    v[0] = p[0]*(c/M);
-    v[1] = p[1]*(c/M);
-    v[2] = p[2]*(c/M);
-    double vv = sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+    v[0] = p[0]*c/M;
+    v[1] = p[1]*c/M;
+    v[2] = p[2]*c/M;
+    fVelocity2 = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
+    fVelocity = sqrt(fVelocity2);
+    fGamma = 1/sqrt(1-(fVelocity2/c/c));
 
     xi[0] = x[0];
     xi[1] = x[1];
@@ -51,24 +60,93 @@ void G2PDrift::Drift(double* x, double* p, double zlimit, double llimit)
     xi[4] = v[1];
     xi[5] = v[2];
 
-    double dt = fStep/vv;
+    double dt = fStep/fVelocity;
     double l = 0;
 
     double dxdt[6], err[6];
     bool sign = (x[2]>zlimit)?true:false;
-    while ((l<llimit)&&((xf[2]>zlimit)^(sign))) {
+    while ((l<llimit)&&((xf[2]<zlimit)^(sign))) {
+#ifdef DRIFT_DEBUG
+        printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
+#endif
         ComputeRHS(xi, dxdt);
+#ifdef DRIFT_DEBUG
+        printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
+#endif
         NystromRK4(xi, dxdt, dt, xf, err);
         for (int i = 0; i<6; i++) xi[i] = xf[i];
-        l+=vv*dt;
+        l+=fVelocity*dt;
     }
 
-    x[0] = xf[0];
-    x[1] = xf[1];
-    x[2] = xf[2];
-    p[0] = xf[3]*M/c;
-    p[1] = xf[4]*M/c;
-    p[2] = xf[5]*M/c;
+    xout[0] = xf[0];
+    xout[1] = xf[1];
+    xout[2] = xf[2];
+    pout[0] = xf[3]*M/c;
+    pout[1] = xf[4]*M/c;
+    pout[2] = xf[5]*M/c;
+}
+
+void G2PDrift::Drift(const double* x, double z_tr, double zlimit, double llimit, double* xout)
+{
+    double xi[6], xf[6];
+    double sinHRS = sin(fHRSAngle);
+    double cosHRS = cos(fHRSAngle);
+
+    HRSTransTCSNHCS::X_TCS2HCS(x[0], x[2], z_tr, fHRSAngle, xi[0], xi[1], xi[2]);
+    double theta, phi;
+    HRSTransTCSNHCS::P_TCS2HCS(x[1], x[3], fHRSAngle, theta, phi);
+
+    double pp = (1+x[4])*fHRSMomentum;
+    xi[3] = pp*sin(theta)*cos(phi);
+    xi[4] = pp*sin(theta)*sin(phi);
+    xi[5] = pp*cos(theta);
+
+    double M = sqrt(fM0*fM0+pp*pp);
+    xi[3] *= c/M;
+    xi[4] *= c/M;
+    xi[5] *= c/M;
+    fVelocity2 = xi[3]*xi[3]+xi[4]*xi[4]+xi[5]*xi[5];
+    fVelocity = sqrt(fVelocity2);
+    fGamma = 1/sqrt(1-(fVelocity2/c/c));
+
+    double dt = fStep/fVelocity;
+    double l = 0;
+
+    double dxdt[6], err[6];
+    bool sign = (z_tr>zlimit)?true:false;
+    if (sign) {
+        xi[3] *= -1.0;
+        xi[4] *= -1.0;
+        xi[5] *= -1.0;
+    }
+    double newz_tr = z_tr;
+    while ((l<llimit)&&((newz_tr>zlimit)^(sign))) {
+#ifdef DRIFT_DEBUG
+        printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
+#endif
+        ComputeRHS(xi, dxdt);
+#ifdef DRIFT_DEBUG
+        printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
+#endif
+        NystromRK4(xi, dxdt, dt, xf, err);
+        for (int i = 0; i<6; i++) xi[i] = xf[i];
+        newz_tr = xf[0]*sinHRS+xf[2]*cosHRS;
+        l+=fVelocity*dt;
+    }
+
+    if (sign) {
+        xi[3] *= -1.0;
+        xi[4] *= -1.0;
+        xi[5] *= -1.0;
+    }
+
+    phi = atan(xi[4]/xi[3]);
+    theta = acos(xi[4]/fVelocity2);
+
+    HRSTransTCSNHCS::P_HCS2TCS(theta, phi, fHRSAngle, xout[1], xout[3]);
+    double temp;
+    HRSTransTCSNHCS::X_HCS2TCS(xi[0], xi[1], xi[2], fHRSAngle, xout[0], xout[2], temp);
+    xout[4] = x[4];
 }
 
 void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err)
@@ -86,7 +164,7 @@ void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, doub
     fInPoint[2] = R[2];
 
     // Point 1
-    double K1[3] = { x[3], x[4], x[5] };
+    double K1[3] = { dxdt[3], dxdt[4], dxdt[5] };
 
     // Point 2
     double p[3] = { R[0]+S5*(A[0]+S4*K1[0]),
@@ -172,9 +250,7 @@ double G2PDrift::DistChord() const
 void G2PDrift::ComputeRHS(const double* x, double* dxdt)
 {
     pField->GetField(x, fField);
-    fVelocity2 = x[3]*x[3]+x[4]*x[4]+x[5]*x[5];
-    double gamma = 1.0/sqrt(1.0-(fVelocity2)/c/c);
-    double m = fM0*gamma;
+    double m = fM0*fGamma*kGEV;
     dxdt[0] = x[3];
     dxdt[1] = x[4];
     dxdt[2] = x[5];

@@ -158,13 +158,12 @@ void G2PTargetField::GetField(const double* x, double* b)
 {
     double pos[3], field[3];
     pos[0] = x[0]; pos[1] = x[1]; pos[2] = x[2];
-    
     TransLab2Field(pos);
 
 #ifdef FIELD_DEBUG
-    printf("G2PTargetField: %e\t%e\t%e\n", x[0], x[1], x[2]);
+    printf("G2PTargetField: %e\t%e\t%e\n", pos[0], pos[1], pos[2]);
 #endif
-    
+
     Interpolate(pos, field, 2);
 
     TransField2Lab(field);
@@ -324,7 +323,7 @@ bool G2PTargetField::Interpolate(const double* pos, double* b, const int order)
 
     // Lagrange polynomial interpolate on Z
     int indexZ, indexR, indexT;
-    double tempBz[5], tempBr[5];
+    double tempBz[order+1], tempBr[order+1];
     for (int i = 0; i<=order; i++){
         indexR = indexR0+i;
         tempBz[i] = 0.0;
@@ -356,9 +355,21 @@ bool G2PTargetField::Interpolate(const double* pos, double* b, const int order)
     }
 
     // Sign has already been considered
-    b[0] = Br*(pos[0]/r)*(pos[2]/z);
-    b[1] = Br*(pos[1]/r)*(pos[2]/z);
-    b[2] = Bz;
+    if (r==0) {
+        b[0] = 0.0;
+        b[1] = 0.0;
+        b[2] = Bz;
+    }
+    else if (z==0) {
+        b[0] = Br*(pos[0]/r);
+        b[1] = Br*(pos[1]/r);
+        b[2] = Bz;
+    }
+    else {
+        b[0] = Br*(pos[0]/r)*(pos[2]/z);
+        b[1] = Br*(pos[1]/r)*(pos[2]/z);
+        b[2] = Bz;
+    }
 
     return  true;
 }

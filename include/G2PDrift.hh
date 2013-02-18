@@ -17,9 +17,13 @@ public:
     void SetCharge(double value) { fQ = value; }
     void SetStepLength(double value) { fStep = value; }
 
+    void SetHRSAngle(double value) { fHRSAngle = value; }
+    void SetHRSMomentum(double value) { fHRSMomentum = value; }
+
     void SetField(G2PTargetField* field) { pField = field; }
 
-    void Drift(double* x, double* p, double zlimit, double llimit);
+    void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    void Drift(const double* x, double z_tr, double zlimit, double llimit, double* xout);
     
 private:
     void NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err);
@@ -29,10 +33,14 @@ private:
     double fM0;
     double fQ;
     double fStep;
+
+    double fHRSAngle;
+    double fHRSMomentum;
         
     double fField[3];
+    double fVelocity, fVelocity2;
+    double fGamma;
     double fCof;
-    double fVelocity2;
     double fInPoint[3];
     double fMidPoint[3];
     double fFinPoint[3];
