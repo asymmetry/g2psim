@@ -12,7 +12,12 @@ HRSTransBase::~HRSTransBase()
     // Nothing to do
 }
 
-void HRSTransBase::FPCorrection(const double* V5tg, double* V5fp)
+void HRSTransBase::FPCorrLeft(const double* V5tg, double* V5fp)
+{
+    // Nothing to do
+}
+
+void HRSTransBase::FPCorrRight(const double* V5tg, double* V5fp)
 {
     // Nothing to do
 }

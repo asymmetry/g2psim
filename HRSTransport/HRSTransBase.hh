@@ -14,7 +14,8 @@ public:
 
     virtual double GetAngle() = 0;
 
-    virtual void FPCorrection(const double* V5tg, double* V5fp);
+    virtual void FPCorrLeft(const double* V5tg, double* V5fp);
+    virtual void FPCorrRight(const double* V5tg, double* V5fp);
 
     // Rotate on X axis in transport coordinate
     // Notice the positive direction is anti-clockwise

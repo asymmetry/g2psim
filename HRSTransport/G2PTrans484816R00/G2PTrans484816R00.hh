@@ -16,7 +16,8 @@ public:
 
     double GetAngle() { return cModelAngle; }
 
-    void FPCorrection(const double* V5tg, double* V5fp);
+    void FPCorrLeft(const double* V5tg, double* V5fp);
+    void FPCorrRight(const double* V5tg, double* V5fp);
 
 private:
     const double cModelAngle;
