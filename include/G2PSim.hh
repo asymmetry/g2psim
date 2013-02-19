@@ -19,6 +19,8 @@
 
 #include "G2PGun.hh"
 #include "HRSRecUseDB.hh"
+#include "G2PDrift.hh"
+#include "G2PTargetField.hh"
 
 #include "G2PXS.hh"
 #include "HRSTransport.hh"
@@ -36,10 +38,12 @@ public:
     void SetArm(const char* label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
     void SetHRSAngle(double angle) { fHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
+    void SetEndPlaneZ(double value) { fEndPlaneZ = value; }
 
     void AddGun(G2PGun* gun) { pGunList.push_back(gun); }
     
     void SetHRSModel(HRSTransport* model) { pHRS = model; }
+    void SetTargetField(G2PTargetField* model) { pField = model; bFieldOn = true; }
     void SetPhysModel(G2PXS* model) { pPhys=model; }
 
     void SetRootName(const char* name) { pFileName = name; }
@@ -75,7 +79,7 @@ private:
     vector<G2PGun*> pGunList;
     G2PGun* pGun;
     int iGunSetting;
-    double fV3bpm_lab[3];
+    double fV5bpm_lab[5];
     double fV5tg_tr[5];
     double fV5tg_lab[5];
     double fV5fpdata_tr[5];
@@ -91,6 +95,12 @@ private:
     HRSRecUseDB* pRecUseDB;
     double fV5recdb_tr[5];
     double fV5recdb_lab[5];
+
+    G2PDrift* pDrift;
+    G2PTargetField *pField;
+    bool bFieldOn;
+    double fEndPlaneZ;
+    double fV5vb_tr[5];
     
     G2PXS* pPhys;
     double fXS;

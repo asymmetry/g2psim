@@ -15,8 +15,13 @@
 #define G2P_GUN_H
 
 #include <cstdio>
+#include <vector>
 
 #include "TObject.h"
+
+#include "G2PDrift.hh"
+
+using namespace std;
 
 class G2PGun : public TObject
 {
@@ -48,6 +53,8 @@ public:
     void SetPositionRes(double value) { fPosRes = value; }
     void SetAngleRes(double value) { fAngleRes = value; }
     void SetDeltaRes(double value) { fDeltaRes = value; }
+
+    void SetDrift(G2PDrift* pointer) { pDrift = pointer; bFieldOn = true; }
     
     void SetDataFile(const char* name) { pFileName = name; }
 
@@ -61,17 +68,19 @@ public:
 
     virtual void Init();
     virtual bool Shoot(double* V3bpm, double* V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
-    virtual bool ShootData(double* V3bpm, double* V5tg, double* V5fp);
-    virtual void End();
+    virtual void GetFP(double* V5fp);
 
 private:
     void SetGun();   
 
-    bool ShootDelta(double* V3bpm, double* V5tg);
-    bool ShootGaus(double* V3bpm, double* V5tg);
-    bool ShootFlat(double* V3bpm, double* V5tg);
-    bool ShootTest(double* V3bpm, double* V5tg);
-    bool ShootSieve(double* V3bpm, double* V5tg);
+    bool ShootDelta(double* V5bpm, double* V5tg);
+    bool ShootGaus(double* V5bpm, double* V5tg);
+    bool ShootFlat(double* V5bpm, double* V5tg);
+    bool ShootTest(double* V5bpm, double* V5tg);
+    bool ShootSieve(double* V5bpm, double* V5tg);
+    bool ShootData(double* V5bpm, double* V5tg);
+
+    bool LoadData();
 
     bool bIsInit;
     
@@ -100,7 +109,18 @@ private:
     double fAngleRes;
     double fDeltaRes;
 
-    FILE* pFilePtr;
+    typedef struct {
+        int ind;
+        double xb, tb, yb, pb, zb, xf, tf, yf, pf;
+    } sData;
+    
+    vector<sData> fData;
+    sData fDataAtIndex;
+    int iIndex;
+
+    G2PDrift* pDrift;
+    bool bFieldOn;
+
     const char* pFileName;
     
     pf_Gun pfGunSelector;
