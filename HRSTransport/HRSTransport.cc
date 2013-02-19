@@ -7,6 +7,7 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
+//   Feb 2013, J.X. Zhang, Add VC support
 //
 
 #include <cstdio>
@@ -23,6 +24,8 @@
 #include "G2PTrans400016.hh"
 #include "G2PTrans484816.hh"
 #include "G2PTrans484816R00.hh"
+#include "GDHTransSTD.hh"
+#include "GDHTransLargeX0.hh"
 
 #include "HRSTransport.hh"
 
@@ -86,12 +89,14 @@ HRSTransport::~HRSTransport()
 ///////////////////////////////////////////////////////////////////////////
 // Transport particles through HRS using SNAKE model
 // Use iModelIndex to identify which SNAKE model to be used
-// 0: No Septa, 12.0 deg
-// 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
-// 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
+// 1: No Septa, 12.5 deg
+// 11: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
+// 12: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
+// 13: 400016 with shim, 5.65 deg, 3 cm raster, by Min
 // Index > 10 means test
-// 11: 484816 with shim, 5.76 deg, no raster, by Min
+// 18: 484816 with shim, 5.76 deg, no raster, by Min
+// 20: GDH exp with small X0 version
+// 21: GDH exp with large X0 version
 // May add more HRS packages later
 ///////////////////////////////////////////////////////////////////////////
 
@@ -99,20 +104,52 @@ void HRSTransport::RegisterModel()
 {
     HRSTransBase* temp;
     temp = new HRSTransSTD();
-    mModelIndex["STD"] = 0;
-    mModel[0] = temp;
-
-    temp = new G2PTrans484816();
-    mModelIndex["484816"] = 1;
+    mModelIndex["STD"] = 1;
     mModel[1] = temp;
 
+    temp = new G2PTrans484816();
+    mModelIndex["484816"] = 11;
+    mModel[12] = temp;
+
     temp = new G2PTrans400016();
-    mModelIndex["400016"] = 3;
-    mModel[3] = temp;
+    mModelIndex["400016"] = 13;
+    mModel[13] = temp;
 
     temp = new G2PTrans484816R00();
-    mModelIndex["484816R00"] = 11;
-    mModel[11] = temp;
+    mModelIndex["484816R00"] = 18;
+    mModel[18] = temp;
+
+    temp = new GDHTransSTD();
+    mModelIndex["GDHSTD"] = 20;
+    mModel[20] = temp;
+
+    temp = new GDHTransLargeX0();
+    mModelIndex["GDHLargeX0"] = 21;
+    mModel[21] = temp;
+}
+
+void HRSTransport::ChangeModel(int setting)
+{
+    bool found=false;
+    map<string, int>::iterator it = mModelIndex.begin();
+    while (it!=mModelIndex.end()) {
+        if(setting == it->second) {
+            found=true; 
+            break;
+        }
+        it++;
+    }
+    
+    if (!found) {
+        printf("Can not found SNAKE model %d, no change.\n", setting);
+        exit(-1);
+    }
+    else{
+        pModel = mModel[setting];
+        iModelIndex = setting;
+        fModelAngle = pModel->GetAngle();
+        printf("Current SNAKE model is \"%s\", setting=%d\n", (it->first).c_str(), it->second);
+    }
 }
 
 bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
@@ -130,7 +167,7 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     V5[4] = V5_tg[4];
 
 #ifdef DEBUG_HRS_FORWARD
-	printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
+    printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
 #endif
 
     bool bGoodParticle=false;
@@ -138,12 +175,12 @@ bool HRSTransport::Forward(const double* V5_tg, double* V5_fp)
     if (bIsLeftArm) {
         pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         bGoodParticle = pModel->TransLeftHRS(V5);
-        pModel->FPCorrection(V5_tg, V5);
+        pModel->FPCorrLeft(V5_tg, V5);
     }
     else {
         pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         bGoodParticle = pModel->TransRightHRS(V5);
-        pModel->FPCorrection(V5_tg, V5);
+        pModel->FPCorrRight(V5_tg, V5);
     }
 
     V5_fp[0] = V5[0];
@@ -171,7 +208,7 @@ bool HRSTransport::Backward(const double* V5_fp, double* V5_tg)
     V5[4] = V5_fp[4];
 
 #ifdef DEBUG_HRS_BACKWARD
-	printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
+    printf("HRSTransport: %e\t%e\t%e\t%e\t%e\n", V5[0], V5[1], V5[2], V5[3], V5[4]);
 #endif
     
     if (bIsLeftArm) {

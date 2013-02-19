@@ -7,6 +7,7 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
+//   Feb 2013, J.X. Zhang, Add VC support
 //
 
 #ifndef HRS_TRANSPORT_H
@@ -22,58 +23,67 @@
 
 using namespace std;
 
+#ifndef WIN32
 class HRSTransport : public TObject
+#else
+class HRSTransport
+#endif
 {
 public:
-    HRSTransport();
-    HRSTransport(const char* name);
+	HRSTransport();
+	HRSTransport(const char* name);
     HRSTransport(int setting);
-    ~HRSTransport();
-    
-    virtual void RegisterModel();
+	~HRSTransport();
 
-    void SetArm(bool isleftarm) { bIsLeftArm = isleftarm; }
-    void SetHRSAngle(double value) { fHRSAngle = value; }
+    ///////////////////////////////////////////////////////////////////////////
+	// Transport particles through HRS using SNAKE model
+	// Use iModelIndex to identify which SNAKE model to be used
+	// 10: No Septa, 12.5 deg
+	// 11: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
+	// 12: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
+	// 13: 400016 with shim, 5.65 deg, 3 cm raster, by Min
+	// Index > 10 means test
+	// 18: 484816 with shim, 5.76 deg, no raster, by Min
+	// 20: GDH exp with small X0 version
+	// 21: GDH exp with large X0 version
+	// May add more HRS packages later
+	///////////////////////////////////////////////////////////////////////////
+	virtual void RegisterModel();
+    void ChangeModel(int setting);
+	void SetArm(bool isleftarm) { bIsLeftArm = isleftarm; }
+	void SetHRSAngle(double value) { fHRSAngle = value; }
 
-    int GetModelIndex() { return iModelIndex; }
-    
-///////////////////////////////////////////////////////////////////////////
-// Definition of variables
-// forward:
-// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
-// V5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
-// delta does not change
-// backward:
-// V5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
-// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
-// x_tg does not change
-/////////////////////////////////////////////////////////////////////////////
-// Transport particles through HRS using SNAKE model
-// Use iModelIndex to identify which SNAKE model to be used
-// 0: No Septa, 12.0 deg
-// 1: 484816 with shim, 5.65 deg, 3 cm raster, by JJL 
-// 2: 403216 with shim, 5.65 deg, SNAKE Model not ready yet 
-// 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
-// Index > 10 means test
-// 11: 484816 with shim, 5.76 deg, no raster, by Min
-// May add more HRS packages later
-///////////////////////////////////////////////////////////////////////////
+	int GetModelIndex() { return iModelIndex; }
 
+	///////////////////////////////////////////////////////////////////////////
+	// Definition of variables
+	// forward:
+	// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+	// V5_fp = {x_fg, theta_fp, y_fp, phi_fp, delta@tg};
+	// delta does not change
+	///////////////////////////////////////////////////////////////////////////
     bool Forward(const double* V5_tg, double* V5_fp);
+
+    ///////////////////////////////////////////////////////////////////////////
+	// backward:
+	// V5_fp = {x_fp, theta_fp, y_fp, phi_fp, x_tg};
+	// V5_tg = {x_tg, theta_tg, y_tg, phi_tg, delta@tg};
+	// x_tg does not change
+	///////////////////////////////////////////////////////////////////////////
     bool Backward(const double* V5_fp, double* V5_tg);
 
 private:
-    int iModelIndex;
-    bool bIsLeftArm;
-    double fHRSAngle;
-    double fModelAngle;
+	int iModelIndex;
+	bool bIsLeftArm;
+	double fHRSAngle;
+	double fModelAngle;
 
-    map<int, HRSTransBase*> mModel;
-    map<string, int> mModelIndex;
-    HRSTransBase* pModel;
-    
+	map<int, HRSTransBase*> mModel;
+	map<string, int> mModelIndex;
+	HRSTransBase* pModel;
+
 #ifndef WIN32
-    ClassDef(HRSTransport,1);
+	ClassDef(HRSTransport,1);
 #endif
 };
 
@@ -85,9 +95,8 @@ private:
 //C++ interface to call JLL's Fortran transportation routines
 //By Jixie Zhang
 //Jixie has tested and verified that one can use the right arm routines to
-//do the transportation and reconstruction. One only need to flip y_tr
-//and phi_tr
-//at the following pposition:
+//do the transportation and reconstruction for the left arm. One only need to 
+//flip y_tr and phi_tr at the following pposition:
 //1) flip y_tg and phi_tg then call transportation
 //2) flip y_fp and phi_fp in the focus plane then call the reconstruction
 //3) need to flip y_rec and phi_rec again
