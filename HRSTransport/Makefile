@@ -12,7 +12,7 @@ MYHOST      := $(shell hostname -s)
 
 ########################################################################
 LIBFILE     := libHRSTransport.a
-VERSION     := 1.2.5
+VERSION     := 1.3.1
 
 ########################################################################
 SRCDIR      := .
@@ -20,7 +20,8 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELDIR    := HRSTransSTD:G2PTrans400016:G2PTrans484816:G2PTrans484816R00
+MODELDIR    := HRSTransSTD:G2PTrans400016:G2PTrans484816:G2PTrans484816R00:\
+GDHTransSTD:GDHTransLargeX0
 INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
@@ -142,19 +143,19 @@ $(OBJDIR)/%.d: %.cxx
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.f
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.f
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.F
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.F
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
 ifneq ($(DEPS),)
 -include $(DEPS)

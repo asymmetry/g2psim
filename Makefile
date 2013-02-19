@@ -140,19 +140,19 @@ $(OBJDIR)/%.d: %.cxx
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.f
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.f
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.F
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.F
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
 ifneq ($(DEPS),)
 -include $(DEPS)
