@@ -90,7 +90,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 ########################################################################
 # You can specify the .SUFFIXES
 .SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
-.PHONY: all clean test
+.PHONY: all clean test vc
 VPATH       := $(SRCDIR)
 
 ########################################################################
@@ -224,6 +224,11 @@ $(OBJDIR)/%.o: %.F
 
 dir:
 	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
+
+########################################################################
+vc:
+	@tar xvf VCSupport.tar.gz
+	@echo "Adding support files of VC ...... done!"
 
 ########################################################################
 clean: dir
