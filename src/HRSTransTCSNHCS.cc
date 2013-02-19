@@ -89,6 +89,10 @@ namespace HRSTransTCSNHCS
 		x =  y_tr*cosHRS+z_tr*sinHRS; 
 		y = -x_tr;
 		z =  z_tr*cosHRS-y_tr*sinHRS;
+
+#ifdef TRANSFORM_DEBUG
+        printf("Transform: %e\t%e\t%e\n", x, y, z);
+#endif
 	}
     
 	void P_TCS2HCS(double Theta_tr, double Phi_tr, double EndPlaneTheta_hall, double &Theta_hall, double &Phi_hall)

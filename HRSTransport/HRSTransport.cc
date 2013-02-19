@@ -109,7 +109,7 @@ void HRSTransport::RegisterModel()
 
     temp = new G2PTrans484816();
     mModelIndex["484816"] = 11;
-    mModel[12] = temp;
+    mModel[11] = temp;
 
     temp = new G2PTrans400016();
     mModelIndex["400016"] = 13;

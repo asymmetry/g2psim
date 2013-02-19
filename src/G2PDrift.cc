@@ -8,7 +8,7 @@
 
 #include "G2PDrift.hh"
 
-//#define DRIFT_DEBUG 1
+#define DRIFT_DEBUG 1
 
 using namespace std;
 
@@ -19,7 +19,8 @@ const double c = 2.99792458e8;
 const double e = 1.60217656535e-19;
 const double kGEV = 1.0e9*e/c/c;
 const double kOneSixth = 1./6.;
-const double kDEG = 3.14159265358979323846/180.0;
+const double pi = 3.14159265358979323846;
+const double kDEG = pi/180.0;
 
 G2PDrift::G2PDrift()
     :fM0(0.00051099893), fQ(-1.0*e), fStep(1.0e-5), fHRSAngle(5.767*kDEG),
@@ -100,7 +101,6 @@ void G2PDrift::Drift(const double* x, double z_tr, double zlimit, double llimit,
     xi[3] = pp*sin(theta)*cos(phi);
     xi[4] = pp*sin(theta)*sin(phi);
     xi[5] = pp*cos(theta);
-
     double M = sqrt(fM0*fM0+pp*pp);
     xi[3] *= c/M;
     xi[4] *= c/M;
@@ -119,8 +119,9 @@ void G2PDrift::Drift(const double* x, double z_tr, double zlimit, double llimit,
         xi[4] *= -1.0;
         xi[5] *= -1.0;
     }
+
     double newz_tr = z_tr;
-    while ((l<llimit)&&((newz_tr>zlimit)^(sign))) {
+    while ((l<llimit)&&((newz_tr<zlimit)^(sign))) {
 #ifdef DRIFT_DEBUG
         printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
 #endif
@@ -141,7 +142,8 @@ void G2PDrift::Drift(const double* x, double z_tr, double zlimit, double llimit,
     }
 
     phi = atan(xi[4]/xi[3]);
-    theta = acos(xi[4]/fVelocity2);
+    if (phi<0) phi+=2*pi;
+    theta = acos(xi[5]/fVelocity);
 
     HRSTransTCSNHCS::P_HCS2TCS(theta, phi, fHRSAngle, xout[1], xout[3]);
     double temp;
