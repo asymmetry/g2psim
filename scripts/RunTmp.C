@@ -11,17 +11,22 @@
 
 int Run()
 {
+    clock_t start = clock();
     G2PSim *run = new G2PSim();
     
-    G2PGun *gun = new G2PGun("test");
+    //G2PGun *gun = new G2PGun("test");
+    G2PGun *gun = new G2PGun("gaus");
     //G2PGun *gun = new G2PGun("sieve");
     //G2PGun *gun = new G2PGun("data");
     //gun->SetTargetX(4.134e-3);
     //gun->SetTargetY(1.176e-3);
     //gun->SetTargetZ(-12.5475e-3);
     //gun->SetTargetZRange(-14.135e-3,-10.960e-3);
+    gun->SetTargetX(0.0e-3);
+    gun->SetTargetY(0.0e-3);
+    gun->SetTargetZ(0.0e-3);
     gun->SetPositionRes(0.0e-3);
-    gun->SetAngleRes(0.0e-3);
+    gun->SetAngleRes(5.0e-3);
     gun->SetBeamEnergy(2.253207);
     //gun->SetDataFile("input_fp_tr.dat");
     run->AddGun(gun);
@@ -45,12 +50,16 @@ int Run()
     //run->SetRootName("result_G4_484816R00_noc.root"); // no correction
     //run->SetRootName("result_G4_484816R00_noc_200.root"); // fit
 
-    run->SetRootName("result_G4_484816.root");
+    run->SetRootName("result_G2_484816.root");
     //run->SetRootName("result_G4_484816_noc.root"); // no correction
     //run->SetRootName("result_G4_484816_noc_200.root"); // fit
 
-    run->Run(30000);
-    
+    int N = 50000;
+    run->Run(N);
+    clock_t end = clock();
+#define CLOCKS_PER_SEC 1000000
+    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/N);    
+
 //     // Test Drift
 //     G2PTargetField *field = new G2PTargetField("hallb");
 //     field->SetEulerAngle(90,90,-90);

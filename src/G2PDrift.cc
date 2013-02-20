@@ -8,7 +8,7 @@
 
 #include "G2PDrift.hh"
 
-#define DRIFT_DEBUG 1
+//#define DRIFT_DEBUG 1
 
 using namespace std;
 
