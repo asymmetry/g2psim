@@ -4,7 +4,7 @@ Release version: 1.3.0
 git@asymmetry.zapto.org:g2psim.git
 Author: Chao Gu, Jixie Zhang, Min Huang
 
-Useage:
+Usage:
 
     Run.C could be used to debug and test. This root script use the shared library directly with ROOT support.
     Once finished debug, the script could be copied into Main.cc and be compiled to an executable to increase the speed.
@@ -15,6 +15,8 @@ History:
 v1.3
     HRSTransport is a stand alone class now for easier maintaince.
     Add a new gun to sim sieve slit.
+    Add vc project files to support vc2008 IDE
+    Reorganize HRSTransport packages.
 
 v1.2, git snapshot 7f95f23 @ 01182013
     Add all of the focus plane coordinate transformations.
