@@ -31,7 +31,7 @@ HRSTransSTD::~HRSTransSTD()
 bool HRSTransSTD::TransLeftHRS(double* pV5)
 {
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int; (*ii) = 5;
+	int iii = 5; int *ii = &iii;
 
 	float x_test, y_test;
 	//Target to Q1 exit, circle of radius 14.92 cm
@@ -88,7 +88,7 @@ bool HRSTransSTD::TransLeftHRS(double* pV5)
 bool HRSTransSTD::TransRightHRS(double* pV5)
 {
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int; (*ii) = 5;
+	int iii = 5; int *ii = &iii;
 
 	float x_test, y_test;
 
@@ -139,16 +139,14 @@ bool HRSTransSTD::TransRightHRS(double* pV5)
 	pV5[3] = (double)phi_fp;
 	//pV5[4] = (double)delta_fp;  // delta is not change
 
-    delete ii;
-
 	return true;
 }
 
 void HRSTransSTD::ReconLeftHRS(double* pV5)
 {   
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-	int *ii = new int; (*ii) = 5;
-    int *jj = new int; (*jj) = 1;
+	int iii = 5; int *ii = &iii;
+    int jjj = 1; int *jj = &jjj;
     
 	vector_jjl[1] = vector_jjl[1] - txfit_l12p5_(vector_jjl, jj);
 	float x_or      = vector_jjl[4];
@@ -163,15 +161,13 @@ void HRSTransSTD::ReconLeftHRS(double* pV5)
 	pV5[2] = (double)y_rec;
 	pV5[3] = (double)phi_rec;
 	pV5[4] = (double)delta_rec;
-
-    delete ii; delete jj;
 }
 
 void HRSTransSTD::ReconRightHRS(double* pV5)
 {
 	float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-	int *ii = new int; (*ii) = 5;
-    int *jj = new int; (*jj) = 1;
+	int iii = 5; int *ii = &iii;
+    int jjj = 1; int *jj = &jjj;
     
 	/* Orthogonalize theta as JJL asks*/
 	vector_jjl[1]   = vector_jjl[1] - txfit_r12p5_(vector_jjl, jj);
@@ -188,5 +184,4 @@ void HRSTransSTD::ReconRightHRS(double* pV5)
 	pV5[3] = (double)phi_rec;
 	pV5[4] = (double)delta_rec;
 
-    delete ii; delete jj;
 } 

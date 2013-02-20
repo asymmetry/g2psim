@@ -45,7 +45,7 @@ bool G2PTrans484816::TransLeftHRS(double* pV5)
 bool G2PTrans484816::TransRightHRS(double* pV5)
 {    
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int; (*ii) = 5;
+	int iii = 5; int *ii = &iii;
 
     float x_test, y_test;
 
@@ -118,8 +118,6 @@ bool G2PTrans484816::TransRightHRS(double* pV5)
     pV5[3] = (double)phi_fp;
     //pV5[4] = (double)delta_fp;  // delta is not change
 
-    delete ii;
-
     return true;
 }
 
@@ -136,7 +134,7 @@ void G2PTrans484816::ReconLeftHRS(double* pV5)
 void G2PTrans484816::ReconRightHRS(double* pV5)
 {   
     float vector_jjl[]={pV5[0],pV5[1],pV5[2],pV5[3],pV5[4]};
-    int *ii = new int; (*ii) = 5;
+	int iii = 5; int *ii = &iii;
 
     vector_jjl[1]   = vector_jjl[1] - txfit_r5p65_484816_(vector_jjl,ii);
 
@@ -152,8 +150,6 @@ void G2PTrans484816::ReconRightHRS(double* pV5)
     pV5[2] = (double)y_rec;
     pV5[3] = (double)phi_rec;
     pV5[4] = (double)delta_rec;
- 
-    delete ii;
 }
 
 void G2PTrans484816::FPCorrLeft(const double* V5tg, double* V5fp)
