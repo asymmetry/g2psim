@@ -19,8 +19,6 @@
 
 #include "TObject.h"
 
-#include "G2PDrift.hh"
-
 using namespace std;
 
 class G2PGun : public TObject
@@ -30,72 +28,80 @@ public:
     G2PGun(const char* dist);
     ~G2PGun();
 
-    typedef bool (G2PGun::*pf_Gun)(double*, double*);
+    typedef bool (G2PGun::*pf_Gun)(double*, double*, double*);
     
     void SetHRSAngle(double value) { fHRSAngle = value; }
     void SetHRSMomentum(double value) { fHRSMomentum = value; }
     void SetBeamEnergy(double value) { fBeamEnergy = value; }
     
-    void SetTargetX(double value) { fTargetX_lab = value; }
-    void SetTargetY(double value) { fTargetY_lab = value; }
-    void SetTargetZ(double value) { fTargetZLow_lab = value; }
-    void SetTargetZRange(double low, double high) { fTargetZLow_lab = low; fTargetZHigh_lab = high; }
-    void SetTargetR(double value) { fTargetR_lab = value; }
+    void SetBeamX(double value) { fBeamX_lab = value; }
+    void SetBeamY(double value) { fBeamY_lab = value; }
+    void SetBeamTh(double value) { fBeamTh_lab = value; }
+    void SetBeamPh(double value) { fBeamPh_lab = value; }
+    void SetBeamR(double value) { fBeamR = value; }
+    
+    void SetReactZ(double value) { fReactZLow_lab = value; fReactZHigh_lab = value;}
+    void SetReactZRange(double low, double high) { fReactZLow_lab = low; fReactZHigh_lab = high; }
 
-    void SetTheta(double value) { fTargetThLow_tr = value; }
-    void SetThetaRange(double low, double high) { fTargetThLow_tr = low; fTargetThHigh_tr = high; }
-    void SetPhi(double value) { fTargetPhLow_tr = value; }
-    void SetPhiRange(double low, double high) { fTargetPhLow_tr = low; fTargetPhHigh_tr = high; }
+    void SetTargetTh(double value) { fTargetThLow_tr = value; fTargetThHigh_tr = value; }
+    void SetTargetThRange(double low, double high) { fTargetThLow_tr = low; fTargetThHigh_tr = high; }
+    void SetTargetPh(double value) { fTargetPhLow_tr = value; fTargetPhHigh_tr = value; }
+    void SetTargetPhRange(double low, double high) { fTargetPhLow_tr = low; fTargetPhHigh_tr = high; }
 
-    void SetDelta(double value) { fDeltaLow = value; }
+    void SetDelta(double value) { fDeltaLow = value; fDeltaHigh = value; }
     void SetDeltaRange(double low, double high) { fDeltaLow = low; fDeltaHigh = high; }
     
-    void SetPositionRes(double value) { fPosRes = value; }
-    void SetAngleRes(double value) { fAngleRes = value; }
-    void SetDeltaRes(double value) { fDeltaRes = value; }
+    void SetSigmaPosLab(double value) { fSigmaPos_lab = value; }
+    void SetSigmaAngLab(double value) { fSigmaAng_lab = value; }
+    void SetSigmaAngTr(double value) { fSigmaAng_tr = value; }
+    void SetSigmaDelta(double value) { fSigmaDelta = value; }
 
-    void SetDrift(G2PDrift* pointer) { pDrift = pointer; bFieldOn = true; }
-    
+    void SetBPMZLab(double value) { fBPMZ_lab = value; }
+    void SetBPMPosRes(double value) { fBPMPosRes = value; }
+    void SetBPMAngRes(double value) { fBPMAngRes = value; }
+   
     void SetDataFile(const char* name) { pFileName = name; }
 
     bool IsInit() { return bIsInit; }
     bool IsUsingData() { return bUseData; }
 
     int GetSetting() { return iSetting; }
-    double GetPosResolution() { return fPosRes; }
-    double GetAngleResolution() { return fAngleRes; }
-    double GetDeltaResolution() { return fDeltaRes; }
+    double GetBPMPosRes() { return fBPMPosRes; }
+    double GetBPMAngRes() { return fBPMAngRes; }
 
     virtual void Init();
-    virtual bool Shoot(double* V3bpm, double* V5tg) { return (this->*pfGunSelector)(V3bpm, V5tg); }
-    virtual void GetFP(double* V5fp);
+    virtual bool Shoot(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr) { return (this->*pfGunSelector)(V5beam_lab, V5bpm_lab, V5tg_tr); }
+    virtual void GetFP(double* V5fp_tr);
 
 private:
     void SetGun();   
 
-    bool ShootDelta(double* V5bpm, double* V5tg);
-    bool ShootGaus(double* V5bpm, double* V5tg);
-    bool ShootFlat(double* V5bpm, double* V5tg);
-    bool ShootTest(double* V5bpm, double* V5tg);
-    bool ShootSieve(double* V5bpm, double* V5tg);
-    bool ShootData(double* V5bpm, double* V5tg);
+    bool ShootDelta(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootGaus(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootFlat(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootTest(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootSieve(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootData(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
 
+    void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
     bool LoadData();
 
     bool bIsInit;
     
     int iSetting;
     bool bUseData;
+    bool bUseField;
 
     double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
 
-    double fTargetX_lab;
-    double fTargetY_lab;
-    double fTargetZLow_lab;
-    double fTargetZHigh_lab;
-    double fTargetR_lab;
+    double fBeamX_lab, fBeamY_lab;
+    double fBeamTh_lab, fBeamPh_lab;
+    double fBeamR;
+    
+    double fReactZLow_lab;
+    double fReactZHigh_lab;
 
     double fTargetThLow_tr;
     double fTargetThHigh_tr;
@@ -105,9 +111,14 @@ private:
     double fDeltaLow; // in the unit of delta
     double fDeltaHigh;
 
-    double fPosRes;
-    double fAngleRes;
-    double fDeltaRes;
+    double fSigmaPos_lab;
+    double fSigmaAng_lab;
+    double fSigmaAng_tr;
+    double fSigmaDelta;
+
+    double fBPMZ_lab;
+    double fBPMPosRes;
+    double fBPMAngRes;
 
     typedef struct {
         int ind;
@@ -117,9 +128,6 @@ private:
     vector<sData> fData;
     sData fDataAtIndex;
     int iIndex;
-
-    G2PDrift* pDrift;
-    bool bFieldOn;
 
     const char* pFileName;
     

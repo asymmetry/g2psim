@@ -13,6 +13,8 @@ double fylowlimit  = -0.06, fyhilimit  = 0.06;
 double phlowlimit  = -0.03, phhilimit  = 0.03;
 double thlowlimit  = -0.06, thhilimit  = 0.06;
 double dplowlimit  = -0.01, dphilimit  = 0.01;
+double xlowlimit  = -0.01, xhilimit  = 0.01;
+double ylowlimit  = -0.01, yhilimit  = 0.01;
 
 void PlotFPThPh(){
     TCanvas *c1 = new TCanvas("c1","FP Th vs Ph", 1200, 600);
@@ -148,6 +150,24 @@ void PlotORThPh(){
 
     T->Draw("Thetarecdb_tr:Phirecdb_tr>>h02","IsGood","COLZ");
     c0->Update();
+}
+
+void PlotORYX(){
+    TCanvas *c01 = new TCanvas("c0","Origin Y vs X", 1200, 600);
+    c01->Divide(2,1);
+    c01->cd(1);
+    gPad->SetGrid();
+    TH2F* h001 = new TH2F("h001", "Origin Y vs X", 100, xlowlimit, xhilimit, 100, ylowlimit, yhilimit);
+
+    T->Draw("Xbeam_lab:Ybeam_lab>>h001","IsGood","COLZ");
+    c01->Update();
+
+    c01->cd(2);
+    gPad->SetGrid();
+    TH2F* h002 = new TH2F("h002", "Origin Y vs X (BPM)", 100, xlowlimit, xhilimit, 100, ylowlimit, yhilimit);
+
+    T->Draw("Xbpm_lab:Ybpm_lab>>h002","IsGood","COLZ");
+    c01->Update();
 }
 
 void LoadTree(const char* filename = "test.root"){

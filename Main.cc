@@ -78,17 +78,24 @@ int main(int argc, char** argv)
     G2PSim *run= new G2PSim();
     G2PGun *gun= new G2PGun(pGun);
     gun->SetDataFile("input_fp_tr.dat");
-    //gun->SetTargetX(4.134e-3);
-    //gun->SetTargetY(1.176e-3);
-    //gun->SetTargetZ(-12.5475e-3);
-    //gun->SetTargetZRange(-14.135e-3,-10.960e-3);
-    gun->SetTargetX(0.0e-3);
-    gun->SetTargetY(0.0e-3);
-    gun->SetTargetZ(0.0e-3);
-    gun->SetPositionRes(1.0e-3);
-    gun->SetAngleRes(1.0e-3);
-    gun->SetBeamEnergy(2.253207);
-    gun->SetDataFile("input_fp_tr.dat");
+    //G2PGun *gun = new G2PGun("sieve");
+    //G2PGun *gun = new G2PGun("data");
+    //gun->SetBeamX(4.134e-3);     // 0T,6deg
+    //gun->SetBeamY(1.176e-3);     // 0T,6deg
+    //gun->SetReactZ(-13.6271e-3); // 40mil
+    //gun->SetReactZ(-12.5476e-3); // 125mil
+    //gun->SetReactZRange(-14.1350e-3,-13.1191e-3); //40mil
+    //gun->SetReactZRange(-14.1350e-3,-10.9600e-3); //125mil
+    gun->SetBeamX(0.0e-3);
+    gun->SetBeamY(0.0e-3);
+    gun->SetReactZ(0.0e-3);
+    gun->SetSigmaPosLab(0.0e-3);
+    gun->SetSigmaAngLab(0.2e-3);
+    gun->SetSigmaAngTr(0.2e-3);
+    gun->SetSigmaDelta(0.0e-3);
+    gun->SetBPMPosRes(0.0e-3);
+    gun->SetBPMPosRes(0.0e-3);
+    //gun->SetDataFile("input_fp_tr.dat");
     run->AddGun(gun);
 
     HRSTransport *model = new HRSTransport(pSnake);
@@ -108,7 +115,8 @@ int main(int argc, char** argv)
     run->SetPhysModel(physmodel);
 
     run->SetArm(pArm);
-    run->SetHRSMomentum(2.24949710);
+    run->SetBeamEnergy(2.253207);    // 0T,6deg
+    run->SetHRSMomentum(2.249497);   // 0T,6deg
 
     run->SetNEvent(nEvent);
     run->SetRootName("result_test.root");

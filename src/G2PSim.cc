@@ -19,6 +19,7 @@
 #include "G2PRand.hh"
 #include "HRSRecUseDB.hh"
 #include "HRSTransTCSNHCS.hh"
+#include "G2PDrift.hh"
 
 #include "G2PXS.hh"
 #include "HRSTransport.hh"
@@ -34,11 +35,12 @@ const double kDEG = 3.14159265358979323846/180.0;
 ClassImp(G2PSim);
 
 G2PSim::G2PSim()
-    :bIsInit(false), pFile(NULL), pFileName(NULL), nIndex(1),
-     nEvent(10000), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
-     fHRSMomentum(2.251), pGun(NULL), pHRS(NULL), pRecUseDB(NULL),
-     pDrift(NULL), pField(NULL), bFieldOn(false), fEndPlaneZ(0),
-     pPhys(NULL), pTree(NULL), pConfig(NULL), pfRunSelector(NULL)
+    :bIsInit(false), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
+     fHRSMomentum(2.251), fBeamEnergy(2.254), bUseField(false),
+     nEvent(10000), nIndex(1), pGun(NULL), iGunSetting(0), pHRS(NULL),
+     bIsGoodParticle(false), pRecUseDB(NULL), pField(NULL),
+     fEndPlaneZ(0), pPhys(NULL), fXS(0), pTree(NULL), pConfig(NULL),
+     pFile(NULL), pFileName(NULL), pfRunSelector(NULL)
 {
     pGunList.clear();
     
@@ -54,19 +56,17 @@ void G2PSim::Init()
 {
     bool noerror = true;
 
-    if (bFieldOn) {
+    if (bUseField) {
         pField->Init();
         if (!pField->IsInit()) noerror = false;
-        pDrift = new G2PDrift(pField);
-        pDrift->SetHRSAngle(fHRSAngle);
-        pDrift->SetHRSMomentum(fHRSMomentum);
+        else G2PDrift::SetField(pField);
     }
 
     vector<G2PGun*>::iterator it = pGunList.begin();
     while (it!=pGunList.end()){
         (*it)->SetHRSAngle(fHRSAngle);
         (*it)->SetHRSMomentum(fHRSMomentum);
-        if (bFieldOn) (*it)->SetDrift(pDrift);
+        (*it)->SetBeamEnergy(fBeamEnergy);
         (*it)->Init();
         if (!(*it)->IsInit()) noerror = false;
         it++;
@@ -120,6 +120,7 @@ void G2PSim::End()
 
 void G2PSim::Clear()
 {
+    memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5tg_tr, 0, sizeof(fV5tg_tr));
     memset(fV5tg_lab, 0, sizeof(fV5tg_lab));
@@ -156,18 +157,17 @@ void G2PSim::InitTree()
         pConfig->Branch("IsLeftArm", &bIsLeftArm, "IsLeftArm/O");
         pConfig->Branch("HRSAngle", &fHRSAngle, "HRSAngle/D");
         pConfig->Branch("HRSMomentum", &fHRSMomentum, "HRSMomentum/D");
+        pConfig->Branch("BeamEnergy", &fBeamEnergy, "BeamEnergy/D");
 
         int hrssetting = pHRS->GetModelIndex();
         pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
 
         int gunsetting = pGun->GetSetting();
-        double posres = pGun->GetPosResolution();
-        double angleres = pGun->GetAngleResolution();
-        double deltares = pGun->GetDeltaResolution();
+        double posres = pGun->GetBPMPosRes();
+        double angres = pGun->GetBPMAngRes();
         pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
-        pConfig->Branch("GunPosRes", &posres, "GunPosRes/D");
-        pConfig->Branch("GunAngleRes", &angleres, "GunAngleRes/D");
-        pConfig->Branch("GunDeltaRes", &deltares, "GunDeltaRes/D");
+        pConfig->Branch("BPMPosRes", &posres, "BPMPosRes/D");
+        pConfig->Branch("BPMAngRes", &angres, "BPMAngRes/D");
 
         pConfig->Fill();
 
@@ -182,8 +182,16 @@ void G2PSim::InitTree()
     pTree->Branch("IsGood", &bIsGoodParticle, "IsGood/O");
     pTree->Branch("Gun", &iGunSetting, "Gun/I");
 
+    pTree->Branch("Xbeam_lab", &fV5beam_lab[0],"Xbeam_lab/D");
+    pTree->Branch("Thetabeam_lab", &fV5beam_lab[1],"Thetabeam_lab/D");
+	pTree->Branch("Ybeam_lab", &fV5beam_lab[2],"Ybeam_lab/D");
+    pTree->Branch("Phibeam_lab", &fV5beam_lab[3],"Phibeam_lab/D");
+	pTree->Branch("Zbeam_lab", &fV5beam_lab[4],"Zbeam_lab/D");
+
     pTree->Branch("Xbpm_lab", &fV5bpm_lab[0],"Xbpm_lab/D");
+    pTree->Branch("Thetabpm_lab", &fV5bpm_lab[1],"Thetabpm_lab/D");
 	pTree->Branch("Ybpm_lab", &fV5bpm_lab[2],"Ybpm_lab/D");
+    pTree->Branch("Phibpm_lab", &fV5bpm_lab[3],"Phibpm_lab/D");
 	pTree->Branch("Zbpm_lab", &fV5bpm_lab[4],"Zbpm_lab/D");
 
     pTree->Branch("Xtg_tr",&fV5tg_tr[0],"Xtg_tr/D");
@@ -248,38 +256,39 @@ void G2PSim::InitTree()
 void G2PSim::RunSim()
 {
     while (nIndex<=nEvent) {
-        if (!pGun->Shoot(fV5bpm_lab, fV5tg_tr)) break;
+        if (!pGun->Shoot(fV5beam_lab, fV5bpm_lab, fV5tg_tr)) break;
 
-        double saveXtg_tr;
-        if (bFieldOn) {
-            pDrift->Drift(fV5tg_tr, 0.0, fEndPlaneZ, 10.0, fV5vb_tr);
+        if (bUseField) {
+            G2PDrift::Drift(fV5tg_tr, fHRSMomentum, fHRSAngle, 0.0, fEndPlaneZ, 10.0, fV5vb_tr);
             double virtualV5tg_tr[5];
             HRSTransTCSNHCS::Project(fV5vb_tr[0], fV5vb_tr[2], fEndPlaneZ, -fEndPlaneZ, fV5vb_tr[1], fV5vb_tr[3], virtualV5tg_tr[0], virtualV5tg_tr[2], virtualV5tg_tr[4]);
             virtualV5tg_tr[1] = fV5vb_tr[1];
             virtualV5tg_tr[3] = fV5vb_tr[3];
             virtualV5tg_tr[4] = fV5vb_tr[4];
             bIsGoodParticle = pHRS->Forward(virtualV5tg_tr, fV5fp_tr);
-            saveXtg_tr = virtualV5tg_tr[0];
         }
         else {
             bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
-            saveXtg_tr = fV5tg_tr[0];
         }
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
 #ifdef G2PSIM_DEBUG
         printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3], fV5fp_rot[4]);
 #endif
-        fV5fp_tr[4] = saveXtg_tr;
+
+        double xbpm_tr, ybpm_tr, zbpm_tr;
+        HRSTransTCSNHCS::X_HCS2TCS(fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4], fHRSAngle, xbpm_tr, ybpm_tr, zbpm_tr);
+        HRSTransTCSNHCS::Project(xbpm_tr, ybpm_tr, zbpm_tr, -zbpm_tr, fV5tg_tr[1], fV5tg_tr[3]);
+        fV5fp_tr[4] = xbpm_tr;
         bIsGoodParticle &= pHRS->Backward(fV5fp_tr, fV5rec_tr);
         pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5recdb_tr);
 
-        if (bFieldOn) {
+        if (bUseField) {
             HRSTransTCSNHCS::Project(fV5rec_tr[0], fV5rec_tr[2], 0.0, fEndPlaneZ, fV5rec_tr[1], fV5rec_tr[3], fV5vb_tr[0], fV5vb_tr[2], fV5vb_tr[4]);
             fV5vb_tr[1] = fV5rec_tr[1];
             fV5vb_tr[3] = fV5rec_tr[3];
             fV5vb_tr[4] = fV5rec_tr[4];
-            pDrift->Drift(fV5vb_tr, fEndPlaneZ, 0.0, 10.0, fV5rec_tr);
+            G2PDrift::Drift(fV5vb_tr, fHRSMomentum, fHRSAngle, fEndPlaneZ, 0.0, 10.0, fV5rec_tr);
         }
 
 #ifdef G2PSIM_DEBUG
@@ -298,7 +307,7 @@ void G2PSim::RunSim()
 void G2PSim::RunData()
 {
     while (nIndex<=nEvent) {
-        if (!pGun->Shoot(fV5bpm_lab, fV5tg_tr)) break;
+        if (!pGun->Shoot(fV5beam_lab, fV5bpm_lab, fV5tg_tr)) break;
         pGun->GetFP(fV5fpdata_tr);
 
         fV5fpdata_tr[4] = fV5tg_tr[0];
