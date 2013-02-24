@@ -31,6 +31,7 @@ public:
     void End();
 
     void GetField(const double* x, double* b);
+    double GetRatio() { return fRatio; }
 
 private:
     bool ReadMap();

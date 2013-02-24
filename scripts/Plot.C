@@ -15,6 +15,8 @@ double thlowlimit  = -0.06, thhilimit  = 0.06;
 double dplowlimit  = -0.01, dphilimit  = 0.01;
 double xlowlimit  = -0.01, xhilimit  = 0.01;
 double ylowlimit  = -0.01, yhilimit  = 0.01;
+double bxlowlimit  = -0.01, bxhilimit  = 0.01;
+double bylowlimit  = -0.01, byhilimit  = 0.01;
 
 void PlotFPThPh(){
     TCanvas *c1 = new TCanvas("c1","FP Th vs Ph", 1200, 600);
@@ -117,6 +119,24 @@ void PlotTPThPh(){
     c3->Update();
 }
 
+void PlotTPThY(){
+    TCanvas *c32 = new TCanvas("c32","Target Th vs Y", 1200, 600);
+    c32->Divide(2,1);
+    c32->cd(1);
+    gPad->SetGrid();
+    TH2F* h321 = new TH2F("h321", "Target Th vs Y (SNAKE)", 200, ylowlimit, yhilimit, 200, thlowlimit, thhilimit);
+
+    T->Draw("Thetarec_tr:Yrec_tr>>h321","IsGood","COLZ");
+    c32->Update();
+
+    c32->cd(2);
+    gPad->SetGrid();
+    TH2F* h322 = new TH2F("h322", "Target Th vs Ph (Database)", 200, ylowlimit, yhilimit, 200, thlowlimit, thhilimit);
+
+    T->Draw("Thetarecdb_tr:Yrecdb_tr>>h322","IsGood","COLZ");
+    c32->Update();
+}
+
 void PlotTPDp(){
     TCanvas *c4 = new TCanvas("c4","TP Dp", 600, 300);
     c4->cd();
@@ -124,13 +144,13 @@ void PlotTPDp(){
     TH1F* h41 = new TH1F("h41", "TP Dp", 200, dplowlimit, dphilimit);
     h41->SetLineColor(2);
     
-    T->Draw("Deltarecdb>>h41","IsGood");
+    T->Draw("Delta>>h41","IsGood");
     c4->Update();
     
     TH1F* h42 = new TH1F("h42", "TP Dp", 200, dplowlimit, dphilimit);
     h42->SetLineColor(1);
 
-    T->Draw("Delta_rec>>h42","IsGood","same");
+    T->Draw("Deltarec>>h42","IsGood","same");
     c4->Update();
 }
 
@@ -157,21 +177,52 @@ void PlotORYX(){
     c01->Divide(2,1);
     c01->cd(1);
     gPad->SetGrid();
-    TH2F* h001 = new TH2F("h001", "Origin Y vs X", 100, xlowlimit, xhilimit, 100, ylowlimit, yhilimit);
+    TH2F* h001 = new TH2F("h001", "Origin Y vs X", 100, bxlowlimit, bxhilimit, 100, bylowlimit, byhilimit);
 
     T->Draw("Xbeam_lab:Ybeam_lab>>h001","IsGood","COLZ");
     c01->Update();
 
     c01->cd(2);
     gPad->SetGrid();
-    TH2F* h002 = new TH2F("h002", "Origin Y vs X (BPM)", 100, xlowlimit, xhilimit, 100, ylowlimit, yhilimit);
+    TH2F* h002 = new TH2F("h002", "Origin Y vs X (BPM)", 100, bxlowlimit, bxhilimit, 100, bylowlimit, byhilimit);
 
     T->Draw("Xbpm_lab:Ybpm_lab>>h002","IsGood","COLZ");
     c01->Update();
+}
+
+void PlotRecError()
+{
+    TCanvas* c100 = new TCanvas("c100", "Reconstruction Uncertainty", 1200, 600);
+    c100->Divide(2,2);
+    c100->cd(1);
+    TH1F* h1001 = new TH1F("h1001", "Delta (x 10e-4)", 100, dplowlimit/10.0*10000, dphilimit/10.0*10000);
+
+    T->Draw("(Deltarec-Delta)*10000>>h1001","IsGood");
+
+    c100->cd(2);
+    TH1F* h1002 = new TH1F("h1002", "Theta (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
+
+    T->Draw("(Thetarec_tr-Thetatg_tr)*1000>>h1002","IsGood");
+
+    c100->cd(3);
+    TH1F* h1003 = new TH1F("h1003", "Y (mm)", 100, ylowlimit/2.0*1000, yhilimit/2.0*1000);
+
+    T->Draw("(Yrec_tr-Ytg_tr)*1000>>h1003","IsGood");
+
+    c100->cd(4);
+    TH1F* h1004 = new TH1F("h1004", "Phi (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
+
+    T->Draw("(Phirec_tr-Phitg_tr)*1000>>h1004","IsGood");
+
+    c100->Update();
 }
 
 void LoadTree(const char* filename = "test.root"){
     // Will add TChain later
     f = new TFile(filename);
     T = (TTree *)f->Get("T");
+
+    gStyle->SetStatH(0.3);
+    gStyle->SetStatW(0.25);
+    gStyle->SetOptStat("emr");
 }

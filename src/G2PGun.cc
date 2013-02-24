@@ -145,10 +145,10 @@ bool G2PGun::ShootDelta(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr)
 
     GetBPMValue(V5beam_lab, V5bpm_lab);
 
-    if (bUseField)
-        G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
-    else
-        HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
+    // if (bUseField)
+    //     G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
+    // else
+    //     HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg_tr[0], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
@@ -177,10 +177,10 @@ bool G2PGun::ShootGaus(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr)
 
     GetBPMValue(V5beam_lab, V5bpm_lab);
 
-    if (bUseField)
-        G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
-    else
-        HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
+    // if (bUseField)
+    //     G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
+    // else
+    //     HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg_tr[0], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
@@ -217,10 +217,10 @@ bool G2PGun::ShootFlat(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr)
 
     GetBPMValue(V5beam_lab, V5bpm_lab);
 
-    if (bUseField)
-        G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
-    else
-        HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
+    // if (bUseField)
+    //     G2PDrift::Drift(V5tg_tr, fHRSMomentum, fHRSAngle, Ztg_tr, 0.0, 10.0, V5tg_tr);
+    // else
+    //     HRSTransTCSNHCS::Project(V5tg_tr[0], V5tg_tr[2], Ztg_tr, -Ztg_tr, V5tg_tr[1], V5tg_tr[3]);
 
 #ifdef GUN_DEBUG
     printf("G2PGun: %e\t%e\t%e\t%e\t%e\n", V5tg_tr[0], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
@@ -510,6 +510,7 @@ void G2PGun::GetBPMValue(const double* V5beam_lab, double* V5bpm_lab)
     if (bUseField) {
         double z_lab = x[2];
         G2PDrift::Drift(x, p, fBPMZ_lab, 10.0, x, p);
+
         double theta_tr = G2PRand::Gaus(atan(p[0]/p[2]), fBPMAngRes);
         double phi_tr = G2PRand::Gaus(atan(p[1]/p[2]), fBPMAngRes);
         p[0] = p[2]*tan(theta_tr);
@@ -522,9 +523,9 @@ void G2PGun::GetBPMValue(const double* V5beam_lab, double* V5bpm_lab)
         x[1] = G2PRand::Gaus(x[1], fBPMPosRes);
         G2PDrift::Drift(x, p, z_lab, 10.0, x, p);
         V5bpm_lab[0] = x[0];
-        V5bpm_lab[1] = atan(p[1]/p[0]);
+        V5bpm_lab[1] = acos(p[2]/fBeamEnergy);
         V5bpm_lab[2] = x[1];
-        V5bpm_lab[3] = acos(p[2]/fBeamEnergy);
+        V5bpm_lab[3] = atan(p[1]/p[0]);
         V5bpm_lab[4] = x[2];
     }
     else {
@@ -543,7 +544,6 @@ void G2PGun::GetBPMValue(const double* V5beam_lab, double* V5bpm_lab)
         p[0] *= normF;
         p[1] *= normF;
         p[2] *= normF;
-        printf("G2PGun: %e\t%e\n", theta_tr, phi_tr);
         V5bpm_lab[0] = x[0];
         V5bpm_lab[1] = acos(p[2]/fBeamEnergy);
         V5bpm_lab[2] = x[1];

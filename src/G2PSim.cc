@@ -204,7 +204,6 @@ void G2PSim::InitTree()
 	pTree->Branch("Thetatg_lab",&fV5tg_lab[1],"Thetatg_lab/D");
 	pTree->Branch("Ytg_lab",&fV5tg_lab[2],"Ytg_lab/D");
 	pTree->Branch("Phitg_lab",&fV5tg_lab[3],"Phitg_lab/D");
-	pTree->Branch("Ztg_lab",&fV5tg_lab[4],"Ztg_lab/D");
 
     pTree->Branch("Xfpdata_tr",&fV5fpdata_tr[0],"Xfpdata_tr/D");
 	pTree->Branch("Thetafpdata_tr",&fV5fpdata_tr[1],"Thetafpdata_tr/D");
@@ -236,7 +235,6 @@ void G2PSim::InitTree()
 	pTree->Branch("Thetarec_lab",&fV5rec_lab[1],"Thetarec_lab/D");
 	pTree->Branch("Yrec_lab",&fV5rec_lab[2],"Yrec_lab/D");
 	pTree->Branch("Phirec_lab",&fV5rec_lab[3],"Phirec_lab/D");
-	pTree->Branch("Zrec_lab",&fV5tg_lab[4],"Zrec_lab/D");
 
     pTree->Branch("Xrecdb_tr",&fV5recdb_tr[0],"Xrecdb_tr/D");
 	pTree->Branch("Thetarecdb_tr",&fV5recdb_tr[1],"Thetarecdb_tr/D");
@@ -248,7 +246,6 @@ void G2PSim::InitTree()
 	pTree->Branch("Thetarecdb_lab",&fV5recdb_lab[1],"Thetarecdb_lab/D");
 	pTree->Branch("Yrecdb_lab",&fV5recdb_lab[2],"Yrecdb_lab/D");
 	pTree->Branch("Phirecdb_lab",&fV5recdb_lab[3],"Phirecdb_lab/D");
-    pTree->Branch("Zrecdb_lab",&fV5recdb_lab[3],"Zrecdb_lab/D");
 
     pTree->Branch("XS", &fXS, "XS/D");
 }
@@ -258,16 +255,24 @@ void G2PSim::RunSim()
     while (nIndex<=nEvent) {
         if (!pGun->Shoot(fV5beam_lab, fV5bpm_lab, fV5tg_tr)) break;
 
+        double xtg_tr, ytg_tr, ztg_tr;
+        HRSTransTCSNHCS::X_HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, xtg_tr, ytg_tr, ztg_tr);
+
+        double xsave_tr;
         if (bUseField) {
-            G2PDrift::Drift(fV5tg_tr, fHRSMomentum, fHRSAngle, 0.0, fEndPlaneZ, 10.0, fV5vb_tr);
+            G2PDrift::Drift(fV5tg_tr, fHRSMomentum, fHRSAngle, ztg_tr, fEndPlaneZ, 10.0, fV5vb_tr);
             double virtualV5tg_tr[5];
             HRSTransTCSNHCS::Project(fV5vb_tr[0], fV5vb_tr[2], fEndPlaneZ, -fEndPlaneZ, fV5vb_tr[1], fV5vb_tr[3], virtualV5tg_tr[0], virtualV5tg_tr[2], virtualV5tg_tr[4]);
             virtualV5tg_tr[1] = fV5vb_tr[1];
             virtualV5tg_tr[3] = fV5vb_tr[3];
             virtualV5tg_tr[4] = fV5vb_tr[4];
+            //printf("%e\t%e\n", fV5vb_tr[1], fV5vb_tr[3]);
+            xsave_tr = virtualV5tg_tr[0];
             bIsGoodParticle = pHRS->Forward(virtualV5tg_tr, fV5fp_tr);
         }
         else {
+            HRSTransTCSNHCS::Project(fV5tg_tr[0], fV5tg_tr[2], ztg_tr, -ztg_tr, fV5tg_tr[1], fV5tg_tr[3]);
+            xsave_tr = fV5tg_tr[0];
             bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
         }
         pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
@@ -275,11 +280,24 @@ void G2PSim::RunSim()
 #ifdef G2PSIM_DEBUG
         printf("G2PSim: %e\t%e\t%e\t%e\t%e\n", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3], fV5fp_rot[4]);
 #endif
+        VDCSmearing(fV5fp_tr);
 
         double xbpm_tr, ybpm_tr, zbpm_tr;
         HRSTransTCSNHCS::X_HCS2TCS(fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4], fHRSAngle, xbpm_tr, ybpm_tr, zbpm_tr);
         HRSTransTCSNHCS::Project(xbpm_tr, ybpm_tr, zbpm_tr, -zbpm_tr, fV5tg_tr[1], fV5tg_tr[3]);
         fV5fp_tr[4] = xbpm_tr;
+        if (bUseField) {
+            double xbpm_tr_eff = GetEffBPM(xbpm_tr, fHRSMomentum);
+            fV5fp_tr[4] = xbpm_tr_eff;
+            pHRS->Backward(fV5fp_tr, fV5rec_tr);
+            double temprec=fHRSMomentum*(1.0+fV5rec_tr[4]);
+            xbpm_tr_eff = GetEffBPM(xbpm_tr, temprec);
+            fV5fp_tr[4] = xsave_tr;
+            //printf("%e\t%e\n", xsave_tr, xbpm_tr_eff);
+        }
+        else {
+            fV5fp_tr[4] = xsave_tr;
+        }
         bIsGoodParticle &= pHRS->Backward(fV5fp_tr, fV5rec_tr);
         pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5recdb_tr);
 
@@ -289,6 +307,10 @@ void G2PSim::RunSim()
             fV5vb_tr[3] = fV5rec_tr[3];
             fV5vb_tr[4] = fV5rec_tr[4];
             G2PDrift::Drift(fV5vb_tr, fHRSMomentum, fHRSAngle, fEndPlaneZ, 0.0, 10.0, fV5rec_tr);
+            double reactz = DriftPath();
+            //double reactz = -13.6271e-3;
+            //printf("%e\n", reactz);
+            G2PDrift::Drift(fV5rec_tr, fHRSMomentum, fHRSAngle, 0.0, reactz, 10.0, fV5rec_tr);
         }
 
 #ifdef G2PSIM_DEBUG
@@ -299,7 +321,7 @@ void G2PSim::RunSim()
 
         pTree->Fill();
 
-        if ((nIndex%10000)==0) printf("%d\n", nIndex);
+        if ((nIndex%1000)==0) printf("%d\n", nIndex);
         nIndex++;
     }
 }
@@ -333,7 +355,7 @@ void G2PSim::RunData()
 
         pTree->Fill();
 
-        if ((nIndex%10000)==0) printf("%d\n", nIndex);
+        if ((nIndex%1000)==0) printf("%d\n", nIndex);
         nIndex++;
     }
 }
@@ -349,6 +371,91 @@ void G2PSim::VDCSmearing(double* V5_fp)
     V5_fp[2] += G2PRand::Gaus(0, WireChamberResY);
     V5_fp[1] += G2PRand::Gaus(0, WireChamberResT);
     V5_fp[3] += G2PRand::Gaus(0, WireChamberResP);
+}
+
+double G2PSim::GetEffBPM(double xbpm_tr, double p)
+{
+	//Apply the correction to get the effective X_BPM_tr at target plane
+	//the following is the result of fitting "[0]/x+[1]" to 
+	//(X_proj2tg_tr - Xtg_tr) vs Pvb @ 5.0T target field
+	//need to fit for 2.5Ttarget field later
+	// EXT PARAMETER                                   STEP         FIRST   
+	//NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+	// 1  p0          -6.39438e+00   5.37354e-03   1.74320e-04  -2.30577e-05
+	// 2  p1           8.06795e-04   4.92714e-03   1.02122e-05   6.92299e-07
+	double xbpm_tr_eff=xbpm_tr;	
+	if(bUseField)
+    {
+		xbpm_tr_eff += (-6.39438/p + 8.06795e-04)/1000 * pField->GetRatio();
+	}
+	return xbpm_tr_eff;
+}
+
+
+double G2PSim::DriftPath()
+{   
+    if (bUseField) {
+        double x[3] = { fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4] };
+        double p[3] = { fBeamEnergy*sin(fV5bpm_lab[1])*cos(fV5bpm_lab[3]),
+                        fBeamEnergy*sin(fV5bpm_lab[1])*sin(fV5bpm_lab[3]),
+                        fBeamEnergy*cos(fV5bpm_lab[1]) };
+
+        double xrec[3];
+        HRSTransTCSNHCS::X_TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
+        double theta,phi;
+        HRSTransTCSNHCS::P_TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, theta, phi);
+        double prec[3] = { fHRSMomentum*(1+fV5rec_tr[4])*sin(theta)*cos(phi),
+                           fHRSMomentum*(1+fV5rec_tr[4])*sin(theta)*sin(phi),
+                           fHRSMomentum*(1+fV5rec_tr[4])*cos(theta) };
+        G2PDrift::Drift(xrec, prec, 0, 10.0, xrec, prec);
+
+        double z = 0.0;
+        double zmin = 0.0;
+        double distmin = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
+        for (int i = 1; i<150; i++) {
+            z = 0.1e-3*i;
+            G2PDrift::Drift(x, p, z, 10.0, x, p);
+            G2PDrift::Drift(xrec, prec, z, 10.0, xrec, prec);
+            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
+            double distance = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
+            if (distance<distmin) {
+                zmin = z;
+                distmin = distance;
+            }
+        }
+
+        // for (int i = 20; i<200; i++) {
+        //     z = 1e-3*i;
+        //     G2PDrift::Drift(xrec, prec, z, 10.0, xrec, prec);
+        //     printf("%e\t%e\t%e\t%e\t%e\n", z, 1000.0, 1000.0, xrec[0], xrec[1]);
+        // }
+
+        for (int i = 1; i<150; i++) {
+            z = -0.1e-3*i;
+            G2PDrift::Drift(x, p, z, 10.0, x, p);
+            G2PDrift::Drift(xrec, prec, z, 10.0, xrec, prec);
+            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
+            double distance = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
+            if (distance<distmin) {
+                zmin = z;
+                distmin = distance;
+            }
+        }
+
+        // for (int i = -20; i>-200; i--) {
+        //     z = 1e-3*i;
+        //     G2PDrift::Drift(x, p, z, 10.0, x, p);
+        //     printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], 1000.0, 1000.0);
+        // }
+
+        G2PDrift::Drift(x, p, zmin, 10.0, x, p);
+        G2PDrift::Drift(xrec, prec, zmin, 10.0, xrec, prec);
+
+        double x_tr,y_tr,z_tr;
+        HRSTransTCSNHCS::X_HCS2TCS(xrec[0], xrec[1], xrec[2], fHRSAngle, x_tr, y_tr, z_tr);
+        return (z_tr);
+    }
+    else return 0;
 }
 
         //throw away this event if delta_rec>=1.0

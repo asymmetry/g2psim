@@ -6,6 +6,7 @@
 #include "G2PSim.hh"
 #include "G2PGun.hh"
 #include "G2PTargetField.hh"
+#include "G2PDrift.hh"
 #include "HRSTransport.hh"
 #include "G2PXS.hh"
 
@@ -93,8 +94,8 @@ int main(int argc, char** argv)
     gun->SetSigmaAngLab(0.2e-3);
     gun->SetSigmaAngTr(0.2e-3);
     gun->SetSigmaDelta(0.0e-3);
-    gun->SetBPMPosRes(0.0e-3);
-    gun->SetBPMPosRes(0.0e-3);
+    gun->SetBPMPosRes(0.2e-3);
+    gun->SetBPMPosRes(0.8e-3);
     //gun->SetDataFile("input_fp_tr.dat");
     run->AddGun(gun);
 
@@ -125,7 +126,25 @@ int main(int argc, char** argv)
 
     clock_t end = clock();
 
-    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/nEvent);     
+    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/nEvent);
+
+    // // Test Drift
+    // G2PTargetField *field = new G2PTargetField("hallb");
+    // field->SetEulerAngle(90,90,-90);
+    // field->SetRatio(0.5);
+    // field->Init();
+    // G2PDrift::SetField(field);
+    // double x[5] = { 0.0, 0.0, 0.0, 0.0, 0.0 };
+    // double p[3] = { 0.0, 0.0, 2.0 };
+    // for (int i=0; i<1; i++) {
+    //     x[0] = 0.01; x[1] = 0.01; x[2] = 0.0; x[3] = 0.0; x[4] = 0.0;
+    //     p[0] = 0.2; p[1] = 0.0; p[2] = 2.0;
+    //     G2PDrift::Drift(x, 2.251, 0.1, 0.0, 0.8, 10.0, x);
+    //     printf("%e\t%e\t%e\t%e\t%e\n", x[0], x[1], x[2], x[3], x[4]);
+    //     G2PDrift::Drift(x, 2.251, 0.1, 0.8, 0.0, 10.0, x);
+    //     printf("%e\t%e\t%e\t%e\t%e\n", x[0], x[1], x[2], x[3], x[4]);
+    // } 
+    
     
 	return 0;
 }

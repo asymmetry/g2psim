@@ -64,6 +64,8 @@ private:
     void RunData();
 
     void VDCSmearing(double* V5_fp);
+    double GetEffBPM(double xbpm_tr, double p);
+    double DriftPath();
 
     bool bIsInit;
 

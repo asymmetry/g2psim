@@ -20,8 +20,9 @@ static const double kOneSixth = 1./6.;
 
 // These variables are only used by this namespace
 
-static double fM0 = 0, fQ = 0;
-static double fStep = 1.0e-5;
+static double fM0 = 0.00051099892811, fQ = -1*e;
+static double fQsave = fQ;
+static double fStep = 5.0e-5;
 static double fVelocity = 0.0, fVelocity2 = 0.0, fGamma = 0.0;
 static double fCof = 0.0;
 static double fField[3] = { 0.0, 0.0, 0.0 };
@@ -45,7 +46,8 @@ namespace G2PDrift {
     
     void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
     {
-        double xi[6], xf[6];
+        double xi[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+        double xf[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
         double M = sqrt(fM0*fM0+p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
 
@@ -69,6 +71,15 @@ namespace G2PDrift {
      
         double dxdt[6], err[6];
         bool sign = (x[2]>zlimit)?true:false;
+        if (sign) {
+            xi[3] *= -1.0;
+            xi[4] *= -1.0;
+            xi[5] *= -1.0;
+            fQ = -1.0*fQsave;
+        }
+
+        for (int i = 0; i<6; i++) xf[i] = xi[i];
+
         while ((l<llimit)&&((xf[2]<zlimit)^(sign))) {
 #ifdef DRIFT_DEBUG
             printf("G2PDrift: %e\t%e\t%e\t%e\t%e\t%e\n", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
@@ -81,7 +92,14 @@ namespace G2PDrift {
             for (int i = 0; i<6; i++) xi[i] = xf[i];
             l+=fVelocity*dt;
         }
-     
+
+        if (sign) {
+            xf[3] *= -1.0;
+            xf[4] *= -1.0;
+            xf[5] *= -1.0;
+            fQ = fQsave;
+        }
+
         xout[0] = xf[0];
         xout[1] = xf[1];
         xout[2] = xf[2];
@@ -92,9 +110,11 @@ namespace G2PDrift {
      
     void Drift(const double* x, double p, double angle, double z_tr, double zlimit, double llimit, double* xout)
     {
-        double xi[6], xf[6];
-        double sinHRS = sin(angle);
-        double cosHRS = cos(angle);
+        double xi[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+        double xf[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+
+        double sinangle = sin(angle);
+        double cosangle = cos(angle);
      
         HRSTransTCSNHCS::X_TCS2HCS(x[0], x[2], z_tr, angle, xi[0], xi[1], xi[2]);
         double theta, phi;
@@ -121,7 +141,10 @@ namespace G2PDrift {
             xi[3] *= -1.0;
             xi[4] *= -1.0;
             xi[5] *= -1.0;
+            fQ = -1.0*fQsave;
         }
+
+        for (int i = 0; i<6; i++) xf[i] = xi[i];
      
         double newz_tr = z_tr;
         while ((l<llimit)&&((newz_tr<zlimit)^(sign))) {
@@ -134,23 +157,23 @@ namespace G2PDrift {
 #endif
             NystromRK4(xi, dxdt, dt, xf, err);
             for (int i = 0; i<6; i++) xi[i] = xf[i];
-            newz_tr = xf[0]*sinHRS+xf[2]*cosHRS;
+            newz_tr = xf[0]*sinangle+xf[2]*cosangle;
             l+=fVelocity*dt;
         }
      
         if (sign) {
-            xi[3] *= -1.0;
-            xi[4] *= -1.0;
-            xi[5] *= -1.0;
+            xf[3] *= -1.0;
+            xf[4] *= -1.0;
+            xf[5] *= -1.0;
+            fQ = fQsave;
         }
      
-        phi = atan(xi[4]/xi[3]);
-        if (phi<0) phi+=2*pi;
-        theta = acos(xi[5]/fVelocity);
+        phi = atan(xf[4]/xf[3]);
+        theta = acos(xf[5]/fVelocity);
      
         HRSTransTCSNHCS::P_HCS2TCS(theta, phi, angle, xout[1], xout[3]);
         double temp;
-        HRSTransTCSNHCS::X_HCS2TCS(xi[0], xi[1], xi[2], angle, xout[0], xout[2], temp);
+        HRSTransTCSNHCS::X_HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], temp);
         xout[4] = x[4];
     }
 }
@@ -257,6 +280,7 @@ static void NystromRK4(const double* x, const double* dxdt, double step, double*
 static void ComputeRHS(const double* x, double* dxdt)
 {
     G2PDrift::pField->GetField(x, fField);
+
     double m = fM0*fGamma*kGEV;
     dxdt[0] = x[3];
     dxdt[1] = x[4];
