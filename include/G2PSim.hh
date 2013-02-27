@@ -18,6 +18,7 @@
 #include "TTree.h"
 
 #include "G2PGun.hh"
+#include "G2PBPM.hh"
 #include "HRSRecUseDB.hh"
 #include "G2PTargetField.hh"
 
@@ -53,8 +54,9 @@ public:
 
     void Init();
     void Run();
-    void Run(int n) { nEvent = n; Run(); }
     void End();
+
+    void Run(int n) { nEvent = n; Run(); }
 
 private:
     void Clear();
@@ -82,11 +84,14 @@ private:
     G2PGun* pGun;
     int iGunSetting;
     double fV5beam_lab[5];
-    double fV5bpm_lab[5];
+    double fV5react_tr[5];
     double fV5tg_tr[5];
     double fV5tg_lab[5];
     double fV5fpdata_tr[5];
     double fV5fpdata_rot[5];
+
+    G2PBPM* pBPM;
+    double fV5bpm_lab[5];
 
     HRSTransport* pHRS;
     bool bIsGoodParticle;
@@ -101,7 +106,7 @@ private:
 
     G2PTargetField *pField;
     double fEndPlaneZ;
-    double fV5vb_tr[5];
+    double fV5sieve_tr[5];
 
     G2PXS* pPhys;
     double fXS;

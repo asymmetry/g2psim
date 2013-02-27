@@ -16,8 +16,9 @@
 #include "TTree.h"
 
 #include "G2PGun.hh"
-#include "G2PRand.hh"
+#include "G2PBPM.hh"
 #include "HRSRecUseDB.hh"
+#include "G2PRand.hh"
 #include "HRSTransTCSNHCS.hh"
 #include "G2PDrift.hh"
 
@@ -30,17 +31,18 @@
 
 using namespace std;
 
-const double kDEG = 3.14159265358979323846/180.0;
+static const double kDEG = 3.14159265358979323846/180.0;
 
 ClassImp(G2PSim);
 
 G2PSim::G2PSim()
     :bIsInit(false), bIsLeftArm(true), fHRSAngle(5.767*kDEG),
      fHRSMomentum(2.251), fBeamEnergy(2.254), bUseField(false),
-     nEvent(10000), nIndex(1), pGun(NULL), iGunSetting(0), pHRS(NULL),
-     bIsGoodParticle(false), pRecUseDB(NULL), pField(NULL),
-     fEndPlaneZ(0), pPhys(NULL), fXS(0), pTree(NULL), pConfig(NULL),
-     pFile(NULL), pFileName(NULL), pfRunSelector(NULL)
+     nEvent(10000), nIndex(1), pGun(NULL), iGunSetting(0), pBPM(NULL),
+     pHRS(NULL), bIsGoodParticle(false), pRecUseDB(NULL),
+     pField(NULL), fEndPlaneZ(0), pPhys(NULL), fXS(0),
+     pTree(NULL), pConfig(NULL), pFile(NULL), pFileName(NULL),
+     pfRunSelector(NULL)
 {
     pGunList.clear();
     
@@ -71,6 +73,8 @@ void G2PSim::Init()
         if (!(*it)->IsInit()) noerror = false;
         it++;
     }
+
+    pBPM = new G2PBPM();
 
     pHRS->SetArm(bIsLeftArm);
     pHRS->SetHRSAngle(fHRSAngle);
@@ -114,18 +118,21 @@ void G2PSim::End()
 {
     pFile->Write("", TObject::kOverwrite);
     pFile->Close();
-    
+
+    delete pBPM;
     delete pRecUseDB;
 }
 
 void G2PSim::Clear()
 {
     memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
-    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
+    memset(fV5react_tr, 0, sizeof(fV5react_tr));
     memset(fV5tg_tr, 0, sizeof(fV5tg_tr));
     memset(fV5tg_lab, 0, sizeof(fV5tg_lab));
     memset(fV5fpdata_tr, 0, sizeof(fV5fpdata_tr));
     memset(fV5fpdata_rot, 0, sizeof(fV5fpdata_rot));
+
+    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
 
     bIsGoodParticle = false;
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
@@ -136,7 +143,7 @@ void G2PSim::Clear()
     memset(fV5recdb_tr, 0, sizeof(fV5recdb_tr));
     memset(fV5recdb_lab, 0, sizeof(fV5recdb_lab));
 
-    memset(fV5vb_tr, 0, sizeof(fV5recdb_lab));
+    memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
 
     fXS = 1;
 }
@@ -163,11 +170,11 @@ void G2PSim::InitTree()
         pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
 
         int gunsetting = pGun->GetSetting();
-        double posres = pGun->GetBPMPosRes();
-        double angres = pGun->GetBPMAngRes();
+        double resa = pBPM->GetBPMARes();
+        double resb = pBPM->GetBPMBRes();
         pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
-        pConfig->Branch("BPMPosRes", &posres, "BPMPosRes/D");
-        pConfig->Branch("BPMAngRes", &angres, "BPMAngRes/D");
+        pConfig->Branch("BPMARes", &resa, "BPMARes/D");
+        pConfig->Branch("BPMBRes", &resb, "BPMBRes/D");
 
         pConfig->Fill();
 
@@ -183,69 +190,69 @@ void G2PSim::InitTree()
     pTree->Branch("Gun", &iGunSetting, "Gun/I");
 
     pTree->Branch("Xbeam_lab", &fV5beam_lab[0],"Xbeam_lab/D");
-    pTree->Branch("Thetabeam_lab", &fV5beam_lab[1],"Thetabeam_lab/D");
+    pTree->Branch("Thbeam_lab", &fV5beam_lab[1],"Thbeam_lab/D");
 	pTree->Branch("Ybeam_lab", &fV5beam_lab[2],"Ybeam_lab/D");
-    pTree->Branch("Phibeam_lab", &fV5beam_lab[3],"Phibeam_lab/D");
+    pTree->Branch("Phbeam_lab", &fV5beam_lab[3],"Phbeam_lab/D");
 	pTree->Branch("Zbeam_lab", &fV5beam_lab[4],"Zbeam_lab/D");
 
     pTree->Branch("Xbpm_lab", &fV5bpm_lab[0],"Xbpm_lab/D");
-    pTree->Branch("Thetabpm_lab", &fV5bpm_lab[1],"Thetabpm_lab/D");
+    pTree->Branch("Thbpm_lab", &fV5bpm_lab[1],"Thbpm_lab/D");
 	pTree->Branch("Ybpm_lab", &fV5bpm_lab[2],"Ybpm_lab/D");
-    pTree->Branch("Phibpm_lab", &fV5bpm_lab[3],"Phibpm_lab/D");
+    pTree->Branch("Phbpm_lab", &fV5bpm_lab[3],"Phbpm_lab/D");
 	pTree->Branch("Zbpm_lab", &fV5bpm_lab[4],"Zbpm_lab/D");
 
     pTree->Branch("Xtg_tr",&fV5tg_tr[0],"Xtg_tr/D");
-	pTree->Branch("Thetatg_tr",&fV5tg_tr[1],"Thetatg_tr/D");
+	pTree->Branch("Thtg_tr",&fV5tg_tr[1],"Thtg_tr/D");
 	pTree->Branch("Ytg_tr",&fV5tg_tr[2],"Ytg_tr/D");
-	pTree->Branch("Phitg_tr",&fV5tg_tr[3],"Phitg_tr/D");
+	pTree->Branch("Phtg_tr",&fV5tg_tr[3],"Phtg_tr/D");
 	pTree->Branch("Delta",&fV5tg_tr[4],"Delta/D");
 
     pTree->Branch("Xtg_lab",&fV5tg_lab[0],"Xtg_lab/D");
-	pTree->Branch("Thetatg_lab",&fV5tg_lab[1],"Thetatg_lab/D");
+	pTree->Branch("Thtg_lab",&fV5tg_lab[1],"Thtg_lab/D");
 	pTree->Branch("Ytg_lab",&fV5tg_lab[2],"Ytg_lab/D");
-	pTree->Branch("Phitg_lab",&fV5tg_lab[3],"Phitg_lab/D");
+	pTree->Branch("Phtg_lab",&fV5tg_lab[3],"Phtg_lab/D");
 
     pTree->Branch("Xfpdata_tr",&fV5fpdata_tr[0],"Xfpdata_tr/D");
-	pTree->Branch("Thetafpdata_tr",&fV5fpdata_tr[1],"Thetafpdata_tr/D");
+	pTree->Branch("Thfpdata_tr",&fV5fpdata_tr[1],"Thfpdata_tr/D");
 	pTree->Branch("Yfpdata_tr",&fV5fpdata_tr[2],"Yfpdata_tr/D");
-	pTree->Branch("Phifpdata_tr",&fV5fpdata_tr[3],"Phifpdata_tr/D");
+	pTree->Branch("Phfpdata_tr",&fV5fpdata_tr[3],"Phfpdata_tr/D");
 
     pTree->Branch("Xfpdata_rot",&fV5fpdata_rot[0],"Xfpdata_rot/D");
-	pTree->Branch("Thetafpdata_rot",&fV5fpdata_rot[1],"Thetafpdata_rot/D");
+	pTree->Branch("Thfpdata_rot",&fV5fpdata_rot[1],"Thfpdata_rot/D");
 	pTree->Branch("Yfpdata_rot",&fV5fpdata_rot[2],"Yfpdata_rot/D");
-	pTree->Branch("Phifpdata_rot",&fV5fpdata_rot[3],"Phifpdata_rot/D");
+	pTree->Branch("Phfpdata_rot",&fV5fpdata_rot[3],"Phfpdata_rot/D");
     
 	pTree->Branch("Xfp_tr",&fV5fp_tr[0],"Xfp_tr/D");
-	pTree->Branch("Thetafp_tr",&fV5fp_tr[1],"Thetafp_tr/D");
+	pTree->Branch("Thfp_tr",&fV5fp_tr[1],"Thfp_tr/D");
 	pTree->Branch("Yfp_tr",&fV5fp_tr[2],"Yfp_tr/D");
-	pTree->Branch("Phifp_tr",&fV5fp_tr[3],"Phifp_tr/D");
+	pTree->Branch("Phfp_tr",&fV5fp_tr[3],"Phfp_tr/D");
 
     pTree->Branch("Xfp_rot",&fV5fp_rot[0],"Xfp_rot/D");
-	pTree->Branch("Thetafp_rot",&fV5fp_rot[1],"Thetafp_rot/D");
+	pTree->Branch("Thfp_rot",&fV5fp_rot[1],"Thfp_rot/D");
 	pTree->Branch("Yfp_rot",&fV5fp_rot[2],"Yfp_rot/D");
-	pTree->Branch("Phifp_rot",&fV5fp_rot[3],"Phifp_rot/D");
+	pTree->Branch("Phfp_rot",&fV5fp_rot[3],"Phfp_rot/D");
 
     pTree->Branch("Xrec_tr",&fV5rec_tr[0],"Xrec_tr/D");
-	pTree->Branch("Thetarec_tr",&fV5rec_tr[1],"Thetarec_tr/D");
+	pTree->Branch("Threc_tr",&fV5rec_tr[1],"Threc_tr/D");
 	pTree->Branch("Yrec_tr",&fV5rec_tr[2],"Yrec_tr/D");
-	pTree->Branch("Phirec_tr",&fV5rec_tr[3],"Phirec_tr/D");
+	pTree->Branch("Phrec_tr",&fV5rec_tr[3],"Phrec_tr/D");
 	pTree->Branch("Deltarec",&fV5rec_tr[4],"Deltarec/D");
 
     pTree->Branch("Xrec_lab",&fV5rec_lab[0],"Xrec_lab/D");
-	pTree->Branch("Thetarec_lab",&fV5rec_lab[1],"Thetarec_lab/D");
+	pTree->Branch("Threc_lab",&fV5rec_lab[1],"Threc_lab/D");
 	pTree->Branch("Yrec_lab",&fV5rec_lab[2],"Yrec_lab/D");
-	pTree->Branch("Phirec_lab",&fV5rec_lab[3],"Phirec_lab/D");
+	pTree->Branch("Phrec_lab",&fV5rec_lab[3],"Phrec_lab/D");
 
     pTree->Branch("Xrecdb_tr",&fV5recdb_tr[0],"Xrecdb_tr/D");
-	pTree->Branch("Thetarecdb_tr",&fV5recdb_tr[1],"Thetarecdb_tr/D");
+	pTree->Branch("Threcdb_tr",&fV5recdb_tr[1],"Threcdb_tr/D");
 	pTree->Branch("Yrecdb_tr",&fV5recdb_tr[2],"Yrecdb_tr/D");
-	pTree->Branch("Phirecdb_tr",&fV5recdb_tr[3],"Phirecdb_tr/D");
+	pTree->Branch("Phrecdb_tr",&fV5recdb_tr[3],"Phrecdb_tr/D");
 	pTree->Branch("Deltarecdb",&fV5recdb_tr[4],"Deltarecdb/D");
 
     pTree->Branch("Xrecdb_lab",&fV5recdb_lab[0],"Xrecdb_lab/D");
-	pTree->Branch("Thetarecdb_lab",&fV5recdb_lab[1],"Thetarecdb_lab/D");
+	pTree->Branch("Threcdb_lab",&fV5recdb_lab[1],"Threcdb_lab/D");
 	pTree->Branch("Yrecdb_lab",&fV5recdb_lab[2],"Yrecdb_lab/D");
-	pTree->Branch("Phirecdb_lab",&fV5recdb_lab[3],"Phirecdb_lab/D");
+	pTree->Branch("Phrecdb_lab",&fV5recdb_lab[3],"Phrecdb_lab/D");
 
     pTree->Branch("XS", &fXS, "XS/D");
 }
@@ -253,25 +260,30 @@ void G2PSim::InitTree()
 void G2PSim::RunSim()
 {
     while (nIndex<=nEvent) {
-        if (!pGun->Shoot(fV5beam_lab, fV5bpm_lab, fV5tg_tr)) break;
+        if (!pGun->Shoot(fV5beam_lab, fV5react_tr)) break;
 
-        double xtg_tr, ytg_tr, ztg_tr;
-        HRSTransTCSNHCS::X_HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, xtg_tr, ytg_tr, ztg_tr);
+        pBPM->GetBPMValue(fV5beam_lab, fV5bpm_lab);
+
+        double x_tr, y_tr, z_tr;
+        HRSTransTCSNHCS::X_HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, x_tr, y_tr, z_tr);
 
         double xsave_tr;
         if (bUseField) {
-            G2PDrift::Drift(fV5tg_tr, fHRSMomentum, fHRSAngle, ztg_tr, fEndPlaneZ, 10.0, fV5vb_tr);
+            G2PDrift::Drift(fV5react_tr, fHRSMomentum, fHRSAngle, z_tr, 0.0, 10.0, fV5tg_tr);
+            G2PDrift::Drift(fV5tg_tr, fHRSMomentum, fHRSAngle, 0.0, fEndPlaneZ, 10.0, fV5sieve_tr);
             double virtualV5tg_tr[5];
-            HRSTransTCSNHCS::Project(fV5vb_tr[0], fV5vb_tr[2], fEndPlaneZ, -fEndPlaneZ, fV5vb_tr[1], fV5vb_tr[3], virtualV5tg_tr[0], virtualV5tg_tr[2], virtualV5tg_tr[4]);
-            virtualV5tg_tr[1] = fV5vb_tr[1];
-            virtualV5tg_tr[3] = fV5vb_tr[3];
-            virtualV5tg_tr[4] = fV5vb_tr[4];
-            //printf("%e\t%e\n", fV5vb_tr[1], fV5vb_tr[3]);
+            HRSTransTCSNHCS::Project(fV5sieve_tr[0], fV5sieve_tr[2], fEndPlaneZ, -fEndPlaneZ, fV5sieve_tr[1], fV5sieve_tr[3], virtualV5tg_tr[0], virtualV5tg_tr[2], virtualV5tg_tr[4]);
+            virtualV5tg_tr[1] = fV5sieve_tr[1];
+            virtualV5tg_tr[3] = fV5sieve_tr[3];
+            virtualV5tg_tr[4] = fV5sieve_tr[4];
             xsave_tr = virtualV5tg_tr[0];
             bIsGoodParticle = pHRS->Forward(virtualV5tg_tr, fV5fp_tr);
         }
         else {
-            HRSTransTCSNHCS::Project(fV5tg_tr[0], fV5tg_tr[2], ztg_tr, -ztg_tr, fV5tg_tr[1], fV5tg_tr[3]);
+            HRSTransTCSNHCS::Project(fV5react_tr[0], fV5react_tr[2], z_tr, -z_tr, fV5react_tr[1], fV5react_tr[3], fV5tg_tr[0], fV5tg_tr[2], fV5tg_tr[4]);
+            fV5tg_tr[1] = fV5react_tr[1];
+            fV5tg_tr[3] = fV5react_tr[3];
+            fV5tg_tr[4] = fV5react_tr[4];
             xsave_tr = fV5tg_tr[0];
             bIsGoodParticle = pHRS->Forward(fV5tg_tr, fV5fp_tr);
         }
@@ -302,11 +314,11 @@ void G2PSim::RunSim()
         pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5recdb_tr);
 
         if (bUseField) {
-            HRSTransTCSNHCS::Project(fV5rec_tr[0], fV5rec_tr[2], 0.0, fEndPlaneZ, fV5rec_tr[1], fV5rec_tr[3], fV5vb_tr[0], fV5vb_tr[2], fV5vb_tr[4]);
-            fV5vb_tr[1] = fV5rec_tr[1];
-            fV5vb_tr[3] = fV5rec_tr[3];
-            fV5vb_tr[4] = fV5rec_tr[4];
-            G2PDrift::Drift(fV5vb_tr, fHRSMomentum, fHRSAngle, fEndPlaneZ, 0.0, 10.0, fV5rec_tr);
+            HRSTransTCSNHCS::Project(fV5rec_tr[0], fV5rec_tr[2], 0.0, fEndPlaneZ, fV5rec_tr[1], fV5rec_tr[3], fV5sieve_tr[0], fV5sieve_tr[2], fV5sieve_tr[4]);
+            fV5sieve_tr[1] = fV5rec_tr[1];
+            fV5sieve_tr[3] = fV5rec_tr[3];
+            fV5sieve_tr[4] = fV5rec_tr[4];
+            G2PDrift::Drift(fV5sieve_tr, fHRSMomentum, fHRSAngle, fEndPlaneZ, 0.0, 10.0, fV5rec_tr);
             double reactz = DriftPath();
             //double reactz = -13.6271e-3;
             //printf("%e\n", reactz);
@@ -329,10 +341,9 @@ void G2PSim::RunSim()
 void G2PSim::RunData()
 {
     while (nIndex<=nEvent) {
-        if (!pGun->Shoot(fV5beam_lab, fV5bpm_lab, fV5tg_tr)) break;
-        pGun->GetFP(fV5fpdata_tr);
+        if (!pGun->Shoot(fV5bpm_lab, fV5tg_tr, fV5fpdata_tr)) break;
 
-        fV5fpdata_tr[4] = fV5tg_tr[0];
+        fV5fpdata_tr[4] = -fV5bpm_lab[2];
 
         pRecUseDB->TransTr2Rot(fV5fpdata_tr, fV5fpdata_rot);
         pRecUseDB->CalcTargetCoords(fV5fpdata_rot, fV5recdb_tr);

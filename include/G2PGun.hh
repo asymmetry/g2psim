@@ -1,7 +1,5 @@
 // This file defines a class G2PGun.
 // This class is used in G2PSim class as particle gun.
-// It has 6 standard gun: ShootDelta(), ShootGaus(), ShootFlat(), ShootTest(),
-//+ShootSieve() and ShootData().
 // The active gun is chosen during initializing.
 // G2PSim class will call Shoot() to get kinematic variables. It is a virtual
 //+function so you can rewrite it by inheriting this class.
@@ -9,6 +7,7 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Jan 2013, C. Gu, Add ShootSieve() method.
+//   Feb 2013, C. Gu, Rewrite the sieve and data parts
 //
 
 #ifndef G2P_GUN_H
@@ -25,6 +24,15 @@ class G2PGun : public TObject
 {
 public:
     G2PGun();
+////////////////////////////////////////////////////////////////////////
+// Definition of guns:
+// gaus : gaussian distribution
+// flat : flat distribution
+// sieve : use sieve as mask
+// fastsieve : directly calculation from survey, only work without field
+// data : production data
+// opticsdata : use cut index to indicate sieve holes
+////////////////////////////////////////////////////////////////////////
     G2PGun(const char* dist);
     ~G2PGun();
 
@@ -56,34 +64,28 @@ public:
     void SetSigmaAngTr(double value) { fSigmaAng_tr = value; }
     void SetSigmaDelta(double value) { fSigmaDelta = value; }
 
-    void SetBPMZLab(double value) { fBPMZ_lab = value; }
-    void SetBPMPosRes(double value) { fBPMPosRes = value; }
-    void SetBPMAngRes(double value) { fBPMAngRes = value; }
-   
     void SetDataFile(const char* name) { pFileName = name; }
 
     bool IsInit() { return bIsInit; }
     bool IsUsingData() { return bUseData; }
 
     int GetSetting() { return iSetting; }
-    double GetBPMPosRes() { return fBPMPosRes; }
-    double GetBPMAngRes() { return fBPMAngRes; }
 
     virtual void Init();
-    virtual bool Shoot(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr) { return (this->*pfGunSelector)(V5beam_lab, V5bpm_lab, V5tg_tr); }
-    virtual void GetFP(double* V5fp_tr);
+    virtual bool Shoot(double* V51, double* V52, double* V53 = NULL) { return (this->*pfGunSelector)(V51, V52, V53); }
 
 private:
-    void SetGun();   
+    void SetGun();
 
-    bool ShootDelta(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
-    bool ShootGaus(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
-    bool ShootFlat(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
-    bool ShootTest(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
-    bool ShootSieve(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
-    bool ShootData(double* V5beam_lab, double* V5bpm_lab, double* V5tg_tr);
+    bool ShootGaus(double* V5beam_lab, double* V5react_tr, double* reserved);
+    bool ShootFlat(double* V5beam_lab, double* V5react_tr, double* reserved);
+    bool ShootSieve(double* V5beam_lab, double* V5react_tr, double* reserved);
+    bool ShootSieveFast(double* V5beam_lab, double* V5react_tr, double* reserved);
+    bool ShootData(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
+    bool ShootOpticsData(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
 
-    void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
+    virtual void SetSieve();
+    //void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
     bool LoadData();
 
     bool bIsInit;
@@ -116,9 +118,25 @@ private:
     double fSigmaAng_tr;
     double fSigmaDelta;
 
-    double fBPMZ_lab;
-    double fBPMPosRes;
-    double fBPMAngRes;
+    typedef struct {
+        int nRow;
+        int nCol;
+        vector<double> fX;
+        vector<double> fY;
+        double fZ;
+        double fXOffset;
+        double fYOffset;
+        int nLargerHole;
+        vector<int> iLargerHole;
+        vector<bool> bOpen;
+        double fDHole;
+        double fDLargerHole;
+        double fThreshold;
+    } sSieve;
+
+    sSieve fSieve;
+    double fTargetMass;
+    double fEnergyLoss;
 
     typedef struct {
         int ind;
@@ -126,8 +144,6 @@ private:
     } sData;
     
     vector<sData> fData;
-    sData fDataAtIndex;
-    int iIndex;
 
     const char* pFileName;
     

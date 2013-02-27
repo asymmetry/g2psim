@@ -94,8 +94,6 @@ int main(int argc, char** argv)
     gun->SetSigmaAngLab(0.2e-3);
     gun->SetSigmaAngTr(0.2e-3);
     gun->SetSigmaDelta(0.0e-3);
-    gun->SetBPMPosRes(0.2e-3);
-    gun->SetBPMPosRes(0.8e-3);
     //gun->SetDataFile("input_fp_tr.dat");
     run->AddGun(gun);
 

@@ -6,6 +6,7 @@
 
 #pragma link C++ class G2PSim+;
 #pragma link C++ class G2PGun+;
+#pragma link C++ class G2PBPM+;
 #pragma link C++ class HRSRecUseDB+;
 #pragma link C++ class G2PTargetField+;
 #pragma link C++ class HRSTransport+;
