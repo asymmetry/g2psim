@@ -75,6 +75,8 @@ void G2PSim::Init()
     }
 
     pBPM = new G2PBPM();
+    pBPM->Init();
+    pBPM->SetBeamEnergy(fBeamEnergy);
 
     pHRS->SetArm(bIsLeftArm);
     pHRS->SetHRSAngle(fHRSAngle);

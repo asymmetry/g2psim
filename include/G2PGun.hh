@@ -44,8 +44,6 @@ public:
     
     void SetBeamX(double value) { fBeamX_lab = value; }
     void SetBeamY(double value) { fBeamY_lab = value; }
-    void SetBeamTh(double value) { fBeamTh_lab = value; }
-    void SetBeamPh(double value) { fBeamPh_lab = value; }
     void SetBeamR(double value) { fBeamR = value; }
     
     void SetReactZ(double value) { fReactZLow_lab = value; fReactZHigh_lab = value;}
@@ -76,6 +74,8 @@ public:
 
 private:
     void SetGun();
+    void SetBeamTiltAngle();
+    void SetSieve();
 
     bool ShootGaus(double* V5beam_lab, double* V5react_tr, double* reserved);
     bool ShootFlat(double* V5beam_lab, double* V5react_tr, double* reserved);
@@ -84,8 +84,7 @@ private:
     bool ShootData(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
     bool ShootOpticsData(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
 
-    virtual void SetSieve();
-    //void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
+    void GetReactPoint(double x, double y, double z, double* V5);
     bool LoadData();
 
     bool bIsInit;
@@ -99,7 +98,7 @@ private:
     double fBeamEnergy;
 
     double fBeamX_lab, fBeamY_lab;
-    double fBeamTh_lab, fBeamPh_lab;
+    double fBeamTiltAngle;
     double fBeamR;
     
     double fReactZLow_lab;

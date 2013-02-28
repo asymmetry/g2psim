@@ -37,7 +37,7 @@ ClassImp(G2PGun);
 G2PGun::G2PGun()
     :bIsInit(false), iSetting(1), bUseData(false), bUseField(false),
      fHRSAngle(5.767*kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254),
-     fBeamX_lab(0), fBeamY_lab(0), fBeamTh_lab(0), fBeamPh_lab(0),
+     fBeamX_lab(0), fBeamY_lab(0), fBeamTiltAngle(0),
      fBeamR(0.015), fReactZLow_lab(0), fReactZHigh_lab(0),
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
      fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0),
@@ -52,7 +52,7 @@ G2PGun::G2PGun()
 G2PGun::G2PGun(const char* dist)
     :bIsInit(false), iSetting(1), bUseData(false), bUseField(false),
      fHRSAngle(5.767*kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254),
-     fBeamX_lab(0), fBeamY_lab(0), fBeamTh_lab(0), fBeamPh_lab(0),
+     fBeamX_lab(0), fBeamY_lab(0), fBeamTiltAngle(0),
      fBeamR(0.015), fReactZLow_lab(0), fReactZHigh_lab(0),
      fTargetThLow_tr(0), fTargetThHigh_tr(0), fTargetPhLow_tr(0),
      fTargetPhHigh_tr(0), fDeltaLow(0), fDeltaHigh(0),
@@ -71,11 +71,11 @@ G2PGun::G2PGun(const char* dist)
     dist_map["data"] = 10;
     dist_map["opticsdata"] = 11;
 
-    if(dist_map[dist] == 0){
+    if (dist_map[dist] == 0) {
         printf("Unknown gun setting, set to delta distribution ...\n");
         iSetting=1;
     }
-    else{
+    else {
         iSetting=dist_map[dist];
     }
 }
@@ -96,6 +96,7 @@ void G2PGun::Init()
     }
     if (bUseData) noerror = LoadData();
     SetGun();
+    SetBeamTiltAngle();
     bIsInit = noerror;
 }
 
@@ -122,16 +123,111 @@ void G2PGun::SetGun()
     }
 }
 
+void G2PGun::SetBeamTiltAngle()
+{
+    if (bUseField) {
+        if (fabs(G2PDrift::GetField()->GetRatio()-0.5)<1e-8) {
+            if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 3.31*kDEG;
+            else if (fabs(fBeamEnergy-1.706)<0.2) fBeamTiltAngle = 4.03*kDEG;
+            else if (fabs(fBeamEnergy-1.159)<0.2) fBeamTiltAngle = 5.97*kDEG;
+            else fBeamTiltAngle = 0.0;
+        }
+        else if (fabs(G2PDrift::GetField()->GetRatio()-1.0)<1e-8) {
+            if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 0.0; 
+            else if (fabs(fBeamEnergy-3.355)<0.2) fBeamTiltAngle = 0.0;
+            else fBeamTiltAngle = 0.0;
+        }
+        else {
+            fBeamTiltAngle = 0.0;
+        }
+    }
+    else {
+        fBeamTiltAngle = 0.0;
+    }
+}
+
+void G2PGun::SetSieve()
+{
+    if (fHRSAngle>0) { // left arm
+        const double kSIEVEX[7] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
+        const double kSIEVEY[7] = { 3*6.1214e-3, 2*6.1214e-3, 1*6.1214e-3, 0.0, -1*4.7752e-3, -2*4.7752e-3, -3*4.7752e-3 };
+        const int kLARGERHOLE[2] = { 15, 24 };
+        const int kSIEVEOPEN[49] = { 0, 0, 0, 0, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 0, 1, 1, 1, 0,
+                                     0, 0, 0, 0, 0, 0, 0 };
+
+        fSieve.nRow = 7;
+        fSieve.nCol = 7;
+        fSieve.nLargerHole = 2;
+
+        fSieve.fX.clear();
+        for (int i = 0; i<fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
+        fSieve.fY.clear();
+        for (int i = 0; i<fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
+        fSieve.fZ = 799.60e-3;
+        fSieve.fXOffset = 0.0;
+        fSieve.fYOffset = 0.0;
+
+        fSieve.iLargerHole.clear();
+        for (int i = 0; i<fSieve.nLargerHole; i++) fSieve.iLargerHole.push_back(kLARGERHOLE[i]);
+        fSieve.bOpen.clear();
+        for (int i = 0; i<fSieve.nRow*fSieve.nCol; i++) fSieve.bOpen.push_back((kSIEVEOPEN[i]==1)?true:false);
+
+        fSieve.fDHole = 1.3970e-3;
+        fSieve.fDLargerHole = 2.6924e-3;
+
+        double ratio = fSieve.fDLargerHole*fSieve.fDLargerHole/(fSieve.fDHole*fSieve.fDHole);
+        fSieve.fThreshold = (ratio-1)/((ratio-1)*fSieve.nLargerHole+fSieve.nRow*fSieve.nCol);
+    }
+    else { // right arm
+        const double kSIEVEX[7] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
+        const double kSIEVEY[7] = { -3*6.1214e-3, -2*6.1214e-3, -1*6.1214e-3, 0.0, 1*4.7752e-3, 2*4.7752e-3, 3*4.7752e-3 };
+        const int kLARGERHOLE[2] = { 15, 24 };
+        const int kSIEVEOPEN[49] = { 0, 0, 0, 0, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 1, 1, 1, 1, 1,
+                                     0, 0, 0, 1, 1, 1, 0,
+                                     0, 0, 0, 0, 0, 0, 0 };
+
+        fSieve.nRow = 7;
+        fSieve.nCol = 7;
+        fSieve.nLargerHole = 2;
+
+        fSieve.fX.clear();
+        for (int i = 0; i<fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
+        fSieve.fY.clear();
+        for (int i = 0; i<fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
+        fSieve.fZ = 799.46e-3;
+        fSieve.fXOffset = 0.0;
+        fSieve.fYOffset = 0.0;
+
+        fSieve.iLargerHole.clear();
+        for (int i = 0; i<fSieve.nLargerHole; i++) fSieve.iLargerHole.push_back(kLARGERHOLE[i]);
+        fSieve.bOpen.clear();
+        for (int i = 0; i<fSieve.nRow*fSieve.nCol; i++) fSieve.bOpen.push_back((kSIEVEOPEN[i]==1)?true:false);
+
+        fSieve.fDHole = 1.3970e-3;
+        fSieve.fDLargerHole = 2.6924e-3;
+
+        double ratio = fSieve.fDLargerHole*fSieve.fDLargerHole/(fSieve.fDHole*fSieve.fDHole);
+        fSieve.fThreshold = (ratio-1)/((ratio-1)*fSieve.nLargerHole+fSieve.nRow*fSieve.nCol);
+    }
+}
+
 bool G2PGun::ShootGaus(double* V5beam_lab, double* V5react_tr, double* reserved)
 {
-    V5beam_lab[0] = G2PRand::Gaus(fBeamX_lab, fSigmaPos_lab);
-    V5beam_lab[1] = G2PRand::Gaus(fBeamTh_lab, fSigmaAng_lab);
-    V5beam_lab[2] = G2PRand::Gaus(fBeamY_lab, fSigmaPos_lab);
-    V5beam_lab[3] = G2PRand::Gaus(fBeamPh_lab, fSigmaAng_lab);
-    V5beam_lab[4] = G2PRand::Gaus(fReactZLow_lab, fSigmaPos_lab);
+    double X_lab = G2PRand::Gaus(fBeamX_lab, fSigmaPos_lab);
+    double Y_lab = G2PRand::Gaus(fBeamY_lab, fSigmaPos_lab);
+    double Z_lab = G2PRand::Gaus(fReactZLow_lab, fSigmaPos_lab);
+    GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
 
     double Xreact_tr, Yreact_tr, Zreact_tr;
-    
     HRSTransTCSNHCS::X_HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
    
     V5react_tr[0] = Xreact_tr;
@@ -149,26 +245,24 @@ bool G2PGun::ShootGaus(double* V5beam_lab, double* V5react_tr, double* reserved)
 
 bool G2PGun::ShootFlat(double* V5beam_lab, double* V5react_tr, double* reserved)
 {
-    double Xbeam_lab, Ybeam_lab;
+    double X_lab, Y_lab;
     if (fBeamR>1e-5) {
         do {
-            Xbeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-            Ybeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-        } while (Xbeam_lab*Xbeam_lab+Ybeam_lab*Ybeam_lab>fBeamR*fBeamR);
+            X_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+            Y_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+        } while (X_lab*X_lab+Y_lab*Y_lab>fBeamR*fBeamR);
     }
     else {
-        Xbeam_lab = 0.0;
-        Ybeam_lab = 0.0;
+        X_lab = 0.0;
+        Y_lab = 0.0;
     }
 
-    V5beam_lab[0] = Xbeam_lab+fBeamX_lab;
-    V5beam_lab[1] = fBeamTh_lab;
-    V5beam_lab[2] = Ybeam_lab+fBeamY_lab;
-    V5beam_lab[3] = fBeamPh_lab;
-    V5beam_lab[4] = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
+    X_lab+=fBeamX_lab;
+    Y_lab+=fBeamY_lab;
+    double Z_lab = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
+    GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
 
     double Xreact_tr, Yreact_tr, Zreact_tr;
-    
     HRSTransTCSNHCS::X_HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
 
     V5react_tr[0] = Xreact_tr;
@@ -190,23 +284,22 @@ bool G2PGun::ShootSieve(double* V5beam_lab, double* V5react_tr, double* reserved
 
     while (!found) {
         // generate flat distribution
-        double Xbeam_lab, Ybeam_lab;
+        double X_lab, Y_lab;
         if (fBeamR>1e-5) {
             do {
-                Xbeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-                Ybeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-            } while (Xbeam_lab*Xbeam_lab+Ybeam_lab*Ybeam_lab>fBeamR*fBeamR);
+                X_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+                Y_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+            } while (X_lab*X_lab+Y_lab*Y_lab>fBeamR*fBeamR);
         }
         else {
-            Xbeam_lab = 0.0;
-            Ybeam_lab = 0.0;
+            X_lab = 0.0;
+            Y_lab = 0.0;
         }
 
-        V5beam_lab[0] = Xbeam_lab+fBeamX_lab;
-        V5beam_lab[1] = fBeamTh_lab;
-        V5beam_lab[2] = Ybeam_lab+fBeamY_lab;
-        V5beam_lab[3] = fBeamPh_lab;
-        V5beam_lab[4] = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
+        X_lab+=fBeamX_lab;
+        Y_lab+=fBeamY_lab;
+        double Z_lab = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
+        GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
 
         double Xreact_tr, Yreact_tr, Zreact_tr;
         HRSTransTCSNHCS::X_HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
@@ -269,26 +362,24 @@ bool G2PGun::ShootSieveFast(double* V5beam_lab, double* V5react_tr, double* rese
     int col = selector/(fSieve.nRow);
     int row = selector%(fSieve.nRow);
 
-    double Xbeam_lab, Ybeam_lab;
+    double X_lab, Y_lab;
     if (fBeamR>1e-5) {
         do {
-            Xbeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-            Ybeam_lab = G2PRand::Uniform(-fBeamR, fBeamR);
-        } while (Xbeam_lab*Xbeam_lab+Ybeam_lab*Ybeam_lab>fBeamR*fBeamR);
+            X_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+            Y_lab = G2PRand::Uniform(-fBeamR, fBeamR);
+        } while (X_lab*X_lab+Y_lab*Y_lab>fBeamR*fBeamR);
     }
     else {
-        Xbeam_lab = 0.0;
-        Ybeam_lab = 0.0;
+        X_lab = 0.0;
+        Y_lab = 0.0;
     }
-    
-    V5beam_lab[0] = fBeamX_lab+Xbeam_lab;
-    V5beam_lab[1] = fBeamTh_lab;
-    V5beam_lab[2] = fBeamY_lab+Ybeam_lab;
-    V5beam_lab[3] = fBeamPh_lab;
-    V5beam_lab[4] = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
 
+    X_lab+=fBeamX_lab;
+    Y_lab+=fBeamY_lab;
+    double Z_lab = G2PRand::Uniform(fReactZLow_lab, fReactZHigh_lab);
+    GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
+        
     double Xreact_tr, Yreact_tr, Zreact_tr;
-    
     HRSTransTCSNHCS::X_HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
 
     double V3sieve_tr[3];
@@ -424,77 +515,28 @@ bool G2PGun::ShootOpticsData(double* V5bpm_lab, double* V5react_tr, double* V5fp
     return noerror;
 }
 
-void G2PGun::SetSieve()
+void G2PGun::GetReactPoint(double xb, double yb, double zb, double* V5)
 {
-    if (fHRSAngle>0) { // left arm
-        const double kSIEVEX[7] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
-        const double kSIEVEY[7] = { 3*6.1214e-3, 2*6.1214e-3, 1*6.1214e-3, 0.0, -1*4.7752e-3, -2*4.7752e-3, -3*4.7752e-3 };
-        const int kLARGERHOLE[2] = { 15, 24 };
-        const int kSIEVEOPEN[49] = { 0, 0, 0, 0, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 0, 1, 1, 1, 0,
-                                     0, 0, 0, 0, 0, 0, 0 };
-
-        fSieve.nRow = 7;
-        fSieve.nCol = 7;
-        fSieve.nLargerHole = 2;
-
-        fSieve.fX.clear();
-        for (int i = 0; i<fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
-        fSieve.fY.clear();
-        for (int i = 0; i<fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
-        fSieve.fZ = 799.60e-3;
-        fSieve.fXOffset = 0.0;
-        fSieve.fYOffset = 0.0;
-
-        fSieve.iLargerHole.clear();
-        for (int i = 0; i<fSieve.nLargerHole; i++) fSieve.iLargerHole.push_back(kLARGERHOLE[i]);
-        fSieve.bOpen.clear();
-        for (int i = 0; i<fSieve.nRow*fSieve.nCol; i++) fSieve.bOpen.push_back((kSIEVEOPEN[i]==1)?true:false);
-
-        fSieve.fDHole = 1.3970e-3;
-        fSieve.fDLargerHole = 2.6924e-3;
-
-        double ratio = fSieve.fDLargerHole*fSieve.fDLargerHole/(fSieve.fDHole*fSieve.fDHole);
-        fSieve.fThreshold = (ratio-1)/((ratio-1)*fSieve.nLargerHole+fSieve.nRow*fSieve.nCol);
+    if (bUseField) {
+        double x[3] = { xb, yb, 0.0 };
+        double p[3] = { 0.0,
+                        fBeamEnergy*sin(fBeamTiltAngle),
+                        fBeamEnergy*cos(fBeamTiltAngle) };
+        G2PDrift::Drift(x, p, zb, 10.0, x, p);
+        V5[0] = x[0];
+        V5[1] = acos(p[2]/fBeamEnergy);
+        V5[2] = x[1];
+        V5[3] = atan(p[1]/p[0]);
+        if (p[1]/p[0]<0) V5[3]+= 180.0*kDEG;
+        if (p[1]<0) V5[3]+= 180.0*kDEG;
+        V5[4] = x[2];
     }
-    else { // right arm
-        const double kSIEVEX[7] = { -3*13.3096e-3, -2*13.3096e-3, -1*13.3096e-3, 0.0, 1*13.3096e-3, 2*13.3096e-3, 3*13.3096e-3 };
-        const double kSIEVEY[7] = { -3*6.1214e-3, -2*6.1214e-3, -1*6.1214e-3, 0.0, 1*4.7752e-3, 2*4.7752e-3, 3*4.7752e-3 };
-        const int kLARGERHOLE[2] = { 15, 24 };
-        const int kSIEVEOPEN[49] = { 0, 0, 0, 0, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 1, 1, 1, 1, 1,
-                                     0, 0, 0, 1, 1, 1, 0,
-                                     0, 0, 0, 0, 0, 0, 0 };
-
-        fSieve.nRow = 7;
-        fSieve.nCol = 7;
-        fSieve.nLargerHole = 2;
-
-        fSieve.fX.clear();
-        for (int i = 0; i<fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
-        fSieve.fY.clear();
-        for (int i = 0; i<fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
-        fSieve.fZ = 799.46e-3;
-        fSieve.fXOffset = 0.0;
-        fSieve.fYOffset = 0.0;
-
-        fSieve.iLargerHole.clear();
-        for (int i = 0; i<fSieve.nLargerHole; i++) fSieve.iLargerHole.push_back(kLARGERHOLE[i]);
-        fSieve.bOpen.clear();
-        for (int i = 0; i<fSieve.nRow*fSieve.nCol; i++) fSieve.bOpen.push_back((kSIEVEOPEN[i]==1)?true:false);
-
-        fSieve.fDHole = 1.3970e-3;
-        fSieve.fDLargerHole = 2.6924e-3;
-
-        double ratio = fSieve.fDLargerHole*fSieve.fDLargerHole/(fSieve.fDHole*fSieve.fDHole);
-        fSieve.fThreshold = (ratio-1)/((ratio-1)*fSieve.nLargerHole+fSieve.nRow*fSieve.nCol);
+    else {
+        V5[0] = xb;
+        V5[1] = 0.0;
+        V5[2] = yb;
+        V5[3] = 0.0;
+        V5[4] = zb;
     }
 }
 

@@ -43,6 +43,7 @@ namespace G2PDrift {
     void SetStep(double value) { fStep = value; }
 
     bool HasField() { return (pField==NULL)?false:true; }
+    G2PTargetField* GetField() { return pField; }
     
     void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
     {

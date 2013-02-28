@@ -11,6 +11,7 @@ namespace G2PDrift
     void SetStep(double value);
 
     bool HasField();
+    G2PTargetField* GetField();
 
     void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     void Drift(const double* x, double p, double angle, double z_tr, double zlimit, double llimit, double* xout);
