@@ -11,7 +11,7 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-LIBFILE     := libHRSTransport.a
+LIBFILE     := libHRSTrans.a
 VERSION     := 1.3.1
 
 ########################################################################
