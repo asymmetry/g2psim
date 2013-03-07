@@ -4,11 +4,6 @@
 #include <getopt.h>
 
 #include "G2PSim.hh"
-#include "G2PGun.hh"
-#include "G2PTargetField.hh"
-#include "G2PDrift.hh"
-#include "HRSTransport.hh"
-#include "G2PXS.hh"
 
 void usage(int argc, char** argv);
 
@@ -19,7 +14,7 @@ int main(int argc, char** argv)
     int nEvent = 50000;    // default 50000
     char pSnake[300] = "484816";     // default 484816 septa with shim
     char pField[300] = "hallb";
-    char pExperiment[300] = "g2p";
+    // char pExperiment[300] = "g2p";
     char pPhysics[300] = "qfs";
     char pGun[300] = "data";
     char pArm[300] = "L";          // default left arm
@@ -74,57 +69,57 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    clock_t start = clock();
+    // clock_t start = clock();
 
-    G2PSim *run= new G2PSim();
-    G2PGun *gun= new G2PGun(pGun);
-    gun->SetDataFile("input_fp_tr.dat");
-    //G2PGun *gun = new G2PGun("sieve");
-    //G2PGun *gun = new G2PGun("data");
-    //gun->SetBeamX(4.134e-3);     // 0T,6deg
-    //gun->SetBeamY(1.176e-3);     // 0T,6deg
-    //gun->SetReactZ(-13.6271e-3); // 40mil
-    //gun->SetReactZ(-12.5476e-3); // 125mil
-    //gun->SetReactZRange(-14.1350e-3,-13.1191e-3); //40mil
-    //gun->SetReactZRange(-14.1350e-3,-10.9600e-3); //125mil
-    gun->SetBeamX(0.0e-3);
-    gun->SetBeamY(0.0e-3);
-    gun->SetReactZ(0.0e-3);
-    gun->SetSigmaPosLab(0.0e-3);
-    gun->SetSigmaAngLab(0.2e-3);
-    gun->SetSigmaAngTr(0.2e-3);
-    gun->SetSigmaDelta(0.0e-3);
-    //gun->SetDataFile("input_fp_tr.dat");
-    run->AddGun(gun);
+    // G2PSim *run= new G2PSim();
+    // G2PGun *gun= new G2PGun(pGun);
+    // gun->SetDataFile("input_fp_tr.dat");
+    // //G2PGun *gun = new G2PGun("sieve");
+    // //G2PGun *gun = new G2PGun("data");
+    // //gun->SetBeamX(4.134e-3);     // 0T,6deg
+    // //gun->SetBeamY(1.176e-3);     // 0T,6deg
+    // //gun->SetReactZ(-13.6271e-3); // 40mil
+    // //gun->SetReactZ(-12.5476e-3); // 125mil
+    // //gun->SetReactZRange(-14.1350e-3,-13.1191e-3); //40mil
+    // //gun->SetReactZRange(-14.1350e-3,-10.9600e-3); //125mil
+    // gun->SetBeamX(0.0e-3);
+    // gun->SetBeamY(0.0e-3);
+    // gun->SetReactZ(0.0e-3);
+    // gun->SetSigmaPosLab(0.0e-3);
+    // gun->SetSigmaAngLab(0.2e-3);
+    // gun->SetSigmaAngTr(0.2e-3);
+    // gun->SetSigmaDelta(0.0e-3);
+    // //gun->SetDataFile("input_fp_tr.dat");
+    // run->AddGun(gun);
 
-    HRSTransport *model = new HRSTransport(pSnake);
-    run->SetHRSModel(model);
+    // HRSTransport *model = new HRSTransport(pSnake);
+    // run->SetHRSModel(model);
 
-    G2PTargetField *field = new G2PTargetField(pField);
-    if (strcmp(pExperiment, "g2p")) {
-        field->SetEulerAngle(90,90,-90); // transverse, g2p
-    }
-    else {
-        field->SetEulerAngle(90,6,-90);  // 6 deg, gep
-    }
-    field->SetRatio(0.5);
-    run->SetTargetField(field);
+    // G2PTargetField *field = new G2PTargetField(pField);
+    // if (strcmp(pExperiment, "g2p")) {
+    //     field->SetEulerAngle(90,90,-90); // transverse, g2p
+    // }
+    // else {
+    //     field->SetEulerAngle(90,6,-90);  // 6 deg, gep
+    // }
+    // field->SetRatio(0.5);
+    // run->SetTargetField(field);
 
-    G2PXS *physmodel = new G2PXS("qfs");
-    run->SetPhysModel(physmodel);
+    // G2PXS *physmodel = new G2PXS("qfs");
+    // run->SetPhysModel(physmodel);
 
-    run->SetArm(pArm);
-    run->SetBeamEnergy(2.253207);    // 0T,6deg
-    run->SetHRSMomentum(2.249497);   // 0T,6deg
+    // run->SetArm(pArm);
+    // run->SetBeamEnergy(2.253207);    // 0T,6deg
+    // run->SetHRSMomentum(2.249497);   // 0T,6deg
 
-    run->SetNEvent(nEvent);
-    run->SetRootName("result_test.root");
+    // run->SetNEvent(nEvent);
+    // run->SetRootName("result_test.root");
     
-    run->Run();
+    // run->Run();
 
-    clock_t end = clock();
+    // clock_t end = clock();
 
-    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/nEvent);
+    // printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/nEvent);
 
     // // Test Drift
     // G2PTargetField *field = new G2PTargetField("hallb");

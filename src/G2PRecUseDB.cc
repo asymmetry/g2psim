@@ -11,57 +11,66 @@
 //   Jan 2013, C. Gu, First public version.
 //
 
+#include <cstdlib>
+#include <cmath>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <cstring>
 #include <vector>
 #include <map>
-#include <cstdlib>
-#include <cmath>
 
 #include "TROOT.h"
 #include "TObject.h"
+#include "TError.h"
 #include "TString.h"
-#include "TMath.h"
 
-#include "HRSRecUseDB.hh"
+#include "G2PAppsBase.hh"
+#include "G2PGlobals.hh"
+#include "G2PRunBase.hh"
 
-//#define RECUSEDB_DEBUG 1
+#include "G2PRecUseDB.hh"
 
 using namespace std;
 
-ClassImp(HRSRecUseDB);
+G2PRecUseDB* G2PRecUseDB::pG2PRecUseDB = NULL;
 
-HRSRecUseDB::HRSRecUseDB()
-    :bIsInit(false)
+
+G2PRecUseDB::G2PRecUseDB() :
+    pPrefix(NULL), pDBName(NULL)
 {
-    // Nothing to do
+    if (pG2PRecUseDB) {
+        Error("G2PRecUseDB()", "Only one instance of G2PRecUseDB allowed.");
+        MakeZombie();
+        return;
+    }
+    pG2PRecUseDB = this;
 }
 
-HRSRecUseDB::HRSRecUseDB(const char* prefix, const char* dbname)
-    :bIsInit(false)
+G2PRecUseDB::~G2PRecUseDB()
 {
-    SetPrefix(prefix);
-    SetDBName(dbname);
-    LoadDataBase();
+    if (pG2PRecUseDB==this) pG2PRecUseDB = NULL;
 }
 
-HRSRecUseDB::~HRSRecUseDB()
+G2PAppsBase::EStatus G2PRecUseDB::Init()
 {
-    // Nothing to do
-}
+    static const char* const here = "Init()";
 
-int HRSRecUseDB::LoadDataBase()
-{
+    if (G2PAppsBase::Init()) return fStatus;
+
+    if (gG2PRun->GetHRSAngle()>0) {
+        pPrefix = "L"; pDBName = "db_L.vdc.dat";
+    }
+    else {
+        pPrefix = "R"; pDBName = "db_R.vdc.dat";
+    }
+
     // Read VDC database
     ifstream ifs(pDBName, ios_base::in);
     if (!ifs.good()) {
-        cout << "Can not open database file \"" << pDBName << "\" !" << endl;
-        return -1;
+        Error(here, "Cannot initialize, database file \"%s\" does not exist.", pDBName);
+        return (fStatus = kINITERROR);
     }
-    else
-        cout << "Reading database file \"" << pDBName << "\"" << endl;
 
     TString tag(pPrefix);
     Ssiz_t pos = tag.Index(".");
@@ -89,8 +98,9 @@ int HRSRecUseDB::LoadDataBase()
     }
 
     if (!found){
-        cout << "Can not find matrix in database file \"" << pDBName << "\" !" << endl;
-        return 1;
+        Error(here, "Cannot initialize, no matrix in database file \"%s\".", pDBName);
+        ifs.close();
+        return (fStatus = kINITERROR);
     }
     
     ifs.getline(buff, LEN);
@@ -136,7 +146,7 @@ int HRSRecUseDB::LoadDataBase()
 	matrix_map["P"] = &fPMatrixElems;
 	matrix_map["PTA"] = &fPTAMatrixElems;
 
-    cout << "Loading matrix ..." << endl;
+    if (fDebug>0) Info(here, "Loading matrix from %s ...", pDBName);
 
     // Read matrix elements line by line
     while (ifs.getline(buff, LEN) != NULL) {
@@ -173,10 +183,9 @@ int HRSRecUseDB::LoadDataBase()
             }
         }
         if (p_cnt<1) {
-            cout << "Could not read in Matrix Element " << w << ME.iPower[0] << ME.iPower[1] << ME.iPower[2] << " !" << endl;
-            cout << "Line looks like : " << tmpline.Data() << endl;
+            Error(here, "Cannot Initialize, matrix element %s%d%d%d has error.", w, ME.iPower[0], ME.iPower[1], ME.iPower[2]);
             ifs.close();
-            return 1;
+            return (fStatus = kINITERROR);
         }
 
         if (ME.bIsZero) continue;
@@ -186,61 +195,22 @@ int HRSRecUseDB::LoadDataBase()
             bool match = false;
             for (vector<THaMatrixElement>::iterator it = mat->begin(); (it!=mat->end())&&(!(match = it->IsMatch(ME))); it++);
             if (match)
-                cout << "Duplicate definition of matrix element " << w << ME.iPower[0] << ME.iPower[1] << ME.iPower[2] << ". Using first definition." << endl;
+                Warning(here, "Duplicate definition of matrix element %s%d%d%d.", w, ME.iPower[0], ME.iPower[1], ME.iPower[2]);
             else
                 mat->push_back(ME);
         }
     }
 
-    bIsInit = true;
+    fStatus = kOK;
     ifs.close();
 
-#ifdef RECUSEDB_DEBUG
-    PrintDataBase();
-#endif
-    
-    return 0;
+    return (fStatus = kOK);
 }
 
-void HRSRecUseDB::PrintDataBase()
+void G2PRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
 {
-    map<int, vector<THaMatrixElement>*> matrix_map;
-    matrix_map[1] = &ftMatrixElems;
-	matrix_map[2] = &fyMatrixElems;
-	matrix_map[3] = &fpMatrixElems;
-	matrix_map[4] = &fDMatrixElems;
-	matrix_map[5] = &fTMatrixElems;
-	matrix_map[6] = &fPMatrixElems;
-	matrix_map[7] = &fYMatrixElems;
-	matrix_map[8] = &fPTAMatrixElems;
-	matrix_map[9] = &fYTAMatrixElems;
+    static const char* const here = "CalcTargetCoords()";
 
-    map<int, const char*> name_map;
-    name_map[1] = "t";
-    name_map[2] = "y";
-    name_map[3] = "p";
-    name_map[4] = "D";
-    name_map[5] = "T";
-    name_map[6] = "P";
-    name_map[7] = "Y";
-    name_map[8] = "PTA";
-    name_map[9] = "YTA";
-
-    cout << "Reconstruction database: " << endl;
-    
-    for (int i = 1; i<=9; i++) {
-        vector<THaMatrixElement>* mat = matrix_map[i];
-        if (mat->size()>0) {
-            for (vector<THaMatrixElement>::iterator it = mat->begin(); it!=mat->end(); it++){
-                cout << name_map[i] << " ";
-                it->Print();
-            }
-        }
-    }
-}
-
-void HRSRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
-{
     // Calculate target coordinates from focal plane coordinates
     double x_fp, y_fp, th_fp, ph_fp;
     double powers[kNUM_PRECOMP_POW][5];
@@ -278,20 +248,14 @@ void HRSRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     V5tg_tr[2] = y;
     V5tg_tr[3] = atan(phi);
     V5tg_tr[4] = dp;
-    
-#ifdef RECUSEDB_DEBUG
-    double V5fp_tr[5];
-    TransRot2Tr(V5fp_rot, V5fp_tr);
-    printf("%e\t%e\t%e\t%e\n", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
-    double V5fp_det[5];
-    TransTr2Det(V5fp_tr, V5fp_det);
-    printf("%e\t%e\t%e\t%e\n", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
-    printf("%e\t%e\t%e\t%e\n\n", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
-#endif
+
+    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5tg_tr[4], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3]);
 }
 
-void HRSRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
+void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
 {
+    static const char* const here = "TransTr2Rot()";
+
     double x, y, theta, phi;
     
     double V5fp_det[5];
@@ -321,10 +285,14 @@ void HRSRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
     V5fp_rot[1] = atan(theta);
     V5fp_rot[2] = y;
     V5fp_rot[3] = atan(phi);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
-void HRSRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
+void G2PRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
 {
+    static const char* const here = "TransRot2Tr()";
+
     double x = V5fp_rot[0];
     double t = tan(V5fp_rot[1]);
     double y = V5fp_rot[2];
@@ -352,10 +320,14 @@ void HRSRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
     V5fp_tr[1] = atan(t_tr);
     V5fp_tr[2] = y_tr;
     V5fp_tr[3] = atan(p_tr);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
-void HRSRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
+void G2PRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
 {
+    static const char* const here = "TransTr2Det()";
+
     double tan_rho_0 = ftMatrixElems[0].fPoly[0];
     double cos_rho_0 = 1.0/sqrt(1.0+tan_rho_0*tan_rho_0);
 
@@ -373,10 +345,14 @@ void HRSRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
     V5fp_det[1] = atan(th_det);
     V5fp_det[2] = y_det;
     V5fp_det[3] = atan(ph_det);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
-void HRSRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
+void G2PRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
 {
+    static const char* const here = "TransDet2Tr()";
+
     double tan_rho_0 = ftMatrixElems[0].fPoly[0];
     double cos_rho_0 = 1.0/sqrt(1.0+tan_rho_0*tan_rho_0);
 
@@ -394,25 +370,74 @@ void HRSRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
     V5fp_tr[1] = atan(th_tr);
     V5fp_tr[2] = y_tr;
     V5fp_tr[3] = atan(ph_tr);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
-void HRSRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
+void G2PRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
 {
+    static const char* const here = "TransRot2Det()";
+
     double V5fp_tr[5];
     
     TransRot2Tr(V5fp_rot, V5fp_tr);
     TransTr2Det(V5fp_tr, V5fp_det);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
-void HRSRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
+void G2PRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
 {
+    static const char* const here = "TransDet2Rot()";
+
     double V5fp_tr[5];
     
     TransDet2Tr(V5fp_det, V5fp_tr);
     TransTr2Rot(V5fp_tr, V5fp_rot);
+
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
-double HRSRecUseDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
+void G2PRecUseDB::PrintDataBase()
+{
+    static const char* const here = "TransDet2Rot()";
+
+    map<int, vector<THaMatrixElement>*> matrix_map;
+    matrix_map[1] = &ftMatrixElems;
+	matrix_map[2] = &fyMatrixElems;
+	matrix_map[3] = &fpMatrixElems;
+	matrix_map[4] = &fDMatrixElems;
+	matrix_map[5] = &fTMatrixElems;
+	matrix_map[6] = &fPMatrixElems;
+	matrix_map[7] = &fYMatrixElems;
+	matrix_map[8] = &fPTAMatrixElems;
+	matrix_map[9] = &fYTAMatrixElems;
+
+    map<int, const char*> name_map;
+    name_map[1] = "t";
+    name_map[2] = "y";
+    name_map[3] = "p";
+    name_map[4] = "D";
+    name_map[5] = "T";
+    name_map[6] = "P";
+    name_map[7] = "Y";
+    name_map[8] = "PTA";
+    name_map[9] = "YTA";
+
+    Info(here, "Reconstruction database:");
+    
+    for (int i = 1; i<=9; i++) {
+        vector<THaMatrixElement>* mat = matrix_map[i];
+        if (mat->size()>0) {
+            for (vector<THaMatrixElement>::iterator it = mat->begin(); it!=mat->end(); it++){
+                cout << name_map[i] << " ";
+                it->Print();
+            }
+        }
+    }
+}
+
+double G2PRecUseDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a variable at the target
     // Must already have x values for the matrix elements
@@ -430,7 +455,7 @@ double HRSRecUseDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &
     return value;
 }
 
-void HRSRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
+void G2PRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a matrix element for a given x
     double value = 0.0;
@@ -446,19 +471,19 @@ void HRSRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
     }   
 }
 
-HRSRecUseDB::THaMatrixElement::THaMatrixElement()
-    :bIsZero(true), iPower(3), iOrder(0), fPoly(HRSRecUseDB::kPORDER),
+G2PRecUseDB::THaMatrixElement::THaMatrixElement()
+    :bIsZero(true), iPower(3), iOrder(0), fPoly(G2PRecUseDB::kPORDER),
      fValue(0)
 {
     // Nothing to do
 }
 
-HRSRecUseDB::THaMatrixElement::~THaMatrixElement()
+G2PRecUseDB::THaMatrixElement::~THaMatrixElement()
 {
     // Nothing to do
 }
 
-bool HRSRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
+bool G2PRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
 {
     // Compare coefficients of this matrix element to another
     if (iPower.size()!=rhs.iPower.size()) return false;
@@ -468,7 +493,7 @@ bool HRSRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
     return true;
 }
 
-void HRSRecUseDB::THaMatrixElement::SkimPoly()
+void G2PRecUseDB::THaMatrixElement::SkimPoly()
 {
     if (bIsZero) return;
 
@@ -479,7 +504,7 @@ void HRSRecUseDB::THaMatrixElement::SkimPoly()
     if (iOrder==0) bIsZero = true;
 }
 
-void HRSRecUseDB::THaMatrixElement::Print()
+void G2PRecUseDB::THaMatrixElement::Print()
 {
     if (bIsZero) {
         cout << "This element is zero" << endl;
@@ -494,3 +519,5 @@ void HRSRecUseDB::THaMatrixElement::Print()
     cout << endl;
     cout.unsetf(ios::floatfield);
 }
+
+ClassImp(G2PRecUseDB)

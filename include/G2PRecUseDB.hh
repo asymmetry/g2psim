@@ -1,4 +1,4 @@
-// This file defines a class HRSRecUseDB.
+// This file defines a class G2PRecUseDB.
 // This class is used in G2PSim class together with HRSTransport.
 // It reads replay database and reconstruct target variables using this
 //+database.
@@ -11,29 +11,23 @@
 //   Jan 2013, C. Gu, First public version.
 //
 
-#ifndef HRS_RECUSEDB_H
-#define HRS_RECUSEDB_H
+#ifndef G2P_RECUSEDB_H
+#define G2P_RECUSEDB_H
 
 #include <vector>
 
-#include "TROOT.h"
-#include "TObject.h"
+#include "G2PAppsBase.hh"
 
 using namespace std;
 
-class HRSRecUseDB : public TObject
+class G2PRecUseDB : public G2PAppsBase
 {
 public:
-    HRSRecUseDB();
-    HRSRecUseDB(const char* prefix, const char* dbname);
-    ~HRSRecUseDB();
-    
-    bool IsInit() { return bIsInit; }
-    void SetPrefix(const char* prefix) { pPrefix = prefix; }
-    void SetDBName(const char* dbname) { pDBName = dbname; }
+    G2PRecUseDB();
+    ~G2PRecUseDB();
 
-    int LoadDataBase();
-    void PrintDataBase();
+    EStatus Init();
+    void Clear() { }
 
     void CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr);
     
@@ -44,13 +38,12 @@ public:
     void TransRot2Det(const double* V5fp_rot, double* V5fp_det);
     void TransDet2Rot(const double* V5fp_det, double* V5fp_rot);
 
+    static G2PRecUseDB* GetInstance() { return pG2PRecUseDB; }
+
+protected:
     enum { kPORDER = 7, kNUM_PRECOMP_POW = 10 }; // constants
 
-private:
-    const char* pPrefix;
-    const char* pDBName;
-
-    bool bIsInit;
+    void PrintDataBase();
 
     // Class for storing matrix element data
     class THaMatrixElement
@@ -77,6 +70,9 @@ private:
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
 
+    const char* pPrefix;
+    const char* pDBName;
+
     vector<THaMatrixElement>* fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;
     vector<THaMatrixElement> fyMatrixElems;
@@ -88,7 +84,10 @@ private:
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
-    ClassDef(HRSRecUseDB,1);
+private:
+    static G2PRecUseDB* pG2PRecUseDB;
+
+    ClassDef(G2PRecUseDB, 1)
 };
 
 #endif

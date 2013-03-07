@@ -8,118 +8,51 @@
 #ifndef G2P_SIM_H
 #define G2P_SIM_H
 
-#include <cstdio>
-#include <cstring>
-#include <vector>
-
-#include "TROOT.h"
 #include "TObject.h"
-#include "TFile.h"
-#include "TTree.h"
 
-#include "G2PGun.hh"
-#include "G2PBPM.hh"
-#include "HRSRecUseDB.hh"
-#include "G2PTargetField.hh"
-
-#include "G2PXS.hh"
-#include "HRSTransport.hh"
+class TFile;
+class TList;
+class TTree;
+class G2PDrift;
+class G2PRunBase;
 
 class G2PSim : public TObject
 {
 public:
     G2PSim();
     ~G2PSim();
-
-    typedef void (G2PSim::*pf_Run)();
-    
+   
     void SetNEvent(int n) { nEvent = n; }
+    void SetSeed(int n);
+    void SetDebug(int n) { fDebug = n; }
+    void SetOutFileName(const char* name) { pOutFileName = name; }
 
-    void SetArm(const char* label) { bIsLeftArm = (strcmp(label,"L")==0)?true:false; }
-    void SetHRSAngle(double angle) { fHRSAngle = angle; }
-    void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
-    void SetBeamEnergy(double value) { fBeamEnergy = value; }
-
-    void SetEndPlaneZ(double value) { fEndPlaneZ = value; }
-
-    void AddGun(G2PGun* gun) { pGunList.push_back(gun); }
-
-    void SetHRSModel(HRSTransport* model) { pHRS = model; }
-    void SetTargetField(G2PTargetField* model) { pField = model; bUseField = true; }
-    void SetPhysModel(G2PXS* model) { pPhys=model; }
-
-    void SetRootName(const char* name) { pFileName = name; }
-
-    bool IsInit() { return bIsInit; }
-
-    void Init();
-    void Run();
+    bool Init();
+    void Begin();
     void End();
 
+    void Run();
     void Run(int n) { nEvent = n; Run(); }
 
-private:
-    void Clear();
-    void InitTree();
+    static G2PSim* GetInstance() { return pG2PSim; }
 
-    void RunSim();
-    void RunData();
-
-    void VDCSmearing(double* V5_fp);
-    double GetEffBPM(double xbpm_tr, double p);
-    double DriftPath();
-
-    bool bIsInit;
-
-    bool bIsLeftArm;
-    double fHRSAngle;  // Set the same value to optics setting
-    double fHRSMomentum;
-    double fBeamEnergy;
-    bool bUseField;
+protected:
     int nEvent;
+    int nCounter;
 
-    int nIndex;
-
-    vector<G2PGun*> pGunList;
-    G2PGun* pGun;
-    int iGunSetting;
-    double fV5beam_lab[5];
-    double fV5react_tr[5];
-    double fV5tg_tr[5];
-    double fV5tg_lab[5];
-    double fV5fpdata_tr[5];
-    double fV5fpdata_rot[5];
-
-    G2PBPM* pBPM;
-    double fV5bpm_lab[5];
-
-    HRSTransport* pHRS;
-    bool bIsGoodParticle;
-    double fV5fp_tr[5];
-    double fV5fp_rot[5];
-	double fV5rec_tr[5];
-    double fV5rec_lab[5];
-
-    HRSRecUseDB* pRecUseDB;
-    double fV5recdb_tr[5];
-    double fV5recdb_lab[5];
-
-    G2PTargetField *pField;
-    double fEndPlaneZ;
-    double fV5sieve_tr[5];
-
-    G2PXS* pPhys;
-    double fXS;
-
-    TTree* pTree;
-    TTree* pConfig;
+    int fDebug;
 
     TFile* pFile;
-    const char* pFileName;
+    const char* pOutFileName;
+    TTree* pTree;
 
-    pf_Run pfRunSelector;
+    TList* fApps;
+    G2PRunBase* pRun;
 
-    ClassDef(G2PSim,1);
+private:
+    static G2PSim* pG2PSim;
+
+    ClassDef(G2PSim, 1)
 };
 
 #endif

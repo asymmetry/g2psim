@@ -23,8 +23,8 @@ INCDIR      := include
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELDIR    := HRSTransport:G2PXSection
-MODELLIST   := HRSTransport G2PXS
+MODELDIR    := HRSTrans:G2PPhys
+MODELLIST   := HRSTrans G2PPhys
 INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
@@ -75,7 +75,7 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ########################################################################
 # Libs
 SYSLIBS     := -lstdc++ -lgfortran
-OTHERLIBS   := -LHRSTransport -lHRSTransport -LG2PXSection -lG2PXS
+OTHERLIBS   := -LHRSTrans -lHRSTrans -LG2PPhys -lG2PPhys
 
 ########################################################################
 # ROOT configure
@@ -170,8 +170,8 @@ $(OBJDIR)/Main.o: Main.cc
 
 ########################################################################
 lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
-	@make -s -C HRSTransport
-	@make -s -C G2PXSection
+	@make -s -C HRSTrans
+	@make -s -C G2PPhys
 	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
@@ -238,8 +238,8 @@ clean: dir
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
-	@make distclean -s -C HRSTransport
-	@make distclean -s -C G2PXSection
+	@make distclean -s -C HRSTrans
+	@make distclean -s -C G2PPhys
 
 test:	
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)

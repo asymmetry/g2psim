@@ -12,47 +12,28 @@
 #include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
 
-#include "G2PHallBField.hh"
+#include "G2PMapField.hh"
 
 using namespace std;
 
-extern "C"
-{
-    void sda_ptf_(float*, float*); // routine to calculate the field of HallB coil, which is not symmetric
-}
-
 static const double kCM = 1.0e-2;
-static const double kKG = 1.0e-1;
-static const double kSCALE = 4.9788476/5.0938709;
 
-static void GetHallBField(const double* pos, double* field)
+G2PMapField::G2PMapField(const char* name)
 {
-    float x[3], b[3];
-
-    x[0] = pos[0]/kCM;
-    x[1] = pos[1]/kCM;
-    x[2] = pos[2]/kCM;
-
-    sda_ptf_(x, b);
-
-    // The routine will return fields in kG, maximum is 5.0938709T
-    // Match it to the TOSCA map maximum 4.9788476T
-    field[0] = b[0]*kKG*kSCALE;
-    field[1] = b[1]*kKG*kSCALE;
-    field[2] = b[2]*kKG*kSCALE;
+    pMapFileName = name;
 }
 
-G2PHallBField::G2PHallBField()
-{
-    pMapFileName = "hallbfield.map";
-}
-
-G2PHallBField::~G2PHallBField()
+G2PMapField::G2PMapField()
 {
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PHallBField::Init()
+G2PMapField::~G2PMapField()
+{
+    // Nothing to do
+}
+
+G2PAppsBase::EStatus G2PMapField::Init()
 {
     static const char* const here = "Init()";
 
@@ -60,7 +41,6 @@ G2PAppsBase::EStatus G2PHallBField::Init()
 
     fStatus = kINITERROR;
     if (ReadMap()) fStatus = kOK;
-    else if (CreateMap()) fStatus = kOK;
     else Error(here, "Cannot initialize.");
 
     if (fDebug>3) SaveRootFile();
@@ -68,7 +48,7 @@ G2PAppsBase::EStatus G2PHallBField::Init()
     return fStatus;
 }
 
-bool G2PHallBField::ReadMap()
+bool G2PMapField::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
@@ -129,43 +109,4 @@ bool G2PHallBField::ReadMap()
     return true;
 }
 
-bool G2PHallBField::CreateMap()
-{
-    static const char* const here = "CreateMap()";
-
-    if (!G2PFieldBase::CreateMap()) return false;
-
-    FILE* fp;
-
-    if ((fp=fopen(pMapFileName,"w"))==NULL) return false;
-
-    fprintf(fp, "   z        r       Bz              Br              Btot\n");
-    double x[3], b[3];
-
-    x[1] = 0;
-    
-    for (int i = 0; i<nNumR; i++) {
-        x[0] = i*fStepR;
-        for (int j = 0; j<nNumZ; j++) {
-            x[2] = j*fStepZ;
-
-            GetHallBField(x, b);
-
-            fBField[i][j][0] = j*fStepZ;
-            fBField[i][j][1] = i*fStepR;
-            fBField[i][j][2] = b[2];
-            fBField[i][j][3] = sqrt(b[0]*b[0]+b[1]*b[1]);
-            fBField[i][j][4] = sqrt(b[0]*b[0]+b[1]*b[1]+b[2]*b[2]);
-            
-            fprintf(fp, "%8.3f %8.3f\t%e\t%e\t%e\n", x[2]/kCM, x[0]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
-
-            if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", x[2]/kCM, x[0]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
-        }
-    }
-
-    fclose(fp);
-
-    return true;
-}
-
-ClassImp(G2PHallBField)
+ClassImp(G2PMapField)

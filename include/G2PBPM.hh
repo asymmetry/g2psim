@@ -1,31 +1,33 @@
 #ifndef G2P_BPM_H
 #define G2P_BPM_H
 
-#include "TROOT.h"
-#include "TObject.h"
+#include "G2PAppsBase.hh"
 
-class G2PBPM : public TObject
+class G2PDrift;
+
+class G2PBPM : public G2PAppsBase
 {
 public:
     G2PBPM();
     ~G2PBPM();
 
-    void SetBeamEnergy(double value) { fBeamEnergy = value; }
     void SetBPMRes(double value1, double value2) { fBPMARes = value1; fBPMBRes = value2; }
+
+    EStatus Init();
+    void Clear() { }
+
+    void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
+    void TransBPM2Lab(const double*V5_bpm, double* V5_lab);
 
     double GetBPMARes() { return fBPMARes; }
     double GetBPMBRes() { return fBPMBRes; }
 
-    void Init();
-    void GetBPMValue(const double* V5beam_lab, double* V5bpm_lab);
+    static G2PBPM* GetInstance() { return pG2PBPM; }
 
-private:
-    void SetBPM();
+    int RegisterModel();
 
-    bool bIsInit;
-
-    int iSetting;
-    bool bUseField;
+protected:
+    int SetBPM();
 
     double fBeamEnergy;
 
@@ -34,7 +36,12 @@ private:
     double fBPMBX, fBPMBY;
     double fBPMARes, fBPMBRes;
 
-    ClassDef(G2PBPM, 1);
+    G2PDrift* pDrift;
+
+private:
+    static G2PBPM* pG2PBPM;
+
+    ClassDef(G2PBPM, 1)
 };
 
 #endif

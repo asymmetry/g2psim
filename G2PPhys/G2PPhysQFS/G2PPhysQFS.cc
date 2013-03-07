@@ -41,6 +41,8 @@ void G2PPhysQFS::SetPars(double* array, int n)
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
+    case 0:
+        break;
     case 2:
         fTb = fPars[0]; fTa = fPars[1];
         break;
