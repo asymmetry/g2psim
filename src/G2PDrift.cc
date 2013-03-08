@@ -22,7 +22,7 @@ G2PDrift* G2PDrift::pG2PDrift = NULL;
 
 G2PDrift::G2PDrift() :
     fM0(0.51099892811e-3), fQ(-1*e), fQsave(-1*e),
-    fStep(1.0e-3), fStepLimit(1.0e-6),
+    fStep(1.0e-3), fErrLoLimit(1.0e-7), fErrUpLimit(5.0e-7),
     fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0),
     pField(NULL)
 {
@@ -95,8 +95,8 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
     xi[0] = x[0]; xi[1] = x[1]; xi[2] = x[2];
     xi[3] = v[0]; xi[4] = v[1]; xi[5] = v[2];
 
-    bool sign = ((x[2]<zlimit)^(p[2]<0))?false:true;
-    if (sign) {
+    bool sign = (x[2]>zlimit)?true:false;
+    if ((p[2]<0)^(sign)) {
         xi[3] *= -1.0;
         xi[4] *= -1.0;
         xi[5] *= -1.0;
@@ -105,27 +105,25 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
 
     double dxdt[6], err[6];
     double dt = fStep/fVelocity;
-    double error;
+    double error = (fErrUpLimit+fErrLoLimit)/2.0;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i];
-    while (l<llimit) {
-        if (error>fStepLimit/10.0) dt/=2.0;
-        else for (int i = 0; i<6; i++) xi[i] = xf[i];
-        ComputeRHS(xi, dxdt);
-        if (fDebug>3) {
-            Info(here, "   x: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
-            Info(here, "dxdt: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
+    while ((l<llimit)&&((xf[2]<zlimit)^(sign))) {
+        if (error>fErrUpLimit) dt/=2.0;
+        else {
+            for (int i = 0; i<6; i++) xi[i] = xf[i];
+            if (error<fErrLoLimit) dt*=2.0;
+            l+=fVelocity*dt;
         }
+        ComputeRHS(xi, dxdt);
         NystromRK4(xi, dxdt, dt, xf, err);
         error = DistChord();
-        if ((xf[2]>zlimit)^(p[2]<0)^(sign)) break;
-        l+=fVelocity*dt;
     }
 
     if (l<llimit) {
-        double dtlimit = fStepLimit/fVelocity;
+        double dtlimit = fErrUpLimit/fVelocity;
         while (dt>dtlimit) {
-            if ((xf[2]>zlimit)^(p[2]<0)^(sign)) {
+            if ((xf[2]>zlimit)^(sign)) {
                 dt/=2.0;
             }
             else {
@@ -136,7 +134,7 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
         }
     }
         
-    if (sign) {
+    if ((p[2]<0)^(sign)) {
         xf[3] *= -1.0;
         xf[4] *= -1.0;
         xf[5] *= -1.0;
@@ -197,7 +195,7 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     fVelocity = sqrt(fVelocity2);
     fGamma = 1/sqrt(1-(fVelocity2/c/c));
 
-    bool sign = (x[2]<zlimit)?false:true;
+    bool sign = (z_tr>zlimit)?true:false;
     if (sign) {
         xi[3] *= -1.0;
         xi[4] *= -1.0;
@@ -206,30 +204,28 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     }
 
     double dxdt[6], err[6];
-    double error;
+    double error = (fErrUpLimit+fErrLoLimit)/2.0;
     double dt = fStep/fVelocity;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i]; 
     double newz_tr = z_tr;
-    while (l<llimit) {
-        if (error>fStepLimit/10.0) dt/=2.0;
-        else for (int i = 0; i<6; i++) xi[i] = xf[i];
-        ComputeRHS(xi, dxdt);
-        if (fDebug>3) {
-            Info(here, "   x: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xi[0], xi[1], xi[2], xi[3], xi[4], xi[5]);
-            Info(here, "dxdt: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
+    while ((l<llimit)&&((newz_tr<zlimit)^(sign))) {
+        if (error>fErrUpLimit) dt/=2.0;
+        else {
+            for (int i = 0; i<6; i++) xi[i] = xf[i];
+            if (error<fErrLoLimit) dt*=2.0;
+            l+=fVelocity*dt;
         }
+        ComputeRHS(xi, dxdt);
         NystromRK4(xi, dxdt, dt, xf, err);
         error = DistChord();
         newz_tr = xf[0]*sinang+xf[2]*cosang;
-        if ((newz_tr>zlimit)^(sign)) break;
-        l+=fVelocity*dt;
     }
 
     if (l<llimit) {
-        double dtlimit = fStepLimit/fVelocity;
+        double dtlimit = fErrUpLimit/fVelocity;
         while (dt>dtlimit) {
-            if ((xf[2]>zlimit)^(sign)) {
+            if ((newz_tr>zlimit)^(sign)) {
                 dt/=2.0;
             }
             else {
@@ -237,6 +233,7 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
             }
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
+            newz_tr = xf[0]*sinang+xf[2]*cosang;
         }
     }
 
@@ -279,6 +276,8 @@ void G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle, 
 
 void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err)
 {
+    static const char* const here = "NystromRK4()";
+
     // Using Nystrom-Runge-Kutta method to solve the motion equation of the
     // electron in static magnetic field numerically
     double S = step;
@@ -356,6 +355,10 @@ void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, doub
     xo[3]*=normF;
     xo[4]*=normF;
     xo[5]*=normF;
+
+    if (fDebug>3) {
+        Info(here, " err: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", err[0]/fabs(xo[0]-x[0]), err[1]/fabs(xo[1]-x[1]), err[2]/fabs(xo[2]-x[2]), err[3]/fabs(xo[3]-x[3]), err[4]/fabs(xo[4]-x[4]), err[5]/fabs(xo[5]-x[5]));
+    }
 }
  
 double G2PDrift::DistChord()
@@ -381,6 +384,8 @@ double G2PDrift::DistChord()
  
 void G2PDrift::ComputeRHS(const double* x, double* dxdt)
 {
+    static const char* const here = "ComputeHRS()";
+
     // Calculate the right hand side of the motion equation
     pField->GetField(x, fField);
 
@@ -392,6 +397,11 @@ void G2PDrift::ComputeRHS(const double* x, double* dxdt)
     dxdt[3] = (x[4]*fField[2]-fField[1]*x[5])*fCof;
     dxdt[4] = (x[5]*fField[0]-fField[2]*x[3])*fCof;
     dxdt[5] = (x[3]*fField[1]-fField[0]*x[4])*fCof;
+
+    if (fDebug>3) {
+        Info(here, "   x: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", x[0], x[1], x[2], x[3], x[4], x[5]);
+        Info(here, "dxdt: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
+    }
 }
 
 ClassImp(G2PDrift)

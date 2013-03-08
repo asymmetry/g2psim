@@ -138,14 +138,14 @@ bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp)
     bool bGoodParticle=false;
 
     if (fHRSAngle>0) {
-        pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
+        //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         bGoodParticle = pModel->TransLeftHRS(V5);
-        pModel->FPCorrLeft(V5_tg, V5);
+        //pModel->FPCorrLeft(V5_tg, V5);
     }
     else {
-        pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
+        //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         bGoodParticle = pModel->TransRightHRS(V5);
-        pModel->FPCorrRight(V5_tg, V5);
+        //pModel->FPCorrRight(V5_tg, V5);
     }
 
     V5_fp[0] = V5[0];
@@ -154,7 +154,7 @@ bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp)
     V5_fp[3] = atan(V5[3]);
     V5_fp[4] = V5[4];
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4],V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4]);
+    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4]);
 
     return bGoodParticle;
 }
@@ -178,11 +178,11 @@ bool G2PHRSTrans::Backward(const double* V5_fp, double* V5_tg)
     
     if (fHRSAngle>0) {
         pModel->ReconLeftHRS(V5);
-        pModel->CoordsCorrection(fModelAngle-fHRSAngle, V5);
+        //pModel->CoordsCorrection(fModelAngle-fHRSAngle, V5);
     }
     else {
         pModel->ReconRightHRS(V5);
-        pModel->CoordsCorrection(-fModelAngle-fHRSAngle, V5);
+        //pModel->CoordsCorrection(-fModelAngle-fHRSAngle, V5);
     }
 
     V5_tg[0] = V5[0];
@@ -195,7 +195,7 @@ bool G2PHRSTrans::Backward(const double* V5_fp, double* V5_tg)
 
     if (V5_tg[4]<1.0) bGoodParticle = true;
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4], V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
+    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
     
     return bGoodParticle;
 }

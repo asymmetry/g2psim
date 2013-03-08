@@ -39,7 +39,7 @@ protected:
 
     double fM0;
     double fQ, fQsave;
-    double fStep, fStepLimit;
+    double fStep, fErrLoLimit,fErrUpLimit;
     double fVelocity, fVelocity2, fGamma;
     double fCof;
     double fField[3];

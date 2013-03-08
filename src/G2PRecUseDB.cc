@@ -249,7 +249,7 @@ void G2PRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     V5tg_tr[3] = atan(phi);
     V5tg_tr[4] = dp;
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5tg_tr[4], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3]);
+    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5tg_tr[4], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
 }
 
 void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)

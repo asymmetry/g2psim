@@ -63,7 +63,7 @@ G2PAppsBase::EStatus G2PHallBField::Init()
     else if (CreateMap()) fStatus = kOK;
     else Error(here, "Cannot initialize.");
 
-    if (fDebug>3) SaveRootFile();
+    if (fDebug>4) SaveRootFile();
 
     return fStatus;
 }
@@ -117,7 +117,7 @@ bool G2PHallBField::ReadMap()
             fBField[indexR][indexZ][3] = tempBr;
             fBField[indexR][indexZ][4] = tempB;
 
-            if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
+            if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
 
             count++;
         }
@@ -159,7 +159,7 @@ bool G2PHallBField::CreateMap()
             
             fprintf(fp, "%8.3f %8.3f\t%e\t%e\t%e\n", x[2]/kCM, x[0]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
 
-            if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", x[2]/kCM, x[0]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
+            if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", x[2]/kCM, x[0]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
         }
     }
 

@@ -35,7 +35,7 @@ G2PAppsBase::EStatus G2PUniField::Init()
     if (CreateMap()) fStatus = kOK;
     else Error(here, "Cannot initialize.");
 
-    if (fDebug>3) SaveRootFile();
+    if (fDebug>4) SaveRootFile();
 
     return fStatus;
 }
@@ -54,7 +54,7 @@ bool G2PUniField::CreateMap()
             fBField[i][j][3] = 0.0;
             fBField[i][j][4] = 1.0;
 
-            if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e",  fBField[i][j][0]/kCM, fBField[i][j][1]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
+            if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e",  fBField[i][j][0]/kCM, fBField[i][j][1]/kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
         }
     }
 

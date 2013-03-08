@@ -179,19 +179,28 @@ int G2PRun::RunSim()
 {
     static const char* const here = "Run()";
 
+    double x_tr, y_tr, z_tr;
+
     if (!pGun->Shoot(fV5beam_lab, fV5react_tr)) return -1;
 
     pBPM->GetBPMValue(fV5beam_lab, fV5bpm_lab);
+    double V5[5];
+    pBPM->TransBPM2Lab(fV5bpm_lab, V5);
+    HCS2TCS(V5[0], V5[2], V5[4], fHRSAngle, fV5bpm_tr[0], fV5bpm_tr[2], z_tr);
+    HCS2TCS(V5[1], V5[3], fHRSAngle, fV5bpm_tr[1], fV5bpm_tr[3]);
+    fV5bpm_tr[4] = 0.0;
+    pDrift->Drift(fV5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, fV5bpm_tr);
+    if (fDebug>1) {
+        Info(here, "bpm_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_tr[0], fV5bpm_tr[1], fV5bpm_tr[2], fV5bpm_tr[3], fV5bpm_tr[4]);
+    }
 
-    double x_tr, y_tr, z_tr;
     HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, x_tr, y_tr, z_tr);
-
     pDrift->Drift(fV5react_tr, fHRSMomentum, z_tr, fHRSAngle, 0.0, 10.0, fV5tg_tr);
     pDrift->Drift(fV5tg_tr, fHRSMomentum, 0.0, fHRSAngle, fSieve.fZ, 10.0, fV5sieve_tr);
 
     if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5tg_tr[0], fV5tg_tr[1], fV5tg_tr[2], fV5tg_tr[3], fV5tg_tr[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
+        Info(here, "tg_tr   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tg_tr[0], fV5tg_tr[1], fV5tg_tr[2], fV5tg_tr[3], fV5tg_tr[4]);
+        Info(here, "sieve_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
     }
 
     Project(fV5sieve_tr[0], fV5sieve_tr[2], fSieve.fZ, 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tgproj_tr[0], fV5tgproj_tr[2]);
@@ -201,21 +210,16 @@ int G2PRun::RunSim()
     double xsave_tr = fV5tgproj_tr[0];
 
     if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5tgproj_tr[0], fV5tgproj_tr[1], fV5tgproj_tr[2], fV5tgproj_tr[3], fV5tgproj_tr[4]);
+        Info(here, "proj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tgproj_tr[0], fV5tgproj_tr[1], fV5tgproj_tr[2], fV5tgproj_tr[3], fV5tgproj_tr[4]);
     }
 
     bIsGood = pHRS->Forward(fV5tgproj_tr, fV5fp_tr);
     pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
-    VDCSmearing(fV5fp_tr);
+    //VDCSmearing(fV5fp_tr);
 
-    double V5[5];
-    pBPM->TransBPM2Lab(fV5bpm_lab, V5);
-    HCS2TCS(V5[0], V5[2], V5[4], fHRSAngle, fV5bpm_tr[0], fV5bpm_tr[2], z_tr);
-    HCS2TCS(V5[1], V5[3], fHRSAngle, fV5bpm_tr[1], fV5bpm_tr[3]);
-    fV5bpm_tr[4] = 0.0;
-    pDrift->Drift(fV5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, fV5bpm_tr);
     fV5fp_tr[4] = xsave_tr;
+    fV5fp_rot[4] = xsave_tr;
 
     pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5rectg_tr);
     Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, fSieve.fZ, fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
@@ -226,7 +230,7 @@ int G2PRun::RunSim()
 
     bIsGood &= pHRS->Backward(fV5fp_tr, fV5rectg_tr);
     if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);
+        Info(here, "recj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);
     }
     Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, fSieve.fZ, fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
     fV5recsieve_tr[1] = fV5rectg_tr[1];
@@ -234,8 +238,8 @@ int G2PRun::RunSim()
     fV5recsieve_tr[4] = fV5rectg_tr[4];
     pDrift->Drift(fV5recsieve_tr, fHRSMomentum, fSieve.fZ, fHRSAngle, 0.0, 10.0, fV5rec_tr);
     if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsieve_tr[0], fV5recsieve_tr[1], fV5recsieve_tr[2], fV5recsieve_tr[3], fV5recsieve_tr[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
+        Info(here, "rcsiv_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsieve_tr[0], fV5recsieve_tr[1], fV5recsieve_tr[2], fV5recsieve_tr[3], fV5recsieve_tr[4]);
+        Info(here, "rec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
     }
 
     return 0;

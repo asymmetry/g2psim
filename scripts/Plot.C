@@ -25,16 +25,16 @@ void PlotFPThPh(){
     gPad->SetGrid();
     TH2F* h11 = new TH2F("h11", "FP Th vs Ph (Data)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafpdata_rot:Phifpdata_rot>>h11","IsGood","COLZ");
-    //T->Draw("Thetafpdata_tr:Phifpdata_tr>>h11","IsGood","COLZ");
+    T->Draw("Tfpdata_rot:Pfpdata_rot>>h11","IsGood","COLZ");
+    //T->Draw("Tfpdata_tr:Pfpdata_tr>>h11","IsGood","COLZ");
     c1->Update();
 
     c1->cd(2);
     gPad->SetGrid();
     TH2F* h12 = new TH2F("h12", "FP Th vs Ph (SNAKE)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafp_rot:Phifp_rot>>h12","IsGood","COLZ");
-    //T->Draw("Thetafp_tr:Phifp_tr>>h12","IsGood","COLZ");
+    T->Draw("Tfp_rot:Pfp_rot>>h12","IsGood","COLZ");
+    //T->Draw("Tfp_tr:Pfp_tr>>h12","IsGood","COLZ");
     c1->Update();
 }
 
@@ -45,16 +45,16 @@ void PlotFPThPhTR(){
     gPad->SetGrid();
     TH2F* h101 = new TH2F("h101", "FP Th vs Ph (Data)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    //T->Draw("Thetafpdata_tr:Phifpdata_tr>>h101","IsGood&&Gun==6","COLZ");
-    T->Draw("Thetafpdata_tr:Phifpdata_tr>>h101","IsGood","COLZ");
+    //T->Draw("Tfpdata_tr:Pfpdata_tr>>h101","IsGood&&Gun==6","COLZ");
+    T->Draw("Tfpdata_tr:Pfpdata_tr>>h101","IsGood","COLZ");
     c10->Update();
 
     c10->cd(2);
     gPad->SetGrid();
     TH2F* h102 = new TH2F("h102", "FP Th vs Ph (SNAKE)", 200, fphlowlimit, fphhilimit, 200, fthlowlimit, fthhilimit);
 
-    //T->Draw("Thetafp_tr:Phifp_tr>>h102","IsGood&&Gun==6","COLZ");
-    T->Draw("Thetafp_tr:Phifp_tr>>h102","IsGood","COLZ");
+    //T->Draw("Tfp_tr:Pfp_tr>>h102","IsGood&&Gun==6","COLZ");
+    T->Draw("Tfp_tr:Pfp_tr>>h102","IsGood","COLZ");
     c10->Update();
 }
 
@@ -65,14 +65,14 @@ void PlotFPThY(){
     gPad->SetGrid();
     TH2F* h21 = new TH2F("h21", "FP Th vs Y (Data)", 200, fylowlimit, fyhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafpdata_rot:Yfpdata_rot>>h21","IsGood","COLZ");
+    T->Draw("Tfpdata_rot:Yfpdata_rot>>h21","IsGood","COLZ");
     c2->Update();
 
     c2->cd(2);
     gPad->SetGrid();
     TH2F* h22 = new TH2F("h22", "FP Th vs Y (SNAKE)", 200, fylowlimit, fyhilimit, 200, fthlowlimit, fthhilimit);
 
-    T->Draw("Thetafp_rot:Yfp_rot>>h22","IsGood","COLZ");
+    T->Draw("Tfp_rot:Yfp_rot>>h22","IsGood","COLZ");
     c2->Update();
 }
 
@@ -108,14 +108,14 @@ void PlotTPThPh(){
     gPad->SetGrid();
     TH2F* h31 = new TH2F("h31", "Target Th vs Ph (SNAKE)", 200, phlowlimit, phhilimit, 200, thlowlimit, thhilimit);
 
-    T->Draw("Thetarec_tr:Phirec_tr>>h31","IsGood","COLZ");
+    T->Draw("Trec_tr:Prec_tr>>h31","IsGood","COLZ");
     c3->Update();
 
     c3->cd(2);
     gPad->SetGrid();
     TH2F* h32 = new TH2F("h32", "Target Th vs Ph (Database)", 200, phlowlimit, phhilimit, 200, thlowlimit, thhilimit);
 
-    T->Draw("Thetarecdb_tr:Phirecdb_tr>>h32","IsGood","COLZ");
+    T->Draw("Trecdb_tr:Precdb_tr>>h32","IsGood","COLZ");
     c3->Update();
 }
 
@@ -126,14 +126,14 @@ void PlotTPThY(){
     gPad->SetGrid();
     TH2F* h321 = new TH2F("h321", "Target Th vs Y (SNAKE)", 200, ylowlimit, yhilimit, 200, thlowlimit, thhilimit);
 
-    T->Draw("Thetarec_tr:Yrec_tr>>h321","IsGood","COLZ");
+    T->Draw("Trec_tr:Yrec_tr>>h321","IsGood","COLZ");
     c32->Update();
 
     c32->cd(2);
     gPad->SetGrid();
     TH2F* h322 = new TH2F("h322", "Target Th vs Ph (Database)", 200, ylowlimit, yhilimit, 200, thlowlimit, thhilimit);
 
-    T->Draw("Thetarecdb_tr:Yrecdb_tr>>h322","IsGood","COLZ");
+    T->Draw("Trecdb_tr:Yrecdb_tr>>h322","IsGood","COLZ");
     c32->Update();
 }
 
@@ -161,14 +161,14 @@ void PlotORThPh(){
     gPad->SetGrid();
     TH2F* h01 = new TH2F("h01", "Origin Th vs Ph (CALCULATE)", 100, phlowlimit, phhilimit, 100, thlowlimit, thhilimit);
 
-    T->Draw("Thetatg_tr:Phitg_tr>>h01","IsGood","COLZ");
+    T->Draw("Ttg_tr:Ptg_tr>>h01","IsGood","COLZ");
     c0->Update();
 
     c0->cd(2);
     gPad->SetGrid();
     TH2F* h02 = new TH2F("h02", "Origin Th vs Ph (DATA, Database)", 100, phlowlimit, phhilimit, 100, thlowlimit, thhilimit);
 
-    T->Draw("Thetarecdb_tr:Phirecdb_tr>>h02","IsGood","COLZ");
+    T->Draw("Trecdb_tr:Precdb_tr>>h02","IsGood","COLZ");
     c0->Update();
 }
 
@@ -200,9 +200,9 @@ void PlotRecError()
     T->Draw("(Deltarec-Delta)*10000>>h1001","IsGood");
 
     c100->cd(2);
-    TH1F* h1002 = new TH1F("h1002", "Theta (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
+    TH1F* h1002 = new TH1F("h1002", "T (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
 
-    T->Draw("(Thetarec_tr-Thetatg_tr)*1000>>h1002","IsGood");
+    T->Draw("(Trec_tr-Ttg_tr)*1000>>h1002","IsGood");
 
     c100->cd(3);
     TH1F* h1003 = new TH1F("h1003", "Y (mm)", 100, ylowlimit/2.0*1000, yhilimit/2.0*1000);
@@ -210,11 +210,65 @@ void PlotRecError()
     T->Draw("(Yrec_tr-Ytg_tr)*1000>>h1003","IsGood");
 
     c100->cd(4);
-    TH1F* h1004 = new TH1F("h1004", "Phi (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
+    TH1F* h1004 = new TH1F("h1004", "P (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
 
-    T->Draw("(Phirec_tr-Phitg_tr)*1000>>h1004","IsGood");
+    T->Draw("(Prec_tr-Ptg_tr)*1000>>h1004","IsGood");
 
     c100->Update();
+}
+
+void PlotSNAKERecError()
+{
+    TCanvas* c101 = new TCanvas("c101", "Reconstruction Uncertainty", 1200, 600);
+    c101->Divide(2,2);
+    c101->cd(1);
+    TH1F* h1011 = new TH1F("h1011", "Delta (x 10e-4)", 100, dplowlimit/10.0*10000, dphilimit/10.0*10000);
+
+    T->Draw("(Deltarec-Delta)*10000>>h1011","IsGood");
+
+    c101->cd(2);
+    TH1F* h1012 = new TH1F("h1012", "T (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
+
+    T->Draw("(Trectg_tr-Ttgproj_tr)*1000>>h1012","IsGood");
+
+    c101->cd(3);
+    TH1F* h1013 = new TH1F("h1013", "Y (mm)", 100, ylowlimit/2.0*1000, yhilimit/2.0*1000);
+
+    T->Draw("(Yrectg_tr-Ytgproj_tr)*1000>>h1013","IsGood");
+
+    c101->cd(4);
+    TH1F* h1014 = new TH1F("h1014", "P (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
+
+    T->Draw("(Prectg_tr-Ptgproj_tr)*1000>>h1014","IsGood");
+
+    c101->Update();
+}
+
+void PlotXBPM()
+{
+    TCanvas* c110 = new TCanvas("c110", "BPM", 1200, 600);
+    c110->Divide(2,2);
+    c110->cd(1);
+    TH2F* h1101 = new TH2F("h1101", "BPM Deviation vs Delta", 100, -0.02, 0.02, 100, 0.0, 0.005);
+
+    T->Draw("(Xtg_tr-Xtgproj_tr):Delta>>h1101","");
+
+    c110->cd(2);
+    TH2F* h1102 = new TH2F("h1102", "BPM Deviation vs z", 100, -0.015, 0.015, 100, -0.001, 0.005);
+
+    T->Draw("(Xbpm_tr-Xtg_tr)*(1+Delta):Zbeam_lab>>h1102","");
+
+    // c110->cd(3);
+    // TH1F* h1103 = new TH1F("h1103", "Y (mm)", 110, ylowlimit/2.0*1100, yhilimit/2.0*1100);
+
+    // T->Draw("(Yrec_tr-Ytg_tr)*1100>>h1103","IsGood");
+
+    // c110->cd(4);
+    // TH1F* h1104 = new TH1F("h1104", "P (mrad)", 110, phlowlimit/10.0*1100, phhilimit/10.0*1100);
+
+    // T->Draw("(Prec_tr-Ptg_tr)*1100>>h1104","IsGood");
+
+    // c110->Update();
 }
 
 void LoadTree(const char* filename = "test.root"){

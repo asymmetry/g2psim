@@ -43,7 +43,7 @@ G2PAppsBase::EStatus G2PMapField::Init()
     if (ReadMap()) fStatus = kOK;
     else Error(here, "Cannot initialize.");
 
-    if (fDebug>3) SaveRootFile();
+    if (fDebug>4) SaveRootFile();
 
     return fStatus;
 }
@@ -97,7 +97,7 @@ bool G2PMapField::ReadMap()
             fBField[indexR][indexZ][3] = tempBr;
             fBField[indexR][indexZ][4] = tempB;
 
-            if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
+            if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
 
             count++;
         }
