@@ -30,6 +30,7 @@ public:
     bool Init();
     void Begin();
     void End();
+    void Clear();
 
     void Run();
     void Run(int n) { nEvent = n; Run(); }

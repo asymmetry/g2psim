@@ -54,7 +54,6 @@ public:
 
 protected:
     virtual void Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout);
-    virtual void VDCSmearing(double* V5_fp);
 
     double fHRSAngle;
     double fHRSMomentum;

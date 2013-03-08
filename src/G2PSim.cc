@@ -92,7 +92,7 @@ void G2PSim::Begin()
 
     pTree->Branch("Index", &nCounter, "Index/I");
 
-    TIter next(gG2PApps);
+    TIter next(fApps);
     while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
         aobj->DefineVariables(pTree);
     }
@@ -106,6 +106,14 @@ void G2PSim::End()
     //delete pTree;
 }
 
+void G2PSim::Clear()
+{
+    TIter next(fApps);
+    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
+        aobj->Clear();
+    }
+}
+
 void G2PSim::Run()
 {
     static const char* const here = "Run()";
@@ -114,6 +122,7 @@ void G2PSim::Run()
         Begin();
         while (nCounter<=nEvent) {
             if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
+            Clear();
             if (pRun->Run()) break;
             pTree->Fill();
             if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);

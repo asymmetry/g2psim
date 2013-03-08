@@ -8,6 +8,7 @@
 
 #include "G2PBPM.hh"
 #include "G2PDrift.hh"
+#include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PGunBase.hh"
 #include "G2PRand.hh"
@@ -21,7 +22,7 @@
 static const double kDEG = 3.14159265358979323846/180.0;
 
 G2PRun::G2PRun() :
-    pfRun(NULL)
+    bUseEffBPM(true), pfRun(NULL)
 {   
     Clear();
 }
@@ -73,7 +74,10 @@ void G2PRun::Clear()
     memset(fV5rectg_tr, 0, sizeof(fV5rectg_tr));
     memset(fV5recsieve_tr, 0, sizeof(fV5recsieve_tr));
 
-    fXS = 1.0;
+    fRealXbeam = 0.0; fEffXbeam = 0.0;
+
+    fThetainit = 0.0; fThetarec = 0.0;
+    fXSinit = 1.0; fXSrec = 1.0;
 }
 
 int G2PRun::DefineVariables(TTree *t)
@@ -102,6 +106,11 @@ int G2PRun::DefineVariables(TTree *t)
     t->Branch("Ytg_tr", &fV5tg_tr[2], "Ytg_tr/D");
     t->Branch("Ptg_tr", &fV5tg_tr[3], "Ptg_tr/D");
     t->Branch("Delta", &fV5tg_tr[4], "Delta/D");
+
+    t->Branch("Xreact_tr", &fV5react_tr[0], "Xreact_tr/D");
+    t->Branch("Treact_tr", &fV5react_tr[1], "Treact_tr/D");
+    t->Branch("Yreact_tr", &fV5react_tr[2], "Yreact_tr/D");
+    t->Branch("Preact_tr", &fV5react_tr[3], "Preact_tr/D");
 
     t->Branch("Xtg_lab", &fV5tg_lab[0], "Xtg_lab/D");
     t->Branch("Ttg_lab", &fV5tg_lab[1], "Ttg_lab/D");
@@ -170,7 +179,13 @@ int G2PRun::DefineVariables(TTree *t)
     t->Branch("Yrecsieve_tr", &fV5recsieve_tr[2], "Yrecsieve_tr/D");
     t->Branch("Precsieve_tr", &fV5recsieve_tr[3], "Precsieve_tr/D");
 
-    t->Branch("XS", &fXS, "XS/D");
+    t->Branch("Xeff_tr", &fEffXbeam, "Xeff_tr/D");
+    t->Branch("Xreal_tr", &fRealXbeam, "Xreal_tr/D");
+
+    t->Branch("Thetainit", &fThetainit, "Thetainit/D");
+    t->Branch("Thetarec", &fThetarec, "Thetarec/D");
+    t->Branch("XSinit", &fXSinit, "XSinit/D");
+    t->Branch("XSrec", &fXSrec, "XSrec/D");
 
     return 0;
 }
@@ -182,6 +197,8 @@ int G2PRun::RunSim()
     double x_tr, y_tr, z_tr;
 
     if (!pGun->Shoot(fV5beam_lab, fV5react_tr)) return -1;
+
+    fXSinit = CalXS(fV5beam_lab, fV5react_tr, fThetainit);
 
     pBPM->GetBPMValue(fV5beam_lab, fV5bpm_lab);
     double V5[5];
@@ -196,10 +213,12 @@ int G2PRun::RunSim()
 
     HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, x_tr, y_tr, z_tr);
     pDrift->Drift(fV5react_tr, fHRSMomentum, z_tr, fHRSAngle, 0.0, 10.0, fV5tg_tr);
-    pDrift->Drift(fV5tg_tr, fHRSMomentum, 0.0, fHRSAngle, fSieve.fZ, 10.0, fV5sieve_tr);
-
     if (fDebug>1) {
         Info(here, "tg_tr   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tg_tr[0], fV5tg_tr[1], fV5tg_tr[2], fV5tg_tr[3], fV5tg_tr[4]);
+    }
+    
+    pDrift->Drift(fV5tg_tr, fHRSMomentum, 0.0, fHRSAngle, fSieve.fZ, 10.0, fV5sieve_tr);
+    if (fDebug>1) {
         Info(here, "sieve_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
     }
 
@@ -207,8 +226,7 @@ int G2PRun::RunSim()
     fV5tgproj_tr[1] = fV5sieve_tr[1];
     fV5tgproj_tr[3] = fV5sieve_tr[3];
     fV5tgproj_tr[4] = fV5sieve_tr[4];
-    double xsave_tr = fV5tgproj_tr[0];
-
+    fRealXbeam = fV5tgproj_tr[0];
     if (fDebug>1) {
         Info(here, "proj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tgproj_tr[0], fV5tgproj_tr[1], fV5tgproj_tr[2], fV5tgproj_tr[3], fV5tgproj_tr[4]);
     }
@@ -216,10 +234,22 @@ int G2PRun::RunSim()
     bIsGood = pHRS->Forward(fV5tgproj_tr, fV5fp_tr);
     pRecUseDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
-    //VDCSmearing(fV5fp_tr);
+    if (!bIsGood) return 0;
 
-    fV5fp_tr[4] = xsave_tr;
-    fV5fp_rot[4] = xsave_tr;
+    SmearVDC(fV5fp_tr);
+
+    if (bUseEffBPM) {
+        fEffXbeam = GetEffBPM(fV5bpm_tr[0], fV5fp_tr);
+        if (fDebug>1) {
+            Info(here, "bpm_eff : %10.3e %10.3e", fRealXbeam, fEffXbeam);
+        }
+        fV5fp_tr[4] = fEffXbeam;
+        fV5fp_rot[4] = fEffXbeam;
+    }
+    else {
+        fV5fp_tr[4] = fRealXbeam;
+        fV5fp_rot[4] = fRealXbeam;
+    }
 
     pRecUseDB->CalcTargetCoords(fV5fp_rot, fV5rectg_tr);
     Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, fSieve.fZ, fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
@@ -232,15 +262,21 @@ int G2PRun::RunSim()
     if (fDebug>1) {
         Info(here, "recj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);
     }
+
     Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, fSieve.fZ, fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
     fV5recsieve_tr[1] = fV5rectg_tr[1];
     fV5recsieve_tr[3] = fV5rectg_tr[3];
     fV5recsieve_tr[4] = fV5rectg_tr[4];
-    pDrift->Drift(fV5recsieve_tr, fHRSMomentum, fSieve.fZ, fHRSAngle, 0.0, 10.0, fV5rec_tr);
     if (fDebug>1) {
         Info(here, "rcsiv_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsieve_tr[0], fV5recsieve_tr[1], fV5recsieve_tr[2], fV5recsieve_tr[3], fV5recsieve_tr[4]);
+    }
+
+    pDrift->Drift(fV5recsieve_tr, fHRSMomentum, fSieve.fZ, fHRSAngle, 0.0, 10.0, fV5rec_tr);
+    if (fDebug>1) {
         Info(here, "rec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
     }
+
+    fXSrec = CalXS(V5, fV5rec_tr, fThetarec);
 
     return 0;
 }
@@ -265,23 +301,86 @@ int G2PRun::RunData()
     return 0;
 }
 
-// double G2PRun::GetEffBPM(double xbpm_tr, double p)
-// {
-//     //Apply the correction to get the effective X_BPM_tr at target plane
-//     //the following is the result of fitting "[0]/x+[1]" to 
-//     //(X_proj2tg_tr - Xtg_tr) vs Pvb @ 5.0T target field
-//     //need to fit for 2.5Ttarget field later
-//     // EXT PARAMETER                                   STEP         FIRST   
-//     //NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-//     // 1  p0          -6.39438e+00   5.37354e-03   1.74320e-04  -2.30577e-05
-//     // 2  p1           8.06795e-04   4.92714e-03   1.02122e-05   6.92299e-07
-//     double xbpm_tr_eff=xbpm_tr;    
-//     if(bUseField)
-//     {
-//         xbpm_tr_eff += (-6.39438/p + 8.06795e-04)/1000 * pField->GetRatio();
-//     }
-//     return xbpm_tr_eff;
-// }
+void G2PRun::SmearVDC(double* V5_fp)
+{
+    double WireChamberResX = 0.0013; //m;
+    double WireChamberResY = 0.0013; //m;
+    double WireChamberResT = 0.0003; //rad;
+    double WireChamberResP = 0.0003; //rad;
+
+    V5_fp[0] = pRand->Gaus(V5_fp[0], WireChamberResX);
+    V5_fp[1] = pRand->Gaus(V5_fp[1], WireChamberResT);
+    V5_fp[2] = pRand->Gaus(V5_fp[2], WireChamberResY);
+    V5_fp[3] = pRand->Gaus(V5_fp[3], WireChamberResP);
+}
+
+double G2PRun::GetEffBPM(double xbpm_tr, const double* V5fp)
+{
+    // (Xbpm_tr-Xtg_tr) vs Z
+    // ([0]+[1]*x)
+    // Fitting result of (Xbpm_tr-Xtg_tr) vs Z @ 2.5T
+    // p0                        =    -0.011838   +/-   0.00132798 
+    // p1                        =      49.856    +/-   0.163115
+
+    // (Xtg_tr-Xtgproj_tr) vs P
+    // ([0]+[1]/x)
+    // Fitting result of (Xtg_tr-Xtgproj_tr) vs P @ 2.5T
+    // p0                        =    0.0183611   +/-   0.0105237   
+    // p1                        =      3.14345   +/-   0.0105453
+    // Fitting result of (Xtg_tr-Xtgproj_tr) vs P @ 5.0T
+    // p0                        =      0.14139   +/-   0.018683    
+    // p1                        =      6.11766   +/-   0.0187211
+
+    double xbpm_tr_eff = xbpm_tr;
+
+    if (!pDrift->GetField()) return xbpm_tr_eff;
+
+    double V5_fp[5] = { V5fp[0], V5fp[1], V5fp[2], V5fp[3], V5fp[4] };
+    double V5_tg[5] = { 0, 0, 0, 0, 0 };
+
+    double ratio = pDrift->GetField()->GetRatio();
+
+    double p = fHRSMomentum;
+    if (ratio<0.75) xbpm_tr_eff -= (3.14345/p + 0.0183611)/1000*ratio/0.5;
+    else xbpm_tr_eff -= (6.11766/p + 0.14139)/1000*ratio/1.0;
+
+    V5_fp[4] = xbpm_tr_eff;
+    pHRS->Backward(V5_fp, V5_tg);
+
+    p = (1+V5_tg[4])*fHRSMomentum;
+    xbpm_tr_eff = xbpm_tr;
+    if (ratio<0.75) xbpm_tr_eff -= (3.14345/p + 0.0183611)/1000*ratio/0.5;
+    else xbpm_tr_eff -= (6.11766/p + 0.14139)/1000*ratio/1.0;
+
+    V5_fp[4] = xbpm_tr_eff;
+    pHRS->Backward(V5_fp, V5_tg);
+
+    p = (1+V5_tg[4])*fHRSMomentum;
+    xbpm_tr_eff = xbpm_tr;
+    if (ratio<0.75) xbpm_tr_eff -= (3.14345/p + 0.0183611)/1000*ratio/0.5;
+    else xbpm_tr_eff -= (6.11766/p + 0.14139)/1000*ratio/1.0;
+
+    return xbpm_tr_eff;
+}
+
+double G2PRun::CalXS(const double* V5lab, const double* V5tr, double& scatangle)
+{
+    double Eb[3] = { sin(V5lab[1])*cos(V5lab[3]),
+                     sin(V5lab[1])*sin(V5lab[3]),
+                     cos(V5lab[1]) };
+
+    double theta, phi;
+    TCS2HCS(V5tr[1], V5tr[3], fHRSAngle, theta, phi);
+
+    double Ef[3] = { sin(theta)*cos(phi), sin(theta)*sin(phi), cos(theta) };
+
+    scatangle = acos(Eb[0]*Ef[0]+Eb[1]*Ef[1]+Eb[2]*Ef[2]);
+
+    double Ebval = fBeamEnergy;
+    double Efval = (1+V5tr[4])*fHRSMomentum;
+
+    return pPhys->GetXS(Ebval, Efval, scatangle);
+}
 
 // double G2PRun::DriftPath()
 // {   

@@ -22,7 +22,8 @@ G2PDrift* G2PDrift::pG2PDrift = NULL;
 
 G2PDrift::G2PDrift() :
     fM0(0.51099892811e-3), fQ(-1*e), fQsave(-1*e),
-    fStep(1.0e-3), fErrLoLimit(1.0e-7), fErrUpLimit(5.0e-7),
+    fStep(1.0e-3), fStepLimit(1.0e-6),
+    fErrLoLimit(1.0e-7), fErrUpLimit(1.0e-6),
     fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0),
     pField(NULL)
 {
@@ -105,11 +106,12 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
 
     double dxdt[6], err[6];
     double dt = fStep/fVelocity;
+    double dtlimit = fStepLimit/fVelocity;
     double error = (fErrUpLimit+fErrLoLimit)/2.0;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i];
     while ((l<llimit)&&((xf[2]<zlimit)^(sign))) {
-        if (error>fErrUpLimit) dt/=2.0;
+        if ((error>fErrUpLimit)&&(dt>dtlimit)) dt/=2.0;
         else {
             for (int i = 0; i<6; i++) xi[i] = xf[i];
             if (error<fErrLoLimit) dt*=2.0;
@@ -121,7 +123,6 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
     }
 
     if (l<llimit) {
-        double dtlimit = fErrUpLimit/fVelocity;
         while (dt>dtlimit) {
             if ((xf[2]>zlimit)^(sign)) {
                 dt/=2.0;
@@ -206,11 +207,12 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     double dxdt[6], err[6];
     double error = (fErrUpLimit+fErrLoLimit)/2.0;
     double dt = fStep/fVelocity;
+    double dtlimit = fStepLimit/fVelocity;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i]; 
     double newz_tr = z_tr;
     while ((l<llimit)&&((newz_tr<zlimit)^(sign))) {
-        if (error>fErrUpLimit) dt/=2.0;
+        if ((error>fErrUpLimit)&&(dt>dtlimit)) dt/=2.0;
         else {
             for (int i = 0; i<6; i++) xi[i] = xf[i];
             if (error<fErrLoLimit) dt*=2.0;
@@ -223,7 +225,6 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     }
 
     if (l<llimit) {
-        double dtlimit = fErrUpLimit/fVelocity;
         while (dt>dtlimit) {
             if ((newz_tr>zlimit)^(sign)) {
                 dt/=2.0;

@@ -116,6 +116,8 @@ G2PAppsBase::EStatus G2PHRSTrans::Init()
 
     fModelAngle = pModel->GetAngle();
 
+    if (fDebug>0) Info(here, "Model angle is %10.3e." , fModelAngle/kDEG);
+
     return (fStatus = kOK);
 }
 

@@ -202,19 +202,29 @@ void PlotRecError()
     c100->cd(2);
     TH1F* h1002 = new TH1F("h1002", "T (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
 
-    T->Draw("(Trec_tr-Ttg_tr)*1000>>h1002","IsGood");
+    T->Draw("(Trec_tr-Treact_tr)*1000>>h1002","IsGood");
 
     c100->cd(3);
     TH1F* h1003 = new TH1F("h1003", "Y (mm)", 100, ylowlimit/2.0*1000, yhilimit/2.0*1000);
 
-    T->Draw("(Yrec_tr-Ytg_tr)*1000>>h1003","IsGood");
+    T->Draw("(Yrec_tr-Yreact_tr)*1000>>h1003","IsGood");
 
     c100->cd(4);
     TH1F* h1004 = new TH1F("h1004", "P (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
 
-    T->Draw("(Prec_tr-Ptg_tr)*1000>>h1004","IsGood");
+    T->Draw("(Prec_tr-Preact_tr)*1000>>h1004","IsGood");
 
     c100->Update();
+}
+
+void PlotXRecError()
+{
+    TCanvas* c297 = new TCanvas("c297", "Reconstruction Uncertainty", 600, 600);
+    TH1F* h2971 = new TH1F("h2971", "Eff Xproj Uncertainty", 100, -2, 2);
+
+    h2971->SetXTitle("(Xeff-Xreal)/mm");
+
+    T->Draw("(Xeff_tr-Xreal_tr)*1000>>h2971","IsGood");
 }
 
 void PlotSNAKERecError()

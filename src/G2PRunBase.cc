@@ -105,17 +105,4 @@ void G2PRunBase::Project(double x, double y, double z, double z_out, double t, d
     yout = y + (z_out-z)*tan(p);
 }
 
-void G2PRunBase::VDCSmearing(double* V5_fp)
-{
-    double WireChamberResX = 0.0013; //m;
-    double WireChamberResY = 0.0013; //m;
-    double WireChamberResT = 0.0003; //rad;
-    double WireChamberResP = 0.0003; //rad;
-
-    V5_fp[0] = pRand->Gaus(V5_fp[0], WireChamberResX);
-    V5_fp[1] = pRand->Gaus(V5_fp[1], WireChamberResT);
-    V5_fp[2] = pRand->Gaus(V5_fp[2], WireChamberResY);
-    V5_fp[3] = pRand->Gaus(V5_fp[3], WireChamberResP);
-}
-
 ClassImp(G2PRunBase)

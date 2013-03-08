@@ -71,7 +71,7 @@ protected:
 private:
     static G2PHRSTrans* pG2PHRSTrans;
 
-    ClassDef(G2PHRSTrans ,1)
+    ClassDef(G2PHRSTrans, 1)
 };
 
 #endif

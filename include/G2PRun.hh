@@ -14,6 +14,8 @@ public:
 
     typedef int (G2PRun::*pfRun_)();
 
+    void SetUseEffBPM(bool b) { bUseEffBPM = b; }
+
     EStatus Init();
     int Begin() { return 0; }
     int End() { return 0; }
@@ -27,8 +29,12 @@ protected:
     int RunSim();
     int RunData();
 
-    //double GetEffBPM(double xbpm_tr, double p);
+    void SmearVDC(double* V5_fp);
+    double GetEffBPM(double xbpm_tr, const double* V5fp);
+    double CalXS(const double* V5lab, const double* V5tr, double& scatangle);
     //double DriftPath();
+
+    bool bUseEffBPM;
 
     bool bIsGood;
 
@@ -56,7 +62,10 @@ protected:
     double fV5rectg_tr[5];
     double fV5recsieve_tr[5];
 
-    double fXS;
+    double fEffXbeam, fRealXbeam;
+
+    double fThetainit, fThetarec;
+    double fXSinit, fXSrec;
 
     TTree* pTree;
 
