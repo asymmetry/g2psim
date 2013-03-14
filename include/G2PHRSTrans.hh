@@ -1,4 +1,4 @@
-// This file defines a class HRSTransport.
+// This file defines a class G2PHRSTrans.
 // This class is used in G2PSim class as HRS model.
 // The definition of variables and the list of available models can be found in
 //+the comments in the body
@@ -7,17 +7,16 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
-//   Feb 2013, J.X. Zhang, Add VC support
 //
 
 #ifndef G2P_HRSTRANS_H
 #define G2P_HRSTRANS_H
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 
 class HRSTransBase;
 
-class G2PHRSTrans : public G2PAppsBase
+class G2PHRSTrans : public G2PAppBase
 {
 public:
 	G2PHRSTrans(const char* name);
@@ -34,8 +33,8 @@ public:
 	// 11: 484816 with shim, 5.76 deg, no raster, by Min
 	// May add more HRS packages later
 	///////////////////////////////////////////////////////////////////////////
-	EStatus Init();
-    void Clear() { }
+	int Init();
+    int Begin();
 
 	///////////////////////////////////////////////////////////////////////////
 	// Definition of variables
@@ -54,12 +53,10 @@ public:
 	///////////////////////////////////////////////////////////////////////////
     bool Backward(const double* V5_fp, double* V5_tg);
 
-    int GetSetting() { return iSetting; }
-
     static G2PHRSTrans* GetInstance() { return pG2PHRSTrans; }
 
 protected:
-    G2PHRSTrans();
+    G2PHRSTrans(); // Only for ROOT I/O
 
     int iSetting;
 

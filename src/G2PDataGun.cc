@@ -7,11 +7,8 @@
 #include "TObject.h"
 #include "TError.h"
 
-#include "G2PDrift.hh"
-#include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PGunBase.hh"
-#include "G2PRand.hh"
 #include "G2PRunBase.hh"
 #include "G2PSieve.hh"
 
@@ -31,13 +28,13 @@ G2PDataGun::~G2PDataGun()
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PDataGun::Init()
+int G2PDataGun::Begin()
 {
-    static const char* const here = "Init()";
+    static const char* const here = "Begin()";
 
-    if (G2PGunBase::Init()) return fStatus;
+    if (G2PGunBase::Begin()!=0) return fStatus;
 
-    if (pDrift->GetField()) bIsOptics = false;
+    if (fFieldRatio>0) bIsOptics = false;
 
     if (bIsOptics) {
         pfGun = &G2PDataGun::ShootOptics;
@@ -46,9 +43,9 @@ G2PAppsBase::EStatus G2PDataGun::Init()
     }
     else pfGun = &G2PDataGun::ShootNormal;
 
-    if (!LoadData()) {
-        Error(here, "Cannot initialize, cannot read data.");
-        return (fStatus = kINITERROR);
+    if (LoadData()!=0) {
+        Error(here, "Cannot read data.");
+        return (fStatus = kERROR);
     }
 
     SetSieve(fHRSAngle);
@@ -56,15 +53,13 @@ G2PAppsBase::EStatus G2PDataGun::Init()
     return (fStatus = kOK);
 }
 
-bool G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
+int G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
 {
     static const char* const here = "Shoot()";
 
-    bool noerror = true;
-
     sData tempdata;
 
-    if (fData.empty()) return false;
+    if (fData.empty()) return -1;
     tempdata = fData.back();
     V5bpm_lab[0] = tempdata.xb;
     V5bpm_lab[1] = tempdata.tb;
@@ -77,22 +72,22 @@ bool G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp
     V5fp_tr[3] = tempdata.pf;
     V5fp_tr[4] = 0.0;
 
-    if (fDebug>1) {
+    if (fDebug>2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_lab[0], V5bpm_lab[1], V5bpm_lab[2], V5bpm_lab[3], V5bpm_lab[4]);
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
     }
 
     fData.pop_back();
-    return noerror;
+    return 0;
 }
 
-bool G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
+int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
 {
     static const char* const here = "Shoot()";
 
     sData tempdata;
 
-    if (fData.empty()) return false;
+    if (fData.empty()) return -1;
     tempdata = fData.back();
     int index = tempdata.ind;
     V5bpm_lab[0] = tempdata.xb;
@@ -142,19 +137,19 @@ bool G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp
     V5react_tr[3] = Phireact_tr;
     V5react_tr[4] = Delta;
 
-    if (fDebug>1) {
+    if (fDebug>2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_lab[0], V5bpm_lab[1], V5bpm_lab[2], V5bpm_lab[3], V5bpm_lab[4]);
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
     }
 
-    return true;
+    return 0;
 }
 
-bool G2PDataGun::LoadData()
+int G2PDataGun::LoadData()
 {
     FILE *fp;
 
-    if ((fp=fopen(pDataFileName, "r"))==NULL) return false;
+    if ((fp=fopen(pDataFileName, "r"))==NULL) return -1;
 
     sData temp;
     fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
@@ -165,8 +160,8 @@ bool G2PDataGun::LoadData()
 
     fclose(fp);
 
-    if (!fData.empty()) return true;
-    else return false;
+    if (!fData.empty()) return 0;
+    else return -1;
 }
 
 ClassImp(G2PDataGun)

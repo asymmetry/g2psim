@@ -1,7 +1,7 @@
 // This file defines a class G2PGunBase.
 // This class is the base class of G2PGun.
-// G2PRun class will call Shoot() to get kinematic variables. It is a virtual
-//+function so each derived class will have its own method.
+// G2PProcBase classes will call Shoot() to get kinematic variables.
+// It is a virtual function so each derived class will have its own method.
 //
 // History:
 //   Mar 2013, C. Gu, First public version.
@@ -10,11 +10,11 @@
 #ifndef G2P_GUNBASE_H
 #define G2P_GUNBASE_H
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 
 class G2PDrift;
 
-class G2PGunBase : public G2PAppsBase
+class G2PGunBase : public G2PAppBase
 {
 public:
     G2PGunBase();
@@ -40,24 +40,23 @@ public:
     void SetSigmaAngTr(double value) { fSigmaAng_tr = value; }
     void SetSigmaDelta(double value) { fSigmaDelta = value; }
 
-    virtual EStatus Init();
-    virtual void Clear() { }
+    virtual int Init();
+    virtual int Begin();
 
-    virtual bool Shoot(double* V51, double* V52, double* V53 = NULL) = 0;
+    virtual int Shoot(double* V51, double* V52, double* V53 = NULL) = 0;
 
     virtual bool UseData() = 0;
-
-    virtual int RegisterModel();
 
     static G2PGunBase* GetInstance() { return pG2PGunBase; }
 
 protected:
-    virtual int SetTiltAngle();
+    virtual void SetTiltAngle();
     virtual void GetReactPoint(double x, double y, double z, double* V5);
 
     double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
+    double fFieldRatio;
 
     double fBeamX_lab, fBeamY_lab;
     double fBeamTiltAngle;

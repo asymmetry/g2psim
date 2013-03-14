@@ -8,7 +8,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
 
 #include "G2PFieldBase.hh"
@@ -21,8 +21,8 @@ G2PFieldBase* G2PFieldBase::pG2PFieldBase = NULL;
 
 G2PFieldBase::G2PFieldBase() :
     pMapFileName(NULL), fZMin(0.0), fZMax(2.99),
-    fRMin(0.0), fRMax(2.99), fStepZ(0.01), fStepR(0.01), nNumZ(0),
-    nNumR(0), bRotation(false), fRatio(1.0)
+    fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0),
+    nR(0), bRotation(false), fRatio(1.0)
 {
     if (pG2PFieldBase) {
         Error("G2PFieldBase()", "Only one instance of G2PFieldBase allowed.");
@@ -89,20 +89,31 @@ void G2PFieldBase::SetEulerAngle(double alpha, double beta, double gamma)
     bRotation = true;
 }
 
-G2PAppsBase::EStatus G2PFieldBase::Init()
+int G2PFieldBase::Init()
 {
-    if (G2PAppsBase::Init()) return fStatus;
+    //static const char* const here = "Init()";
 
-    nNumZ = int((fZMax-fZMin)/fStepZ+1e-8)+1;
-    nNumR = int((fRMax-fRMin)/fStepR+1e-8)+1;
+    if (G2PAppBase::Init()!=0) return fStatus;
 
-    fBField.resize(nNumR);
-    for (int i = 0; i<nNumR; i++) {
-        fBField[i].resize(nNumZ);
-        for (int j = 0; j<nNumZ; j++) {
+    nZ = int((fZMax-fZMin)/fZStep+1e-8)+1;
+    nR = int((fRMax-fRMin)/fRStep+1e-8)+1;
+
+    fBField.resize(nR);
+    for (int i = 0; i<nR; i++) {
+        fBField[i].resize(nZ);
+        for (int j = 0; j<nZ; j++) {
             fBField[i][j].resize(5, 0.0);
         }
     }
+
+    return (fStatus = kOK);
+}
+
+int G2PFieldBase::Begin()
+{
+    //static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin()!=0) return fStatus;
 
     return (fStatus = kOK);
 }
@@ -116,28 +127,28 @@ void G2PFieldBase::GetField(const double* x, double* b)
     Interpolate(pos, field, 2);
     TransField2Lab(field, b);
     b[0] *= fRatio; b[1] *= fRatio; b[2] *= fRatio;
-    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
+    if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
-bool G2PFieldBase::ReadMap()
+int G2PFieldBase::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
     if (fDebug>0) Info(here, "Reading field map ...");
 
-    return true;
+    return 0;
 }
 
-bool G2PFieldBase::CreateMap()
+int G2PFieldBase::CreateMap()
 {
     static const char* const here = "CreateMap()";
 
     if (fDebug>0) Info(here, "Creating field map ...");
 
-    return true;   
+    return 0;   
 }
 
-bool G2PFieldBase::Interpolate(const double* pos, double* b, int order)
+int G2PFieldBase::Interpolate(const double* pos, double* b, int order)
 {
 
 // Calculate the nth order Lagrange polynomial interpolation
@@ -152,16 +163,16 @@ bool G2PFieldBase::Interpolate(const double* pos, double* b, int order)
 
     if ((r>fRMax)||(z>fZMax)||(r<fRMin)||(z<fZMin)) {
         b[0] = 0.0; b[1] = 0.0; b[2] = 0.0;
-        return false;
+        return -1;
     }
     
-    int indexZ0 = int((z-fZMin)/fStepZ)-int((order-1)/2);
-    int indexR0 = int((r-fRMin)/fStepR)-int((order-1)/2);
+    int indexZ0 = int((z-fZMin)/fZStep)-int((order-1)/2);
+    int indexR0 = int((r-fRMin)/fRStep)-int((order-1)/2);
 
     if (indexZ0<0) indexZ0 = 0;
     if (indexR0<0) indexR0 = 0;
-    if (indexZ0+order>nNumZ-1) indexZ0 = nNumZ-1-order;
-    if (indexR0+order>nNumR-1) indexR0 = nNumR-1-order;
+    if (indexZ0+order>nZ-1) indexZ0 = nZ-1-order;
+    if (indexR0+order>nR-1) indexR0 = nR-1-order;
 
     // Lagrange polynomial interpolate on Z
     int indexZ, indexR, indexT;
@@ -211,7 +222,7 @@ bool G2PFieldBase::Interpolate(const double* pos, double* b, int order)
         b[2] = Bz;
     }
 
-    return true;
+    return 0;
 }
 
 void G2PFieldBase::TransLab2Field(const double* x, double* xout)

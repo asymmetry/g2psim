@@ -12,23 +12,22 @@
 #include "TObject.h"
 #include "TError.h"
 #include "TList.h"
-#include "TFile.h"
-#include "TTree.h"
 
-#include "G2PAppsBase.hh"
-#include "G2PDrift.hh"
+#include "G2PAppBase.hh"
 #include "G2PRunBase.hh"
+#include "G2PVarList.hh"
 
 #include "G2PSim.hh"
 
 TList* gG2PApps = new TList();
 G2PRunBase* gG2PRun = NULL;
+G2PVarList* gG2PVars = NULL;
 
 G2PSim* G2PSim::pG2PSim = NULL;
 
 G2PSim::G2PSim() :
-    nEvent(50000), nCounter(1), fDebug(1), pFile(NULL), pOutFileName(NULL),
-    pTree(NULL), fApps(NULL), pRun(NULL)
+    nEvent(50000), nCounter(1), fDebug(1), pOutFile(NULL),
+    fApps(NULL), pRun(NULL)
 {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
@@ -42,22 +41,21 @@ G2PSim::G2PSim() :
 
 G2PSim::~G2PSim()
 {
-    TIter next(fApps);
+    if (pG2PSim==this) pG2PSim = NULL;
 
-    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
+    TIter next(fApps);
+    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
         fApps->Remove(aobj);
         aobj->Delete();
     }
-
-    if (pG2PSim==this) pG2PSim = NULL;
 }
 
 void G2PSim::SetSeed(int n)
 {
-    G2PAppsBase::SetSeed(n);
+    G2PAppBase::SetSeed(n);
 }
 
-bool G2PSim::Init()
+int G2PSim::Init()
 {
     static const char* const here = "Init()";
 
@@ -68,68 +66,65 @@ bool G2PSim::Init()
     while (TObject* obj = next()) {
         if (obj->IsZombie()) gG2PApps->Remove(obj);
     }
+    
     next.Reset();
-    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
-        aobj->RegisterModel();
+    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
         aobj->SetDebug(fDebug);
     }
+    pRun->SetDebug(fDebug);
+
     next.Reset();
-    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
-        if (!aobj->IsInit()) {
-            if (aobj->Init()) return false;
-        }
+    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
+        if (aobj->Init()!=0) return -1;
     }
+
+    if (pRun->Init()!=0) return -1;
 
     if (fDebug>0) Info(here, "Initialize done!");
 
-    return true;
+    return 0;
 }
 
-void G2PSim::Begin()
-{
-    pFile = new TFile(pOutFileName, "recreate");
-    pTree = new TTree("T", "Sim result");
-
-    pTree->Branch("Index", &nCounter, "Index/I");
-
-    TIter next(fApps);
-    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
-        aobj->DefineVariables(pTree);
-    }
-}
-
-void G2PSim::End()
-{
-    pFile->Write("", TObject::kOverwrite);
-    pFile->Close();
-
-    //delete pTree;
-}
-
-void G2PSim::Clear()
+int G2PSim::Begin()
 {
     TIter next(fApps);
-    while (G2PAppsBase* aobj = static_cast<G2PAppsBase*>(next())) {
-        aobj->Clear();
+    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
+        if (aobj->Begin()!=0) return -1;
     }
+
+    return 0;
+}
+
+int G2PSim::End()
+{
+    // Nothing to do
+
+    return 0;
 }
 
 void G2PSim::Run()
 {
     static const char* const here = "Run()";
 
-    if (Init()) {
-        Begin();
-        while (nCounter<=nEvent) {
-            if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
-            Clear();
-            if (pRun->Run()) break;
-            pTree->Fill();
-            if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);
-            nCounter++;
-        }
-        End();
+    if (Init()!=0) {
+        Error(here, "Cannot initialize, program will stop.");
+        return;
     }
+
+    if (Begin()!=0) {
+        Error(here, "Critical error, program will stop.");
+        return;
+    }
+
+    while (nCounter<=nEvent) {
+        if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
+        pRun->Clear();
+        if (pRun->Process()!=0) break;
+        if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);
+        nCounter++;
+    }
+
+    End();
 }
 
 // void G2PSim::InitTree()

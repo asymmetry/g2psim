@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 
 class G2PPhysBase;
 
-class G2PPhys : public G2PAppsBase
+class G2PPhys : public G2PAppBase
 {
 public:
     G2PPhys(const char *name);
@@ -15,12 +15,10 @@ public:
 
     void SetPars(double* array, int n) { fPars = array; nPars = n; }
 
-    EStatus Init();
-    void Clear() { }
+    int Init();
+    int Begin();
 
     double GetXS(double Eb, double Ef, double theta);
-
-    int GetSetting() { return iSetting; }
 
     static G2PPhys* GetInstance() { return pG2PPhys; }
 

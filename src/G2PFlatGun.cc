@@ -21,7 +21,7 @@ G2PFlatGun::~G2PFlatGun()
     // Nothing to do
 }
 
-bool G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr, double* reserved)
+int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr, double* reserved)
 {
     static const char* const here = "Shoot()";
 
@@ -51,12 +51,11 @@ bool G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr, double* reserved)
     V5react_tr[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
     V5react_tr[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);
 
-    if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
     }
 
-    return true;
+    return 0;
 }
 
 ClassImp(G2PFlatGun)

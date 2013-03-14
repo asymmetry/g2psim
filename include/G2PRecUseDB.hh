@@ -16,18 +16,17 @@
 
 #include <vector>
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 
 using namespace std;
 
-class G2PRecUseDB : public G2PAppsBase
+class G2PRecUseDB : public G2PAppBase
 {
 public:
     G2PRecUseDB();
     ~G2PRecUseDB();
 
-    EStatus Init();
-    void Clear() { }
+    int Init();
 
     void CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr);
     

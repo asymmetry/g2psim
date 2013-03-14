@@ -7,7 +7,6 @@
 #include "TError.h"
 
 #include "G2PDrift.hh"
-#include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PGunBase.hh"
 #include "G2PRand.hh"
@@ -30,13 +29,13 @@ G2PSieveGun::~G2PSieveGun()
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PSieveGun::Init()
+int G2PSieveGun::Begin()
 {
-    // static const char* const here = "Init()";
+    //static const char* const here = "Begin()";
 
-    if (G2PGunBase::Init()) return fStatus;
+    if (G2PGunBase::Begin()!=0) return fStatus;
 
-    if (G2PFieldBase::GetInstance()) bUseFast = false;
+    if (fFieldRatio>0) bUseFast = false;
 
     if (bUseFast) pfGun = &G2PSieveGun::ShootFast;
     else pfGun = &G2PSieveGun::ShootNormal;
@@ -51,7 +50,7 @@ G2PAppsBase::EStatus G2PSieveGun::Init()
     return (fStatus = kOK);
 }
 
-bool G2PSieveGun::ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved)
+int G2PSieveGun::ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved)
 {
     static const char* const here = "Shoot()";
     
@@ -108,15 +107,14 @@ bool G2PSieveGun::ShootNormal(double* V5beam_lab, double* V5react_tr, double* re
         }
     }
 
-    if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
     }
 
-    return true;
+    return 0;
 }
 
-bool G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved)
+int G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved)
 {
     static const char* const here = "Shoot()";
     
@@ -192,12 +190,11 @@ bool G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* rese
     V5react_tr[3] = Phireact_tr;
     V5react_tr[4] = Delta;
 
-    if (fDebug>1) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
     }
 
-    return true;
+    return 0;
 }
 
 ClassImp(G2PSieveGun)

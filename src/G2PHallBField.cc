@@ -52,33 +52,31 @@ G2PHallBField::~G2PHallBField()
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PHallBField::Init()
+int G2PHallBField::Begin()
 {
-    static const char* const here = "Init()";
+    static const char* const here = "Begin()";
 
-    if (G2PFieldBase::Init()) return fStatus;
-
-    fStatus = kINITERROR;
-    if (ReadMap()) fStatus = kOK;
-    else if (CreateMap()) fStatus = kOK;
-    else Error(here, "Cannot initialize.");
-
-    if (fDebug>4) SaveRootFile();
+    if (G2PFieldBase::Begin()!=0) return fStatus;
+    
+    fStatus = kERROR;
+    if (ReadMap()==0) fStatus = kOK;
+    else if (CreateMap()==0) fStatus = kOK;
+    else Error(here, "Cannot create field map.");
 
     return fStatus;
 }
 
-bool G2PHallBField::ReadMap()
+int G2PHallBField::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
-    if (!G2PFieldBase::ReadMap()) return false;
+    if (G2PFieldBase::ReadMap()!=0) return -1;
 
     ifstream ifs;
     int count = 0;
 
     ifs.open(pMapFileName);
-    if (ifs.fail()) return false;
+    if (ifs.fail()) return -1;
 
     const int LEN = 300;
     char buff[LEN];
@@ -108,8 +106,8 @@ bool G2PHallBField::ReadMap()
             double tempBr = atof(line_spl[3].c_str());
             double tempB  = atof(line_spl[4].c_str());
 
-            int indexZ = int((tempZ-fZMin)/fStepZ+1e-8);
-            int indexR = int((tempR-fRMin)/fStepR+1e-8);
+            int indexZ = int((tempZ-fZMin)/fZStep+1e-8);
+            int indexR = int((tempR-fRMin)/fRStep+1e-8);
 
             fBField[indexR][indexZ][0] = tempZ;
             fBField[indexR][indexZ][1] = tempR;
@@ -125,34 +123,34 @@ bool G2PHallBField::ReadMap()
 
     ifs.close();
 
-    if (count==0) return false;
-    return true;
+    if (count==0) return -1;
+    return 0;
 }
 
-bool G2PHallBField::CreateMap()
+int G2PHallBField::CreateMap()
 {
     static const char* const here = "CreateMap()";
 
-    if (!G2PFieldBase::CreateMap()) return false;
+    if (G2PFieldBase::CreateMap()!=0) return -1;
 
     FILE* fp;
 
-    if ((fp=fopen(pMapFileName,"w"))==NULL) return false;
+    if ((fp=fopen(pMapFileName,"w"))==NULL) return -1;
 
     fprintf(fp, "   z        r       Bz              Br              Btot\n");
     double x[3], b[3];
 
     x[1] = 0;
     
-    for (int i = 0; i<nNumR; i++) {
-        x[0] = i*fStepR;
-        for (int j = 0; j<nNumZ; j++) {
-            x[2] = j*fStepZ;
+    for (int i = 0; i<nR; i++) {
+        x[0] = i*fRStep;
+        for (int j = 0; j<nZ; j++) {
+            x[2] = j*fZStep;
 
             GetHallBField(x, b);
 
-            fBField[i][j][0] = j*fStepZ;
-            fBField[i][j][1] = i*fStepR;
+            fBField[i][j][0] = j*fZStep;
+            fBField[i][j][1] = i*fRStep;
             fBField[i][j][2] = b[2];
             fBField[i][j][3] = sqrt(b[0]*b[0]+b[1]*b[1]);
             fBField[i][j][4] = sqrt(b[0]*b[0]+b[1]*b[1]+b[2]*b[2]);
@@ -165,7 +163,7 @@ bool G2PHallBField::CreateMap()
 
     fclose(fp);
 
-    return true;
+    return 0;
 }
 
 ClassImp(G2PHallBField)

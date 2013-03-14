@@ -1,23 +1,20 @@
 #ifndef G2P_RUNBASE_H
 #define G2P_RUNBASE_H
 
-#include <cstring>
+#include <vector>
 
-#include "G2PAppsBase.hh"
+#include "TObject.h"
 
-class G2PBPM;
-class G2PDrift;
-class G2PGunBase;
-class G2PHRSTrans;
-class G2PPhys;
-class G2PRecUseDB;
-class TTree;
+using namespace std;
 
-class G2PRunBase : public G2PAppsBase
+class TList;
+
+class G2PRunBase : public TObject
 {
 public:
-    G2PRunBase();
     virtual ~G2PRunBase();
+    
+    enum EStatus { kOK = 0, kNOTINIT, kINITERROR, kERROR };
 
     void SetHRSAngle(double angle) { fHRSAngle = angle; }
     void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
@@ -29,12 +26,13 @@ public:
     void SetParticleMass(double M0) { fParticleM0 = M0; }
     void SetParticleCharge(double Q) { fParticleQ = Q; }
 
-    virtual EStatus Init();
-    virtual int Begin() { return 0; }
-    virtual int End() { return 0; }
-    virtual void Clear() { }
+    void SetDebug(int n) { fDebug = n; }
 
-    virtual int Run() = 0;
+    virtual int Init();
+    virtual int Begin();
+    virtual int Process();
+    virtual int End() { return 0; }
+    virtual void Clear();
 
     double GetHRSAngle() { return fHRSAngle; }
     double GetHRSMomentum() { return fHRSMomentum; }
@@ -47,30 +45,28 @@ public:
     double GetParticleMass() { return fParticleM0; }
     double GetParticleCharge() { return fParticleQ; }
 
-    virtual int RegisterModel();
-    virtual int DefineVariables(TTree* t) { return 0; }
-
     static G2PRunBase* GetInstance() { return pG2PRunBase; }
 
 protected:
-    virtual void Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout);
+    G2PRunBase();
 
+    EStatus fStatus;
+    int fDebug;
+
+    double fBeamEnergy;
     double fHRSAngle;
     double fHRSMomentum;
-    double fBeamEnergy;
+
     int iTargetZ, iTargetA;
     double fTargetMass;
     double fEnergyLoss;
+
     int iParticlePID;
     double fParticleM0, fParticleQ;
 
-    G2PBPM* pBPM;
-    G2PDrift* pDrift;
-    G2PGunBase* pGun;
-    G2PHRSTrans* pHRS;
-    G2PPhys* pPhys;
-    G2PRecUseDB* pRecUseDB;
-    
+    TList* fProcs;
+    vector<vector<const char*> > fProcReqs;
+
 private:
     static G2PRunBase* pG2PRunBase;
 

@@ -9,7 +9,7 @@ public:
     G2PPointGun();
     ~G2PPointGun();
    
-    bool Shoot(double* V51, double* V52, double* V53 = NULL);
+    int Shoot(double* V51, double* V52, double* V53 = NULL);
 
     bool UseData() { return false; }
 

@@ -25,7 +25,7 @@
 #include "TError.h"
 #include "TString.h"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
@@ -34,7 +34,6 @@
 using namespace std;
 
 G2PRecUseDB* G2PRecUseDB::pG2PRecUseDB = NULL;
-
 
 G2PRecUseDB::G2PRecUseDB() :
     pPrefix(NULL), pDBName(NULL)
@@ -52,11 +51,11 @@ G2PRecUseDB::~G2PRecUseDB()
     if (pG2PRecUseDB==this) pG2PRecUseDB = NULL;
 }
 
-G2PAppsBase::EStatus G2PRecUseDB::Init()
+int G2PRecUseDB::Init()
 {
     static const char* const here = "Init()";
 
-    if (G2PAppsBase::Init()) return fStatus;
+    if (G2PAppBase::Init()!=0) return fStatus;
 
     if (gG2PRun->GetHRSAngle()>0) {
         pPrefix = "L"; pDBName = "db_L.vdc.dat";
@@ -249,7 +248,7 @@ void G2PRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     V5tg_tr[3] = atan(phi);
     V5tg_tr[4] = dp;
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5tg_tr[4], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
+    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_rot[4], V5tg_tr[0], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
 }
 
 void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
@@ -286,7 +285,7 @@ void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
     V5fp_rot[2] = y;
     V5fp_rot[3] = atan(phi);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
 void G2PRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
@@ -321,7 +320,7 @@ void G2PRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
     V5fp_tr[2] = y_tr;
     V5fp_tr[3] = atan(p_tr);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
 void G2PRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
@@ -346,7 +345,7 @@ void G2PRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
     V5fp_det[2] = y_det;
     V5fp_det[3] = atan(ph_det);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
 void G2PRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
@@ -371,7 +370,7 @@ void G2PRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
     V5fp_tr[2] = y_tr;
     V5fp_tr[3] = atan(ph_tr);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
 void G2PRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
@@ -383,7 +382,7 @@ void G2PRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
     TransRot2Tr(V5fp_rot, V5fp_tr);
     TransTr2Det(V5fp_tr, V5fp_det);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
 void G2PRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
@@ -395,7 +394,7 @@ void G2PRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
     TransDet2Tr(V5fp_det, V5fp_tr);
     TransTr2Rot(V5fp_tr, V5fp_rot);
 
-    if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
+    if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
 void G2PRecUseDB::PrintDataBase()

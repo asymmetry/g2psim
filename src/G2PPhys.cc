@@ -8,7 +8,7 @@
 #include "G2PPhysBase.hh"
 #include "G2PPhysQFS/G2PPhysQFS.hh"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
@@ -47,15 +47,11 @@ G2PPhys::~G2PPhys()
     if (pG2PPhys==this) pG2PPhys = NULL;
 }
 
-G2PAppsBase::EStatus G2PPhys::Init()
+int G2PPhys::Init()
 {
     static const char* const here = "Init()";
 
-    if (G2PAppsBase::Init()) return fStatus;
-
-    iZ = gG2PRun->GetTargetZ();
-    iA = gG2PRun->GetTargetA();
-    iPID = gG2PRun->GetParticlePID();
+    if (G2PAppBase::Init()!=0) return fStatus;
 
     switch (iSetting) {
     case 12:
@@ -66,6 +62,19 @@ G2PAppsBase::EStatus G2PPhys::Init()
         return (fStatus = kINITERROR);
         break;
     }
+
+    return (fStatus = kOK);
+}
+
+int G2PPhys::Begin()
+{
+    //static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin()!=0) return fStatus;
+
+    iZ = gG2PRun->GetTargetZ();
+    iA = gG2PRun->GetTargetA();
+    iPID = gG2PRun->GetParticlePID();
 
     pModel->SetTarget(iZ, iA);
     pModel->SetParticle(iPID);

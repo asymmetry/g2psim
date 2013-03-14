@@ -1,29 +1,27 @@
 #ifndef G2P_DRIFT_H
 #define G2P_DRIFT_H
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 
 class G2PFieldBase;
 
-class G2PDrift : public G2PAppsBase
+class G2PDrift : public G2PAppBase
 {
 public:
     G2PDrift();
     ~G2PDrift();
 
-    void SetStep(double value) { fStep = value; }
-
-    EStatus Init();
-
     typedef void (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
     typedef void (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
 
-    void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) { (this->*pfDriftHCS)(x, p, zlimit, llimit, xout, pout); }
-    void Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) { (this->*pfDriftTCS)(x, p, z_tr, angle, zlimit, llimit, xout); }
+    void SetLimit(double lo, double hi) { fErrLoLimit = lo; fErrHiLimit = hi; }
 
-    G2PFieldBase* GetField() { return pField; }
+    int Init();
+    int Begin();
+    void Clear();
 
-    int RegisterModel();
+    void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    void Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
 
     static G2PDrift* GetInstance() { return pG2PDrift; }
 
@@ -39,7 +37,7 @@ protected:
 
     double fM0;
     double fQ, fQsave;
-    double fStep, fStepLimit, fErrLoLimit,fErrUpLimit;
+    double fStep, fStepLimit, fErrLoLimit, fErrHiLimit;
     double fVelocity, fVelocity2, fGamma;
     double fCof;
     double fField[3];

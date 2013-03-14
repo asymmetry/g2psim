@@ -25,31 +25,29 @@ G2PUniField::~G2PUniField()
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PUniField::Init()
+int G2PUniField::Begin()
 {
-    static const char* const here = "Init()";
+    static const char* const here = "Begin()";
 
-    if (G2PFieldBase::Init()) return fStatus;
+    if (G2PFieldBase::Begin()!=0) return fStatus;
 
-    fStatus = kINITERROR;
-    if (CreateMap()) fStatus = kOK;
-    else Error(here, "Cannot initialize.");
-
-    if (fDebug>4) SaveRootFile();
+    fStatus = kERROR;
+    if (CreateMap()==0) fStatus = kOK;
+    else Error(here, "Cannot create field map.");
 
     return fStatus;
 }
 
-bool G2PUniField::CreateMap()
+int G2PUniField::CreateMap()
 {
     static const char* const here = "CreateMap()";
 
-    if (!G2PFieldBase::CreateMap()) return false;
+    if (!G2PFieldBase::CreateMap()) return -1;
 
-    for (int i = 0; i<nNumR; i++) {
-        for (int j = 0; j<nNumZ; j++) {
-            fBField[i][j][0] = j*fStepZ;
-            fBField[i][j][1] = i*fStepR;
+    for (int i = 0; i<nR; i++) {
+        for (int j = 0; j<nZ; j++) {
+            fBField[i][j][0] = j*fZStep;
+            fBField[i][j][1] = i*fRStep;
             fBField[i][j][2] = 1.0;
             fBField[i][j][3] = 0.0;
             fBField[i][j][4] = 1.0;
@@ -58,7 +56,7 @@ bool G2PUniField::CreateMap()
         }
     }
 
-    return true;
+    return 0;
 }
 
 ClassImp(G2PUniField)

@@ -14,22 +14,22 @@ public:
     G2PDataGun(const char* filename);
     ~G2PDataGun();
 
-    typedef bool (G2PDataGun::*pfGun_)(double*, double*, double*);
+    typedef int (G2PDataGun::*pfGun_)(double*, double*, double*);
 
     void SetOpticsData(bool b) { bIsOptics = b; }
 
-    EStatus Init();
-    bool Shoot(double* V51, double* V52, double* V53 = NULL) { return (this->*pfGun)(V51, V52, V53); }
+    int Begin();
+    int Shoot(double* V51, double* V52, double* V53 = NULL) { return (this->*pfGun)(V51, V52, V53); }
 
     bool UseData() { return true; }
 
 protected:
     G2PDataGun(); // Only for ROOT I/O
 
-    bool ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
-    bool ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
+    int ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
+    int ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr);
 
-    bool LoadData();
+    int LoadData();
 
     bool bIsOptics;
 

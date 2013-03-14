@@ -9,11 +9,11 @@ public:
     G2PHallBField();
     ~G2PHallBField();
 
-    EStatus Init();
+    int Begin();
 
 protected:
-    bool ReadMap();
-    bool CreateMap();
+    int ReadMap();
+    int CreateMap();
 
 private:
     ClassDef(G2PHallBField, 1)

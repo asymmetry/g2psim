@@ -9,10 +9,10 @@ public:
     G2PUniField();
     ~G2PUniField();
 
-    EStatus Init();
+    int Begin();
 
 protected:
-    bool CreateMap();
+    int CreateMap();
 
 private:
     ClassDef(G2PUniField, 1)

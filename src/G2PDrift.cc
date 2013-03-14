@@ -5,7 +5,7 @@
 #include "TObject.h"
 #include "TError.h"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
@@ -23,9 +23,9 @@ G2PDrift* G2PDrift::pG2PDrift = NULL;
 G2PDrift::G2PDrift() :
     fM0(0.51099892811e-3), fQ(-1*e), fQsave(-1*e),
     fStep(1.0e-3), fStepLimit(1.0e-6),
-    fErrLoLimit(1.0e-7), fErrUpLimit(1.0e-6),
+    fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6),
     fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0),
-    pField(NULL)
+    pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL)
 {
     if (pG2PDrift) {
         Error("G2PDrift()", "Only one instance of G2PDrift allowed.");
@@ -34,10 +34,7 @@ G2PDrift::G2PDrift() :
     }
     pG2PDrift = this;
 
-    memset(fField, 0, sizeof(fField));
-    memset(fIPoint, 0, sizeof(fIPoint));
-    memset(fMPoint, 0, sizeof(fMPoint));
-    memset(fEPoint, 0, sizeof(fEPoint));
+    Clear();
 }
 
 G2PDrift::~G2PDrift()
@@ -45,19 +42,24 @@ G2PDrift::~G2PDrift()
     if (pG2PDrift==this) pG2PDrift = NULL;
 }
 
-G2PAppsBase::EStatus G2PDrift::Init()
+int G2PDrift::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
-    if (G2PAppsBase::Init()) return fStatus;
+    if (G2PAppBase::Init()!=0) return fStatus;
+
+    pField = G2PFieldBase::GetInstance();
+
+    return (fStatus = kOK);
+}
+
+int G2PDrift::Begin()
+{
+    //static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin()!=0) return fStatus;
 
     if (pField) {
-        if (!pField->IsInit()) {
-            if (pField->Init()) {
-                Error(here, "Cannot initialize.");
-                return (fStatus = kINITERROR);
-            }
-        }
         pfDriftHCS = &G2PDrift::DriftHCS;
         pfDriftTCS = &G2PDrift::DriftTCS;
     }
@@ -72,17 +74,46 @@ G2PAppsBase::EStatus G2PDrift::Init()
     return (fStatus = kOK);
 }
 
-int G2PDrift::RegisterModel()
+void G2PDrift::Clear()
 {
-    pField = G2PFieldBase::GetInstance();
+    G2PAppBase::Clear();
 
-    return 0;
+    memset(fField, 0, sizeof(fField));
+    memset(fIPoint, 0, sizeof(fIPoint));
+    memset(fMPoint, 0, sizeof(fMPoint));
+    memset(fEPoint, 0, sizeof(fEPoint));
+}
+
+void G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
+{
+    static const char* const here = "Drift()";
+
+    double xx[3] = { x[0], x[1], x[2] };
+    double pp[3] = { p[0], p[1], p[2] };
+    
+    (this->*pfDriftHCS)(x, p, zlimit, llimit, xout, pout);
+
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xout[0], xout[1], xout[2]);
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", pp[0], pp[1], pp[2], pout[0], pout[1], pout[2]);
+    }    
+}
+
+void G2PDrift::Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
+{
+    static const char* const here = "Drift()";
+
+    double xx[5] = { x[0], x[1], x[2], x[3], x[4] };
+
+    (this->*pfDriftTCS)(x, p, z_tr, angle, zlimit, llimit, xout);
+
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
+    }
 }
 
 void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
 {
-    static const char* const here = "Drift()";
-
     double xi[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     double xf[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
@@ -107,11 +138,11 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
     double dxdt[6], err[6];
     double dt = fStep/fVelocity;
     double dtlimit = fStepLimit/fVelocity;
-    double error = (fErrUpLimit+fErrLoLimit)/2.0;
+    double error = (fErrHiLimit+fErrLoLimit)/2.0;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i];
     while ((l<llimit)&&((xf[2]<zlimit)^(sign))) {
-        if ((error>fErrUpLimit)&&(dt>dtlimit)) dt/=2.0;
+        if ((error>fErrHiLimit)&&(dt>dtlimit)) dt/=2.0;
         else {
             for (int i = 0; i<6; i++) xi[i] = xf[i];
             if (error<fErrLoLimit) dt*=2.0;
@@ -142,40 +173,21 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
         fQ = fQsave;
     }
 
-    if (fDebug>2) {
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", x[0], x[1], x[2], xf[0], xf[1], xf[2]);
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", p[0], p[1], p[2], xf[3]*M/c, xf[4]*M/c, xf[5]*M/c);
-    }
-
     xout[0] = xf[0]; xout[1] = xf[1]; xout[2] = xf[2];
     pout[0] = xf[3]*M/c; pout[1] = xf[4]*M/c; pout[2] = xf[5]*M/c;
 }
 
 void G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
 {
-    static const char* const here = "Drift()";
-
-    double xx[3] = { x[0], x[1], x[2] };
-    double pp[3] = { p[0], p[1], p[2] };
-
-    xout[0] = xx[0]+(zlimit-xx[2])*pp[0]/pp[2];
-    xout[1] = xx[1]+(zlimit-xx[2])*pp[1]/pp[2];
+    xout[0] = x[0]+(zlimit-x[2])*p[0]/p[2];
+    xout[1] = x[1]+(zlimit-x[2])*p[1]/p[2];
     xout[2] = zlimit;
 
-    pout[0] = pp[0]; pout[1] = pp[1]; pout[2] = pp[2];
-
-    if (fDebug>2) {
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xout[0], xout[1], xout[2]);
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", pp[0], pp[1], pp[2], pout[0], pout[1], pout[2]);
-    }
+    pout[0] = p[0]; pout[1] = p[1]; pout[2] = p[2];
 }
  
 void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
 {
-    static const char* const here = "Drift()";
-
-    double xx[5] = { x[0], x[1], x[2], x[3], x[4] };
-
     double xi[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     double xf[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
@@ -205,14 +217,14 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     }
 
     double dxdt[6], err[6];
-    double error = (fErrUpLimit+fErrLoLimit)/2.0;
+    double error = (fErrHiLimit+fErrLoLimit)/2.0;
     double dt = fStep/fVelocity;
     double dtlimit = fStepLimit/fVelocity;
     double l = 0.0;
     for (int i = 0; i<6; i++) xf[i] = xi[i]; 
     double newz_tr = z_tr;
     while ((l<llimit)&&((newz_tr<zlimit)^(sign))) {
-        if ((error>fErrUpLimit)&&(dt>dtlimit)) dt/=2.0;
+        if ((error>fErrHiLimit)&&(dt>dtlimit)) dt/=2.0;
         else {
             for (int i = 0; i<6; i++) xi[i] = xf[i];
             if (error<fErrLoLimit) dt*=2.0;
@@ -252,27 +264,15 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     double temp;
     HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], temp);
     xout[4] = x[4];
-
-    if (fDebug>2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
-    }
 }
 
 void G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
 {
-    static const char* const here = "Drift()";
-
-    double xx[5] = { x[0], x[1], x[2], x[3], x[4] };
-
     xout[0] = x[0]+(zlimit-z_tr)*tan(x[1]);
     xout[1] = x[1];
     xout[2] = x[2]+(zlimit-z_tr)*tan(x[3]);
     xout[3] = x[3];
     xout[4] = x[4];
-
-    if (fDebug>2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
-    }
 }
 
 void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err)
@@ -357,7 +357,7 @@ void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, doub
     xo[4]*=normF;
     xo[5]*=normF;
 
-    if (fDebug>3) {
+    if (fDebug>4) {
         Info(here, " err: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", err[0]/fabs(xo[0]-x[0]), err[1]/fabs(xo[1]-x[1]), err[2]/fabs(xo[2]-x[2]), err[3]/fabs(xo[3]-x[3]), err[4]/fabs(xo[4]-x[4]), err[5]/fabs(xo[5]-x[5]));
     }
 }
@@ -399,7 +399,7 @@ void G2PDrift::ComputeRHS(const double* x, double* dxdt)
     dxdt[4] = (x[5]*fField[0]-fField[2]*x[3])*fCof;
     dxdt[5] = (x[3]*fField[1]-fField[0]*x[4])*fCof;
 
-    if (fDebug>3) {
+    if (fDebug>4) {
         Info(here, "   x: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", x[0], x[1], x[2], x[3], x[4], x[5]);
         Info(here, "dxdt: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
     }

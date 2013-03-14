@@ -3,5 +3,6 @@
 
 extern class TList* gG2PApps;
 extern class G2PRunBase* gG2PRun;
+extern class G2PVarList* gG2PVars;
 
 #endif

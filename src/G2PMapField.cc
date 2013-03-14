@@ -33,32 +33,30 @@ G2PMapField::~G2PMapField()
     // Nothing to do
 }
 
-G2PAppsBase::EStatus G2PMapField::Init()
+int G2PMapField::Begin()
 {
     static const char* const here = "Init()";
 
-    if (G2PFieldBase::Init()) return fStatus;
+    if (G2PFieldBase::Begin()!=0) return fStatus;
 
-    fStatus = kINITERROR;
+    fStatus = kERROR;
     if (ReadMap()) fStatus = kOK;
-    else Error(here, "Cannot initialize.");
-
-    if (fDebug>4) SaveRootFile();
+    else Error(here, "Cannot read field map.");
 
     return fStatus;
 }
 
-bool G2PMapField::ReadMap()
+int G2PMapField::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
-    if (!G2PFieldBase::ReadMap()) return false;
+    if (!G2PFieldBase::ReadMap()) return -1;
 
     ifstream ifs;
     int count = 0;
 
     ifs.open(pMapFileName);
-    if (ifs.fail()) return false;
+    if (ifs.fail()) return -1;
 
     const int LEN = 300;
     char buff[LEN];
@@ -88,8 +86,8 @@ bool G2PMapField::ReadMap()
             double tempBr = atof(line_spl[3].c_str());
             double tempB  = atof(line_spl[4].c_str());
 
-            int indexZ = int((tempZ-fZMin)/fStepZ+1e-8);
-            int indexR = int((tempR-fRMin)/fStepR+1e-8);
+            int indexZ = int((tempZ-fZMin)/fZStep+1e-8);
+            int indexR = int((tempR-fRMin)/fRStep+1e-8);
 
             fBField[indexR][indexZ][0] = tempZ;
             fBField[indexR][indexZ][1] = tempR;
@@ -105,8 +103,8 @@ bool G2PMapField::ReadMap()
 
     ifs.close();
 
-    if (count==0) return false;
-    return true;
+    if (count==0) return -1;
+    return 0;
 }
 
 ClassImp(G2PMapField)

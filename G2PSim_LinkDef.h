@@ -6,10 +6,12 @@
 
 #pragma link C++ global gG2PApps;
 #pragma link C++ global gG2PRun;
+#pragma link C++ global gG2PVars;
 
-#pragma link C++ class G2PSim+;
 #pragma link C++ class G2PRand+;
-#pragma link C++ class G2PAppsBase+;
+#pragma link C++ class G2PVar;
+#pragma link C++ class G2PVarList;
+#pragma link C++ class G2PAppBase+;
 #pragma link C++ class G2PBPM+;
 #pragma link C++ class G2PDrift+;
 #pragma link C++ class G2PFieldBase+;
@@ -25,7 +27,13 @@
 #pragma link C++ class G2PHRSTrans+;
 #pragma link C++ class G2PPhys+;
 #pragma link C++ class G2PRecUseDB+;
+#pragma link C++ class G2PProcBase+;
+#pragma link C++ class G2PBwdProc+;
+#pragma link C++ class G2PFwdProc+;
+#pragma link C++ class G2PGunProc+;
+#pragma link C++ class G2PPhyProc+;
 #pragma link C++ class G2PRunBase+;
 #pragma link C++ class G2PRun+;
+#pragma link C++ class G2PSim+;
 
 #endif

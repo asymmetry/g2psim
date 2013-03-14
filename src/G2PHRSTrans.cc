@@ -1,4 +1,4 @@
-// This file defines a class HRSTransport.
+// This file defines a class G2PHRSTrans.
 // This class is used in G2PSim class as HRS model.
 // The definition of variables and the list of available models can be found in
 //+the comments in the body
@@ -7,7 +7,6 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
-//   Feb 2013, J.X. Zhang, Add VC support
 //
 
 #include <cstdlib>
@@ -24,7 +23,7 @@
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816R00/G2PTrans484816R00.hh"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
@@ -32,19 +31,19 @@
 
 using namespace std;
 
-const double kDEG = 3.14159265358979323846/180.0;
+static const double kDEG = 3.14159265358979323846/180.0;
 
 G2PHRSTrans* G2PHRSTrans::pG2PHRSTrans = NULL;
 
 G2PHRSTrans::G2PHRSTrans() :
-    iSetting(0), fHRSAngle(5.767*kDEG), fModelAngle(5.767*kDEG),
+    iSetting(1), fHRSAngle(5.767*kDEG), fModelAngle(5.767*kDEG),
     pModel(NULL)
 {
     // Nothing to do
 }
 
 G2PHRSTrans::G2PHRSTrans(const char* name) :
-    iSetting(0), fHRSAngle(5.767*kDEG), fModelAngle(5.767*kDEG),
+    iSetting(1), fHRSAngle(5.767*kDEG), fModelAngle(5.767*kDEG),
     pModel(NULL)
 {
     if (pG2PHRSTrans) {
@@ -90,13 +89,11 @@ G2PHRSTrans::~G2PHRSTrans()
 // May add more HRS packages later
 ////////////////////////////////////////////////////////////////////////////////
 
-G2PAppsBase::EStatus G2PHRSTrans::Init()
+int G2PHRSTrans::Init()
 {
     static const char* const here = "Init()";
 
-    if (G2PAppsBase::Init()) return fStatus;
-
-    fHRSAngle = gG2PRun->GetHRSAngle();
+    if (G2PAppBase::Init()!=0) return fStatus;
 
     switch (iSetting) {
     case 1:
@@ -113,7 +110,16 @@ G2PAppsBase::EStatus G2PHRSTrans::Init()
         return (fStatus = kINITERROR);
         break;
     }
+    return (fStatus = kOK);
+}
 
+int G2PHRSTrans::Begin()
+{
+    static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin()!=0) return fStatus;
+
+    fHRSAngle = gG2PRun->GetHRSAngle();
     fModelAngle = pModel->GetAngle();
 
     if (fDebug>0) Info(here, "Model angle is %10.3e." , fModelAngle/kDEG);
@@ -156,7 +162,9 @@ bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp)
     V5_fp[3] = atan(V5[3]);
     V5_fp[4] = V5[4];
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4]);
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4]);
+    }
 
     return bGoodParticle;
 }
@@ -197,8 +205,10 @@ bool G2PHRSTrans::Backward(const double* V5_fp, double* V5_tg)
 
     if (V5_tg[4]<1.0) bGoodParticle = true;
 
-    if (fDebug>1) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
-    
+    if (fDebug>2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4], V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
+    }
+
     return bGoodParticle;
 }
 

@@ -10,10 +10,7 @@
 
 #include "TObject.h"
 
-class TFile;
 class TList;
-class TTree;
-class G2PDrift;
 class G2PRunBase;
 
 class G2PSim : public TObject
@@ -25,12 +22,11 @@ public:
     void SetNEvent(int n) { nEvent = n; }
     void SetSeed(int n);
     void SetDebug(int n) { fDebug = n; }
-    void SetOutFileName(const char* name) { pOutFileName = name; }
+    void SetOutFile(const char* name) { pOutFile = name; }
 
-    bool Init();
-    void Begin();
-    void End();
-    void Clear();
+    int Init();
+    int Begin();
+    int End();
 
     void Run();
     void Run(int n) { nEvent = n; Run(); }
@@ -43,9 +39,9 @@ protected:
 
     int fDebug;
 
-    TFile* pFile;
-    const char* pOutFileName;
-    TTree* pTree;
+    // TFile* pFile;
+    const char* pOutFile;
+    // TTree* pTree;
 
     TList* fApps;
     G2PRunBase* pRun;

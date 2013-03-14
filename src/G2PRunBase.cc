@@ -1,16 +1,19 @@
 #include <cstdlib>
 #include <cmath>
+#include <vector>
 
 #include "TROOT.h"
 #include "TObject.h"
 #include "TError.h"
+#include "TList.h"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PBPM.hh"
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PGunBase.hh"
 #include "G2PPointGun.hh"
+#include "G2PProcBase.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PPhys.hh"
 #include "G2PRand.hh"
@@ -24,10 +27,11 @@ static const double kDEG = 3.14159265358979323846/180.0;
 G2PRunBase* G2PRunBase::pG2PRunBase = NULL;
 
 G2PRunBase::G2PRunBase() :
-    fHRSAngle(5.767*kDEG), fHRSMomentum(2.251),
-    fBeamEnergy(2.254), iTargetZ(1), iTargetA(1), fTargetMass(0.0), 
-    fEnergyLoss(0.0), iParticlePID(11), fParticleM0(0.511e-3),
-    fParticleQ(-1*e)
+    fStatus(kNOTINIT),
+    fBeamEnergy(2.254), fHRSAngle(5.767*kDEG), fHRSMomentum(2.251),
+    iTargetZ(1), iTargetA(1), fTargetMass(0.0), fEnergyLoss(0.0),
+    iParticlePID(11), fParticleM0(0.51099892811e-3), fParticleQ(-1*e),
+    fProcs(NULL)
 {
     if (pG2PRunBase) {
         Error("G2PRunBase()", "Only one instance of G2PRunBase allowed.");
@@ -35,74 +39,92 @@ G2PRunBase::G2PRunBase() :
         return;
     }
     pG2PRunBase = this;
+
+    fProcReqs.clear();
 }
 
 G2PRunBase::~G2PRunBase()
 {
     if (pG2PRunBase==this) pG2PRunBase = NULL;
+
+    TIter next(fProcs);
+    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
+        fProcs->Remove(aobj);
+        aobj->Delete();
+    }
+    delete fProcs;
 }
 
-G2PAppsBase::EStatus G2PRunBase::Init()
+int G2PRunBase::Init()
 {
-    // static const char* const here = "Init()";
+    static const char* const here = "Init()";
 
-    if (G2PAppsBase::Init()) return fStatus;
+    Info(here, "Initializing ...");
 
     return (fStatus = kOK);
 }
 
-int G2PRunBase::RegisterModel()
+int G2PRunBase::Begin()
 {
-    pBPM = G2PBPM::GetInstance();
-    if (!pBPM) {
-        pBPM = new G2PBPM();
-        gG2PApps->Add(pBPM);
+    static const char* const here = "Begin()";
+
+    Info(here, "Beginning ...");
+
+    EStatus status = kOK;
+    TIter next(fProcs);
+    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
+        if (aobj->Begin()!=0) status = kERROR;
     }
 
-    pDrift = G2PDrift::GetInstance();
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
-
-    pGun = G2PGunBase::GetInstance();
-    if (!pGun) {
-        pGun = new G2PPointGun();
-        gG2PApps->Add(pGun);
-    }
-
-    pHRS = G2PHRSTrans::GetInstance();
-    if (!pHRS) {
-        pHRS = new G2PHRSTrans("484816");
-        gG2PApps->Add(pHRS);
-    }
-
-    pPhys = G2PPhys::GetInstance();
-    if (!pPhys) {
-        pPhys = new G2PPhys("qfs");
-        gG2PApps->Add(pPhys);
-    }
-
-    pRecUseDB = G2PRecUseDB::GetInstance();
-    if (!pRecUseDB) {
-        pRecUseDB = new G2PRecUseDB();
-        gG2PApps->Add(pRecUseDB);
-    }
-
-    fApps->Add(pBPM);
-    fApps->Add(pDrift);
-    fApps->Add(pGun);
-    fApps->Add(pHRS);
-    fApps->Add(pPhys);
-    fApps->Add(pRecUseDB);
-
-    return 0;   
+    return (fStatus = status);
 }
 
-void G2PRunBase::Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout)
+int G2PRunBase::Process()
 {
-    xout = x + (z_out-z)*tan(t);
-    yout = y + (z_out-z)*tan(p);
+    static const char* const here = "Process()";
+
+    double Vtemp[100];
+
+    TIter prociter(fProcs);
+    vector<vector<const char*> >::iterator procreqs = fProcReqs.begin();
+    while (G2PProcBase* next = static_cast<G2PProcBase*>(prociter())) {
+        if (procreqs==fProcReqs.end()) break;
+        for (vector<const char*>::iterator name = procreqs->begin(); name!=procreqs->end(); name++) {
+            TIter tempiter(fProcs);
+            bool found = false;
+            while (G2PProcBase* ori = static_cast<G2PProcBase*>(tempiter())) {
+                if (ori->GetValue(*name, Vtemp)==0) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Error(here, "Critical error, check request vars list.");
+                return -1;
+            }
+
+            next->SetValue(*name, Vtemp);
+        }
+
+        if (next->Process()!=0) return -1;
+        
+        procreqs++;
+    }
+
+    if ((procreqs!=fProcReqs.end())||(prociter()!=NULL)) {
+        Error(here, "Critical error, check process list.");
+        return -1;
+    }
+
+    return 0;
+}
+
+void G2PRunBase::Clear()
+{
+    TIter next(fProcs);
+    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
+        aobj->Clear();
+    }
 }
 
 ClassImp(G2PRunBase)

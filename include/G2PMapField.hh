@@ -9,12 +9,12 @@ public:
     G2PMapField(const char* name);
     ~G2PMapField();
 
-    EStatus Init();
+    int Begin();
 
 protected:
     G2PMapField(); // Only for ROOT I/O
 
-    bool ReadMap();
+    int ReadMap();
 
 private:
     ClassDef(G2PMapField, 1)

@@ -14,18 +14,18 @@ public:
     G2PSieveGun();
     ~G2PSieveGun();
 
-    typedef bool (G2PSieveGun::*pfGun_)(double*, double*, double*);
+    typedef int (G2PSieveGun::*pfGun_)(double*, double*, double*);
 
     void SetUseFast(bool fast) { bUseFast = fast; }
 
-    EStatus Init();
-    bool Shoot(double* V51, double* V52, double* V53 = NULL) { return (this->*pfGun)(V51, V52, V53); }
+    int Begin();
+    int Shoot(double* V51, double* V52, double* V53 = NULL) { return (this->*pfGun)(V51, V52, V53); }
 
     bool UseData() { return false; }
 
 protected:
-    bool ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved);
-    bool ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved);
+    int ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved);
+    int ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved);
 
     bool bUseFast;
 

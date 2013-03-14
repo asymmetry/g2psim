@@ -1,7 +1,7 @@
 // This file defines a class G2PGunBase.
 // This class is the base class of G2PGun.
-// G2PRun class will call Shoot() to get kinematic variables. It is a virtual
-//+function so each derived class will have its own method.
+// G2PProcBase classes will call Shoot() to get kinematic variables.
+// It is a virtual function so each derived class will have its own method.
 //
 // History:
 //   Mar 2013, C. Gu, First public version.
@@ -14,7 +14,7 @@
 #include "TObject.h"
 #include "TError.h"
 
-#include "G2PAppsBase.hh"
+#include "G2PAppBase.hh"
 #include "G2PDrift.hh"
 #include "G2PFieldBase.hh"
 #include "G2PGlobals.hh"
@@ -28,12 +28,15 @@ G2PGunBase* G2PGunBase::pG2PGunBase = NULL;
 
 G2PGunBase::G2PGunBase() :
     fHRSAngle(5.767*kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254),
-    fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamTiltAngle(0.0),
-    fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0),
-    fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0),
-    fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0),
-    fSigmaPos_lab(0.0), fSigmaAng_lab(0.0), fSigmaAng_tr(0.0),
-    fSigmaDelta(0.0), pDrift(NULL)
+    fFieldRatio(0.0), fBeamX_lab(0.0), fBeamY_lab(0.0),
+    fBeamTiltAngle(0.0), fBeamR_lab(0.0),
+    fReactZLow_lab(0.0), fReactZHigh_lab(0.0),
+    fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0),
+    fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0),
+    fDeltaLow(0.0), fDeltaHigh(0.0),
+    fSigmaPos_lab(0.0), fSigmaAng_lab(0.0),
+    fSigmaAng_tr(0.0), fSigmaDelta(0.0),
+    pDrift(NULL)
 {
     if (pG2PGunBase) {
         Error("G2PGunBase()", "Only one instance of G2PGunBase allowed.");
@@ -48,61 +51,57 @@ G2PGunBase::~G2PGunBase()
     if (pG2PGunBase==this) pG2PGunBase = NULL;
 }
 
-G2PAppsBase::EStatus G2PGunBase::Init()
+int G2PGunBase::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
-    fHRSAngle = gG2PRun->GetHRSAngle();
-    fHRSMomentum = gG2PRun->GetHRSMomentum();
-    fBeamEnergy = gG2PRun->GetBeamEnergy();
+    if (G2PAppBase::Init()!=0) return fStatus;
 
-    if (SetTiltAngle()) {
-        Error(here, "Cannot initialize.");
-        return (fStatus = kINITERROR);
+    pDrift = G2PDrift::GetInstance();
+    if (pDrift==NULL) {
+        pDrift = new G2PDrift();
+        gG2PApps->Add(pDrift);
     }
 
     return (fStatus = kOK);
 }
 
-int G2PGunBase::SetTiltAngle()
+int G2PGunBase::Begin()
+{
+    //static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin()!=0) return fStatus;
+
+    fHRSAngle = gG2PRun->GetHRSAngle();
+    fHRSMomentum = gG2PRun->GetHRSMomentum();
+    fBeamEnergy = gG2PRun->GetBeamEnergy();
+    G2PFieldBase* field = G2PFieldBase::GetInstance();
+    if (field==NULL) fFieldRatio = 0;
+    else fFieldRatio = field->GetRatio();
+
+    SetTiltAngle();
+
+    return (fStatus = kOK);
+}
+
+void G2PGunBase::SetTiltAngle()
 {
     static const char* const here = "SetTiltAngle()";
 
-    if (pDrift->GetField()) {
-        if (fabs(pDrift->GetField()->GetRatio()-0.5)<1e-8) {
-            if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 3.31*kDEG;
-            else if (fabs(fBeamEnergy-1.706)<0.2) fBeamTiltAngle = 4.03*kDEG;
-            else if (fabs(fBeamEnergy-1.159)<0.2) fBeamTiltAngle = 5.97*kDEG;
-            else fBeamTiltAngle = 0.0;
-        }
-        else if (fabs(pDrift->GetField()->GetRatio()-1.0)<1e-8) {
-            if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 0.0; 
-            else if (fabs(fBeamEnergy-3.355)<0.2) fBeamTiltAngle = 0.0;
-            else fBeamTiltAngle = 0.0;
-        }
-        else {
-            fBeamTiltAngle = 0.0;
-        }
+    if (fabs(fFieldRatio-0.5)<1e-8) {
+        if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 3.31*kDEG;
+        else if (fabs(fBeamEnergy-1.706)<0.2) fBeamTiltAngle = 4.03*kDEG;
+        else if (fabs(fBeamEnergy-1.159)<0.2) fBeamTiltAngle = 5.97*kDEG;
+        else fBeamTiltAngle = 0.0;
     }
-    else {
-        fBeamTiltAngle = 0.0;
+    else if (fabs(fFieldRatio-1.0)<1e-8) {
+        if (fabs(fBeamEnergy-2.254)<0.2) fBeamTiltAngle = 0.0;
+        else if (fabs(fBeamEnergy-3.355)<0.2) fBeamTiltAngle = 0.0;
+        else fBeamTiltAngle = 0.0;
     }
+    else fBeamTiltAngle = 0.0;
 
-    if (fDebug>0) Info(here, "Beam tile angle is %10.3e deg", fBeamTiltAngle/kDEG);
-
-    return 0;
-}
-
-int G2PGunBase::RegisterModel()
-{
-    pDrift = G2PDrift::GetInstance();
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
-    fApps->Add(pDrift);
-
-    return 0;
+    if (fDebug>0) Info(here, "Beam tile angle is %10.3e deg.", fBeamTiltAngle/kDEG);
 }
 
 void G2PGunBase::GetReactPoint(double x, double y, double z, double* V5)
