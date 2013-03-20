@@ -11,10 +11,13 @@
 #include "TROOT.h"
 #include "TObject.h"
 #include "TError.h"
+#include "TFile.h"
 #include "TList.h"
 
 #include "G2PAppBase.hh"
+#include "G2POutput.hh"
 #include "G2PRunBase.hh"
+#include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
 #include "G2PSim.hh"
@@ -26,8 +29,9 @@ G2PVarList* gG2PVars = NULL;
 G2PSim* G2PSim::pG2PSim = NULL;
 
 G2PSim::G2PSim() :
-    nEvent(50000), nCounter(1), fDebug(1), pOutFile(NULL),
-    fApps(NULL), pRun(NULL)
+    fDebug(1), fFile(NULL), pOutFile(NULL),
+    nEvent(50000), nCounter(1), 
+    fApps(NULL), pRun(NULL), pOutput(NULL)
 {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
@@ -48,6 +52,8 @@ G2PSim::~G2PSim()
         fApps->Remove(aobj);
         aobj->Delete();
     }
+
+    if (pOutput) delete pOutput;
 }
 
 void G2PSim::SetSeed(int n)
@@ -92,12 +98,20 @@ int G2PSim::Begin()
         if (aobj->Begin()!=0) return -1;
     }
 
+    fFile = new TFile(pOutFile, "RECREATE");
+
+    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
+
+    pOutput = new G2POutput();
+    if (pOutput->Init()!=0) return -1;
+
     return 0;
 }
 
 int G2PSim::End()
 {
-    // Nothing to do
+    pOutput->End();
+    fFile->Close();
 
     return 0;
 }
@@ -105,6 +119,8 @@ int G2PSim::End()
 void G2PSim::Run()
 {
     static const char* const here = "Run()";
+
+    fFile->cd();
 
     if (Init()!=0) {
         Error(here, "Cannot initialize, program will stop.");
@@ -120,6 +136,7 @@ void G2PSim::Run()
         if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
         pRun->Clear();
         if (pRun->Process()!=0) break;
+        pOutput->Process();
         if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);
         nCounter++;
     }

@@ -9,8 +9,8 @@
 #pragma link C++ global gG2PVars;
 
 #pragma link C++ class G2PRand+;
-#pragma link C++ class G2PVar;
-#pragma link C++ class G2PVarList;
+#pragma link C++ class G2PVar+;
+#pragma link C++ class G2PVarList+;
 #pragma link C++ class G2PAppBase+;
 #pragma link C++ class G2PBPM+;
 #pragma link C++ class G2PDrift+;
@@ -34,6 +34,7 @@
 #pragma link C++ class G2PPhyProc+;
 #pragma link C++ class G2PRunBase+;
 #pragma link C++ class G2PRun+;
+#pragma link C++ class G2POutput+;
 #pragma link C++ class G2PSim+;
 
 #endif

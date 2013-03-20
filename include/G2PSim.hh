@@ -10,8 +10,10 @@
 
 #include "TObject.h"
 
+class TFile;
 class TList;
 class G2PRunBase;
+class G2POutput;
 
 class G2PSim : public TObject
 {
@@ -34,17 +36,18 @@ public:
     static G2PSim* GetInstance() { return pG2PSim; }
 
 protected:
+    int fDebug;
+
+    TFile* fFile;
+    const char* pOutFile;
+
     int nEvent;
     int nCounter;
 
-    int fDebug;
-
-    // TFile* pFile;
-    const char* pOutFile;
-    // TTree* pTree;
-
     TList* fApps;
     G2PRunBase* pRun;
+
+    G2POutput* pOutput;
 
 private:
     static G2PSim* pG2PSim;
