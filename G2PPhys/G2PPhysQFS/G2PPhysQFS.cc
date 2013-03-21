@@ -25,8 +25,8 @@ static double QFS(int Z, int A, double Ei, double Ef, double theta, double EPS, 
     return XS;
 }
 
-G2PPhysQFS::G2PPhysQFS()
-    :fEPS(10.0), fEPSD(-10.0), fFP(220.0), fTb(0.0), fTa(0.0)
+G2PPhysQFS::G2PPhysQFS() :
+    fEPS(10.0), fEPSD(-10.0), fFP(220.0), fTb(0.0), fTa(0.0)
 {
     // Nothing to do
 }

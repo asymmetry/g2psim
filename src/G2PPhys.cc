@@ -6,6 +6,7 @@
 #include "TError.h"
 
 #include "G2PPhysBase.hh"
+#include "G2PPhysPB/G2PPhysPB.hh"
 #include "G2PPhysQFS/G2PPhysQFS.hh"
 
 #include "G2PAppBase.hh"
@@ -37,6 +38,7 @@ G2PPhys::G2PPhys(const char *model) :
     pG2PPhys = this;
 
     map<string, int> model_map;
+    model_map["pbosted"] = 11;
     model_map["qfs"] = 12;
 
     iSetting = model_map[model];
@@ -54,6 +56,9 @@ int G2PPhys::Init()
     if (G2PAppBase::Init()!=0) return fStatus;
 
     switch (iSetting) {
+    case 11:
+        pModel = new G2PPhysPB();
+        break;
     case 12:
         pModel = new G2PPhysQFS();
         break;
