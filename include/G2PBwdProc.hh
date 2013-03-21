@@ -33,6 +33,7 @@ protected:
     double fFieldRatio;
 
     double fV5bpm_bpm[5];
+    double fV5projtg_tr[5];
 
     double fV5fp_tr[5];
 

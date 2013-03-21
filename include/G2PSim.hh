@@ -25,6 +25,7 @@ public:
     void SetSeed(int n);
     void SetDebug(int n) { fDebug = n; }
     void SetOutFile(const char* name) { pOutFile = name; }
+    void SetRun(G2PRunBase* run) { pRun = run; }
 
     int Init();
     int Begin();

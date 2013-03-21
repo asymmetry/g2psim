@@ -32,15 +32,13 @@ G2PRun::~G2PRun()
 
 int G2PRun::Init()
 {
-    //static const char* const here = "Init()";
-
-    if (G2PRunBase::Init()!=0) return fStatus;
+    static const char* const here = "Init()";
 
     // Notice: the order is important
-    fProcs->Add(new G2PGunProc);
-    fProcs->Add(new G2PFwdProc);
-    fProcs->Add(new G2PBwdProc);
-    fProcs->Add(new G2PPhyProc);
+    fProcs->Add(new G2PGunProc());
+    fProcs->Add(new G2PFwdProc());
+    fProcs->Add(new G2PBwdProc());
+    fProcs->Add(new G2PPhyProc());
 
     vector<const char*> gunreqs; gunreqs.clear();
     fProcReqs.push_back(gunreqs);
@@ -51,6 +49,7 @@ int G2PRun::Init()
 
     vector<const char*> bwdreqs; bwdreqs.clear();
     bwdreqs.push_back("fV5bpm_bpm");
+    bwdreqs.push_back("fV5projtg_tr");
     bwdreqs.push_back("fV5fp_tr");
     fProcReqs.push_back(bwdreqs);
 
@@ -61,13 +60,9 @@ int G2PRun::Init()
     phyreqs.push_back("fV5rec_tr");
     fProcReqs.push_back(phyreqs);
 
-    EStatus status = kOK;
-    TIter next(fProcs);
-    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
-        if (aobj->Init()!=0) status = kINITERROR;
-    }
+    if (G2PRunBase::Init()!=0) return fStatus;
 
-    return (fStatus = status);
+    return (fStatus = kOK);
 }
 
 // int G2PRun::RunSim()

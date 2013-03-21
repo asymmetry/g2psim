@@ -87,6 +87,7 @@ int G2PBwdProc::Begin()
     else fFieldRatio = 0.0;
 
     mName["fV5bpm_bpm"] = fV5bpm_bpm; mLength["fV5bpm_bpm"] = 5;
+    mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
     mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
     mName["fV5rectg_tr"] = fV5rectg_tr; mLength["fV5rectg_tr"] = 5;
     mName["fV5recsiv_tr"] = fV5recsiv_tr; mLength["fV5recsiv_tr"] = 5;
@@ -146,6 +147,7 @@ int G2PBwdProc::Process()
 void G2PBwdProc::Clear()
 {
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
+    memset(fV5projtg_tr, 0, sizeof(fV5projtg_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5rectg_tr, 0, sizeof(fV5rectg_tr));
     memset(fV5recsiv_tr, 0, sizeof(fV5recsiv_tr));

@@ -197,22 +197,22 @@ void PlotRecError()
     c100->cd(1);
     TH1F* h1001 = new TH1F("h1001", "Delta (x 10e-4)", 100, dplowlimit/10.0*10000, dphilimit/10.0*10000);
 
-    T->Draw("(Deltarec-Delta)*10000>>h1001","IsGood");
+    T->Draw("(bwd.rec.d-gun.react.d)*10000>>h1001","fwd.isgood");
 
     c100->cd(2);
     TH1F* h1002 = new TH1F("h1002", "T (mrad)", 100, thlowlimit/5.0*1000, thhilimit/5.0*1000);
 
-    T->Draw("(Trec_tr-Treact_tr)*1000>>h1002","IsGood");
+    T->Draw("(bwd.rec.t-gun.react.t)*1000>>h1002","fwd.isgood");
 
     c100->cd(3);
     TH1F* h1003 = new TH1F("h1003", "Y (mm)", 100, ylowlimit/2.0*1000, yhilimit/2.0*1000);
 
-    T->Draw("(Yrec_tr-Yreact_tr)*1000>>h1003","IsGood");
+    T->Draw("(bwd.rec.y-gun.react.y)*1000>>h1003","fwd.isgood");
 
     c100->cd(4);
     TH1F* h1004 = new TH1F("h1004", "P (mrad)", 100, phlowlimit/10.0*1000, phhilimit/10.0*1000);
 
-    T->Draw("(Prec_tr-Preact_tr)*1000>>h1004","IsGood");
+    T->Draw("(bwd.rec.p-gun.react.p)*1000>>h1004","fwd.isgood");
 
     c100->Update();
 }
@@ -224,7 +224,7 @@ void PlotXRecError()
 
     h2971->SetXTitle("(Xeff-Xreal)/mm");
 
-    T->Draw("(Xeff_tr-Xreal_tr)*1000>>h2971","IsGood");
+    T->Draw("(bwd.rectg.x-fwd.projtg.x)*1000>>h2971","fwd.isgood");
 }
 
 void PlotSNAKERecError()

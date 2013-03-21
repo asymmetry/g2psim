@@ -43,18 +43,25 @@ G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const v
     switch (type) {
     case kChar:
         ptr = new G2PVar(name, descript, static_cast<const char*>(var));
+        break;
     case kInt:
         ptr = new G2PVar(name, descript, static_cast<const int*>(var));
+        break;
     case kShort:
         ptr = new G2PVar(name, descript, static_cast<const short*>(var));
+        break;
     case kLong:
         ptr = new G2PVar(name, descript, static_cast<const long*>(var));
+        break;
     case kFloat:
         ptr = new G2PVar(name, descript, static_cast<const float*>(var));
+        break;
     case kDouble:
         ptr = new G2PVar(name, descript, static_cast<const double*>(var));
+        break;
     case kBool:
         ptr = new G2PVar(name, descript, static_cast<const bool*>(var));
+        break;
     }
 
     if (ptr)
@@ -75,8 +82,7 @@ int G2PVarList::DefineVariables(const VarDef* list, const char* prefix)
         const char* description = item->desc;
         if (!description||!*description) description = item->name;
         G2PVar* var = DefineByType(Form("%s%s", prefix, item->name), description, item->loc, item->type);
-        if (var)
-            ndef++;
+        if (var) ndef++;
         item++;
     }
 

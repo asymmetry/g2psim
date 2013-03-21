@@ -24,7 +24,7 @@
 
 TList* gG2PApps = new TList();
 G2PRunBase* gG2PRun = NULL;
-G2PVarList* gG2PVars = NULL;
+G2PVarList* gG2PVars = new G2PVarList();
 
 G2PSim* G2PSim::pG2PSim = NULL;
 
@@ -65,8 +65,8 @@ int G2PSim::Init()
 {
     static const char* const here = "Init()";
 
-    pRun = G2PRunBase::GetInstance();
     gG2PRun = pRun;
+    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
 
     TIter next(fApps);
     while (TObject* obj = next()) {
@@ -86,6 +86,11 @@ int G2PSim::Init()
 
     if (pRun->Init()!=0) return -1;
 
+    fFile = new TFile(pOutFile, "RECREATE");
+
+    pOutput = new G2POutput();
+    if (pOutput->Init()!=0) return -1;
+
     if (fDebug>0) Info(here, "Initialize done!");
 
     return 0;
@@ -93,23 +98,26 @@ int G2PSim::Init()
 
 int G2PSim::Begin()
 {
+    static const char* const here = "Begin()";
+
+    if (fDebug>0) Info(here, "Beginning ......");
+    
     TIter next(fApps);
     while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
         if (aobj->Begin()!=0) return -1;
     }
 
-    fFile = new TFile(pOutFile, "RECREATE");
-
-    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
-
-    pOutput = new G2POutput();
-    if (pOutput->Init()!=0) return -1;
+    if (pRun->Begin()!=0) return -1;
 
     return 0;
 }
 
 int G2PSim::End()
 {
+    static const char* const here = "End()";
+
+    if (fDebug>0) Info(here, "Cleaning ......");
+    
     pOutput->End();
     fFile->Close();
 
@@ -120,8 +128,6 @@ void G2PSim::Run()
 {
     static const char* const here = "Run()";
 
-    fFile->cd();
-
     if (Init()!=0) {
         Error(here, "Cannot initialize, program will stop.");
         return;
@@ -131,6 +137,8 @@ void G2PSim::Run()
         Error(here, "Critical error, program will stop.");
         return;
     }
+
+    fFile->cd();
 
     while (nCounter<=nEvent) {
         if (fDebug>1) Info(here, "Processing event %d ...", nCounter);

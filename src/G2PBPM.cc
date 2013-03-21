@@ -109,32 +109,32 @@ void G2PBPM::SetBPM()
     int orbit;
     if (fabs(fFieldRatio-0.5)<1e-8) {
         if (fabs(fBeamEnergy-2.254)<0.2) {
-            fBPMAX = 0.743197468425;
-            fBPMAY = -97.9439291505;
-            fBPMAZ = -940.46966234;
-            fBPMBX = 1.04489437383;
-            fBPMBY = -69.5218412795;
-            fBPMBZ = -676.469580767;
+            fBPMAX = 0.743197468425e-3;
+            fBPMAY = -97.9439291505e-3;
+            fBPMAZ = -940.46966234e-3;
+            fBPMBX = 1.04489437383e-3;
+            fBPMBY = -69.5218412795e-3;
+            fBPMBZ = -676.469580767e-3;
             pfGetBPMValue = &G2PBPM::GetBPMValue5;
             orbit = 5;
         }
         else if (fabs(fBeamEnergy-1.706)<0.2) {
-            fBPMAX = 0.334417934854;
-            fBPMAY = -130.742151697;
-            fBPMAZ = -943.969646821;
-            fBPMBX = 0.436195607141;
-            fBPMBY = -93.1201715402;
-            fBPMBZ = -681.069555637;
+            fBPMAX = 0.334417934854e-3;
+            fBPMAY = -130.742151697e-3;
+            fBPMAZ = -943.969646821e-3;
+            fBPMBX = 0.436195607141e-3;
+            fBPMBY = -93.1201715402e-3;
+            fBPMBZ = -681.069555637e-3;
             pfGetBPMValue = &G2PBPM::GetBPMValue4;
             orbit = 4;
         }
         else if (fabs(fBeamEnergy-1.159)<0.2) {
-            fBPMAX = 1.04109622687;
-            fBPMAY = -196.201718795;
-            fBPMAZ = -948.669889999;
-            fBPMBX = 1.24268316845;
-            fBPMBY = -143.579627734;
-            fBPMBZ = -688.370604604;
+            fBPMAX = 1.04109622687e-3;
+            fBPMAY = -196.201718795e-3;
+            fBPMAZ = -948.669889999e-3;
+            fBPMBX = 1.24268316845e-3;
+            fBPMBY = -143.579627734e-3;
+            fBPMBZ = -688.370604604e-3;
             pfGetBPMValue = &G2PBPM::GetBPMValue1;
             orbit = 1;
         }
@@ -145,22 +145,22 @@ void G2PBPM::SetBPM()
     }
     else if (fabs(fFieldRatio-1.0)<1e-8) {
         if (fabs(fBeamEnergy-2.254)<0.2) {
-            fBPMAX = 0.138592400799;
-            fBPMAY = -79.962134626;
-            fBPMAZ = -939.76959472;
-            fBPMBX = 0.442605162088;
-            fBPMBY = -55.6342835205;
-            fBPMBZ = -675.269596904;
+            fBPMAX = 0.138592400799e-3;
+            fBPMAY = -79.962134626e-3;
+            fBPMAZ = -939.76959472e-3;
+            fBPMBX = 0.442605162088e-3;
+            fBPMBY = -55.6342835205e-3;
+            fBPMBZ = -675.269596904e-3;
             pfGetBPMValue = &G2PBPM::GetBPMValue7;
             orbit = 7;
         }
         else if (fabs(fBeamEnergy-3.355)<0.2) {
-            fBPMAX = 0.0609719900963;
-            fBPMAY = -53.5499078644;
-            fBPMAZ = -939.169701771;
-            fBPMBX = 0.662453421257;
-            fBPMBY = -37.0276045709;
-            fBPMBZ = -674.16965108;
+            fBPMAX = 0.0609719900963e-3;
+            fBPMAY = -53.5499078644e-3;
+            fBPMAZ = -939.169701771e-3;
+            fBPMBX = 0.662453421257e-3;
+            fBPMBY = -37.0276045709e-3;
+            fBPMBZ = -674.16965108e-3;
             pfGetBPMValue = &G2PBPM::GetBPMValue9;
             orbit = 9;
         }

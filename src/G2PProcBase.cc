@@ -72,7 +72,7 @@ int G2PProcBase::SetValue(const char* name, double* value)
 
 int G2PProcBase::GetValue(const char* name, double* value)
 {
-    if (mName.find(name)!=mName.end()) return -1;
+    if (mName.find(name)==mName.end()) return -1;
 
     return ArrayCopy(value, mName[name], mLength[name]);
 }

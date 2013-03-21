@@ -1,5 +1,6 @@
 #include "TROOT.h"
 #include "TNamed.h"
+#include "TError.h"
 
 #include "G2PVarDef.hh"
 
@@ -46,7 +47,7 @@ double G2PVar::GetValue() const
     case kFloat:
         return static_cast<double>(*fValueF);
     case kDouble:
-        return *fValueD;
+        return static_cast<double>(*fValueD);
     case kBool:
         return static_cast<double>(*fValueB);
     }

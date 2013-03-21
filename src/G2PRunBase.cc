@@ -12,7 +12,6 @@
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PGunBase.hh"
-#include "G2PPointGun.hh"
 #include "G2PProcBase.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PPhys.hh"
@@ -40,6 +39,7 @@ G2PRunBase::G2PRunBase() :
     }
     pG2PRunBase = this;
 
+    fProcs = new TList();
     fProcReqs.clear();
 }
 
@@ -60,6 +60,13 @@ int G2PRunBase::Init()
     static const char* const here = "Init()";
 
     Info(here, "Initializing ...");
+
+    EStatus status = kOK;
+    TIter next(fProcs);
+    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
+        aobj->SetDebug(fDebug);
+        if (aobj->Init()!=0) status = kINITERROR;
+    }
 
     return (fStatus = kOK);
 }

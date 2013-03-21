@@ -12,20 +12,21 @@ int Run()
     //gun->SetOpticsData(true);
     //gun->SetBeamX(4.134e-3);     // 0T,6deg
     //gun->SetBeamY(1.176e-3);     // 0T,6deg
-    //gun->SetBeamY(3e-3);
-    //gun->SetReactZ(0.0);
+    //gun->SetBeamX(0.0);
+    //gun->SetBeamY(0.0);
+    gun->SetReactZ(0.0);
     //gun->SetReactZ(-13.6271e-3); // 40mil
     //gun->SetReactZ(-12.5476e-3); // 125mil
     //gun->SetReactZRange(-14.1350e-3,-13.1191e-3); //40mil
     //gun->SetReactZRange(-14.1350e-3,-10.9600e-3); //125mil
     gun->SetBeamR(15.0e-3);
-    gun->SetReactZRange(-14.135e-3, 14.135e-3);
-    //gun->SetTargetTh(-0.005);
-    gun->SetTargetThRange(-20e-3,20e-3);
-    //gun->SetTargetPh(-0.005);
-    gun->SetTargetPhRange(-20e-3,20e-3);
-    //gun->SetDelta(0.0);
-    gun->SetDeltaRange(-0.02, 0.02);
+    //gun->SetReactZRange(-14.135e-3, 14.135e-3);
+    //gun->SetTargetTh(2.793e-02);
+    gun->SetTargetThRange(-75.0e-3,-55.0e-3);
+    //gun->SetTargetPh(-3.582e-03);
+    gun->SetTargetPhRange(-10.0e-3,10.0e-3);
+    //gun->SetDelta(-2.128e-03);
+    gun->SetDeltaRange(-0.04, 0.04);
     //gun->SetSigmaPosLab(0.0e-3);
     //gun->SetSigmaAngLab(0.0e-3);
     //gun->SetSigmaAngTr(0.0e-3);
@@ -34,15 +35,19 @@ int Run()
 
     G2PHRSTrans* hrs = new G2PHRSTrans("484816");
     gG2PApps->Add(hrs);
+    G2PRecUseDB* rec = new G2PRecUseDB();
+    gG2PApps->Add(rec);
 
     G2PHallBField* field = new G2PHallBField();
     field->SetEulerAngle(90, 90, -90); // transverse, g2p
     //field->SetEulerAngle(90, 6, -90);  // 6 deg, gep
     field->SetRatio(0.5);
     gG2PApps->Add(field);
+    G2PDrift* drift = new G2PDrift();
+    gG2PApps->Add(drift);
 
     G2PBPM* bpm = new G2PBPM();
-    bpm->SetBPMRes(0.0e-3, 0.0e-3);
+    bpm->SetBPMRes(0.2e-3, 0.2e-3);
     gG2PApps->Add(bpm);
 
     G2PPhys* model = new G2PPhys("qfs");
@@ -50,7 +55,8 @@ int Run()
 
     G2PRun* run = new G2PRun();
     run->SetHRSAngle(5.65*3.14159265358979323846/180.0);
-    run->SetHRSMomentum(2.249497);
+    //run->SetHRSMomentum(2.249497);
+    run->SetHRSMomentum(1.5);
     run->SetBeamEnergy(2.253207);
     run->SetTarget(6, 12);
     run->SetTargetMass(12.0107*0.931494028);
@@ -58,39 +64,22 @@ int Run()
     run->SetParticlePID(11);
     run->SetParticleMass(0.51099892811e-3);
     run->SetParticleCharge(-1.60217656535e-19);
-    gG2PApps->Add(run);
+    //run->SetUseEffBPM(true);
 
     G2PSim *sim = new G2PSim();
-    int N = 20000;
+    int N = 50000;
     sim->SetNEvent(N);
     sim->SetSeed(1);
     sim->SetDebug(1);
-    sim->SetOutFileName("result_test.root");
+    //sim->SetOutFile("run1019_flat_484816.root");
+    sim->SetOutFile("run_test.root");
+    sim->SetRun(run);
 
     clock_t start = clock();
     sim->Run();
     clock_t end = clock();
 #define CLOCKS_PER_SEC 1000000
-    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/N); 
-    
-
-//     // Test Drift
-//     G2PTargetField *field = new G2PTargetField("hallb");
-//     field->SetEulerAngle(90,90,-90);
-//     field->SetRatio(0.5);
-//     G2PDrift::SetField(field);
-//     double x[3] = { 0.0, 0.0, 0.0 };
-//     double p[3] = { 0.0, 0.0, 2.0 };
-//     clock_t start = clock();
-//     for (int i=0; i<1; i++) {
-//         x[0] = 0.0; x[1] = 0.0; x[2] = 0.0;
-//         p[0] = 0.0; p[1] = 0.0; p[2] = 2.0;
-//         G2PDrift::Drift(x, p, 0.8, 10.0, x, p);
-//         //printf("%e\t%e\t%e\t%e\t%e\t%e\n", x[0], x[1], x[2], p[0], p[1], p[2]);
-//     }
-//     clock_t end = clock();
-// #define CLOCKS_PER_SEC 1000000
-//     //printf("%f\t%f\t%f\n", (double)start, (double)end, (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/20000.0);
+    printf("Average calcualtion time for one event: %8.4f ms\n", (double)(end-start)*1000.0/(double)CLOCKS_PER_SEC/N);
     
     return 0;
 }

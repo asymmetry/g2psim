@@ -22,7 +22,7 @@ double ylowlimit  = -0.01, yhilimit  = 0.01;
 double bxlowlimit  = -0.01, bxhilimit  = 0.01;
 double bylowlimit  = -0.01, byhilimit  = 0.01;
 
-bool IsGood;
+double IsGood;
 double Delta, Deltarec;
 double Thetainit, Thetarec;
 double Xfp, Yfp, Tfp, Pfp;
@@ -41,7 +41,7 @@ void PlotDelta()
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
         //if (IsGood&&TMath::Abs(Tfp)<0.05&&TMath::Abs(Pfp-1e-3)<0.01) {
-        if (IsGood) {
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
             h1101->Fill(Delta, XSinit);
         }
     }
@@ -57,7 +57,7 @@ void PlotDelta()
 
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
-        if (IsGood) {
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
             h1102->Fill(Deltarec, XSrec);
         }
     }
@@ -80,7 +80,7 @@ void PlotTheta()
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
         //if (IsGood&&TMath::Abs(Tfp)<0.05&&TMath::Abs(Pfp-1e-3)<0.01) {
-        if (IsGood) {
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
             h1111->Fill(Thetainit, XSinit);
         }
     }
@@ -96,7 +96,7 @@ void PlotTheta()
 
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
-        if (IsGood) {
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
             h1112->Fill(Thetarec, XSrec);
         }
     }
@@ -111,17 +111,17 @@ void LoadTree(const char* filename = "test.root"){
     f = new TFile(filename);
     T = (TTree *)f->Get("T");
 
-    T->SetBranchAddress("IsGood", &IsGood);
-    T->SetBranchAddress("Delta", &Delta);
-    T->SetBranchAddress("Deltarec", &Deltarec);
-    T->SetBranchAddress("XSinit", &XSinit);
-    T->SetBranchAddress("XSrec", &XSrec);
-    T->SetBranchAddress("Xfp_rot", &Xfp);
-    T->SetBranchAddress("Yfp_rot", &Yfp);
-    T->SetBranchAddress("Tfp_rot", &Tfp);
-    T->SetBranchAddress("Pfp_rot", &Pfp);
-    T->SetBranchAddress("Thetainit", &Thetainit);
-    T->SetBranchAddress("Thetarec", &Thetarec);
+    T->SetBranchAddress("fwd.isgood", &IsGood);
+    T->SetBranchAddress("gun.react.d", &Delta);
+    T->SetBranchAddress("bwd.rec.d", &Deltarec);
+    T->SetBranchAddress("phy.react.xs", &XSinit);
+    T->SetBranchAddress("phy.rec.xs", &XSrec);
+    T->SetBranchAddress("fwd.focus.r_x", &Xfp);
+    T->SetBranchAddress("fwd.focus.r_y", &Yfp);
+    T->SetBranchAddress("fwd.focus.r_t", &Tfp);
+    T->SetBranchAddress("fwd.focus.r_p", &Pfp);
+    T->SetBranchAddress("phy.react.angle", &Thetainit);
+    T->SetBranchAddress("phy.rec.angle", &Thetarec);
 
     gStyle->SetStatH(0.3);
     gStyle->SetStatW(0.25);
