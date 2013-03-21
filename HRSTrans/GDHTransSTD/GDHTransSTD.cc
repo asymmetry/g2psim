@@ -377,14 +377,14 @@ void GDHTransSTD::ReconLeftHRS(double *pV5)
 	for(int i=0;i<5;i++) vector_jjl[i]=pV5[i];
 	/* Orthogonalize theta as JJL asks*/
 	//float tt2   = vector_jjl[1] - r6_txfit_(vector_jjl,&jj);
-	//It turns out that l6_txfit_ has bugs 
-	vector_jjl[1]   = vector_jjl[1] - l6_txfit_(vector_jjl,&jj);
-	//vector_jjl[1]   = vector_jjl[1] - L6_txfit(vector_jjl,&jj);
+	//It turns out that sl6_txfit_ has bugs 
+	vector_jjl[1]   = vector_jjl[1] - sl6_txfit_(vector_jjl,&jj);
+	//vector_jjl[1]   = vector_jjl[1] - SL6_txfit(vector_jjl,&jj);
 	float x_or      = vector_jjl[4];
-	float delta_rec = l6_delta_(vector_jjl,&ii);
-	float theta_rec = l6_theta_(vector_jjl,&ii);
-	float phi_rec   = l6_phi_(vector_jjl,&ii);
-	float y_rec     = l6_y00_(vector_jjl,&ii);
+	float delta_rec = sl6_delta_(vector_jjl,&ii);
+	float theta_rec = sl6_theta_(vector_jjl,&ii);
+	float phi_rec   = sl6_phi_(vector_jjl,&ii);
+	float y_rec     = sl6_y00_(vector_jjl,&ii);
 
 	//reset the vector and return it back to the caller
 	pV5[0] = (double)x_or;

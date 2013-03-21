@@ -293,7 +293,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_ep3    (x,m)
+      function sl_sr6_largex0_ep3    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 22)
@@ -346,7 +346,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_ep3    =avdat
+      sl_sr6_largex0_ep3    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -355,7 +355,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)    *x21            
-      l_sr6_largex0_ep3    =l_sr6_largex0_ep3    
+      sl_sr6_largex0_ep3    =sl_sr6_largex0_ep3    
      9  +coeff(  9)    *x22    *x41    
      1  +coeff( 10)        *x32*x41    
      2  +coeff( 11)*x12            *x51
@@ -365,7 +365,7 @@ c
      6  +coeff( 15)*x11*x22    *x41    
      7  +coeff( 16)*x11*x21        *x52
      8  +coeff( 17)    *x22*x32*x41    
-      l_sr6_largex0_ep3    =l_sr6_largex0_ep3    
+      sl_sr6_largex0_ep3    =sl_sr6_largex0_ep3    
      9  +coeff( 18)    *x22*x32    *x51
      1  +coeff( 19)    *x22*x33    *x51
      2  +coeff( 20)    *x23    *x42*x51
@@ -789,7 +789,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_ep4    (x,m)
+      function sl_sr6_largex0_ep4    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 19)
@@ -840,7 +840,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_ep4    =avdat
+      sl_sr6_largex0_ep4    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -849,7 +849,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)    *x21            
-      l_sr6_largex0_ep4    =l_sr6_largex0_ep4    
+      sl_sr6_largex0_ep4    =sl_sr6_largex0_ep4    
      9  +coeff(  9)                *x51
      1  +coeff( 10)    *x22    *x41    
      2  +coeff( 11)    *x22*x33        
@@ -859,7 +859,7 @@ c
      6  +coeff( 15)    *x22*x31*x41    
      7  +coeff( 16)*x11*x23            
      8  +coeff( 17)*x11*x23*x31        
-      l_sr6_largex0_ep4    =l_sr6_largex0_ep4    
+      sl_sr6_largex0_ep4    =sl_sr6_largex0_ep4    
      9  +coeff( 18)*x12        *x42*x51
 c
       return
@@ -1283,7 +1283,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_ep5    (x,m)
+      function sl_sr6_largex0_ep5    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 25)
@@ -1334,7 +1334,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_ep5    =avdat
+      sl_sr6_largex0_ep5    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)        *x31        
@@ -1343,7 +1343,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)                *x51
-      l_sr6_largex0_ep5    =l_sr6_largex0_ep5    
+      sl_sr6_largex0_ep5    =sl_sr6_largex0_ep5    
      9  +coeff(  9)            *x41*x51
      1  +coeff( 10)*x11*x21            
      2  +coeff( 11)    *x22    *x41    
@@ -1353,7 +1353,7 @@ c
      6  +coeff( 15)    *x22    *x42    
      7  +coeff( 16)        *x32        
      8  +coeff( 17)        *x31*x42    
-      l_sr6_largex0_ep5    =l_sr6_largex0_ep5    
+      sl_sr6_largex0_ep5    =sl_sr6_largex0_ep5    
      9  +coeff( 18)            *x43    
      1  +coeff( 19)*x11*x21*x31        
      2  +coeff( 20)    *x22*x32        
@@ -1799,7 +1799,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_ep6    (x,m)
+      function sl_sr6_largex0_ep6    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -1853,7 +1853,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_ep6    =avdat
+      sl_sr6_largex0_ep6    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)        *x31        
@@ -1862,7 +1862,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)                *x51
-      l_sr6_largex0_ep6    =l_sr6_largex0_ep6    
+      sl_sr6_largex0_ep6    =sl_sr6_largex0_ep6    
      9  +coeff(  9)            *x41*x51
      1  +coeff( 10)*x11*x21            
      2  +coeff( 11)    *x22    *x41    
@@ -1872,7 +1872,7 @@ c
      6  +coeff( 15)*x11*x21    *x41    
      7  +coeff( 16)    *x22*x31*x41    
      8  +coeff( 17)    *x22    *x43    
-      l_sr6_largex0_ep6    =l_sr6_largex0_ep6    
+      sl_sr6_largex0_ep6    =sl_sr6_largex0_ep6    
      9  +coeff( 18)    *x22*x33*x42    
      1  +coeff( 19)        *x31*x42    
      2  +coeff( 20)    *x22*x32        
@@ -1882,7 +1882,7 @@ c
      6  +coeff( 24)    *x22*x32*x41    
      7  +coeff( 25)    *x22*x31*x42    
      8  +coeff( 26)*x11*x23*x31        
-      l_sr6_largex0_ep6    =l_sr6_largex0_ep6    
+      sl_sr6_largex0_ep6    =sl_sr6_largex0_ep6    
      9  +coeff( 27)    *x22*x31*x43    
      1  +coeff( 28)*x11*x23*x32        
      2  +coeff( 29)*x11*x21*x31        
@@ -2338,7 +2338,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_ep7    (x,m)
+      function sl_sr6_largex0_ep7    (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -2393,7 +2393,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_ep7    =avdat
+      sl_sr6_largex0_ep7    =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -2402,7 +2402,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)*x11*x21            
-      l_sr6_largex0_ep7    =l_sr6_largex0_ep7    
+      sl_sr6_largex0_ep7    =sl_sr6_largex0_ep7    
      9  +coeff(  9)        *x32        
      1  +coeff( 10)            *x41*x51
      2  +coeff( 11)    *x22    *x41    
@@ -2412,7 +2412,7 @@ c
      6  +coeff( 15)    *x22    *x43    
      7  +coeff( 16)    *x22*x31        
      8  +coeff( 17)        *x31*x42    
-      l_sr6_largex0_ep7    =l_sr6_largex0_ep7    
+      sl_sr6_largex0_ep7    =sl_sr6_largex0_ep7    
      9  +coeff( 18)*x11*x21    *x41    
      1  +coeff( 19)    *x22*x32        
      2  +coeff( 20)        *x31*x43    
@@ -2422,7 +2422,7 @@ c
      6  +coeff( 24)*x11*x23*x31        
      7  +coeff( 25)    *x22*x31*x43    
      8  +coeff( 26)                *x52
-      l_sr6_largex0_ep7    =l_sr6_largex0_ep7    
+      sl_sr6_largex0_ep7    =sl_sr6_largex0_ep7    
      9  +coeff( 27)        *x32*x41    
      1  +coeff( 28)*x11*x21*x31        
      2  +coeff( 29)        *x31*x42*x51
@@ -2913,7 +2913,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_q1ex   (x,m)
+      function sl_sr6_largex0_q1ex   (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -2969,7 +2969,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_q1ex   =avdat
+      sl_sr6_largex0_q1ex   =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -2978,7 +2978,7 @@ c
      6  +coeff(  6)            *x42    
      7  +coeff(  7)        *x31    *x51
      8  +coeff(  8)            *x41*x51
-      l_sr6_largex0_q1ex   =l_sr6_largex0_q1ex   
+      sl_sr6_largex0_q1ex   =sl_sr6_largex0_q1ex   
      9  +coeff(  9)    *x22    *x41    
      1  +coeff( 10)    *x22    *x42    
      2  +coeff( 11)*x11*x23    *x43    
@@ -2988,7 +2988,7 @@ c
      6  +coeff( 15)    *x22    *x43    
      7  +coeff( 16)    *x22*x33*x42    
      8  +coeff( 17)*x11*x23*x33*x42    
-      l_sr6_largex0_q1ex   =l_sr6_largex0_q1ex   
+      sl_sr6_largex0_q1ex   =sl_sr6_largex0_q1ex   
      9  +coeff( 18)    *x21            
      1  +coeff( 19)                *x51
      2  +coeff( 20)                *x52
@@ -2998,7 +2998,7 @@ c
      6  +coeff( 24)        *x32*x42    
      7  +coeff( 25)    *x22    *x41*x51
      8  +coeff( 26)    *x22*x32*x41    
-      l_sr6_largex0_q1ex   =l_sr6_largex0_q1ex   
+      sl_sr6_largex0_q1ex   =sl_sr6_largex0_q1ex   
      9  +coeff( 27)    *x22*x31*x42    
      1  +coeff( 28)    *x22    *x42*x51
      2  +coeff( 29)        *x31*x41*x53
@@ -3486,7 +3486,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_dent   (x,m)
+      function sl_sr6_largex0_dent   (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 30)
@@ -3539,7 +3539,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_dent   =avdat
+      sl_sr6_largex0_dent   =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)*x11                
@@ -3548,7 +3548,7 @@ c
      6  +coeff(  6)    *x21        *x51
      7  +coeff(  7)            *x41    
      8  +coeff(  8)    *x21*x31        
-      l_sr6_largex0_dent   =l_sr6_largex0_dent   
+      sl_sr6_largex0_dent   =sl_sr6_largex0_dent   
      9  +coeff(  9)            *x42    
      1  +coeff( 10)    *x21    *x42    
      2  +coeff( 11)    *x23*x31*x41    
@@ -3558,7 +3558,7 @@ c
      6  +coeff( 15)    *x23            
      7  +coeff( 16)    *x21*x31*x41    
      8  +coeff( 17)    *x21    *x43    
-      l_sr6_largex0_dent   =l_sr6_largex0_dent   
+      sl_sr6_largex0_dent   =sl_sr6_largex0_dent   
      9  +coeff( 18)    *x23*x32        
      1  +coeff( 19)    *x23*x31*x42    
      2  +coeff( 20)    *x23    *x43    
@@ -3568,7 +3568,7 @@ c
      6  +coeff( 24)    *x21    *x41*x51
      7  +coeff( 25)*x11        *x42    
      8  +coeff( 26)    *x23*x31        
-      l_sr6_largex0_dent   =l_sr6_largex0_dent   
+      sl_sr6_largex0_dent   =sl_sr6_largex0_dent   
      9  +coeff( 27)    *x21*x32*x41    
      1  +coeff( 28)    *x21*x31*x42    
      2  +coeff( 29)*x11*x22*x31        
@@ -4171,7 +4171,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_dext   (x,m)
+      function sl_sr6_largex0_dext   (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 91)
@@ -4243,7 +4243,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_dext   =avdat
+      sl_sr6_largex0_dext   =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -4252,7 +4252,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21        *x51
      8  +coeff(  8)    *x21    *x42    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff(  9)    *x23*x31*x41    
      1  +coeff( 10)    *x21*x31        
      2  +coeff( 11)    *x21*x31*x41    
@@ -4262,7 +4262,7 @@ c
      6  +coeff( 15)    *x21*x32        
      7  +coeff( 16)    *x21    *x41*x51
      8  +coeff( 17)    *x21*x31*x42    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 18)    *x21    *x43    
      1  +coeff( 19)    *x23*x32*x41    
      2  +coeff( 20)        *x31        
@@ -4272,7 +4272,7 @@ c
      6  +coeff( 24)*x11*x22*x31        
      7  +coeff( 25)*x11*x22    *x42    
      8  +coeff( 26)*x11*x22*x33*x41    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 27)        *x31*x41    
      1  +coeff( 28)            *x42    
      2  +coeff( 29)                *x52
@@ -4282,7 +4282,7 @@ c
      6  +coeff( 33)*x11        *x42    
      7  +coeff( 34)    *x21*x33        
      8  +coeff( 35)    *x22    *x42    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 36)    *x21    *x42*x51
      1  +coeff( 37)    *x21*x31*x43    
      2  +coeff( 38)*x11*x22*x32        
@@ -4292,7 +4292,7 @@ c
      6  +coeff( 42)    *x22*x31        
      7  +coeff( 43)    *x22        *x51
      8  +coeff( 44)            *x42*x51
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 45)    *x21        *x52
      1  +coeff( 46)*x11*x21        *x51
      2  +coeff( 47)*x11        *x41*x51
@@ -4302,7 +4302,7 @@ c
      6  +coeff( 51)    *x21*x31*x41*x51
      7  +coeff( 52)*x11    *x31*x42    
      8  +coeff( 53)*x11        *x43    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 54)    *x21*x32*x42    
      1  +coeff( 55)    *x23    *x41*x51
      2  +coeff( 56)    *x21*x32    *x52
@@ -4312,7 +4312,7 @@ c
      6  +coeff( 60)    *x23    *x42*x51
      7  +coeff( 61)    *x22    *x43*x51
      8  +coeff( 62)        *x32*x41*x53
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 63)*x11    *x33*x42    
      1  +coeff( 64)*x12*x21*x31*x42    
      2  +coeff( 65)    *x23*x31*x43    
@@ -4322,7 +4322,7 @@ c
      6  +coeff( 69)        *x32*x43*x52
      7  +coeff( 70)*x12*x21        *x53
      8  +coeff( 71)        *x32*x42*x53
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 72)*x12*x21*x31*x43    
      1  +coeff( 73)    *x23    *x43*x52
      2  +coeff( 74)    *x21*x32*x43*x52
@@ -4332,7 +4332,7 @@ c
      6  +coeff( 78)*x12*x23    *x43*x51
      7  +coeff( 79)        *x32        
      8  +coeff( 80)            *x41*x51
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 81)    *x23            
      1  +coeff( 82)    *x21*x31    *x51
      2  +coeff( 83)*x11    *x32        
@@ -4342,7 +4342,7 @@ c
      6  +coeff( 87)            *x43*x51
      7  +coeff( 88)    *x21    *x41*x52
      8  +coeff( 89)*x11    *x32*x41    
-      l_sr6_largex0_dext   =l_sr6_largex0_dext   
+      sl_sr6_largex0_dext   =sl_sr6_largex0_dext   
      9  +coeff( 90)*x11*x21*x31    *x51
 c
       return
@@ -4943,7 +4943,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_q3en   (x,m)
+      function sl_sr6_largex0_q3en   (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 91)
@@ -5015,7 +5015,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_q3en   =avdat
+      sl_sr6_largex0_q3en   =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -5024,7 +5024,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21        *x51
      8  +coeff(  8)    *x21    *x42    
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff(  9)    *x23*x31*x41    
      1  +coeff( 10)    *x21*x31        
      2  +coeff( 11)*x11*x21            
@@ -5034,7 +5034,7 @@ c
      6  +coeff( 15)*x11            *x51
      7  +coeff( 16)    *x22*x31        
      8  +coeff( 17)    *x21*x32        
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 18)    *x21*x31*x42    
      1  +coeff( 19)    *x21    *x43    
      2  +coeff( 20)    *x23*x32*x41    
@@ -5044,7 +5044,7 @@ c
      6  +coeff( 24)    *x21    *x41*x51
      7  +coeff( 25)    *x23    *x41    
      8  +coeff( 26)    *x21*x32*x41    
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 27)*x11*x22*x31        
      1  +coeff( 28)*x11*x22    *x42    
      2  +coeff( 29)        *x31*x41    
@@ -5054,7 +5054,7 @@ c
      6  +coeff( 33)*x11    *x31*x41    
      7  +coeff( 34)*x11        *x42    
      8  +coeff( 35)    *x21*x33        
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 36)    *x22    *x42    
      1  +coeff( 37)    *x21    *x42*x51
      2  +coeff( 38)    *x21*x31*x43    
@@ -5064,7 +5064,7 @@ c
      6  +coeff( 42)    *x23    *x43    
      7  +coeff( 43)    *x21*x32*x43    
      8  +coeff( 44)    *x22    *x43*x51
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 45)*x12*x23    *x41*x51
      1  +coeff( 46)    *x21*x31    *x51
      2  +coeff( 47)            *x42*x51
@@ -5074,7 +5074,7 @@ c
      6  +coeff( 51)    *x22*x31*x41    
      7  +coeff( 52)        *x31*x43    
      8  +coeff( 53)    *x21*x31*x41*x51
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 54)*x11*x22    *x41    
      1  +coeff( 55)*x11    *x31*x42    
      2  +coeff( 56)*x11        *x43    
@@ -5084,7 +5084,7 @@ c
      6  +coeff( 60)    *x21*x32    *x52
      7  +coeff( 61)        *x31*x41*x53
      8  +coeff( 62)    *x21*x33*x42    
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 63)*x12*x21    *x41*x51
      1  +coeff( 64)    *x23    *x42*x51
      2  +coeff( 65)    *x22*x31*x42*x51
@@ -5094,7 +5094,7 @@ c
      6  +coeff( 69)*x12*x21    *x42*x51
      7  +coeff( 70)    *x23    *x42*x52
      8  +coeff( 71)    *x22*x31*x42*x52
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 72)        *x33*x42*x52
      1  +coeff( 73)*x12*x21        *x53
      2  +coeff( 74)*x11*x22    *x43*x51
@@ -5104,7 +5104,7 @@ c
      6  +coeff( 78)*x12*x21*x32*x42*x51
      7  +coeff( 79)        *x31    *x51
      8  +coeff( 80)                *x52
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 81)*x12                
      1  +coeff( 82)    *x23            
      2  +coeff( 83)        *x33        
@@ -5114,7 +5114,7 @@ c
      6  +coeff( 87)*x11    *x32        
      7  +coeff( 88)    *x22*x32        
      8  +coeff( 89)*x12        *x41    
-      l_sr6_largex0_q3en   =l_sr6_largex0_q3en   
+      sl_sr6_largex0_q3en   =sl_sr6_largex0_q3en   
      9  +coeff( 90)    *x23        *x51
 c
       return
@@ -5717,7 +5717,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_q3ex   (x,m)
+      function sl_sr6_largex0_q3ex   (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 91)
@@ -5789,7 +5789,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_q3ex   =avdat
+      sl_sr6_largex0_q3ex   =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -5798,7 +5798,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)    *x21    *x42    
      8  +coeff(  8)    *x21*x31        
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff(  9)    *x21        *x51
      1  +coeff( 10)                *x52
      2  +coeff( 11)*x11*x21            
@@ -5808,7 +5808,7 @@ c
      6  +coeff( 15)*x11            *x51
      7  +coeff( 16)    *x22*x31        
      8  +coeff( 17)    *x21*x32        
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 18)    *x21    *x41*x51
      1  +coeff( 19)    *x21*x31*x42    
      2  +coeff( 20)    *x21    *x43    
@@ -5818,7 +5818,7 @@ c
      6  +coeff( 24)    *x22    *x41    
      7  +coeff( 25)    *x23    *x41    
      8  +coeff( 26)    *x21*x32*x41    
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 27)    *x22    *x42    
      1  +coeff( 28)*x11*x22*x31        
      2  +coeff( 29)            *x42*x53
@@ -5828,7 +5828,7 @@ c
      6  +coeff( 33)        *x31*x41    
      7  +coeff( 34)            *x41*x51
      8  +coeff( 35)*x11    *x31        
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 36)    *x22        *x51
      1  +coeff( 37)*x11    *x31*x41    
      2  +coeff( 38)*x11        *x42    
@@ -5838,7 +5838,7 @@ c
      6  +coeff( 42)            *x43*x51
      7  +coeff( 43)    *x23*x31*x41    
      8  +coeff( 44)    *x21*x32*x42    
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 45)    *x22    *x43    
      1  +coeff( 46)    *x21*x31*x43    
      2  +coeff( 47)    *x23    *x41*x51
@@ -5848,7 +5848,7 @@ c
      6  +coeff( 51)*x11*x22*x31*x42*x52
      7  +coeff( 52)*x11*x23    *x43*x53
      8  +coeff( 53)        *x31    *x51
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 54)        *x31*x42    
      1  +coeff( 55)*x11        *x41*x51
      2  +coeff( 56)    *x21*x33        
@@ -5858,7 +5858,7 @@ c
      6  +coeff( 60)*x11        *x43    
      7  +coeff( 61)    *x22*x31*x42    
      8  +coeff( 62)        *x33*x42    
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 63)        *x32*x43    
      1  +coeff( 64)        *x31*x41*x53
      2  +coeff( 65)*x12*x21*x31*x41    
@@ -5868,7 +5868,7 @@ c
      6  +coeff( 69)*x11*x22*x31*x42    
      7  +coeff( 70)*x11    *x33*x42    
      8  +coeff( 71)*x12*x21    *x42*x51
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 72)    *x23    *x42*x52
      1  +coeff( 73)*x12*x21*x33*x41    
      2  +coeff( 74)    *x23*x33*x42    
@@ -5878,7 +5878,7 @@ c
      6  +coeff( 78)*x11*x22*x32*x43    
      7  +coeff( 79)*x11*x23    *x43*x51
      8  +coeff( 80)*x11*x23    *x41*x53
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 81)    *x23*x32*x42*x52
      1  +coeff( 82)*x11*x22    *x43*x53
      2  +coeff( 83)*x11*x23*x32*x43*x51
@@ -5888,7 +5888,7 @@ c
      6  +coeff( 87)    *x21*x31    *x51
      7  +coeff( 88)        *x31*x41*x51
      8  +coeff( 89)            *x42*x51
-      l_sr6_largex0_q3ex   =l_sr6_largex0_q3ex   
+      sl_sr6_largex0_q3ex   =sl_sr6_largex0_q3ex   
      9  +coeff( 90)                *x53
 c
       return
@@ -6493,7 +6493,7 @@ c
 c
       return
       end
-      function l_sr6_largex0_fp     (x,m)
+      function sl_sr6_largex0_fp     (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 91)
@@ -6565,7 +6565,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      l_sr6_largex0_fp     =avdat
+      sl_sr6_largex0_fp     =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)    *x21            
      3  +coeff(  3)                *x51
@@ -6574,7 +6574,7 @@ c
      6  +coeff(  6)    *x21    *x41    
      7  +coeff(  7)                *x52
      8  +coeff(  8)    *x21    *x42    
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff(  9)    *x23*x31*x41    
      1  +coeff( 10)    *x21*x31        
      2  +coeff( 11)*x11*x21            
@@ -6584,7 +6584,7 @@ c
      6  +coeff( 15)            *x42    
      7  +coeff( 16)    *x21        *x51
      8  +coeff( 17)*x11        *x41    
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 18)    *x21*x32        
      1  +coeff( 19)        *x33        
      2  +coeff( 20)    *x21    *x41*x51
@@ -6594,7 +6594,7 @@ c
      6  +coeff( 24)        *x31        
      7  +coeff( 25)            *x41*x51
      8  +coeff( 26)*x11    *x31        
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 27)*x11            *x51
      1  +coeff( 28)    *x22    *x41    
      2  +coeff( 29)    *x21        *x52
@@ -6604,7 +6604,7 @@ c
      6  +coeff( 33)    *x21*x32*x41    
      7  +coeff( 34)    *x22    *x42    
      8  +coeff( 35)*x11    *x33*x41    
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 36)    *x22*x33*x41    
      1  +coeff( 37)    *x21*x32*x43    
      2  +coeff( 38)        *x32        
@@ -6614,7 +6614,7 @@ c
      6  +coeff( 42)*x11    *x31*x41    
      7  +coeff( 43)    *x21*x33        
      8  +coeff( 44)    *x21    *x42*x51
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 45)*x11*x21    *x42    
      1  +coeff( 46)*x11    *x31*x42    
      2  +coeff( 47)*x11        *x43    
@@ -6624,7 +6624,7 @@ c
      6  +coeff( 51)*x11    *x33*x42    
      7  +coeff( 52)    *x21    *x43*x53
      8  +coeff( 53)        *x32    *x51
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 54)            *x42*x51
      1  +coeff( 55)*x11    *x32        
      2  +coeff( 56)*x11*x21    *x41    
@@ -6634,7 +6634,7 @@ c
      6  +coeff( 60)    *x21*x31*x41*x51
      7  +coeff( 61)            *x41*x53
      8  +coeff( 62)*x11    *x32*x41    
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 63)    *x23    *x42    
      1  +coeff( 64)    *x22    *x43    
      2  +coeff( 65)*x12            *x52
@@ -6644,7 +6644,7 @@ c
      6  +coeff( 69)*x11*x22    *x42    
      7  +coeff( 70)*x11    *x32*x42    
      8  +coeff( 71)*x11    *x31*x43    
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 72)    *x21*x33*x42    
      1  +coeff( 73)    *x23    *x43    
      2  +coeff( 74)    *x22*x32*x41*x51
@@ -6654,7 +6654,7 @@ c
      6  +coeff( 78)    *x22*x33*x42    
      7  +coeff( 79)*x12*x22*x31    *x51
      8  +coeff( 80)*x12*x22    *x41*x51
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 81)    *x22*x32*x42*x51
      1  +coeff( 82)        *x31*x43*x53
      2  +coeff( 83)*x11*x22*x32*x42    
@@ -6664,7 +6664,7 @@ c
      6  +coeff( 87)*x12*x22    *x42*x52
      7  +coeff( 88)    *x22*x32*x42*x53
      8  +coeff( 89)    *x22*x33*x42*x53
-      l_sr6_largex0_fp     =l_sr6_largex0_fp     
+      sl_sr6_largex0_fp     =sl_sr6_largex0_fp     
      9  +coeff( 90)    *x22*x32*x43*x53
 c
       return

@@ -1,4 +1,4 @@
-      function L6_txfit    (x,m)
+      function SL6_txfit    (x,m)
 c for left septum at 6 degrees -JJL 3/4/04      
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)
@@ -33,14 +33,14 @@ c          set up monomials   functions
 c
 c                  function
 c
-      L6_txfit    =avdat
+      SL6_txfit    =avdat
      1  +coeff(  1)    
      2  +coeff(  2)*x11
      3  +coeff(  3)*x12
 c
       return
       end
-      function L6_delta       (x,m)
+      function SL6_delta       (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)  !,xmean(10)
       dimension coeff( 96)
@@ -118,7 +118,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      L6_delta       =avdat
+      SL6_delta       =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)*x11                
      3  +coeff(  3)*x12                
@@ -127,7 +127,7 @@ c
      6  +coeff(  6)    *x21            
      7  +coeff(  7)                *x51
      8  +coeff(  8)        *x32        
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff(  9)        *x31*x41    
      1  +coeff( 10)*x11*x22            
      2  +coeff( 11)    *x21*x32        
@@ -137,7 +137,7 @@ c
      6  +coeff( 15)        *x31        
      7  +coeff( 16)*x13                
      8  +coeff( 17)    *x23            
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 18)    *x22*x32        
      1  +coeff( 19)    *x22*x31*x41    
      2  +coeff( 20)    *x22    *x42    
@@ -147,7 +147,7 @@ c
      6  +coeff( 24)*x11*x21*x32        
      7  +coeff( 25)*x11*x21*x33        
      8  +coeff( 26)*x11*x21*x32*x41    
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 27)    *x25*x31        
      1  +coeff( 28)*x12*x22*x33        
      2  +coeff( 29)*x12*x21            
@@ -157,7 +157,7 @@ c
      6  +coeff( 33)*x11*x23            
      7  +coeff( 34)*x12    *x31*x41    
      8  +coeff( 35)*x12        *x42    
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 36)    *x21*x33        
      1  +coeff( 37)    *x21*x32*x41    
      2  +coeff( 38)*x11    *x31*x42    
@@ -167,7 +167,7 @@ c
      6  +coeff( 42)    *x24*x31        
      7  +coeff( 43)    *x23*x32        
      8  +coeff( 44)    *x23    *x42    
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 45)    *x22*x33        
      1  +coeff( 46)    *x22*x32*x41    
      2  +coeff( 47)*x11*x21*x31*x42    
@@ -177,7 +177,7 @@ c
      6  +coeff( 51)*x13*x22    *x41    
      7  +coeff( 52)*x11*x24    *x41    
      8  +coeff( 53)    *x25    *x41    
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 54)*x11*x22*x32*x41    
      1  +coeff( 55)*x12*x25    *x41    
      2  +coeff( 56)*x11    *x31        
@@ -187,7 +187,7 @@ c
      6  +coeff( 60)*x12*x22            
      7  +coeff( 61)*x13    *x31        
      8  +coeff( 62)*x11*x22*x31        
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 63)*x11        *x43    
      1  +coeff( 64)*x12*x23            
      2  +coeff( 65)*x13*x21    *x41    
@@ -197,7 +197,7 @@ c
      6  +coeff( 69)*x12    *x32*x41    
      7  +coeff( 70)*x12    *x31*x42    
      8  +coeff( 71)    *x21*x34        
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 72)    *x21*x33*x41    
      1  +coeff( 73)    *x21*x32*x42    
      2  +coeff( 74)*x11    *x31*x43    
@@ -207,7 +207,7 @@ c
      6  +coeff( 78)    *x24*x32        
      7  +coeff( 79)    *x24*x31*x41    
      8  +coeff( 80)    *x24    *x42    
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 81)*x11*x22*x33        
      1  +coeff( 82)    *x23    *x43    
      2  +coeff( 83)*x13*x24            
@@ -217,7 +217,7 @@ c
      6  +coeff( 87)*x13*x21*x33*x41    
      7  +coeff( 88)            *x41    
      8  +coeff( 89)*x11*x21*x31        
-      L6_delta       =L6_delta       
+      SL6_delta       =SL6_delta       
      9  +coeff( 90)    *x22*x31        
      1  +coeff( 91)*x11*x21    *x42    
      2  +coeff( 92)    *x22        *x51
@@ -227,7 +227,7 @@ c
 c
       return
       end
-      function L6_theta       (x,m)
+      function SL6_theta       (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)  !,xmean(10)
       dimension coeff( 96)
@@ -302,7 +302,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      L6_theta       =avdat
+      SL6_theta       =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)*x11                
      3  +coeff(  3)    *x21            
@@ -311,7 +311,7 @@ c
      6  +coeff(  6)    *x22            
      7  +coeff(  7)    *x21*x31        
      8  +coeff(  8)    *x21    *x41    
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff(  9)    *x21*x32        
      1  +coeff( 10)    *x21*x31*x41    
      2  +coeff( 11)    *x21    *x42    
@@ -321,7 +321,7 @@ c
      6  +coeff( 15)        *x31*x41    
      7  +coeff( 16)*x12*x21            
      8  +coeff( 17)    *x23            
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 18)*x11    *x32        
      1  +coeff( 19)    *x22    *x41    
      2  +coeff( 20)            *x43    
@@ -331,7 +331,7 @@ c
      6  +coeff( 24)    *x22*x31*x41    
      7  +coeff( 25)    *x21*x32*x41    
      8  +coeff( 26)    *x22    *x42    
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 27)    *x21*x31*x42    
      1  +coeff( 28)    *x21    *x43    
      2  +coeff( 29)*x13*x21*x31        
@@ -341,7 +341,7 @@ c
      6  +coeff( 33)        *x32        
      7  +coeff( 34)            *x42    
      8  +coeff( 35)*x11*x21*x31        
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 36)*x11*x21    *x41    
      1  +coeff( 37)*x11*x23            
      2  +coeff( 38)    *x23*x31        
@@ -351,7 +351,7 @@ c
      6  +coeff( 42)*x11*x21*x33        
      7  +coeff( 43)    *x22*x33        
      8  +coeff( 44)    *x24    *x41    
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 45)*x11*x22*x31*x41    
      1  +coeff( 46)*x11*x21*x32*x41    
      2  +coeff( 47)    *x22*x32*x41    
@@ -361,7 +361,7 @@ c
      6  +coeff( 51)    *x22    *x43    
      7  +coeff( 52)*x11            *x51
      8  +coeff( 53)*x11*x24*x31        
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 54)*x11*x22*x33        
      1  +coeff( 55)*x11*x22*x32*x41    
      2  +coeff( 56)*x11*x22    *x43    
@@ -371,7 +371,7 @@ c
      6  +coeff( 60)*x11    *x33        
      7  +coeff( 61)*x11*x21    *x42    
      8  +coeff( 62)*x12    *x33        
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 63)*x13*x21    *x41    
      1  +coeff( 64)    *x23    *x42    
      2  +coeff( 65)*x11*x21    *x43    
@@ -381,7 +381,7 @@ c
      6  +coeff( 69)*x11*x21*x34        
      7  +coeff( 70)    *x22*x34        
      8  +coeff( 71)*x13*x22    *x41    
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 72)*x11*x24    *x41    
      1  +coeff( 73)*x12*x21*x32*x41    
      2  +coeff( 74)    *x23*x31*x42    
@@ -391,7 +391,7 @@ c
      6  +coeff( 78)    *x23*x34        
      7  +coeff( 79)    *x22*x34*x41    
      8  +coeff( 80)*x11*x21*x33*x42    
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 81)    *x23*x33*x42    
      1  +coeff( 82)*x13*x21*x31*x43    
      2  +coeff( 83)    *x23*x32*x43    
@@ -401,7 +401,7 @@ c
      6  +coeff( 87)*x11        *x42    
      7  +coeff( 88)        *x31*x42    
      8  +coeff( 89)*x12*x21*x31        
-      L6_theta       =L6_theta       
+      SL6_theta       =SL6_theta       
      9  +coeff( 90)*x13        *x41    
      1  +coeff( 91)*x11*x22    *x41    
      2  +coeff( 92)*x12    *x31*x41    
@@ -411,7 +411,7 @@ c
 c
       return
       end
-      function L6_phi         (x,m)
+      function SL6_phi         (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)  !,xmean(10)
       dimension coeff( 96)
@@ -489,7 +489,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      L6_phi         =avdat
+      SL6_phi         =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -498,7 +498,7 @@ c
      6  +coeff(  6)*x11    *x31        
      7  +coeff(  7)*x11        *x41    
      8  +coeff(  8)    *x21    *x41    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff(  9)    *x22            
      1  +coeff( 10)            *x43    
      2  +coeff( 11)    *x21    *x42    
@@ -508,7 +508,7 @@ c
      6  +coeff( 15)    *x22*x31*x41    
      7  +coeff( 16)    *x22    *x42    
      8  +coeff( 17)    *x21*x31        
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 18)*x11*x21            
      1  +coeff( 19)        *x33        
      2  +coeff( 20)        *x31*x42    
@@ -518,7 +518,7 @@ c
      6  +coeff( 24)*x11*x21    *x42    
      7  +coeff( 25)    *x23*x31        
      8  +coeff( 26)*x12*x21    *x41    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 27)        *x34*x41    
      1  +coeff( 28)    *x23*x31*x41    
      2  +coeff( 29)    *x23    *x42    
@@ -528,7 +528,7 @@ c
      6  +coeff( 33)*x11    *x32        
      7  +coeff( 34)*x11    *x31*x41    
      8  +coeff( 35)*x12    *x31        
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 36)*x11*x21*x31        
      1  +coeff( 37)*x11*x22            
      2  +coeff( 38)        *x34        
@@ -538,7 +538,7 @@ c
      6  +coeff( 42)*x11    *x32*x41    
      7  +coeff( 43)    *x21*x32*x41    
      8  +coeff( 44)*x11    *x31*x42    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 45)    *x21*x31*x42    
      1  +coeff( 46)*x11        *x43    
      2  +coeff( 47)*x12*x21*x31        
@@ -548,7 +548,7 @@ c
      6  +coeff( 51)    *x22*x33        
      7  +coeff( 52)*x11*x22*x32        
      8  +coeff( 53)    *x23*x32        
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 54)        *x31*x45    
      1  +coeff( 55)    *x21*x35        
      2  +coeff( 56)    *x21*x34*x41    
@@ -558,7 +558,7 @@ c
      6  +coeff( 60)    *x21            
      7  +coeff( 61)    *x21*x32        
      8  +coeff( 62)        *x32*x42    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 63)        *x31*x43    
      1  +coeff( 64)    *x21*x33        
      2  +coeff( 65)*x12    *x31*x41    
@@ -568,7 +568,7 @@ c
      6  +coeff( 69)        *x32*x43    
      7  +coeff( 70)        *x31*x44    
      8  +coeff( 71)            *x45    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 72)*x11    *x33*x41    
      1  +coeff( 73)*x11    *x32*x42    
      2  +coeff( 74)*x11    *x31*x43    
@@ -578,7 +578,7 @@ c
      6  +coeff( 78)*x12    *x32*x41    
      7  +coeff( 79)*x11*x21*x32*x41    
      8  +coeff( 80)    *x22*x32*x41    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 81)*x12    *x31*x42    
      1  +coeff( 82)    *x22*x31*x42    
      2  +coeff( 83)    *x22    *x43    
@@ -588,7 +588,7 @@ c
      6  +coeff( 87)*x14        *x41    
      7  +coeff( 88)*x11    *x35        
      8  +coeff( 89)*x11    *x34*x41    
-      L6_phi         =L6_phi         
+      SL6_phi         =SL6_phi         
      9  +coeff( 90)*x11    *x33*x42    
      1  +coeff( 91)    *x21*x33*x42    
      2  +coeff( 92)    *x21*x31*x44    
@@ -598,7 +598,7 @@ c
 c
       return
       end
-      function L6_y00         (x,m)
+      function SL6_y00         (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10)  !,xmean(10)
       dimension coeff( 96)
@@ -676,7 +676,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      L6_y00         =avdat
+      SL6_y00         =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -685,7 +685,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)            *x42    
      8  +coeff(  8)*x11    *x31        
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff(  9)    *x21*x31        
      1  +coeff( 10)*x11        *x41    
      2  +coeff( 11)    *x21    *x41    
@@ -695,7 +695,7 @@ c
      6  +coeff( 15)*x11    *x32        
      7  +coeff( 16)    *x21*x32        
      8  +coeff( 17)*x11    *x31*x41    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 18)    *x21*x31*x41    
      1  +coeff( 19)*x11        *x42    
      2  +coeff( 20)*x12    *x31        
@@ -705,7 +705,7 @@ c
      6  +coeff( 24)    *x22    *x41    
      7  +coeff( 25)    *x23            
      8  +coeff( 26)        *x34        
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 27)            *x44    
      1  +coeff( 28)*x11    *x33        
      2  +coeff( 29)    *x21    *x43    
@@ -715,7 +715,7 @@ c
      6  +coeff( 33)    *x23*x31        
      7  +coeff( 34)        *x31*x44    
      8  +coeff( 35)    *x22*x33        
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 36)    *x22*x32*x41    
      1  +coeff( 37)    *x22*x31*x42    
      2  +coeff( 38)    *x22    *x43    
@@ -725,7 +725,7 @@ c
      6  +coeff( 42)*x11*x21*x31        
      7  +coeff( 43)        *x32*x42    
      8  +coeff( 44)        *x31*x43    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 45)    *x21*x31*x42    
      1  +coeff( 46)*x11*x21*x32        
      2  +coeff( 47)*x11*x21    *x42    
@@ -735,7 +735,7 @@ c
      6  +coeff( 51)    *x23*x31*x41    
      7  +coeff( 52)    *x23    *x42    
      8  +coeff( 53)*x11*x21*x31*x43    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 54)*x11*x21    *x44    
      1  +coeff( 55)    *x23*x33        
      2  +coeff( 56)    *x23*x32*x41    
@@ -745,7 +745,7 @@ c
      6  +coeff( 60)*x12*x22    *x42    
      7  +coeff( 61)    *x21*x32*x44    
      8  +coeff( 62)*x11*x23*x31*x42    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 63)*x13*x22*x32        
      1  +coeff( 64)*x11*x24    *x42    
      2  +coeff( 65)    *x21            
@@ -755,7 +755,7 @@ c
      6  +coeff( 69)*x11    *x32*x41    
      7  +coeff( 70)    *x21*x32*x41    
      8  +coeff( 71)*x11    *x31*x42    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 72)*x11*x22*x31        
      1  +coeff( 73)    *x23    *x41    
      2  +coeff( 74)*x11*x23            
@@ -765,7 +765,7 @@ c
      6  +coeff( 78)*x11        *x44    
      7  +coeff( 79)    *x21    *x44    
      8  +coeff( 80)*x11*x21*x33        
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 81)*x12*x21*x32        
      1  +coeff( 82)*x13    *x31*x41    
      2  +coeff( 83)*x11*x22    *x42    
@@ -775,7 +775,7 @@ c
      6  +coeff( 87)*x11*x22*x33        
      7  +coeff( 88)*x11*x22*x32*x41    
      8  +coeff( 89)*x11*x23    *x42    
-      L6_y00         =L6_y00         
+      SL6_y00         =SL6_y00         
      9  +coeff( 90)            *x41*x51
      1  +coeff( 91)*x11    *x36        
      2  +coeff( 92)*x11    *x34*x42    
