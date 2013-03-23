@@ -55,18 +55,19 @@ c
 c subroutine F1F2QE09. Returns quasi-elastic F1, F2 for
 c      nucleus with charge Z and atomic number A
 c      for given value of Q2 and W**2
-c 
-c$$$      subroutine bosted(tgt_Z,tgt_A,Ei,Ep1,ang,xs,Tb1,Ta1)
-c$$$
-c$$$      implicit none
-c$$$      
-c$$$      real*8 Ei,Ep1,ang,xs,Tb1,Ta1
-c$$$      real*8 A,Z,E,Ep,theta,nu,bostedxs,SIGRAD
-c$$$      real*8 Tb,Ta
-c$$$      integer tgt_Z,tgt_A;
-c$$$
+c
+      subroutine bosted(Z, A, Ei, Ep, ang, xs, Tb, Ta)
+
+      implicit none
+      
+      double precision Z,A,Ei,Ep,ang,xs,Tb,Ta
+      double precision bostedxs
+
+      Tb = Tb
+      Ta = Ta
+
 c$$$      COMMON/ADDONS/Tb,Ta
-c$$$ 
+ 
 c$$$      A=tgt_A
 c$$$      Z=tgt_Z
 c$$$
@@ -75,21 +76,21 @@ c$$$      Ep=Ep1/1000.
 c$$$      nu=E-Ep
 c$$$
 c$$$      theta=ang*3.1415926/180.
-c$$$
-c$$$      xs=bostedxs(Z,A,E,Ep,theta)
-c$$$         
+
+      xs=bostedxs(Z,A,Ei,Ep,ang)
+         
 c$$$      CALL RADIATE_bosted(Z,A,E*1000.,ang,nu*1000.,xs,SIGRAD)
 c$$$      xs=SIGRAD
-c$$$
-c$$$      end
 
-      REAL*8 FUNCTION bostedxs(Z,A,E,Ep,theta)
+      end
+
+      double precision FUNCTION bostedxs(Z, A, E, Ep, theta)
 
       implicit none
 
-      real*8 Z,A,E,Ep,theta,bostedxs
-      real*8 Q2,w2,M,nu
-      real*8 xs1,xs2,F1,F2,r
+      double precision Z,A,E,Ep,theta
+      double precision Q2,w2,M,nu
+      double precision xs1,xs2,F1,F2,r
 
       M=0.93825
 
@@ -123,38 +124,40 @@ C=======================================================================
 ! Fit to inelastic cross sections for A(e,e')X
 ! valid for all W<3 GeV and all Q2<10 GeV2
 ! 
-! Inputs: Z, A (real*8) are Z and A of nucleus 
+! Inputs: Z, A (double precision) are Z and A of nucleus 
 !         (use Z=0., A=1. to get free neutron)
-c         Qsq (real*8) is 4-vector momentum transfer squared (positive in
-c                     chosen metric)
-c         Wsq (real*8) is invarinat mass squared of final state calculated
-c                     assuming electron scattered from a free proton
-c                 
-c outputs: F1, F2 (real*8) are structure functions per nucleus
+c         Qsq (double precision) is 4-vector momentum transfer squared 
+c                     (positive in chosen metric)
+c         Wsq (double precision) is invarinat mass squared of final 
+c                     state calculated assuming electron scattered from 
+c                     a free proton
+c
+c outputs: F1, F2 (double precision) are structure functions per nucleus
 ! Version of 10/20/2006 P. Bosted
 !--------------------------------------------------------------------
       implicit none
-      REAL*8 P(0:23)
+      DOUBLE PRECISION P(0:23)
       COMMON/PARCORR/P
-      real*8 Z,A,qsq,wsq,w,f1c,x
-      real*8 avgn,r,dr,nu,eps,kappa,sigres,flux,siglp,sigtp,F1pp,F1dp
-      REAL*8 W1,W2,sigt,rc,w1pb,w2pb,F1,F2,sigl,F1d, F1p,qv
-      REAL*8 W1p,W2P,DW2DPF,WSQP,pf,kf,es,dw2des,fyuse
-      real a4, x4, fitemc, emcfac
+      double precision Z,A,qsq,wsq,w,f1c,x
+      double precision avgn,r,dr,nu,eps,kappa,sigres,flux
+      double precision siglp,sigtp,F1pp,F1dp
+      DOUBLE PRECISION W1,W2,sigt,rc,w1pb,w2pb,F1,F2,sigl,F1d, F1p,qv
+      DOUBLE PRECISION W1p,W2P,DW2DPF,WSQP,pf,kf,es,dw2des,fyuse
+      double precision a4, x4, fitemc, emcfac
       logical goodfit
       INTEGER ISM
 
 ! new variables for Fermi smearing over +/- 3 sigma. Sum of 
 ! fy values is 1.000, so no effect if W1 is constant with W
-      REAL*8 XX(15)/-3.000,-2.571,-2.143,-1.714,-1.286,-0.857,
+      DOUBLE PRECISION XX(15)/-3.000,-2.571,-2.143,-1.714,-1.286,-0.857,
      >              -0.429, 0.000, 0.429, 0.857, 1.286, 1.714, 
      >               2.143, 2.571, 3.000/
-      real*8 fy(15)/0.0019, 0.0063, 0.0172, 0.0394, 0.0749, 0.1186, 
-     >              0.1562, 0.1712, 0.1562, 0.1186, 0.0749, 0.0394, 
-     >              0.0172, 0.0063, 0.0019/
+      double precision fy(15)/0.0019, 0.0063, 0.0172, 0.0394, 0.0749, 
+     >              0.1186, 0.1562, 0.1712, 0.1562, 0.1186, 0.0749, 
+     >              0.0394, 0.0172, 0.0063, 0.0019/
 
 ! This is for exp(-xx**2/2.), from teste.f
-       real*8 xxp(99)/
+       double precision xxp(99)/
      > -3.000,-2.939,-2.878,-2.816,-2.755,-2.694,-2.633,-2.571,-2.510,
      > -2.449,-2.388,-2.327,-2.265,-2.204,-2.143,-2.082,-2.020,-1.959,
      > -1.898,-1.837,-1.776,-1.714,-1.653,-1.592,-1.531,-1.469,-1.408,
@@ -167,7 +170,7 @@ c outputs: F1, F2 (real*8) are structure functions per nucleus
      >  1.959, 2.020, 2.082, 2.143, 2.204, 2.265, 2.327, 2.388, 2.449,
      >  2.510, 2.571, 2.633, 2.694, 2.755, 2.816, 2.878, 2.939, 3.000/
 ! these are 100x bigger for convenience
-       real*8 fyp(99)/
+       double precision fyp(99)/
      > 0.0272,0.0326,0.0390,0.0464,0.0551,0.0651,0.0766,0.0898,0.1049,
      > 0.1221,0.1416,0.1636,0.1883,0.2159,0.2466,0.2807,0.3182,0.3595,
      > 0.4045,0.4535,0.5066,0.5637,0.6249,0.6901,0.7593,0.8324,0.9090,
@@ -181,11 +184,11 @@ c outputs: F1, F2 (real*8) are structure functions per nucleus
      > 0.1049,0.0898,0.0766,0.0651,0.0551,0.0464,0.0390,0.0326,0.0272/
 
       integer iz,ia,i
-      real PM/0.93828/,THCNST/0.01745329/,ALPHA/137.0388/        
-      real*8 PI/3.1415926535D0/
+      double precision PM/0.93828/,THCNST/0.01745329/,ALPHA/137.0388/        
+      double precision PI/3.1415926535D0/
 
 ! deuteron fit parameters
-       real*8 xvald0(50)/
+       double precision xvald0(50)/
      >  0.1964E+01, 0.1086E+01, 0.5313E-02, 0.1265E+01, 0.8000E+01,
      >  0.2979E+00, 0.1354E+00, 0.2200E+00, 0.8296E-01, 0.9578E-01,
      >  0.1094E+00, 0.3794E+00, 0.8122E+01, 0.5189E+01, 0.3290E+01,
@@ -198,7 +201,7 @@ c outputs: F1, F2 (real*8) are structure functions per nucleus
      >  0.5883E-02, 0.1934E+01, 0.3800E+00, 0.3319E+01, 0.1446E+00/
 
 cc     
-       real*8 F1M
+       double precision F1M
        logical DEBUG/.TRUE./
 
       IA = int(A)
@@ -328,25 +331,27 @@ cc        if(W .GT. 1.3)
       RETURN                                                            
       END                                          
 
-cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       SUBROUTINE MEC2009(z,a,q2,w2,f1)
 
 ! fit to low q2 dip region: purefly empirical
 ! assume contribution is pure transverse
       implicit none
-      real*8 z,a,q2,w2,f1,am/0.9383/,w,nu
+      double precision z,a,q2,w2,f1,am/0.9383/,w,nu
       integer i
-      real*8 pb(20)/ 
+      double precision pb(20)/ 
      >     0.1023E+02, 0.1052E+01, 0.2485E-01, 0.1455E+01,
      >     0.5650E+01,-0.2889E+00, 0.4943E-01,-0.8183E-01,
      >    -0.7495E+00, 0.8426E+00,-0.2829E+01, 0.1607E+01,
      >     0.1733E+00, 0.0000E+00, 0.0000E+00, 0.0000E+00,
      >     0.0000E+00, 0.0000E+00, 0.0000E+00, 0.0000E+00/
-      REAL*8 P(0:23)
+      DOUBLE PRECISION P(0:23)
       COMMON/PARCORR/P
-      real*8 p18
+      double precision p18
 
-      real*8 x, f1corr
+      double precision x, f1corr
+
+      z=z
 
       f1 = 0.0
       if(w2.le.0.0) return
@@ -386,13 +391,15 @@ c for A>2 uses superscaling from Sick, Donnelly, Maieron, nucl-th/0109032
 c for A=2 uses pre-integrated Paris wave function (see ~bosted/smear.f)
 c coded by P. Bosted August to October, 2006
 c
-c input: Z, A  (real*8) Z and A of nucleus (shoud be 2.0D0 for deueron)
-c        Qsq (real*8) is 4-vector momentum transfer squared (positive in
-c                     chosen metric)
-c        Wsq (real*8) is invarinat mass squared of final state calculated
-c                     assuming electron scattered from a free proton
+c input: Z, A  (double precision) Z and A of nucleus 
+c                     (shoud be 2.0D0 for deueron)
+c        Qsq (double precision) is 4-vector momentum transfer squared
+c                     (positive in chosen metric)
+c        Wsq (double precision) is invarinat mass squared of final 
+c                     state calculated assuming electron scattered from 
+c                     a free proton
 c                 
-c outputs: F1, F2 (real*8) are structure functions per nucleus
+c outputs: F1, F2 (double precision) are structure functions per nucleus
 c
 c Note: Deuteron agrees well with Laget (see ~bosted/eg1b/laget.f) for
 c a) Q2<1 gev**2 and dsig > 1% of peak: doesnt describe tail at high W
@@ -401,21 +408,23 @@ c    to 50% too big at top of q.e. peak. BUT, F2 DOES agree very
 c    nicely with Osipenko et al data from CLAS, up to 5 GeV**2
 
       IMPLICIT NONE     
-      REAL*8 P(0:23)
+      DOUBLE PRECISION P(0:23)
       COMMON/PARCORR/P
-      REAL*8 Z, A, avgN, F1, F2, wsq, qsq
-      REAL*8 amp/0.93828/, amd/1.8756/
-      REAL*8 PAULI_SUP1, PAULI_SUP2
-      REAL*8 GEP, GEN, GMP, GMN, Q, Q3, Q4
-      REAL*8 RMUP/ 2.792782/ ,RMUN/ -1.913148 /                
-      real*8 pz, nu, dpz, pznom, pzmin
-      real*8 qv, TAU, W1, W2, FY, dwmin, w2p
-      real kappa, lam, lamp, taup, squigglef, psi, psip, nuL, nut
-      real kf, es, GM2bar, GE2bar, W1bar, W2bar, Delta, GL, GT
+      DOUBLE PRECISION Z, A, avgN, F1, F2, wsq, qsq
+      DOUBLE PRECISION amp/0.93828/, amd/1.8756/
+      DOUBLE PRECISION PAULI_SUP1, PAULI_SUP2
+      DOUBLE PRECISION GEP, GEN, GMP, GMN, Q, Q3, Q4
+      DOUBLE PRECISION RMUP/ 2.792782/ ,RMUN/ -1.913148 /                
+      double precision pz, nu, dpz, pznom, pzmin
+      double precision qv, TAU, W1, W2, FY, dwmin, w2p
+      double precision kappa, lam, lamp, taup, squigglef
+      double precision psi, psip, nuL, nut
+      double precision kf, es, GM2bar, GE2bar, W1bar, W2bar
+      double precision Delta, GL, GT
       integer IA, izz, izzmin, izp, izznom, izdif
 
 c Look up tables for deuteron case
-       real*8 fyd(200)/
+       double precision fyd(200)/
      > 0.00001,0.00002,0.00003,0.00005,0.00006,0.00009,0.00010,0.00013,
      > 0.00015,0.00019,0.00021,0.00026,0.00029,0.00034,0.00038,0.00044,
      > 0.00049,0.00057,0.00062,0.00071,0.00078,0.00089,0.00097,0.00109,
@@ -441,7 +450,7 @@ c Look up tables for deuteron case
      > 0.00109,0.00097,0.00089,0.00078,0.00071,0.00062,0.00057,0.00049,
      > 0.00044,0.00038,0.00034,0.00029,0.00026,0.00021,0.00019,0.00015,
      > 0.00013,0.00010,0.00009,0.00006,0.00005,0.00003,0.00002,0.00001/
-       real*8 avp2(200)/
+       double precision avp2(200)/
      >     1.0,0.98974,0.96975,0.96768,0.94782,0.94450,0.92494,0.92047,
      > 0.90090,0.89563,0.87644,0.87018,0.85145,0.84434,0.82593,0.81841,
      > 0.80021,0.79212,0.77444,0.76553,0.74866,0.73945,0.72264,0.71343,
@@ -470,12 +479,13 @@ c Look up tables for deuteron case
 
 c     Peter Bosted's correction params
 
-       real*8 pb(20)/ 0.1023E+02, 0.1052E+01, 0.2485E-01, 0.1455E+01,
+       double precision pb(20)/ 
+     >      0.1023E+02, 0.1052E+01, 0.2485E-01, 0.1455E+01,
      >      0.5650E+01,-0.2889E+00, 0.4943E-01,-0.8183E-01,
      >     -0.7495E+00, 0.8426E+00,-0.2829E+01, 0.1607E+01,
      >      0.1733E+00, 0.0000E+00, 0.0000E+00, 0.0000E+00,
      >      0.0000E+00, 0.0000E+00, 0.0000E+00, 0.0000E+00/ 
-       real*8 y,R
+       double precision y,R
 
 ! return if proton: future change this to allow for
 ! equivalent W resolution
@@ -593,7 +603,7 @@ c added to prevent negative xsections:
 ! ignoring energy term, estimate change in pz to compensate
 ! for avp2 term
         dpz = avp2(izznom) / 2. / qv
-        izdif = dpz * 150. 
+        izdif = INT(dpz * 150.)
         dwmin=1.E6
         izzmin=0
         do izp = izznom, min(200, max(1, izznom + izdif))
@@ -674,7 +684,7 @@ cc correction to correction Vahe
       return
       end
       BLOCK DATA CORRECTION
-      REAL*8 P(0:23)
+      DOUBLE PRECISION P(0:23)
       COMMON/PARCORR/P
 c     DATA P/
 c    c       5.1141e-02,   9.9343e-01,   5.3317e-02,   1.3949e+00, 
@@ -696,20 +706,24 @@ c    c       3.1914e-01,  -1.8657e-01,   3.2746e+01,   4.9801e-03/
       subroutine pind(W2,Q2,F1,R,sigt,sigl)
 ! Calculate proton with Fermi smearing of a deuteron 
       implicit none
-      real*8 q2,w2,F1,R,sigt,sigl,am/0.9383/,nu,qv,F1p,Rp,sigtp,siglp
-      real*8 amd/1.8756/,w2p,pz
+      double precision q2,w2,F1,R,sigt,sigl,am/0.9383/
+      double precision nu,qv,F1p,Rp,sigtp,siglp
+      double precision amd/1.8756/,w2p,pz
       integer ism
-       real*8 fyd(20)/ 0.4965, 0.4988, 0.4958, 0.5008, 0.5027, 0.5041,
+       double precision fyd(20)/ 
+     >  0.4965, 0.4988, 0.4958, 0.5008, 0.5027, 0.5041,
      >  0.5029, 0.5034, 0.4993, 0.5147, 0.5140, 0.4975, 0.5007, 0.4992,
      >  0.4994, 0.4977, 0.5023, 0.4964, 0.4966, 0.4767/
-       real*8 avpz(20)/-0.1820,-0.0829,-0.0590,-0.0448,-0.0345,-0.0264,
+       double precision avpz(20)/
+     > -0.1820,-0.0829,-0.0590,-0.0448,-0.0345,-0.0264,
      > -0.0195,-0.0135,-0.0079,-0.0025, 0.0029, 0.0083, 0.0139, 0.0199,
      >  0.0268, 0.0349, 0.0453, 0.0598, 0.0844, 0.1853/
-       real*8 avp2(20)/ 0.0938, 0.0219, 0.0137, 0.0101, 0.0081, 0.0068,
+       double precision avp2(20)/ 
+     >  0.0938, 0.0219, 0.0137, 0.0101, 0.0081, 0.0068,
      >  0.0060, 0.0054, 0.0051, 0.0049, 0.0050, 0.0051, 0.0055, 0.0060,
      >  0.0069, 0.0081, 0.0102, 0.0140, 0.0225, 0.0964/
 c Look up tables for deuteron in fine bins for sub threshold
-       real*8 fydf(200)/
+       double precision fydf(200)/
      > 0.00001,0.00002,0.00003,0.00005,0.00006,0.00009,0.00010,0.00013,
      > 0.00015,0.00019,0.00021,0.00026,0.00029,0.00034,0.00038,0.00044,
      > 0.00049,0.00057,0.00062,0.00071,0.00078,0.00089,0.00097,0.00109,
@@ -735,7 +749,7 @@ c Look up tables for deuteron in fine bins for sub threshold
      > 0.00109,0.00097,0.00089,0.00078,0.00071,0.00062,0.00057,0.00049,
      > 0.00044,0.00038,0.00034,0.00029,0.00026,0.00021,0.00019,0.00015,
      > 0.00013,0.00010,0.00009,0.00006,0.00005,0.00003,0.00002,0.00001/
-       real*8 avp2f(200)/
+       double precision avp2f(200)/
      >     1.0,0.98974,0.96975,0.96768,0.94782,0.94450,0.92494,0.92047,
      > 0.90090,0.89563,0.87644,0.87018,0.85145,0.84434,0.82593,0.81841,
      > 0.80021,0.79212,0.77444,0.76553,0.74866,0.73945,0.72264,0.71343,
@@ -808,20 +822,24 @@ c    Electron-Deuteron and Electron-Neutron
 c    Resonance Region Transverse Cross Sections, 
 c    (arXiv:0711.0159). Submitted to Phys. Rev. C.
       implicit none
-      real*8 q2,w2,xval(50),F1,am/0.9383/,nu,qv,dw2dpf,w2p,sigp,f1sv
-      real*8 sigtst,amd/1.8756/, pz, f1m,f2m
+      double precision q2,w2,xval(50),F1,am/0.9383/
+      double precision nu,qv,dw2dpf,w2p,sigp,f1sv
+      double precision sigtst,amd/1.8756/, pz, f1m,f2m
       integer ism,i
-       real*8 fyd(20)/ 0.4965, 0.4988, 0.4958, 0.5008, 0.5027, 0.5041,
+       double precision fyd(20)/ 
+     >  0.4965, 0.4988, 0.4958, 0.5008, 0.5027, 0.5041,
      >  0.5029, 0.5034, 0.4993, 0.5147, 0.5140, 0.4975, 0.5007, 0.4992,
      >  0.4994, 0.4977, 0.5023, 0.4964, 0.4966, 0.4767/
-       real*8 avpz(20)/-0.1820,-0.0829,-0.0590,-0.0448,-0.0345,-0.0264,
+       double precision avpz(20)/
+     >  -0.1820,-0.0829,-0.0590,-0.0448,-0.0345,-0.0264,
      > -0.0195,-0.0135,-0.0079,-0.0025, 0.0029, 0.0083, 0.0139, 0.0199,
      >  0.0268, 0.0349, 0.0453, 0.0598, 0.0844, 0.1853/
-       real*8 avp2(20)/ 0.0938, 0.0219, 0.0137, 0.0101, 0.0081, 0.0068,
+       double precision avp2(20)/ 
+     >  0.0938, 0.0219, 0.0137, 0.0101, 0.0081, 0.0068,
      >  0.0060, 0.0054, 0.0051, 0.0049, 0.0050, 0.0051, 0.0055, 0.0060,
      >  0.0069, 0.0081, 0.0102, 0.0140, 0.0225, 0.0964/
 c Look up tables for deuteron in fine bins for sub threshold
-       real*8 fydf(200)/
+       double precision fydf(200)/
      > 0.00001,0.00002,0.00003,0.00005,0.00006,0.00009,0.00010,0.00013,
      > 0.00015,0.00019,0.00021,0.00026,0.00029,0.00034,0.00038,0.00044,
      > 0.00049,0.00057,0.00062,0.00071,0.00078,0.00089,0.00097,0.00109,
@@ -847,7 +865,7 @@ c Look up tables for deuteron in fine bins for sub threshold
      > 0.00109,0.00097,0.00089,0.00078,0.00071,0.00062,0.00057,0.00049,
      > 0.00044,0.00038,0.00034,0.00029,0.00026,0.00021,0.00019,0.00015,
      > 0.00013,0.00010,0.00009,0.00006,0.00005,0.00003,0.00002,0.00001/
-       real*8 avp2f(200)/
+       double precision avp2f(200)/
      >     1.0,0.98974,0.96975,0.96768,0.94782,0.94450,0.92494,0.92047,
      > 0.90090,0.89563,0.87644,0.87018,0.85145,0.84434,0.82593,0.81841,
      > 0.80021,0.79212,0.77444,0.76553,0.74866,0.73945,0.72264,0.71343,
@@ -912,8 +930,9 @@ c Look up tables for deuteron in fine bins for sub threshold
 ! Get error on F1 from deuteron fit
       implicit none
       integer i,j,icall
-      real*8 q2,w2,xval(50),xvalp(50),deriv(50),emat(50,50),F1,F1er
-      real*8 epsilon,F1p
+      double precision q2,w2,xval(50),xvalp(50)
+      double precision deriv(50),emat(50,50),F1,F1er
+      double precision epsilon,F1p
       integer ifix(50)/1, 2, 3, 4, 5, 6, 7, 0, 0, 0,
      >                 0, 0, 8, 9,10,11,12,13,14,15,
      >                16,17,18,19,20,21,22,23,24,25,
@@ -961,25 +980,32 @@ c Look up tables for deuteron in fine bins for sub threshold
       SUBROUTINE RESMODD(w2,q2,xval,sig) 
 
       IMPLICIT NONE
-      REAL*8 W,w2,q2,mp,mp2,mpi2,xb,xth(4),sig,xval(50),mass(7),width(7)
-      REAL*8 height(7),sig_del,sig_21,sig_22,sig_31,sig_32,rescoef(6,4)
-      REAL*8 nr_coef(3,4),sigr(5000,7),wdif,wdif2,wr,sig_nr,sig_4,q2temp
-      REAL*8 mpi,meta,intwidth(7),k,kcm,kr(7),kcmr(7),ppicm,ppi2cm
-      REAL*8 petacm,ppicmr(7),ppi2cmr(7),petacmr(7),epicmr(7),epi2cmr(7)
-      REAL*8 eetacmr(7),epicm,epi2cm,eetacm,br(7,2),spin(7),ang(7)
-      REAL*8 pgam(7),pwid(7,2),x0(7),dip,dip2
-      REAL*8 sig_res,sig_4L,xpr,alpha,pi,F1
+      DOUBLE PRECISION W,w2,q2,mp,mp2,mpi2,xb,xth(4)
+      double precision sig,xval(50),mass(7),width(7)
+      DOUBLE PRECISION height(7),sig_del,sig_21,sig_22,sig_31,sig_32
+      double precision rescoef(6,4)
+      DOUBLE PRECISION nr_coef(3,4),sigr(5000,7),wdif,wdif2,wr
+      double precision sig_nr,sig_4,q2temp
+      DOUBLE PRECISION mpi,meta,intwidth(7),k,kcm,kr(7)
+      double precision kcmr(7),ppicm,ppi2cm
+      DOUBLE PRECISION petacm,ppicmr(7),ppi2cmr(7),petacmr(7)
+      double precision epicmr(7),epi2cmr(7)
+      DOUBLE PRECISION eetacmr(7),epicm,epi2cm,eetacm,br(7,2)
+      double precision spin(7),ang(7)
+      DOUBLE PRECISION pgam(7),pwid(7,2),x0(7),dip,dip2
+      DOUBLE PRECISION sig_res,sig_4L,xpr,alpha,pi,F1
       INTEGER i,j,l,lmax,num,iw
-      real*8 noverp,fnp_nmc,x,a,b,sig_mec,brp(7,3)
-      real*8 xval0(12)/
+      double precision noverp,fnp_nmc,x,a,b,sig_mec,brp(7,3)
+      double precision xval0(12)/
 c new 5/07 values. Values 1 and 7 will be overridden below.
      & 0.12298E+01,0.15304E+01,0.15057E+01,0.16980E+01,0.16650E+01,
      & 0.14333E+01,0.13573E+00,0.22000E+00,0.82956E-01,0.95782E-01,
      & 0.10936E+00,0.37944E+00/
-      real*8 xvalold(50),w2sv,q2sv,sigrsv(7),md,w2p,wp,wdifp,xprp,nu
+      double precision xvalold(50),w2sv,q2sv,sigrsv(7),md,w2p
+      double precision wp,wdifp,xprp,nu
       logical first/.true./
       common/tst2/sigrsv,sig_nr,sig_mec
-      real br2(7),br3(7)
+      double precision br2(7),br3(7)
       save
 
       sig = 0.
@@ -1263,8 +1289,8 @@ c    (arXiv:0712.3731). To be submitted to Phys. Rev. C.
 
       IMPLICIT NONE
 
-      real*8 w2,q2,xval1(50),xvall(50),xval(100)
-      real*8 mp,mp2,pi,alpha,xb,sigT,sigL,F1,FL,F2,R
+      double precision w2,q2,xval1(50),xvall(50),xval(100)
+      double precision mp,mp2,pi,alpha,xb,sigT,sigL,F1,FL,F2,R
       integer i,npts,sf
  
       mp = .9382727
@@ -1321,17 +1347,22 @@ c    (arXiv:0712.3731). To be submitted to Phys. Rev. C.
       SUBROUTINE RESMOD507(sf,w2,q2,xval,sig) 
 
       IMPLICIT NONE
-      REAL*8 W,w2,q2,mp,mp2,mpi2,xb,xth(4),sig,xval(50),mass(7),width(7)
-      REAL*8 height(7),sig_del,sig_21,sig_22,sig_31,sig_32,rescoef(6,4)
-      REAL*8 nr_coef(3,4),sigr(7),wdif(2),sig_nr,sig_4
-      REAL*8 mpi,meta,intwidth(7),k,kcm,kr(7),kcmr(7),ppicm,ppi2cm
-      REAL*8 petacm,ppicmr(7),ppi2cmr(7),petacmr(7),epicmr(7),epi2cmr(7)
-      REAL*8 eetacmr(7),epicm,epi2cm,eetacm,br(7,3),spin(7),ang(7)
-      REAL*8 pgam(7),pwid(7,3),x0(7),dip,mon,q20,h_nr(3)
-      REAL*8 sig_res,sig_4L,sigtemp,slope,t,xpr(2),m0
-      real*8 sigrsv(7),sig_nrsv
+      DOUBLE PRECISION W,w2,q2,mp,mp2,mpi2,xb,xth(4),sig
+      double precision xval(50),mass(7),width(7)
+      DOUBLE PRECISION height(7),sig_del,sig_21,sig_22,sig_31,sig_32
+      double precision rescoef(6,4)
+      DOUBLE PRECISION nr_coef(3,4),sigr(7),wdif(2),sig_nr,sig_4
+      DOUBLE PRECISION mpi,meta,intwidth(7),k,kcm,kr(7),kcmr(7)
+      double precision ppicm,ppi2cm
+      DOUBLE PRECISION petacm,ppicmr(7),ppi2cmr(7),petacmr(7)
+      double precision epicmr(7),epi2cmr(7)
+      DOUBLE PRECISION eetacmr(7),epicm,epi2cm,eetacm,br(7,3)
+      double precision spin(7),ang(7)
+      DOUBLE PRECISION pgam(7),pwid(7,3),x0(7),dip,mon,q20,h_nr(3)
+      DOUBLE PRECISION sig_res,sig_4L,sigtemp,slope,t,xpr(2),m0
+      double precision sigrsv(7),sig_nrsv
       INTEGER i,j,l,num,sf
-      real*8 sig_mec
+      double precision sig_mec
       logical first/.true./
       common/tst2/sigrsv,sig_nrsv,sig_mec
 
@@ -1600,7 +1631,7 @@ CCC    Finish resonances / start non-res background calculation   CCC
        
 
 
- 1000  format(8f12.5)
+c 1000  format(8f12.5)
 
       RETURN 
       END 
@@ -1608,7 +1639,7 @@ CCC    Finish resonances / start non-res background calculation   CCC
 
 !---------------------------------------------------------------------
 
-      REAL FUNCTION FITEMC(X,A,GOODFIT)       
+      DOUBLE PRECISION FUNCTION FITEMC(X,A,GOODFIT)       
 !---------------------------------------------------------------------  
 ! Fit to EMC effect.  Steve Rock 8/3/94                                 
 ! Funciton returns value of sigma(A)/sigma(d) 
@@ -1637,13 +1668,13 @@ CCC    Finish resonances / start non-res background calculation   CCC
                                                                         
       IMPLICIT NONE                                                     
       INTEGER I                                                         
-      REAL*4 ALPHA, C,LN_C,X,A ,X_U
+      DOUBLE PRECISION ALPHA, C,LN_C,X,A ,X_U
       LOGICAL GOODFIT                                  
                                                                         
 !Chisq=         19.   for 30 points                                     
 !Term    Coeficient     Error                                           
 
-      REAL*8  ALPHA_COEF(2,0:8)    /                                     
+      DOUBLE PRECISION  ALPHA_COEF(2,0:8)    / 
      > -6.98871401D-02,    6.965D-03,                                   
      >  2.18888887D+00,    3.792D-01,                                   
      > -2.46673765D+01,    6.302D+00,                                   
@@ -1657,7 +1688,7 @@ CCC    Finish resonances / start non-res background calculation   CCC
                               
 !Chisq=         22.    for 30 points                                   
 !Term    Coeficient     Error                                          
-      REAL*8 C_COEF(2,0:2) /        ! Value and error for 6 term fit to 
+      DOUBLE PRECISION C_COEF(2,0:2) / ! Value and error for 6 term fit to 
      >  1.69029097D-02,    4.137D-03,                                   
      >  1.80889367D-02,    5.808D-03,                                   
      >  5.04268396D-03,    1.406D-03   /                                
@@ -1677,7 +1708,7 @@ CCC    Finish resonances / start non-res background calculation   CCC
                                                                         
       LN_C = C_COEF(1,0)                                                
       DO I =1,2                                                         
-       LN_C = LN_C + C_COEF(1,I) * (ALOG(X_U))**I                         
+       LN_C = LN_C + C_COEF(1,I) * (ALOG(REAL(X_U)))**I                         
       ENDDO                                                             
                                                                         
       C = EXP(LN_C)                                                     
@@ -1695,7 +1726,10 @@ CCC    Finish resonances / start non-res background calculation   CCC
 ! fit to low q2 dip region: purefly empirical
 ! assume contribution is pure transverse
       implicit none
-      real*8 z,a,q2,w2,f1,f2,xval(50),am/0.9383/,w,nu
+      double precision z,a,q2,w2,f1,f2,xval(50),am/0.9383/,w,nu
+
+      z=z
+      a=a
 
       w = sqrt(w2)
       nu = (w2 - am**2 + q2) / 2. / am
@@ -1718,7 +1752,7 @@ c$$$C     Rewrote subroutine to include external bremsstrahlung using
 c$$$C     formalism from S. Stein et al. Phys. Rev. D 12 7. Equation (A82)
 c$$$C     Where possible the equation number is given with each expression.
 c$$$C----------------------------------------------------------------------
-c$$$      IMPLICIT REAL*8 (A-H,O-Z)
+c$$$      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
 c$$$      COMMON/PAR/E,TH,W,Z,A,SPENCE
 c$$$      COMMON/ADDONS/Tb,Ta
 c$$$
@@ -1805,8 +1839,8 @@ c$$$      END
 c$$$
 c$$$*VALY
 c$$$      SUBROUTINE VALY_bosted(X,F,IFUNC)
-c$$$      IMPLICIT REAL*8 (A-H,O-Z)
-c$$$C     REAL*8 FUNCTION F(X)
+c$$$      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+c$$$C     DOUBLE PRECISION FUNCTION F(X)
 c$$$      COMMON/PAR/E,TH,W,Z,A,SPENCE
 c$$$      COMMON/ADDONS/Tb,Ta
 c$$$
@@ -1831,7 +1865,8 @@ c$$$      Tpb   = tr2 + Tb
 c$$$      Tpa   = tr2 + Ta
 c$$$
 c$$$      D2    = 13.*(LOG(QMS2/EMASS**2)-1.)/12.-17./36.
-c$$$      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !KS. Correction to peak. approx.
+c$$$      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !KS. Correction to peak. 
+C$$$c                                              !approx.
 c$$$      D2    = D2 + 0.5*(PI**2/6.-SPENCE)
 c$$$      D2    = D2 * (2.*ALPH/PI)
 c$$$      D2    = D2 + 0.5772*xb*(Tb+Ta)
@@ -1874,7 +1909,7 @@ c$$$      RETURN
 c$$$      END
 c$$$
 c$$$      SUBROUTINE ROM_bosted(A,B,EPS,ANS,K,IFUNC)
-c$$$      IMPLICIT REAL*8(A-H,O-Z)
+c$$$      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
 c$$$      COMMON/ADDONS/Tb,Ta
 c$$$C  ROMBERG METHOD OF INTEGRATION
 c$$$      DIMENSION W(2,50)

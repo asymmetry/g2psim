@@ -14,7 +14,7 @@ public:
     double GetXS(double Ei, double Ef, double theta);
 
 private:
-    double fEPS, fEPSD, fFP, fTb, fTa;
+    double fTb, fTa;
 }; 
 
 #endif
