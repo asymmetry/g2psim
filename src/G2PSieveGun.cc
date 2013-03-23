@@ -17,6 +17,8 @@
 
 using namespace std;
 
+static const double kU = 0.93149406121;
+
 G2PSieveGun::G2PSieveGun() :
     bUseFast(true), fTargetMass(0.0), fEnergyLoss(0.0),
     fThreshold(0.0), pfGun(NULL)
@@ -40,7 +42,7 @@ int G2PSieveGun::Begin()
     if (bUseFast) pfGun = &G2PSieveGun::ShootFast;
     else pfGun = &G2PSieveGun::ShootNormal;
 
-    fTargetMass = gG2PRun->GetTargetMass();
+    fTargetMass = gG2PRun->GetTargetMass()*kU;
     fEnergyLoss = gG2PRun->GetEnergyLoss();
 
     SetSieve(fHRSAngle);

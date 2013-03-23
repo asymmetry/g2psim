@@ -16,6 +16,8 @@
 
 using namespace std;
 
+static const double kU = 0.93149406121;
+
 G2PDataGun::G2PDataGun(const char* filename) :
     bIsOptics(false), pDataFileName(filename),
     fTargetMass(0.0), fEnergyLoss(0.0), pfGun(NULL)
@@ -38,7 +40,7 @@ int G2PDataGun::Begin()
 
     if (bIsOptics) {
         pfGun = &G2PDataGun::ShootOptics;
-        fTargetMass = gG2PRun->GetTargetMass();
+        fTargetMass = gG2PRun->GetTargetMass()*kU;
         fEnergyLoss = gG2PRun->GetEnergyLoss();
     }
     else pfGun = &G2PDataGun::ShootNormal;

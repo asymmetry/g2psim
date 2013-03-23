@@ -30,12 +30,11 @@ double XSinit, XSrec;
 
 void PlotDelta()
 {
-    TCanvas* c110 = new TCanvas("c110", "XS", 1200, 600);
-    c110->Divide(2,1);
+    TCanvas* c110 = new TCanvas("c110", "XS", 600, 600);
 
-    c110->cd(1);
+    c110->cd();
 
-    TH1F* h1101 = new TH1F("h1101", "Init Delta (weight by XS)", 50, -0.05, 0.05);
+    TH1F* h1101 = new TH1F("h1101", "Delta (weight by XS)", 100, -0.05, 0.05);
     h1101->SetXTitle("Delta");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -48,12 +47,8 @@ void PlotDelta()
 
     h1101->Draw();
 
-    c110->Update();
-
-    c110->cd(2);
-
-    TH1F* h1102 = new TH1F("h1102", "Rec Delta (weight by XS)", 50, -0.05, 0.05);
-    h1102->SetXTitle("Delta_rec");
+    TH1F* h1102 = new TH1F("h1102", "Delta (weight by XS)", 100, -0.05, 0.05);
+    h1102->SetXTitle("Delta");
 
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
@@ -62,19 +57,23 @@ void PlotDelta()
         }
     }
 
-    h1102->Draw();
+    h1102->Draw("same");
+
+    double mean1 = h1101->GetMean();
+    double mean2 = h1102->GetMean();
+
+    printf("%e\t%e\t%e\n", mean1, mean2, mean2/mean1);
 
     c110->Update();
 }
 
 void PlotTheta()
 {
-    TCanvas* c111 = new TCanvas("c111", "XS", 1200, 600);
-    c111->Divide(2,1);
+    TCanvas* c111 = new TCanvas("c111", "XS", 600, 600);
 
-    c111->cd(1);
+    c111->cd();
 
-    TH1F* h1111 = new TH1F("h1111", "Init Scat Angle (weight by XS)", 50, 0.08, 0.12);
+    TH1F* h1111 = new TH1F("h1111", "Scat Angle (weight by XS)", 100, 0.08, 0.12);
     h1111->SetXTitle("Scat Angle");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -87,11 +86,7 @@ void PlotTheta()
 
     h1111->Draw();
 
-    c111->Update();
-
-    c111->cd(2);
-
-    TH1F* h1112 = new TH1F("h1112", "Rec Scat Angle (weight by XS)", 50, 0.08, 0.12);
+    TH1F* h1112 = new TH1F("h1112", "Scat Angle (weight by XS)", 100, 0.08, 0.12);
     h1112->SetXTitle("Scat Angle");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -101,9 +96,53 @@ void PlotTheta()
         }
     }
 
-    h1112->Draw();
+    h1112->Draw("same");
+
+    double mean1 = h1111->GetMean();
+    double mean2 = h1112->GetMean();
+
+    printf("%e\t%e\t%e\n", mean1, mean2, mean2/mean1);
 
     c111->Update();
+}
+
+void PlotXS()
+{
+    TCanvas* c112 = new TCanvas("c112", "XS", 600, 600);
+
+    c112->cd();
+
+    TH1F* h1121 = new TH1F("h1121", "Cross section central value", 100, 0.05, 0.30);
+    h1121->SetXTitle("XS(ub/MeV-sr)");
+
+    for (int i = 0; i<T->GetEntries(); i++) {
+        T->GetEntry(i);
+        //if (IsGood&&TMath::Abs(Tfp)<0.05&&TMath::Abs(Pfp-1e-3)<0.01) {
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
+            h1121->Fill(XSinit);
+        }
+    }
+
+    h1121->Draw();
+
+    TH1F* h1122 = new TH1F("h1122", "Cross section central value", 100, 0.05, 0.30);
+    h1122->SetXTitle("XS(ub/MeV-sr)");
+
+    for (int i = 0; i<T->GetEntries(); i++) {
+        T->GetEntry(i);
+        if (TMath::Abs(IsGood-1.0)<1e-8) {
+            h1122->Fill(XSrec);
+        }
+    }
+
+    h1122->Draw("same");
+
+    double mean1 = h1121->GetMean();
+    double mean2 = h1122->GetMean();
+
+    printf("%e\t%e\t%e\n", mean1, mean2, mean2/mean1);
+
+    c112->Update();
 }
 
 void LoadTree(const char* filename = "test.root"){
@@ -125,5 +164,6 @@ void LoadTree(const char* filename = "test.root"){
 
     gStyle->SetStatH(0.3);
     gStyle->SetStatW(0.25);
-    gStyle->SetOptStat("emr");
+    //gStyle->SetOptStat("emr");
+    gStyle->SetOptStat("");
 }

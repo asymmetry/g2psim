@@ -9,7 +9,7 @@ using namespace std;
 
 extern "C" 
 {
-    void qfs_(int *tgt_Z, int *tgt_A, double *Ei, double *Ep, double *ang, double *EPS, double *EPSD, double *FP, double *Tb, double *Ta, double *xs);
+    void qfs_(int* tgt_Z, int* tgt_A, double* Ei, double* Ep, double* ang, double* xs, double* EPS, double* EPSD, double* FP, double* Tb, double* Ta);
 }
 
 static const double kDEG = 3.14159265358979323846/180.0;
@@ -21,7 +21,7 @@ static double QFS(int Z, int A, double Ei, double Ef, double theta, double EPS, 
     Ef = Ef/kMEV;
     theta = theta/kDEG;
     double XS;
-    qfs_(&Z, &A, &Ei, &Ef, &theta, &EPS, &EPSD, &FP, &Tb, &Ta, &XS);
+    qfs_(&Z, &A, &Ei, &Ef, &theta, &XS, &EPS, &EPSD, &FP, &Tb, &Ta);
     return XS;
 }
 

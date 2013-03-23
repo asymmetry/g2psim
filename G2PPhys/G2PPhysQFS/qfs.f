@@ -14,7 +14,7 @@ C  OCTOBER 1987
                                                        ! vertical: +/-60 mr
 C Modified by C. Gu for a library used by Geant4 similation
 
-      subroutine qfs(tgt_Z,tgt_A,Ei,Ep,ang,EPS1,EPSD1,PF1,Tb1,Ta1,xs)
+      subroutine qfs(tgt_Z,tgt_A,Ei,Ep,ang,xs,EPS1,EPSD1,PF1,Tb1,Ta1)
 
       IMPLICIT double precision (A-H,O-Z)
 

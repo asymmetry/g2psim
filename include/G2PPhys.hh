@@ -28,6 +28,8 @@ protected:
     int iSetting;
 
     int iZ, iA; // Define Target
+    double fTargetMass;
+
     int iPID;
 
     double* fPars;

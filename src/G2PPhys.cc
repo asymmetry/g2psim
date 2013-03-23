@@ -6,6 +6,7 @@
 #include "TError.h"
 
 #include "G2PPhysBase.hh"
+#include "G2PPhysEl/G2PPhysEl.hh"
 #include "G2PPhysPB/G2PPhysPB.hh"
 #include "G2PPhysQFS/G2PPhysQFS.hh"
 
@@ -20,15 +21,15 @@ using namespace std;
 G2PPhys* G2PPhys::pG2PPhys = NULL;
 
 G2PPhys::G2PPhys() :
-    iSetting(0), iZ(1), iA(1), iPID(11), fPars(NULL), nPars(0),
-    pModel(NULL)
+    iSetting(1), iZ(1), iA(1), fTargetMass(0.0), iPID(11),
+    fPars(NULL), nPars(0), pModel(NULL)
 {
     // Nothing to do
 }
 
 G2PPhys::G2PPhys(const char *model) :
-    iSetting(0), iZ(1), iA(1), iPID(11), fPars(NULL), nPars(0),
-    pModel(NULL)
+    iSetting(1), iZ(1), iA(1), fTargetMass(0.0), iPID(11),
+    fPars(NULL), nPars(0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
@@ -38,6 +39,7 @@ G2PPhys::G2PPhys(const char *model) :
     pG2PPhys = this;
 
     map<string, int> model_map;
+    model_map["elastic"] = 1;
     model_map["pbosted"] = 11;
     model_map["qfs"] = 12;
 
@@ -56,6 +58,9 @@ int G2PPhys::Init()
     if (G2PAppBase::Init()!=0) return fStatus;
 
     switch (iSetting) {
+    case 1:
+        pModel = new G2PPhysEl();
+        break;
     case 11:
         pModel = new G2PPhysPB();
         break;
@@ -79,6 +84,7 @@ int G2PPhys::Begin()
 
     iZ = gG2PRun->GetTargetZ();
     iA = gG2PRun->GetTargetA();
+    fTargetMass = gG2PRun->GetTargetMass();
     iPID = gG2PRun->GetParticlePID();
 
     pModel->SetTarget(iZ, iA);

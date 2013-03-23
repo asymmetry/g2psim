@@ -11,7 +11,8 @@ public:
     G2PPhysBase();
     virtual ~G2PPhysBase();
 
-    void SetTarget(int Z, int A) { iZ = Z; iA = A; }
+    void SetTarget(int Z, int A);
+    void SetTargetMass(double value) { fTargetMass = value; }
     void SetParticle(int pid) { iPID = pid; }
 
     virtual void SetPars(double* array, int n);
@@ -19,7 +20,11 @@ public:
     virtual double GetXS(double Ei, double Ef, double theta) = 0;
     
 protected:
+    void SetTargetMass();
+
     int iZ, iA; // Define Target
+    double fTargetMass;
+
     int iPID; // Define particle
 
     vector<double> fPars;
