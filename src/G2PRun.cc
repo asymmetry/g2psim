@@ -32,7 +32,7 @@ G2PRun::~G2PRun()
 
 int G2PRun::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
     // Notice: the order is important
     fProcs->Add(new G2PGunProc());

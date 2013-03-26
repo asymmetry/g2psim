@@ -44,6 +44,8 @@ protected:
     void GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm);
     void GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm);
 
+    void GetBPMAB(const double* V5beam_lab, float* xout);
+
     double fBeamEnergy;
     double fFieldRatio;
 

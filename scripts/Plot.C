@@ -267,18 +267,24 @@ void PlotXBPM()
     TH2F* h1102 = new TH2F("h1102", "BPM Deviation vs z", 100, -0.015, 0.015, 100, -0.001, 0.005);
 
     T->Draw("(Xbpm_tr-Xtg_tr)*(1+Delta):Zbeam_lab>>h1102","");
+}
 
-    // c110->cd(3);
-    // TH1F* h1103 = new TH1F("h1103", "Y (mm)", 110, ylowlimit/2.0*1100, yhilimit/2.0*1100);
+void PlotBPM()
+{
+    TCanvas* c111 = new TCanvas("c111", "BPM", 1200, 600);
+    c111->Divide(2,1);
 
-    // T->Draw("(Yrec_tr-Ytg_tr)*1100>>h1103","IsGood");
+    c111->cd(1);
+    TH1F* h1111 = new TH1F("h1111", "BPM X Deviation", 100, -0.01, 0.01);
+    h1111->SetXTitle("Xbpm-Xreal/m");
+    T->Draw("(gun.react.l_x-gun.bpm.l_x)>>h1111","");
+    c111->Update();
 
-    // c110->cd(4);
-    // TH1F* h1104 = new TH1F("h1104", "P (mrad)", 110, phlowlimit/10.0*1100, phhilimit/10.0*1100);
-
-    // T->Draw("(Prec_tr-Ptg_tr)*1100>>h1104","IsGood");
-
-    // c110->Update();
+    c111->cd(2);
+    TH1F* h1112 = new TH1F("h1112", "BPM Y Deviation", 100, -0.01, 0.01);
+    h1112->SetXTitle("Ybpm-Yreal/m");
+    T->Draw("(gun.react.l_y-gun.bpm.l_y)>>h1112","");
+    c111->Update();
 }
 
 void LoadTree(const char* filename = "test.root"){

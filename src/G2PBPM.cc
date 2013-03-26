@@ -17,6 +17,7 @@
 #include "TError.h"
 
 #include "G2PAppBase.hh"
+#include "G2PBPMTrans.hh"
 #include "G2PDrift.hh"
 #include "G2PFieldBase.hh"    
 #include "G2PGlobals.hh"
@@ -207,27 +208,92 @@ void G2PBPM::GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm)
 
 void G2PBPM::GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm)
 {
-    GetBPMValue0(V5beam_lab, V5bpm_bpm);
+    using namespace Orbit1;
+
+    float x[4];
+
+    GetBPMAB(V5beam_lab, x);
+
+    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[4] = 0.0;
 }
 
 void G2PBPM::GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm)
 {
-    GetBPMValue0(V5beam_lab, V5bpm_bpm);
+    using namespace Orbit4;
+
+    float x[4];
+
+    GetBPMAB(V5beam_lab, x);
+
+    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[4] = 0.0;
 }
 
 void G2PBPM::GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm)
 {
-    GetBPMValue0(V5beam_lab, V5bpm_bpm);
+    using namespace Orbit5;
+
+    float x[4];
+
+    GetBPMAB(V5beam_lab, x);
+
+    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[4] = 0.0;
 }
 
 void G2PBPM::GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm)
 {
-    GetBPMValue0(V5beam_lab, V5bpm_bpm);
+    using namespace Orbit7;
+
+    float x[4];
+
+    GetBPMAB(V5beam_lab, x);
+
+    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[4] = 0.0;
 }
 
 void G2PBPM::GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm)
 {
-    GetBPMValue0(V5beam_lab, V5bpm_bpm);
+    using namespace Orbit9;
+
+    float x[4];
+
+    GetBPMAB(V5beam_lab, x);
+
+    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[4] = 0.0;
+}
+
+void G2PBPM::GetBPMAB(const double* V5beam_lab, float* xout)
+{
+    double x[3] = { V5beam_lab[0], V5beam_lab[2], V5beam_lab[4] };
+    double p[3] = { fBeamEnergy*sin(V5beam_lab[1])*cos(V5beam_lab[3]),
+                    fBeamEnergy*sin(V5beam_lab[1])*sin(V5beam_lab[3]),
+                    fBeamEnergy*cos(V5beam_lab[1]) };
+
+    pDrift->Drift(x, p, fBPMBZ, 10.0, x, p);
+    xout[2] = pRand->Gaus(x[0]-fBPMBX, fBPMBRes)*1e3;
+    xout[3] = pRand->Gaus(x[1]-fBPMBY, fBPMBRes)*1e3;
+    pDrift->Drift(x, p, fBPMAZ, 10.0, x, p);
+    xout[0] = pRand->Gaus(x[0]-fBPMAX, fBPMARes)*1e3;
+    xout[1] = pRand->Gaus(x[1]-fBPMAY, fBPMARes)*1e3;
 }
 
 ClassImp(G2PBPM)
