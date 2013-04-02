@@ -37,11 +37,13 @@ ifeq ($(MYOS),Darwin)
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none -fno-range-check
+               -ffixed-line-length-none -fno-range-check -fno-align-commons \
+               -Wno-intrinsic-shadow -Wno-unused-label
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
-               -fdollar-ok -ffixed-line-length-none -fno-range-check
+               -fdollar-ok -ffixed-line-length-none -fno-range-check \
+               -fno-align-commons -Wno-intrinsic-shadow -Wno-unused-label
 endif
 GPPFLAGS    := -MM
 LDFLAGS     := -O3 $(MODE)
@@ -125,19 +127,19 @@ $(OBJDIR)/%.d: %.cxx
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.f
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.f
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.F
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+#$(OBJDIR)/%.d: %.F
+#	@echo Making dependency for file $< ......
+#	@set -e; \
+#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
+#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
+#	[ -s $@ ] || rm -f $@
 
 ifneq ($(DEPS),)
 -include $(DEPS)

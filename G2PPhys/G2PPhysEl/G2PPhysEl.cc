@@ -8,6 +8,11 @@
 
 using namespace std;
 
+extern "C"
+{
+    void carbon_(double* Ei, double* ang, double* xs);
+}
+
 static const double kDEG = 3.14159265358979323846/180.0;
 static const double kMEV = 1.0e-3;
 
@@ -59,6 +64,16 @@ static double FF_All(double Q2, double Z)
 	return FF;
 }
 
+static double Carbon(double Ei, double theta)
+{
+    double e = Ei*1000;
+    double t = theta/kDEG;
+    double XS;
+    carbon_(&e, &t, &XS);
+
+    return XS;
+}
+
 G2PPhysEl::G2PPhysEl()
 {
     // Nothing to do
@@ -95,6 +110,8 @@ void G2PPhysEl::SetPars(double* array, int n)
 double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
 {
     if ((iZ==6)&&(iA==12)) return GetXS_C12(Ei, theta);
+    //if ((iZ==6)&&(iA==12)) return Carbon(Ei, theta);
+    else return GetXS_All(Ei, theta);
 
     return 0.0;
 }
@@ -103,6 +120,8 @@ double G2PPhysEl::GetXS_C12(double Ei, double theta)
 {
     double Recoil, Ef, Q2;
     double Mtg = 11.188;
+
+    printf("hehe: %e\t%e\t\n", Ei, theta);
 
     /*
     C     Ei        - INCIDENT ENERGY (GEV)
