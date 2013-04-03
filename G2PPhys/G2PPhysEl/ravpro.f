@@ -126,6 +126,7 @@ C    Include parameter file to define array sizes
       INCLUDE 'ravpro.inc'
       EXTERNAL RAVDEQ
       CHARACTER RHONA*72
+      PARAMETER (NPMX=29)
       DOUBLE PRECISION ZV10(4), ZV11(4), ZV12(3), ZV13(4)
       DOUBLE PRECISION ZV14(11), ZV15(10)
       INTEGER NZ001(10), NZ002(11)
@@ -133,7 +134,7 @@ C    Include parameter file to define array sizes
       DOUBLE PRECISION P(101)
       DOUBLE PRECISION S(3)
       DOUBLE PRECISION THELAB(NANG),THECM(NANG),SIGLAB(NANG)
-      DOUBLE PRECISION SIGCM(NANG),DELTH(NANG),DELPH(NANG),PARAM(1)
+      DOUBLE PRECISION SIGCM(NANG),DELTH(NANG),DELPH(NANG),PARAM(NPMX)
       DOUBLE PRECISION XMS(NANG)
       INTEGER NPRINT(10), NPUNCH(5)
       DOUBLE COMPLEX AA,BB,TT,TTT,BETA,BETA0,ETA,ETN,PS,PSN,PSNM
@@ -183,22 +184,23 @@ C9050     FORMAT (1I7/(2D16.8,I7))
       IZF=IZ2-1
       DO 4449 I=1,IZF
       IF (DABS(ZV15(I))-1.0D-08) 5551,5551,4449
-5551      WRITE (8,5553)
+5551      WRITE (6,5553)
 5553     FORMAT (' Zero step error')
       STOP 'RAVPRO aborted -- zero step error'
 4449      CONTINUE
 C
 C    Write out the input
       IF (NPRINT(2).NE.1) GO TO 7709
-      WRITE (8,8012)
+      WRITE (6,8012)
 8012     FORMAT ('1',T36,'- * - R A V E N H A L L  P R O G R A M - * -')
-      CALL CHGDE3(RHONA,NPAR)
-      WRITE (8,7703) RHONA
+      WRITE(*,*) NPRINT(2)
+      CALL CHGDE3(NPAR)
+      WRITE (6,7703) RHONA
 7703     FORMAT (' Charge distribution is ',A)
-      WRITE (8,7704) (I,PARAM(I),I=1,NPAR)
+      WRITE (6,7704) (I,PARAM(I),I=1,NPAR)
 7704     FORMAT (' Charge distribution parameter',I3,5X,1PE23.16)
       IF (NCM) 7705,7705,7707
-7705      WRITE (8,7706) ELAB,PCM,ECMN,ATWT,FK
+7705      WRITE (6,7706) ELAB,PCM,ECMN,ATWT,FK
 7706     FORMAT ('0Transformation from lab angles to C/M angles',
      1 ' will be made.  The cross sections will be found'/
      2 ' in the C/M system and transformed to the lab system'/
@@ -211,20 +213,20 @@ C    Write out the input
      9 ' The atomic weight of the target = ',0PF13.8/
      1 ' K = ',1PE23.16)
       GO TO 7709
-7707      WRITE (8,7708) PCM,FK
+7707      WRITE (6,7708) PCM,FK
 7708     FORMAT ('0Transformations from lab to C/M will not be made'/
      1 ' The momentum of the electron (positron) in the C/M',
      2 'system = ',1PE23.16,' MeV/c'/
      3 ' K = ',E23.16)
 7709      IF (NPRINT(2).NE.1) GO TO 8015
-      WRITE (8,8014) GAM,ZV14(1),ZV14(2),NF,X0
+      WRITE (6,8014) GAM,ZV14(1),ZV14(2),NF,X0
 8014     FORMAT (' GAMMA = ',1PE23.16/
      1 ' Integrate Dirac equations from ',E23.16,' to ',E23.16/
      2 1X,I3,' Phase shifts will be calculated at a fitting on ',
      3 'radius of ',E23.16)
 8015      GAMM=DCONJG(GAMC)
       MDEQ=0
-      IF (NPRINT(2).EQ.1) WRITE (8,5554) (ZV14(IZ1),ZV15(IZ1),IZ1=1,IZ2)
+      IF (NPRINT(2).EQ.1) WRITE (6,5554) (ZV14(IZ1),ZV15(IZ1),IZ1=1,IZ2)
 5554     FORMAT (' Integration variables:: X = ',1PE23.16,
      1 ', DELTAX =',E23.16)
 C
@@ -332,7 +334,7 @@ C          DX03    Derivatives
 C          DX04    Derivatives
 C          XX      Independent variable, not suitabely named
       IF (ZV12(1).LT.ZV12(3)) GO TO 5100
-      WRITE (8,5101) ZV12(1),ZV12(3)
+      WRITE (6,5101) ZV12(1),ZV12(3)
 5101     FORMAT (' Bad DEQ call in RAVPRO:',2(1X,1PE23.16))
       STOP 'RAVPRO aborted -- bad DEQ call'
 5100      CALL INDEQ2(NZ001(9))
@@ -349,7 +351,7 @@ C          XX      Independent variable, not suitabely named
 8119     FORMAT ('0Radius = ',1PE23.16,', potential = ',E23.16,
      1 ', charge distribution = ',E23.16)
       GO TO 6011
-4117      IF (NPRINT(3).EQ.1) WRITE (8,8119) XX,CD,FUN
+4117      IF (NPRINT(3).EQ.1) WRITE (6,8119) XX,CD,FUN
       NZ001(9)=50
       GO TO 6011
 8118      IF(NPRINT(9).NE.0)WRITE(8,9119)XX,DX01,DX02,DX03,DX04,X01,X02,
@@ -387,7 +389,7 @@ C    Re-initialization
       FFJ=X02
       FFR=X03
       RSR=DSQRT(FFR/FFI)/FK
-      IF (NPRINT(3).EQ.1) WRITE (8,3134) X01,X02,RSR
+      IF (NPRINT(3).EQ.1) WRITE (6,3134) X01,X02,RSR
 3134     FORMAT ('0Normalization: FFI = ',1PE23.16,5X,'FFJ = ',E23.16/
      1 ' Mean square radius = ',E23.16,' fm')
       GO TO 20
@@ -426,21 +428,21 @@ C    To prevent spurious convergence when Tandel changes sign
       GO TO 8888
 3190      IF (NPRINT(4).EQ.0) GO TO 3240
       IF (N-NST) 3201,3201,3204
-3201      WRITE (8,8007)
+3201      WRITE (6,8007)
 8007     FORMAT (1H1)
-      WRITE (8,3202)
+      WRITE (6,3202)
 3202     FORMAT ('0',T31,'Solutions to the Dirac equations')
-      WRITE (8,3203)
+      WRITE (6,3203)
 3203     FORMAT ('0',T11,'N',T21,'G solution',T47,'F solution')
 3204      IF(NE-3)3210,3216,3216
-3210      WRITE (8,3215) N,X01,X02
+3210      WRITE (6,3215) N,X01,X02
 3215     FORMAT ('0',6X,I5,6X,1PE23.16,6X,E23.16)
       GO TO 3240
-3216      WRITE (8,3215) N,X03,X04
+3216      WRITE (6,3215) N,X03,X04
 3240      CONTINUE
 8888      IF(NPRINT(5).EQ.0)GO TO 8245
-      WRITE (8,8007)
-      WRITE (8,8240)
+      WRITE (6,8007)
+      WRITE (6,8240)
 8240     FORMAT ('0Phase shifts Ravenhall program'/'0',T13,'N',T32,
      1 'Phase shifts')
       WRITE(8,8242)(I,TND(I),I=1,NF)
@@ -457,8 +459,8 @@ C    exp(2IBETA-ZERO)
       LEAF=0
       OTEST=OTESTD*RAD
       IF (NPRINT(6).NE.1) GO TO 7000
-      WRITE (8,8007)
-      WRITE (8,7011) FK
+      WRITE (6,8007)
+      WRITE (6,7011) FK
 7011     FORMAT ('0The momentum is given in terms of K = ',1PE23.16,
      1 ' fm-1')
       IF(NCM.LE.0)WRITE(8,7719)
@@ -467,7 +469,7 @@ C    exp(2IBETA-ZERO)
      2 ' The lower entry is the cross section in the C/M system.')
       WRITE(8,7724)
 7724     FORMAT ('0All cross sections in fm per steradian')
-      WRITE (8,8243)
+      WRITE (6,8243)
 8243     FORMAT ('0Cross sections Ravenhall program'/
      1 '0',T9,'Angle in degrees',T40,'Cross section',T68,
      2 'Real amplitude',T92,'Imaginary amplitude')
@@ -486,7 +488,7 @@ C    thickness.
       THMS=RAD*DSQRT(.157D0*Z*(Z+1)*THMS/(ATWT*ELAB**2)*
      1 (-.047D0+2.583D0*DLOG10(7800.D0*(Z+1)*Z**.333333333D0*
      2 THMS/((1.D0+(XME/ELAB)**2)*ATWT*(1.D0+3.35D0*DABS(GAM)**2)))))
-      IF (NPRINT(10).NE.0) WRITE (8,7702) THMS
+      IF (NPRINT(10).NE.0) WRITE (6,7702) THMS
 7702     FORMAT (' RMS multiple scattering angle calculated to be ',
      1 1PE23.16,' degrees.')
 C    Determine the step size for folding.  This is taken to be the smallest
@@ -645,27 +647,27 @@ C            due to electron mass
      1 (1.0D0+(XME/ELAB)**2)*(1.0D0+(XME* DTAN(OL/2.0D0)/ELAB)**2)*DCS
       IF(NPRINT(6).EQ.0)GO TO 7751
       IF (LEAF.LT.16) GO TO 1500
-      WRITE (8,8007)
-      WRITE (8,7011) FK
-      WRITE (8,7719)
-      WRITE (8,7724)
-      WRITE (8,8243)
+      WRITE (6,8007)
+      WRITE (6,7011) FK
+      WRITE (6,7719)
+      WRITE (6,7724)
+      WRITE (6,8243)
       LEAF=0
 1500      OLDEG=OL*RAD
-      WRITE (8,7722) OLDEG,DCS
+      WRITE (6,7722) OLDEG,DCS
 7722     FORMAT ('0',4(1X,1PE23.16))
       LEAF=LEAF+1
-      WRITE (8,4351) ODEG,DCC,FO
+      WRITE (6,4351) ODEG,DCC,FO
 4351     FORMAT (' ',4(1X,1PE23.16))
       GO TO 7751
 7723      IF(NPRINT(6).EQ.0)GO TO 7751
       IF (LEAF.LT.16) GO TO 1600
-      WRITE (8,8007)
-      WRITE (8,7011) FK
-      WRITE (8,7724)
-      WRITE (8,8243)
+      WRITE (6,8007)
+      WRITE (6,7011) FK
+      WRITE (6,7724)
+      WRITE (6,8243)
       LEAF=0
-1600      WRITE (8,4351) ODEG,DCS,FO
+1600      WRITE (6,4351) ODEG,DCS,FO
       LEAF=LEAF+1
 C
 C    Fold the cross section
@@ -686,7 +688,7 @@ C    Fold the cross section
       SIGLAB(NAR)=SIGLAB(NAR)*(1.D0 + DSDT*DCOS(OLS)*((DTR*DELPH(NAR))
      1 **2/6.D0 + CTHMS)/DSIN(OLS) + D2SDT2*((DTR*DELTH(NAR))
      2 **2/6.D0 + CTHMS))
-      IF (NPRINT(10).NE.0) WRITE (8,7754) S(2),SIGLAB(NAR)
+      IF (NPRINT(10).NE.0) WRITE (6,7754) S(2),SIGLAB(NAR)
 7754     FORMAT (' Unfolded cross section = ',1PE23.16/
      1 ' Folded cross section = ',E23.16)
 7753      IF (NPUNCH(3).NE.0) WRITE (9,4351) SIGLAB(NAR),THELAB(NAR)
@@ -838,7 +840,7 @@ C]440      CONTINUE
 C
 C    Write out the input
       IF(NPRINT(1).EQ.0)GO TO 8015
-      WRITE (8,8014) GAM,FCT1,ZV14(2),ZV15(1),NF,X0
+      WRITE (6,8014) GAM,FCT1,ZV14(2),ZV15(1),NF,X0
 8014     FORMAT ('1',T11,'- * - R A V E N H A L L  P R O G R A M  ',
      1 'C O U L O M B  F U N C T I O N S - * -'/
      2 '0Input for calculation of the Coulomb functions for ',
@@ -919,7 +921,7 @@ C    irregular function).
       T=-T
       IF(NPRINT(7).EQ.0)GO TO 1340
       WRITE(8,1085)GSAV,FSAV
-      WRITE (8,1320) X0,N,RHO,GAM,FR,FI,GR,GI,T
+      WRITE (6,1320) X0,N,RHO,GAM,FR,FI,GR,GI,T
 1320     FORMAT ('0X0 = ',1PE23.16,', N = ',I3,', RHO = ',E23.16,
      1 ', GAMMA = ',E23.16/
      2 ' FR = ',E23.16,', FI = ',E23.16,', GR = ',E23.16,', GI = ',
@@ -1005,7 +1007,7 @@ C          DX01    Derivatives
 C          DX02    Derivatives
 C          XX      Independent variable (not suitabely named)
       IF (ZV12(1).LT.ZV12(3)) GO TO 5100
-      WRITE (8,5101) ZV12(1),ZV12(3)
+      WRITE (6,5101) ZV12(1),ZV12(3)
 5101     FORMAT (' Bad DEQ call in COULS: ',2(1X,1PE23.16))
       STOP 'COULS aborted -- bad DEQ call'
 5100      CALL INDEQ2(NZ001(9))
@@ -1035,7 +1037,7 @@ C    Integration finished for this case.  Now do the other function.
 C
 C    Write out the normalized Coulomb functions.
 C    The resulting Coulomb functions are in FRN, FIN, GRN, and GIN.
-3030      IF (NPRINT(1).NE.0) WRITE (8,2117) FRN,GRN,FIN,GIN,FCT,X0
+3030      IF (NPRINT(1).NE.0) WRITE (6,2117) FRN,GRN,FIN,GIN,FCT,X0
 2117     FORMAT ('0FRN = ',1PE23.16,', GRN = ',E23.16/
      1 ' FIN = ',E23.16,', GIN = ',E23.16/
      2 ' FCT = ',E23.16,', X0 = ',E23.16)

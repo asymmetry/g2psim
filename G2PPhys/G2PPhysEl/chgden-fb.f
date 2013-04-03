@@ -9,7 +9,6 @@ C    to use (including the first).
 C
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION COEF(48)
-      CHARACTER RHONA*(*),RHONAM*43
       COMMON /CHARGE/ MODELN,RHON,RMAX,COEF
       DATA PI/3.1415926535897D0/
       DATA RMIN/.1D-6/
@@ -43,10 +42,7 @@ C
 3      A3=RHO0
       RETURN
 C
-      ENTRY CHGDE3(RHONA,NPAR)
-300      NPAR=MODELN+1
-      WRITE (RHONAM,301) MODELN
-301     FORMAT ('F.-B. series with overall norm. (',I2,' coef''s)')
-      RHONA=RHONAM
+      ENTRY CHGDE3(NPAR)
+      NPAR=MODELN+1
       RETURN
       END

@@ -71,10 +71,12 @@ static double Carbon(double Ei, double theta)
     double XS;
     carbon_(&e, &t, &XS);
 
+    XS *=1.0e4; // fm^2 (1e-30m^2) to microbarn (1e-34m^2)
     return XS;
 }
 
-G2PPhysEl::G2PPhysEl()
+G2PPhysEl::G2PPhysEl() :
+    iSetting(1)
 {
     // Nothing to do
 }
@@ -88,9 +90,12 @@ void G2PPhysEl::SetPars(double* array, int n)
 {
     G2PPhysBase::SetPars(array, n);
 
-    // switch (n) {
-    // case 0:
-    //     break;
+    switch (n) {
+    case 0:
+        break;
+    case 1:
+        iSetting = int(fPars[0]);
+        break;
     // case 2:
     //     fTb = fPars[0]; fTa = fPars[1];
     //     break;
@@ -101,16 +106,18 @@ void G2PPhysEl::SetPars(double* array, int n)
     //     fEPS = fPars[0]; fEPSD = fPars[1]; fFP = fPars[2];
     //     fTb = fPars[3]; fTa = fPars[4];
     //     break;
-    // default:
-    //     printf("Error: G2PPhysEl::SetPars(): Invalid number of pars.\n");
-    //     break;
-    // }
+    default:
+        printf("Error: G2PPhysEl::SetPars(): Invalid number of pars.\n");
+        break;
+    }
 }
 
 double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
 {
-    if ((iZ==6)&&(iA==12)) return GetXS_C12(Ei, theta);
-    //if ((iZ==6)&&(iA==12)) return Carbon(Ei, theta);
+    if ((iZ==6)&&(iA==12)) {
+        if (iSetting==1) return Carbon(Ei, theta);
+        else return GetXS_C12(Ei, theta);
+    }
     else return GetXS_All(Ei, theta);
 
     return 0.0;

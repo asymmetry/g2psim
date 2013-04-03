@@ -14,6 +14,8 @@ public:
     double GetXS(double Ei, double Ef, double theta);
 
 private:
+    int iSetting;
+    
     double GetXS_C12(double Ei, double theta);
     double GetXS_All(double Ei, double theta);
 }; 
