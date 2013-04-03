@@ -45,6 +45,8 @@ protected:
     int nEvent;
     int nCounter;
 
+    bool bIsGood;
+
     TList* fApps;
     G2PRunBase* pRun;
 

@@ -1,4 +1,4 @@
-// This file defines a class HRSRecUseDB.
+// This file defines a class G2PDBRec.
 // This class is used in G2PSim class together with HRSTransport.
 // It reads replay database and reconstruct target variables using this
 //+database.
@@ -29,29 +29,29 @@
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
-#include "G2PRecUseDB.hh"
+#include "G2PDBRec.hh"
 
 using namespace std;
 
-G2PRecUseDB* G2PRecUseDB::pG2PRecUseDB = NULL;
+G2PDBRec* G2PDBRec::pG2PDBRec = NULL;
 
-G2PRecUseDB::G2PRecUseDB() :
+G2PDBRec::G2PDBRec() :
     pPrefix(NULL), pDBName(NULL)
 {
-    if (pG2PRecUseDB) {
-        Error("G2PRecUseDB()", "Only one instance of G2PRecUseDB allowed.");
+    if (pG2PDBRec) {
+        Error("G2PDBRec()", "Only one instance of G2PDBRec allowed.");
         MakeZombie();
         return;
     }
-    pG2PRecUseDB = this;
+    pG2PDBRec = this;
 }
 
-G2PRecUseDB::~G2PRecUseDB()
+G2PDBRec::~G2PDBRec()
 {
-    if (pG2PRecUseDB==this) pG2PRecUseDB = NULL;
+    if (pG2PDBRec==this) pG2PDBRec = NULL;
 }
 
-int G2PRecUseDB::Init()
+int G2PDBRec::Init()
 {
     static const char* const here = "Init()";
 
@@ -206,7 +206,7 @@ int G2PRecUseDB::Init()
     return (fStatus = kOK);
 }
 
-void G2PRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
+void G2PDBRec::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
 {
     static const char* const here = "CalcTargetCoords()";
 
@@ -251,7 +251,7 @@ void G2PRecUseDB::CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr)
     if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_rot[4], V5tg_tr[0], V5tg_tr[1], V5tg_tr[2], V5tg_tr[3], V5tg_tr[4]);
 }
 
-void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
+void G2PDBRec::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
 {
     static const char* const here = "TransTr2Rot()";
 
@@ -288,7 +288,7 @@ void G2PRecUseDB::TransTr2Rot(const double* V5fp_tr, double* V5fp_rot)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
-void G2PRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
+void G2PDBRec::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
 {
     static const char* const here = "TransRot2Tr()";
 
@@ -323,7 +323,7 @@ void G2PRecUseDB::TransRot2Tr(const double* V5fp_rot, double* V5fp_tr)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
-void G2PRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
+void G2PDBRec::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
 {
     static const char* const here = "TransTr2Det()";
 
@@ -348,7 +348,7 @@ void G2PRecUseDB::TransTr2Det(const double* V5fp_tr, double* V5fp_det)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
-void G2PRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
+void G2PDBRec::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
 {
     static const char* const here = "TransDet2Tr()";
 
@@ -373,7 +373,7 @@ void G2PRecUseDB::TransDet2Tr(const double* V5fp_det, double* V5fp_tr)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3]);
 }
 
-void G2PRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
+void G2PDBRec::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
 {
     static const char* const here = "TransRot2Det()";
 
@@ -385,7 +385,7 @@ void G2PRecUseDB::TransRot2Det(const double* V5fp_rot, double* V5fp_det)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3], V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3]);
 }
 
-void G2PRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
+void G2PDBRec::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
 {
     static const char* const here = "TransDet2Rot()";
 
@@ -397,7 +397,7 @@ void G2PRecUseDB::TransDet2Rot(const double* V5fp_det, double* V5fp_rot)
     if (fDebug>3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5fp_det[0], V5fp_det[1], V5fp_det[2], V5fp_det[3], V5fp_rot[0], V5fp_rot[1], V5fp_rot[2], V5fp_rot[3]);
 }
 
-void G2PRecUseDB::PrintDataBase()
+void G2PDBRec::PrintDataBase()
 {
     static const char* const here = "TransDet2Rot()";
 
@@ -436,7 +436,7 @@ void G2PRecUseDB::PrintDataBase()
     }
 }
 
-double G2PRecUseDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
+double G2PDBRec::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a variable at the target
     // Must already have x values for the matrix elements
@@ -454,7 +454,7 @@ double G2PRecUseDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &
     return value;
 }
 
-void G2PRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
+void G2PDBRec::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
 {
     // Calculate the value of a matrix element for a given x
     double value = 0.0;
@@ -470,19 +470,19 @@ void G2PRecUseDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
     }   
 }
 
-G2PRecUseDB::THaMatrixElement::THaMatrixElement()
-    :bIsZero(true), iPower(3), iOrder(0), fPoly(G2PRecUseDB::kPORDER),
+G2PDBRec::THaMatrixElement::THaMatrixElement()
+    :bIsZero(true), iPower(3), iOrder(0), fPoly(G2PDBRec::kPORDER),
      fValue(0)
 {
     // Nothing to do
 }
 
-G2PRecUseDB::THaMatrixElement::~THaMatrixElement()
+G2PDBRec::THaMatrixElement::~THaMatrixElement()
 {
     // Nothing to do
 }
 
-bool G2PRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
+bool G2PDBRec::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
 {
     // Compare coefficients of this matrix element to another
     if (iPower.size()!=rhs.iPower.size()) return false;
@@ -492,7 +492,7 @@ bool G2PRecUseDB::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
     return true;
 }
 
-void G2PRecUseDB::THaMatrixElement::SkimPoly()
+void G2PDBRec::THaMatrixElement::SkimPoly()
 {
     if (bIsZero) return;
 
@@ -503,7 +503,7 @@ void G2PRecUseDB::THaMatrixElement::SkimPoly()
     if (iOrder==0) bIsZero = true;
 }
 
-void G2PRecUseDB::THaMatrixElement::Print()
+void G2PDBRec::THaMatrixElement::Print()
 {
     if (bIsZero) {
         cout << "This element is zero" << endl;
@@ -519,4 +519,4 @@ void G2PRecUseDB::THaMatrixElement::Print()
     cout.unsetf(ios::floatfield);
 }
 
-ClassImp(G2PRecUseDB)
+ClassImp(G2PDBRec)

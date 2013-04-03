@@ -6,7 +6,7 @@
 #include "TError.h"
 
 #include "G2PGlobals.hh"
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 #include "G2PRand.hh"
 
 #include "G2PPointGun.hh"

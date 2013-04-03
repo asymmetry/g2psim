@@ -1,4 +1,4 @@
-// This file defines a class G2PRecUseDB.
+// This file defines a class G2PDBRec.
 // This class is used in G2PSim class together with HRSTransport.
 // It reads replay database and reconstruct target variables using this
 //+database.
@@ -20,11 +20,11 @@
 
 using namespace std;
 
-class G2PRecUseDB : public G2PAppBase
+class G2PDBRec : public G2PAppBase
 {
 public:
-    G2PRecUseDB();
-    ~G2PRecUseDB();
+    G2PDBRec();
+    ~G2PDBRec();
 
     int Init();
 
@@ -37,7 +37,7 @@ public:
     void TransRot2Det(const double* V5fp_rot, double* V5fp_det);
     void TransDet2Rot(const double* V5fp_det, double* V5fp_rot);
 
-    static G2PRecUseDB* GetInstance() { return pG2PRecUseDB; }
+    static G2PDBRec* GetInstance() { return pG2PDBRec; }
 
 protected:
     enum { kPORDER = 7, kNUM_PRECOMP_POW = 10 }; // constants
@@ -84,9 +84,9 @@ protected:
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
 private:
-    static G2PRecUseDB* pG2PRecUseDB;
+    static G2PDBRec* pG2PDBRec;
 
-    ClassDef(G2PRecUseDB, 1)
+    ClassDef(G2PDBRec, 1)
 };
 
 #endif

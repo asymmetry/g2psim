@@ -1,9 +1,9 @@
 #ifndef G2P_FLATGUN_H
 #define G2P_FLATGUN_H
 
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 
-class G2PFlatGun : public G2PGunBase
+class G2PFlatGun : public G2PGun
 {
 public:
     G2PFlatGun();

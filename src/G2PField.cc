@@ -1,3 +1,15 @@
+// This file defines a class G2PField.
+// This class is a tool class.
+// G2PProcBase classes will call GetField() to get field values.
+// The field map is defined in a special coords respected to the coils,
+//+however, the final result has been trasformed back to the lab coords.
+// It use Lagrange polynomial interpolation to calculate field values. The
+//+default is 2nd order.
+//
+// History:
+//   Feb 2013, C. Gu, First public version.
+//
+
 #include <cstdlib>
 #include <cmath>
 #include <vector>
@@ -11,25 +23,25 @@
 #include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
 
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 
 using namespace std;
 
 static const double kDEG = 3.14159265358979323846/180.0;
 
-G2PFieldBase* G2PFieldBase::pG2PFieldBase = NULL;
+G2PField* G2PField::pG2PField = NULL;
 
-G2PFieldBase::G2PFieldBase() :
+G2PField::G2PField() :
     pMapFileName(NULL), fZMin(0.0), fZMax(2.99),
     fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0),
     nR(0), bRotation(false), fRatio(1.0)
 {
-    if (pG2PFieldBase) {
-        Error("G2PFieldBase()", "Only one instance of G2PFieldBase allowed.");
+    if (pG2PField) {
+        Error("G2PField()", "Only one instance of G2PField allowed.");
         MakeZombie();
         return;
     }
-    pG2PFieldBase = this;
+    pG2PField = this;
 
     memset(fOrigin, 0, sizeof(fOrigin));
     memset(fEulerAngle, 0, sizeof(fEulerAngle));
@@ -37,7 +49,7 @@ G2PFieldBase::G2PFieldBase() :
     fBField.clear();
 }
 
-G2PFieldBase::~G2PFieldBase()
+G2PField::~G2PField()
 {
     typedef vector<vector<vector<double> > >::size_type size_t;
 
@@ -48,10 +60,10 @@ G2PFieldBase::~G2PFieldBase()
     }
     fBField.clear();
 
-    if (pG2PFieldBase==this) pG2PFieldBase = NULL;
+    if (pG2PField==this) pG2PField = NULL;
 }
 
-void G2PFieldBase::SetEulerAngle(double alpha, double beta, double gamma)
+void G2PField::SetEulerAngle(double alpha, double beta, double gamma)
 {
     // The Euler angle is defined using Z-X'-Z" convention
     fEulerAngle[0] = alpha*kDEG;
@@ -89,7 +101,7 @@ void G2PFieldBase::SetEulerAngle(double alpha, double beta, double gamma)
     bRotation = true;
 }
 
-int G2PFieldBase::Init()
+int G2PField::Init()
 {
     //static const char* const here = "Init()";
 
@@ -109,7 +121,7 @@ int G2PFieldBase::Init()
     return (fStatus = kOK);
 }
 
-int G2PFieldBase::Begin()
+int G2PField::Begin()
 {
     //static const char* const here = "Begin()";
 
@@ -118,7 +130,7 @@ int G2PFieldBase::Begin()
     return (fStatus = kOK);
 }
 
-void G2PFieldBase::GetField(const double* x, double* b)
+void G2PField::GetField(const double* x, double* b)
 {
     static const char* const here = "GetField()";
     
@@ -130,7 +142,7 @@ void G2PFieldBase::GetField(const double* x, double* b)
     if (fDebug>4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
-int G2PFieldBase::ReadMap()
+int G2PField::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
@@ -139,7 +151,7 @@ int G2PFieldBase::ReadMap()
     return 0;
 }
 
-int G2PFieldBase::CreateMap()
+int G2PField::CreateMap()
 {
     static const char* const here = "CreateMap()";
 
@@ -148,7 +160,7 @@ int G2PFieldBase::CreateMap()
     return 0;   
 }
 
-int G2PFieldBase::Interpolate(const double* pos, double* b, int order)
+int G2PField::Interpolate(const double* pos, double* b, int order)
 {
 
 // Calculate the nth order Lagrange polynomial interpolation
@@ -225,7 +237,7 @@ int G2PFieldBase::Interpolate(const double* pos, double* b, int order)
     return 0;
 }
 
-void G2PFieldBase::TransLab2Field(const double* x, double* xout)
+void G2PField::TransLab2Field(const double* x, double* xout)
 {
     double temp[3] = { x[0], x[1], x[2] };
     for (int i = 0; i<3; i++) temp[i]-= fOrigin[i];
@@ -235,14 +247,14 @@ void G2PFieldBase::TransLab2Field(const double* x, double* xout)
     }
 }
 
-void G2PFieldBase::TransField2Lab(const double* b, double* bout)
+void G2PField::TransField2Lab(const double* b, double* bout)
 {
     if (bRotation) {
         for (int i = 0; i<3; i++) bout[i] = fRotationMatrix[1][i][0]*b[0]+fRotationMatrix[1][i][1]*b[1]+fRotationMatrix[1][i][2]*b[2];
     }
 }
 
-void G2PFieldBase::SaveRootFile()
+void G2PField::SaveRootFile()
 {
     TFile* file = new TFile("field.root", "RECREATE");
 	TTree* field = new TTree("field", "field map");
@@ -276,4 +288,4 @@ void G2PFieldBase::SaveRootFile()
     file->Close();
 }
 
-ClassImp(G2PFieldBase)
+ClassImp(G2PField)

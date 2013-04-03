@@ -9,7 +9,7 @@
 #include "TObject.h"
 #include "TError.h"
 
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 #include "G2PGlobals.hh"
 
 #include "G2PMapField.hh"
@@ -37,7 +37,7 @@ int G2PMapField::Begin()
 {
     static const char* const here = "Init()";
 
-    if (G2PFieldBase::Begin()!=0) return fStatus;
+    if (G2PField::Begin()!=0) return fStatus;
 
     fStatus = kERROR;
     if (ReadMap()) fStatus = kOK;
@@ -50,7 +50,7 @@ int G2PMapField::ReadMap()
 {
     static const char* const here = "ReadMap()";
 
-    if (!G2PFieldBase::ReadMap()) return -1;
+    if (!G2PField::ReadMap()) return -1;
 
     ifstream ifs;
     int count = 0;

@@ -12,7 +12,7 @@
 #include "G2PBPM.hh"
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 #include "G2PProcBase.hh"
 #include "G2PRunBase.hh"
 #include "G2PVarDef.hh"
@@ -24,6 +24,17 @@ G2PGunProc::G2PGunProc() :
     fHRSAngle(0.0), fHRSMomentum(0.0),
     pBPM(NULL), pDrift(NULL), pGun(NULL)
 {
+    mName["fV5beam_lab"] = fV5beam_lab; mLength["fV5beam_lab"] = 5;
+    mName["fV5react_tr"] = fV5react_tr; mLength["fV5react_tr"] = 5;
+    mName["fV5react_lab"] = fV5react_lab; mLength["fV5react_lab"] = 5;
+    mName["fV5bpm_bpm"] = fV5bpm_bpm; mLength["fV5bpm_bpm"] = 5;
+    mName["fV5bpm_lab"] = fV5bpm_lab; mLength["fV5bpm_lab"] = 5;
+    mName["fV5tg_tr"] = fV5tg_tr; mLength["fV5tg_tr"] = 5;
+
+    fAppsList.push_back("G2PBPM");
+    fAppsList.push_back("G2PDrift");
+    fAppsList.push_back("G2PGun");
+
     Clear();
 }
 
@@ -34,27 +45,13 @@ G2PGunProc::~G2PGunProc()
 
 int G2PGunProc::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
     if (G2PProcBase::Init()!=0) return fStatus;
 
     pBPM = G2PBPM::GetInstance();
-    if (!pBPM) {
-        Error(here, "Cannot initialize, no G2PBPM found.");
-        return (fStatus = kINITERROR);
-    }
-
     pDrift = G2PDrift::GetInstance();
-    if (!pDrift) {
-        Error(here, "Cannot initialize, no G2PDrift found.");
-        return (fStatus = kINITERROR);
-    }
-
-    pGun = G2PGunBase::GetInstance();
-    if (!pGun) {
-        Error(here, "Cannot initialize, no G2PGun found.");
-        return (fStatus = kINITERROR);
-    }
+    pGun = G2PGun::GetInstance();
 
     fApps->Add(pBPM);
     fApps->Add(pDrift);
@@ -71,13 +68,6 @@ int G2PGunProc::Begin()
 
     fHRSAngle = gG2PRun->GetHRSAngle();
     fHRSMomentum = gG2PRun->GetHRSMomentum();
-
-    mName["fV5beam_lab"] = fV5beam_lab; mLength["fV5beam_lab"] = 5;
-    mName["fV5react_tr"] = fV5react_tr; mLength["fV5react_tr"] = 5;
-    mName["fV5react_lab"] = fV5react_lab; mLength["fV5react_lab"] = 5;
-    mName["fV5bpm_bpm"] = fV5bpm_bpm; mLength["fV5bpm_bpm"] = 5;
-    mName["fV5bpm_lab"] = fV5bpm_lab; mLength["fV5bpm_lab"] = 5;
-    mName["fV5tg_tr"] = fV5tg_tr; mLength["fV5tg_tr"] = 5;
 
     return (fStatus = kOK);
 }

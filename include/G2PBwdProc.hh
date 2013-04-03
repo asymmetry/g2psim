@@ -7,7 +7,7 @@
 class G2PBPM;
 class G2PDrift;
 class G2PHRSTrans;
-class G2PRecUseDB;
+class G2PDBRec;
 
 class G2PBwdProc : public G2PProcBase, public G2PSieve
 {
@@ -46,7 +46,7 @@ protected:
     G2PBPM* pBPM;
     G2PDrift* pDrift;
     G2PHRSTrans* pHRS;
-    G2PRecUseDB* pRecDB;
+    G2PDBRec* pDBRec;
 
 private:
     static G2PBwdProc* pG2PBwdProc;

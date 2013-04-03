@@ -24,6 +24,13 @@ G2PPhyProc::G2PPhyProc() :
     fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), 
     pPhys(NULL)
 {
+    mName["fV5beam_lab"] = fV5beam_lab; mLength["fV5beam_lab"] = 5;
+    mName["fV5bpm_lab"] = fV5bpm_lab; mLength["fV5bpm_lab"] = 5;
+    mName["fV5react_tr"] = fV5react_tr; mLength["fV5react_tr"] = 5;
+    mName["fV5rec_tr"] = fV5rec_tr; mLength["fV5rec_tr"] = 5;
+
+    fAppsList.push_back("G2PPhys");
+
     Clear();
 }
 
@@ -34,15 +41,11 @@ G2PPhyProc::~G2PPhyProc()
 
 int G2PPhyProc::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
     if (G2PProcBase::Init()!=0) return fStatus;
 
     pPhys = G2PPhys::GetInstance();
-    if (!pPhys) {
-        Error(here, "Cannot initialize, no G2PPhys found.");
-        return (fStatus = kINITERROR);
-    }
 
     fApps->Add(pPhys);
 
@@ -59,10 +62,6 @@ int G2PPhyProc::Begin()
     fHRSAngle = gG2PRun->GetHRSAngle();
     fHRSMomentum = gG2PRun->GetHRSMomentum();
 
-    mName["fV5beam_lab"] = fV5beam_lab; mLength["fV5beam_lab"] = 5;
-    mName["fV5bpm_lab"] = fV5bpm_lab; mLength["fV5bpm_lab"] = 5;
-    mName["fV5react_tr"] = fV5react_tr; mLength["fV5react_tr"] = 5;
-    mName["fV5rec_tr"] = fV5rec_tr; mLength["fV5rec_tr"] = 5;
 
     return (fStatus = kOK);
 }

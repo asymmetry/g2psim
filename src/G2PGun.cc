@@ -1,5 +1,5 @@
-// This file defines a class G2PGunBase.
-// This class is the base class of G2PGun.
+// This file defines a class G2PGun.
+// This class is a tool class.
 // G2PProcBase classes will call Shoot() to get kinematic variables.
 // It is a virtual function so each derived class will have its own method.
 //
@@ -16,17 +16,17 @@
 
 #include "G2PAppBase.hh"
 #include "G2PDrift.hh"
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 
 static const double kDEG = 3.14159265358979323846/180.0;
 
-G2PGunBase* G2PGunBase::pG2PGunBase = NULL;
+G2PGun* G2PGun::pG2PGun = NULL;
 
-G2PGunBase::G2PGunBase() :
+G2PGun::G2PGun() :
     fHRSAngle(5.767*kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254),
     fFieldRatio(0.0), fBeamX_lab(0.0), fBeamY_lab(0.0),
     fBeamTiltAngle(0.0), fBeamR_lab(0.0),
@@ -38,20 +38,20 @@ G2PGunBase::G2PGunBase() :
     fSigmaAng_tr(0.0), fSigmaDelta(0.0),
     pDrift(NULL)
 {
-    if (pG2PGunBase) {
-        Error("G2PGunBase()", "Only one instance of G2PGunBase allowed.");
+    if (pG2PGun) {
+        Error("G2PGun()", "Only one instance of G2PGun allowed.");
         MakeZombie();
         return;
     }
-    pG2PGunBase = this;
+    pG2PGun = this;
 }
 
-G2PGunBase::~G2PGunBase()
+G2PGun::~G2PGun()
 {
-    if (pG2PGunBase==this) pG2PGunBase = NULL;
+    if (pG2PGun==this) pG2PGun = NULL;
 }
 
-int G2PGunBase::Init()
+int G2PGun::Init()
 {
     //static const char* const here = "Init()";
 
@@ -66,7 +66,7 @@ int G2PGunBase::Init()
     return (fStatus = kOK);
 }
 
-int G2PGunBase::Begin()
+int G2PGun::Begin()
 {
     //static const char* const here = "Begin()";
 
@@ -75,7 +75,7 @@ int G2PGunBase::Begin()
     fHRSAngle = gG2PRun->GetHRSAngle();
     fHRSMomentum = gG2PRun->GetHRSMomentum();
     fBeamEnergy = gG2PRun->GetBeamEnergy();
-    G2PFieldBase* field = G2PFieldBase::GetInstance();
+    G2PField* field = G2PField::GetInstance();
     if (field==NULL) fFieldRatio = 0;
     else fFieldRatio = field->GetRatio();
 
@@ -84,7 +84,7 @@ int G2PGunBase::Begin()
     return (fStatus = kOK);
 }
 
-void G2PGunBase::SetTiltAngle()
+void G2PGun::SetTiltAngle()
 {
     static const char* const here = "SetTiltAngle()";
 
@@ -104,7 +104,7 @@ void G2PGunBase::SetTiltAngle()
     if (fDebug>0) Info(here, "Beam tile angle is %10.3e deg.", fBeamTiltAngle/kDEG);
 }
 
-void G2PGunBase::GetReactPoint(double x, double y, double z, double* V5)
+void G2PGun::GetReactPoint(double x, double y, double z, double* V5)
 {
     static const char* const here = "GetReactPoint()";
 
@@ -121,4 +121,4 @@ void G2PGunBase::GetReactPoint(double x, double y, double z, double* V5)
     if (fDebug>2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
-ClassImp(G2PGunBase)
+ClassImp(G2PGun)

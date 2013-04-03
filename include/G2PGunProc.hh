@@ -5,7 +5,7 @@
 
 class G2PBPM;
 class G2PDrift;
-class G2PGunBase;
+class G2PGun;
 
 class G2PGunProc : public G2PProcBase
 {
@@ -37,7 +37,7 @@ protected:
 
     G2PBPM* pBPM;
     G2PDrift* pDrift;
-    G2PGunBase* pGun;
+    G2PGun* pGun;
 
 private:
     static G2PGunProc* pG2PGunProc;

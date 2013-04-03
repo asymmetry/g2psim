@@ -10,12 +10,12 @@
 
 #include "G2PAppBase.hh"
 #include "G2PBPM.hh"
+#include "G2PDBRec.hh"
 #include "G2PDrift.hh"
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 #include "G2PGlobals.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PProcBase.hh"
-#include "G2PRecUseDB.hh"
 #include "G2PRunBase.hh"
 #include "G2PSieve.hh"
 #include "G2PVarDef.hh"
@@ -25,8 +25,21 @@
 
 G2PBwdProc::G2PBwdProc() :
     fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), 
-    pDrift(NULL), pHRS(NULL), pRecDB(NULL)
+    pDrift(NULL), pHRS(NULL), pDBRec(NULL)
 {
+    mName["fV5bpm_bpm"] = fV5bpm_bpm; mLength["fV5bpm_bpm"] = 5;
+    mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
+    mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
+    mName["fV5rectg_tr"] = fV5rectg_tr; mLength["fV5rectg_tr"] = 5;
+    mName["fV5recsiv_tr"] = fV5recsiv_tr; mLength["fV5recsiv_tr"] = 5;
+    mName["fV5rec_tr"] = fV5rec_tr; mLength["fV5rec_tr"] = 5;
+    mName["fV5rec_lab"] = fV5rec_lab; mLength["fV5rec_lab"] = 5;
+
+    fAppsList.push_back("G2PBPM");
+    fAppsList.push_back("G2PDBRec");
+    fAppsList.push_back("G2PDrift");
+    fAppsList.push_back("G2PHRSTrans");
+
     Clear();
 }
 
@@ -37,38 +50,19 @@ G2PBwdProc::~G2PBwdProc()
 
 int G2PBwdProc::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
     if (G2PProcBase::Init()!=0) return fStatus;
 
     pBPM = G2PBPM::GetInstance();
-    if (!pBPM) {
-        Error(here, "Cannot initialize, no G2PBPM found.");
-        return (fStatus = kINITERROR);
-    }
-
     pDrift = G2PDrift::GetInstance();
-    if (!pDrift) {
-        Error(here, "Cannot initialize, no G2PDrift found.");
-        return (fStatus = kINITERROR);
-    }
-
     pHRS = G2PHRSTrans::GetInstance();
-    if (!pHRS) {
-        Error(here, "Cannot initialize, no G2PHRSTrans found.");
-        return (fStatus = kINITERROR);
-    }
-
-    pRecDB = G2PRecUseDB::GetInstance();
-    if (!pRecDB) {
-        Error(here, "Cannot initialize, no G2PRecUseDB found.");
-        return (fStatus = kINITERROR);
-    }
+    pDBRec = G2PDBRec::GetInstance();
 
     fApps->Add(pBPM);
     fApps->Add(pDrift);
     fApps->Add(pHRS);
-    fApps->Add(pRecDB);
+    fApps->Add(pDBRec);
 
     return (fStatus = kOK);
 }
@@ -82,17 +76,9 @@ int G2PBwdProc::Begin()
     fBeamEnergy = gG2PRun->GetBeamEnergy();
     fHRSAngle = gG2PRun->GetHRSAngle();
     fHRSMomentum = gG2PRun->GetHRSMomentum();
-    G2PFieldBase* field = G2PFieldBase::GetInstance();
+    G2PField* field = G2PField::GetInstance();
     if (field) fFieldRatio = field->GetRatio();
     else fFieldRatio = 0.0;
-
-    mName["fV5bpm_bpm"] = fV5bpm_bpm; mLength["fV5bpm_bpm"] = 5;
-    mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
-    mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
-    mName["fV5rectg_tr"] = fV5rectg_tr; mLength["fV5rectg_tr"] = 5;
-    mName["fV5recsiv_tr"] = fV5recsiv_tr; mLength["fV5recsiv_tr"] = 5;
-    mName["fV5rec_tr"] = fV5rec_tr; mLength["fV5rec_tr"] = 5;
-    mName["fV5rec_lab"] = fV5rec_lab; mLength["fV5rec_lab"] = 5;
 
     SetSieve(fHRSAngle);
 
@@ -118,7 +104,7 @@ int G2PBwdProc::Process()
     }
 
     fV5fp_tr[4] = fEffXbeam;
-    bIsGood = pHRS->Backward(fV5fp_tr, fV5rectg_tr);
+    if(!pHRS->Backward(fV5fp_tr, fV5rectg_tr)) return -1;
 
     if (fDebug>1) {
         Info(here, "rectg_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);

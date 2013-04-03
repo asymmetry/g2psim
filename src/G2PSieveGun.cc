@@ -8,7 +8,7 @@
 
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 #include "G2PRand.hh"
 #include "G2PRunBase.hh"
 #include "G2PSieve.hh"
@@ -35,7 +35,7 @@ int G2PSieveGun::Begin()
 {
     //static const char* const here = "Begin()";
 
-    if (G2PGunBase::Begin()!=0) return fStatus;
+    if (G2PGun::Begin()!=0) return fStatus;
 
     if (fFieldRatio>0) bUseFast = false;
 

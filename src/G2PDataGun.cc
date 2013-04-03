@@ -8,7 +8,7 @@
 #include "TError.h"
 
 #include "G2PGlobals.hh"
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 #include "G2PRunBase.hh"
 #include "G2PSieve.hh"
 
@@ -34,7 +34,7 @@ int G2PDataGun::Begin()
 {
     static const char* const here = "Begin()";
 
-    if (G2PGunBase::Begin()!=0) return fStatus;
+    if (G2PGun::Begin()!=0) return fStatus;
 
     if (fFieldRatio>0) bIsOptics = false;
 

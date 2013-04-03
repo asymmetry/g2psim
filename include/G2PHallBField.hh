@@ -1,9 +1,9 @@
 #ifndef G2P_HALLBFIELD_H
 #define G2P_HALLBFIELD_H
 
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 
-class G2PHallBField : public G2PFieldBase
+class G2PHallBField : public G2PField
 {
 public:
     G2PHallBField();

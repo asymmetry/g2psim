@@ -1,9 +1,9 @@
 #ifndef G2P_POINTGUN_H
 #define G2P_POINTGUN_H
 
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 
-class G2PPointGun : public G2PGunBase
+class G2PPointGun : public G2PGun
 {
 public:
     G2PPointGun();

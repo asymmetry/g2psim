@@ -8,15 +8,8 @@
 #include "TList.h"
 
 #include "G2PAppBase.hh"
-#include "G2PBPM.hh"
-#include "G2PDrift.hh"
 #include "G2PGlobals.hh"
-#include "G2PGunBase.hh"
 #include "G2PProcBase.hh"
-#include "G2PHRSTrans.hh"
-#include "G2PPhys.hh"
-#include "G2PRand.hh"
-#include "G2PRecUseDB.hh"
 
 #include "G2PRunBase.hh"
 

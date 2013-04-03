@@ -9,11 +9,11 @@
 #include "TError.h"
 
 #include "G2PAppBase.hh"
+#include "G2PDBRec.hh"
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PProcBase.hh"
-#include "G2PRecUseDB.hh"
 #include "G2PRunBase.hh"
 #include "G2PSieve.hh"
 #include "G2PVarDef.hh"
@@ -23,8 +23,18 @@
 
 G2PFwdProc::G2PFwdProc() :
     fHRSAngle(0.0), fHRSMomentum(0.0),
-    pDrift(NULL), pHRS(NULL), pRecDB(NULL)
+    pDrift(NULL), pHRS(NULL), pDBRec(NULL)
 {
+    mName["fV5tg_tr"] = fV5tg_tr; mLength["fV5tg_tr"] = 5;
+    mName["fV5sieve_tr"] = fV5sieve_tr; mLength["fV5sieve_tr"] = 5;
+    mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
+    mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
+    mName["fV5fp_rot"] = fV5fp_rot; mLength["fV5fp_rot"] = 5;
+
+    fAppsList.push_back("G2PDBRec");
+    fAppsList.push_back("G2PDrift");
+    fAppsList.push_back("G2PHRSTrans");
+
     Clear();
 }
 
@@ -35,31 +45,17 @@ G2PFwdProc::~G2PFwdProc()
 
 int G2PFwdProc::Init()
 {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
     if (G2PProcBase::Init()!=0) return fStatus;
 
     pDrift = G2PDrift::GetInstance();
-    if (!pDrift) {
-        Error(here, "Cannot initialize, no G2PDrift found.");
-        return (fStatus = kINITERROR);
-    }
-
     pHRS = G2PHRSTrans::GetInstance();
-    if (!pHRS) {
-        Error(here, "Cannot initialize, no G2PHRSTrans found.");
-        return (fStatus = kINITERROR);
-    }
-
-    pRecDB = G2PRecUseDB::GetInstance();
-    if (!pRecDB) {
-        Error(here, "Cannot initialize, no G2PRecUseDB found.");
-        return (fStatus = kINITERROR);
-    }
+    pDBRec = G2PDBRec::GetInstance();
 
     fApps->Add(pDrift);
     fApps->Add(pHRS);
-    fApps->Add(pRecDB);
+    fApps->Add(pDBRec);
 
     return (fStatus = kOK);
 }
@@ -72,12 +68,6 @@ int G2PFwdProc::Begin()
 
     fHRSAngle = gG2PRun->GetHRSAngle();
     fHRSMomentum = gG2PRun->GetHRSMomentum();
-
-    mName["fV5tg_tr"] = fV5tg_tr; mLength["fV5tg_tr"] = 5;
-    mName["fV5sieve_tr"] = fV5sieve_tr; mLength["fV5sieve_tr"] = 5;
-    mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
-    mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
-    mName["fV5fp_rot"] = fV5fp_rot; mLength["fV5fp_rot"] = 5;
 
     SetSieve(fHRSAngle);
 
@@ -105,9 +95,9 @@ int G2PFwdProc::Process()
         Info(here, "projtg_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5projtg_tr[0], fV5projtg_tr[1], fV5projtg_tr[2], fV5projtg_tr[3], fV5projtg_tr[4]);
     }
 
-    bIsGood = pHRS->Forward(fV5projtg_tr, fV5fp_tr);
+    if (!pHRS->Forward(fV5projtg_tr, fV5fp_tr)) return -1;
     ApplyVDCRes(fV5fp_tr);
-    pRecDB->TransTr2Rot(fV5fp_tr, fV5fp_rot);
+    pDBRec->TransTr2Rot(fV5fp_tr, fV5fp_rot);
 
     if (fDebug>1) {
         Info(here, "fp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
@@ -118,8 +108,6 @@ int G2PFwdProc::Process()
 
 void G2PFwdProc::Clear()
 {
-    G2PProcBase::Clear();
-
     memset(fV5tg_tr, 0, sizeof(fV5tg_tr));
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
     memset(fV5projtg_tr, 0, sizeof(fV5projtg_tr));
@@ -133,7 +121,6 @@ int G2PFwdProc::DefineVariables(EMode mode)
     bIsSetup = (mode==kDefine);
 
     VarDef vars[] = {
-        { "isgood",    "Reach focus plane", kBool, &bIsGood },
         { "sieve.x",   "Sieve X", kDouble, &fV5sieve_tr[0] },
         { "sieve.t",   "Sieve T", kDouble, &fV5sieve_tr[1] },
         { "sieve.y",   "Sieve Y", kDouble, &fV5sieve_tr[2] },

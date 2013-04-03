@@ -1,5 +1,5 @@
-// This file defines a class G2PGunBase.
-// This class is the base class of G2PGun.
+// This file defines a class G2PGun.
+// This class is a tool class.
 // G2PProcBase classes will call Shoot() to get kinematic variables.
 // It is a virtual function so each derived class will have its own method.
 //
@@ -14,11 +14,11 @@
 
 class G2PDrift;
 
-class G2PGunBase : public G2PAppBase
+class G2PGun : public G2PAppBase
 {
 public:
-    G2PGunBase();
-    ~G2PGunBase();
+    G2PGun();
+    ~G2PGun();
     
     void SetBeamX(double value) { fBeamX_lab = value; }
     void SetBeamY(double value) { fBeamY_lab = value; }
@@ -47,7 +47,7 @@ public:
 
     virtual bool UseData() = 0;
 
-    static G2PGunBase* GetInstance() { return pG2PGunBase; }
+    static G2PGun* GetInstance() { return pG2PGun; }
 
 protected:
     virtual void SetTiltAngle();
@@ -81,9 +81,9 @@ protected:
     G2PDrift* pDrift;
 
 private:
-    static G2PGunBase* pG2PGunBase;
+    static G2PGun* pG2PGun;
 
-    ClassDef(G2PGunBase, 1)
+    ClassDef(G2PGun, 1)
 };
 
 #endif

@@ -58,9 +58,9 @@ int G2PAppBase::Init()
 
 int G2PAppBase::Begin()
 {
-    static const char* const here = "Begin()";
+    //static const char* const here = "Begin()";
 
-    if (fDebug>0) Info(here, "Beginning ...");
+    //if (fDebug>0) Info(here, "Beginning ...");
 
     if (!IsInit()) return fStatus;
 
@@ -197,7 +197,7 @@ G2PAppBase* G2PAppBase::FindModule(const char* classname) const
         TObject* obj = lnk->GetObject();
         if ((obj->IsA()->InheritsFrom(classname))&&(obj->IsA()->InheritsFrom(g2papp))) {
             G2PAppBase* aobj = static_cast<G2PAppBase*>(obj);
-            return aobj;
+            if (!aobj->IsZombie()) return aobj;
         }
         lnk = lnk->Next();
     }
@@ -222,8 +222,10 @@ void G2PAppBase::FindModule(const char* classname, TList* list) const
         TObject* obj = lnk->GetObject();
         if (obj->IsA()->InheritsFrom(classname)) {
             G2PAppBase* aobj = static_cast<G2PAppBase*>(obj);
-            list->Add(aobj);
-            n++;
+            if (!aobj->IsZombie()) {
+                list->Add(aobj);
+                n++;
+            }
         }
         lnk = lnk->Next();
     }

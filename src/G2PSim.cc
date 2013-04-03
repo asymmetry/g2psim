@@ -65,29 +65,34 @@ int G2PSim::Init()
 {
     static const char* const here = "Init()";
 
-    gG2PRun = pRun;
-    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
+    if (fDebug>0) Info(here, "Initialize tools ......");
 
+    gG2PRun = pRun;
+    pRun->SetDebug(fDebug);
+
+    if (pRun->Init()!=0) return -1;
+    
     TIter next(fApps);
     while (TObject* obj = next()) {
         if (obj->IsZombie()) gG2PApps->Remove(obj);
     }
+
+    fApps->Print();
     
     next.Reset();
     while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
         aobj->SetDebug(fDebug);
     }
-    pRun->SetDebug(fDebug);
 
     next.Reset();
     while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
         if (aobj->Init()!=0) return -1;
     }
 
-    if (pRun->Init()!=0) return -1;
-
     fFile = new TFile(pOutFile, "RECREATE");
 
+    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
+    gG2PVars->DefineByType("isgood", "Good event", &bIsGood, kBool);
     pOutput = new G2POutput();
     if (pOutput->Init()!=0) return -1;
 
@@ -100,7 +105,7 @@ int G2PSim::Begin()
 {
     static const char* const here = "Begin()";
 
-    if (fDebug>0) Info(here, "Beginning ......");
+    if (fDebug>0) Info(here, "Start run ......");
     
     TIter next(fApps);
     while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
@@ -108,6 +113,8 @@ int G2PSim::Begin()
     }
 
     if (pRun->Begin()!=0) return -1;
+
+    if (fDebug>0) Info(here, "Ready to go!");
 
     return 0;
 }
@@ -120,6 +127,8 @@ int G2PSim::End()
     
     pOutput->End();
     fFile->Close();
+
+    if (fDebug>0) Info(here, "Run finished!");
 
     return 0;
 }
@@ -141,9 +150,10 @@ void G2PSim::Run()
     fFile->cd();
 
     while (nCounter<=nEvent) {
+        bIsGood = false;
         if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
         pRun->Clear();
-        if (pRun->Process()!=0) break;
+        if (pRun->Process()==0) bIsGood = true;
         pOutput->Process();
         if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);
         nCounter++;

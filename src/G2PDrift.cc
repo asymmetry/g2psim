@@ -1,3 +1,17 @@
+// This file defines a class G2PDrift.
+// This class is a tool class.
+// It use Nystrom-Runge-Kutta method to derive the trajectory of a charged
+//+particle in static magnetic field.
+// G2PProcBase classes will call Drift() to get the end point.
+// The subroutine Drift() has 2 prototypes, one for lab corrds and one for
+//+transportation coords.
+//
+// History:
+//   Feb 2013, C. Gu, First public version.
+//   Feb 2013, C. Gu, Change algorithm to Nystrom-Runge-Kutta method.
+//   Mar 2013, C. Gu, Add flexible step length and boundary check.
+//
+
 #include <cstdlib>
 #include <cmath>
 
@@ -6,7 +20,7 @@
 #include "TError.h"
 
 #include "G2PAppBase.hh"
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 #include "G2PGlobals.hh"
 #include "G2PRunBase.hh"
 
@@ -48,7 +62,7 @@ int G2PDrift::Init()
 
     if (G2PAppBase::Init()!=0) return fStatus;
 
-    pField = G2PFieldBase::GetInstance();
+    pField = G2PField::GetInstance();
 
     return (fStatus = kOK);
 }

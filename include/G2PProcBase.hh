@@ -2,6 +2,7 @@
 #define G2P_PROCBASE_H
 
 #include <cstring>
+#include <vector>
 #include <map>
 
 #include "G2PAppBase.hh"
@@ -18,7 +19,7 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int Process() = 0;
-    virtual void Clear();
+    virtual void Clear() { }
 
     virtual int SetValue(const char* name, double* value);
     virtual int GetValue(const char* name, double* value);
@@ -26,18 +27,19 @@ public:
 protected:
     G2PProcBase(); // No instance allowed for this class
 
+    int Add(const char* name);
+
     int ArrayCopy(double* out, const double* in, int length);
 
     virtual int DefineVariables(EMode mode = kDefine) { return 0; }    
 
     virtual void MakePrefix() { }
 
-    bool bIsGood;
-
     map<string, double*> mName;
     map<string, int> mLength;
 
     TList* fApps;
+    vector<const char*> fAppsList;
 
 private:
     ClassDef(G2PProcBase, 1)

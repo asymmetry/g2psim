@@ -1,9 +1,9 @@
 #ifndef G2P_UNIFIELD_H
 #define G2P_UNIFIELD_H
 
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 
-class G2PUniField : public G2PFieldBase
+class G2PUniField : public G2PField
 {
 public:
     G2PUniField();

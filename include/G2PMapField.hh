@@ -1,9 +1,9 @@
 #ifndef G2P_MAPFIELD_H
 #define G2P_MAPFIELD_H
 
-#include "G2PFieldBase.hh"
+#include "G2PField.hh"
 
-class G2PMapField : public G2PFieldBase
+class G2PMapField : public G2PField
 {
 public:
     G2PMapField(const char* name);

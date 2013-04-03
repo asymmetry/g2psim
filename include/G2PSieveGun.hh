@@ -3,12 +3,12 @@
 
 #include <vector>
 
-#include "G2PGunBase.hh"
+#include "G2PGun.hh"
 #include "G2PSieve.hh"
 
 using namespace std;
 
-class G2PSieveGun : public G2PGunBase, public G2PSieve
+class G2PSieveGun : public G2PGun, public G2PSieve
 {
 public:
     G2PSieveGun();

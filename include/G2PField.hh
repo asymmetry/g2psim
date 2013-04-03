@@ -1,3 +1,15 @@
+// This file defines a class G2PField.
+// This class is a tool class.
+// G2PProcBase classes will call GetField() to get field values.
+// The field map is defined in a special coords respected to the coils,
+//+however, the final result has been trasformed back to the lab coords.
+// It use Lagrange polynomial interpolation to calculate field values. The
+//+default is 2nd order.
+//
+// History:
+//   Feb 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_FIELDBASE_H
 #define G2P_FIELDBASE_H
 
@@ -7,10 +19,10 @@
 
 using namespace std;
 
-class G2PFieldBase : public G2PAppBase
+class G2PField : public G2PAppBase
 {
 public:
-    virtual ~G2PFieldBase();
+    virtual ~G2PField();
 
     void SetZRange(double zmin, double zmax) { fZMin = zmin; fZMax = zmax; }
     void SetRRange(double rmin, double rmax) { fRMin = rmin; fRMax = rmax; }
@@ -27,10 +39,10 @@ public:
 
     double GetRatio() { return fRatio; }
 
-    static G2PFieldBase* GetInstance() { return pG2PFieldBase; }
+    static G2PField* GetInstance() { return pG2PField; }
 
 protected:
-    G2PFieldBase(); // No instance allowed for this class
+    G2PField(); // No instance allowed for this class
 
     virtual int ReadMap();
     virtual int CreateMap();
@@ -60,9 +72,9 @@ protected:
     double fRatio;
 
 private:
-    static G2PFieldBase* pG2PFieldBase;
+    static G2PField* pG2PField;
 
-    ClassDef(G2PFieldBase, 1)
+    ClassDef(G2PField, 1)
 };
 
 #endif

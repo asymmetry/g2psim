@@ -121,8 +121,6 @@ double G2PPhysEl::GetXS_C12(double Ei, double theta)
     double Recoil, Ef, Q2;
     double Mtg = 11.188;
 
-    printf("hehe: %e\t%e\t\n", Ei, theta);
-
     /*
     C     Ei        - INCIDENT ENERGY (GEV)
     C     theta     - SCATTERING ANGLE (RADIANS)

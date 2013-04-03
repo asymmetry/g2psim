@@ -19,7 +19,7 @@
 #include "G2PAppBase.hh"
 #include "G2PBPMTrans.hh"
 #include "G2PDrift.hh"
-#include "G2PFieldBase.hh"    
+#include "G2PField.hh"    
 #include "G2PGlobals.hh"
 #include "G2PRand.hh"
 #include "G2PRunBase.hh"
@@ -69,7 +69,7 @@ int G2PBPM::Begin()
     if (G2PAppBase::Begin()!=0) return fStatus;
 
     fBeamEnergy = gG2PRun->GetBeamEnergy();
-    G2PFieldBase* field = G2PFieldBase::GetInstance();
+    G2PField* field = G2PField::GetInstance();
     if (field==NULL) fFieldRatio = 0;
     else fFieldRatio = field->GetRatio();
 
@@ -215,9 +215,9 @@ void G2PBPM::GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm)
     GetBPMAB(V5beam_lab, x);
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
-    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
-    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
@@ -230,9 +230,9 @@ void G2PBPM::GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm)
     GetBPMAB(V5beam_lab, x);
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
-    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
-    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
@@ -245,9 +245,9 @@ void G2PBPM::GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm)
     GetBPMAB(V5beam_lab, x);
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
-    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
-    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
@@ -260,9 +260,9 @@ void G2PBPM::GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm)
     GetBPMAB(V5beam_lab, x);
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
-    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
-    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
@@ -275,9 +275,9 @@ void G2PBPM::GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm)
     GetBPMAB(V5beam_lab, x);
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
-    V5bpm_bpm[1] = target_theta(x, 4)*1e-3;
+    V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
-    V5bpm_bpm[3] = target_phi(x, 4)*1e-3;
+    V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
