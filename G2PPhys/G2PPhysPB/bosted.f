@@ -56,31 +56,27 @@ c subroutine F1F2QE09. Returns quasi-elastic F1, F2 for
 c      nucleus with charge Z and atomic number A
 c      for given value of Q2 and W**2
 c
-      subroutine bosted(Z, A, Ei, Ep, ang, xs, Tb, Ta)
+      subroutine bosted(Z, A, Ei, Ep, ang, xs, Tb1, Ta1)
 
       implicit none
       
-      double precision Z,A,Ei,Ep,ang,xs,Tb,Ta
-      double precision bostedxs
+      double precision Z,A,Ei,Ep,nu,ang,angdeg,xs,Tb,Ta,Tb1,Ta1
+      double precision bostedxs, SIGRAD
 
-      Tb = Tb
-      Ta = Ta
+      COMMON/ADDONS/Tb,Ta
 
-c$$$      COMMON/ADDONS/Tb,Ta
- 
-c$$$      A=tgt_A
-c$$$      Z=tgt_Z
-c$$$
-c$$$      E=Ei/1000.
-c$$$      Ep=Ep1/1000.
-c$$$      nu=E-Ep
-c$$$
-c$$$      theta=ang*3.1415926/180.
+      Tb=Tb1
+      Ta=Ta1
+      nu=Ei-Ep
 
       xs=bostedxs(Z,A,Ei,Ep,ang)
-         
-c$$$      CALL RADIATE_bosted(Z,A,E*1000.,ang,nu*1000.,xs,SIGRAD)
-c$$$      xs=SIGRAD
+
+      angdeg=ang*180.0D0/3.14192654D0
+
+      if ((Tb.le.0.0D0).and.(Ta.le.0.0D0)) then  
+      CALL RADIATE_bosted(Z,A,Ei*1000.,ang,nu*1000.,xs,SIGRAD)
+      xs=SIGRAD
+      endif
 
       end
 
@@ -1743,199 +1739,199 @@ c 1000  format(8f12.5)
       return
       end
 
-c$$$      SUBROUTINE RADIATE_bosted(Z0,A0,E0,TH0,W0,SIGNR,SIGRAD)
-c$$$C     DOES NOT INCLUDE CONTRIBUTION FROM ELASTIC SCATTERING
-c$$$C
-c$$$C-----K. Slifer. 09/16/02
-c$$$C
-c$$$C     Rewrote subroutine to include external bremsstrahlung using
-c$$$C     formalism from S. Stein et al. Phys. Rev. D 12 7. Equation (A82)
-c$$$C     Where possible the equation number is given with each expression.
-c$$$C----------------------------------------------------------------------
-c$$$      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-c$$$      COMMON/PAR/E,TH,W,Z,A,SPENCE
-c$$$      COMMON/ADDONS/Tb,Ta
-c$$$
-c$$$      Z=Z0
-c$$$      A=A0
-c$$$      E=E0
-c$$$      TH=TH0
-c$$$      W=W0
-c$$$
-c$$$      DEL   = 10
-c$$$      PREC  = .001  ! 0.001 gets rid of glitches
-c$$$
-c$$$      xb    = 4./3.  ! A45
-c$$$      XM    = 931.49 ! Mass of the nucleon
-c$$$      XMT   = A*XM   ! Mass of the target
-c$$$      ALPH  = 1./137.03604
-c$$$      EMASS = 0.511
-c$$$      PI    = ACOS(-1.)
-c$$$      THR   = TH*PI/180.
-c$$$      ARG   = COS(THR/2.)**2
-c$$$
-c$$$      SPENCE= PI**2/6.-LOG(ARG)*LOG(1.-ARG)
-c$$$      DO 10 NSP=1,50
-c$$$ 10     SPENCE = SPENCE-ARG**NSP/FLOAT(NSP)**2
-c$$$
-c$$$      QMS   = 4.*E*(E-W)*SIN(THR/2.)**2
-c$$$
-c$$$      D1=(2.*ALPH/PI)*(LOG(QMS/EMASS**2)-1.)      ! =2b*tr (A57)
-c$$$      tr=D1/2./xb
-c$$$
-c$$$      D2 = 13.*(LOG(QMS/EMASS**2)-1.)/12.-17./36. ! this term dominates D2
-c$$$      D2 = D2 +0.5*(PI**2/6.-SPENCE)
-c$$$      D2 = D2 -1./4.*( LOG( E/(E-W) ) )**2        ! Correct. to peak. appr.
-c$$$      D2 = D2*(2.*ALPH/PI)                 
-c$$$      D2 = D2+0.5772*xb*(Tb+Ta)                   ! Here D2= F-1
-c$$$      xF = (1.+D2)                                ! (A44)
-c$$$
-c$$$      Tpb = tr + Tb
-c$$$      Tpa = tr + Ta  
-c$$$   
-c$$$      R   = ( XMT+E*(1-COS(THR)) )/( XMT-(E-W)*(1-COS(THR)) ) ! (A83)
-c$$$      eta = LOG(1440.*Z**(-2./3.) )/LOG(183.*Z**(-1./3.) )    ! (A46)
-c$$$      xi  = (PI*EMASS/2./ALPH)*(Ta+Tb)
-c$$$      xi  = xi/( (Z+eta)*LOG(183.*Z**(-1./3.)) )              ! (A52)
-c$$$
-c$$$      SIGRAD = SIGNR * xF
-c$$$      SIGRAD = SIGRAD*( (R*DEL/E  )**(xb*Tpb) )
-c$$$      SIGRAD = SIGRAD*( (DEL/(E-W))**(xb*Tpa) )
-c$$$      SIGRAD = SIGRAD*(1. - xi/DEL/( 1.-xb*(Tpb+Tpa)) )
-c$$$
-c$$$      TERM1=(R*DEL/E  )**(xb*Tpb)
-c$$$      TERM2=(DEL/(E-W))**(xb*Tpa)
-c$$$      TERM3=(1. - xi/DEL/( 1.-xb*(Tpb+Tpa)) )
-c$$$      TERM4=xF
-c$$$C
-c$$$C-----Stein's 1st integral wrt dEs' (A82)
-c$$$C
-c$$$C     limits of 0 to W-DEL give almost same results
-c$$$C
-c$$$      X1LO   = (E-W)*( XMT/( XMT-2.*(E-W)*(SIN(THR/2.))**2) -1.0 )
-c$$$      X1HI   = W-R*DEL
-c$$$      ANS_Es = 0.
-c$$$      IF (X1HI.GT.X1LO) THEN
-c$$$        CALL ROM_bosted(X1LO,X1HI,PREC,ANS_Es,KF,1)
-c$$$      ENDIF
-c$$$      ANS_Es = ANS_Es
-c$$$C
-c$$$C-----Stein's 2nd integral wrt dEp' (A82)
-c$$$C
-c$$$C     limits of 0 to W-DEL give almost same results
-c$$$C
-c$$$      X2LO   = E*( 1.0-XMT/( XMT+2.*E*(SIN(THR/2.))**2) )
-c$$$      X2HI   = W-DEL 
-c$$$      ANS_Ep = 0.
-c$$$      IF (X2HI.GT.X2LO) THEN
-c$$$         CALL ROM_bosted(X2LO,X2HI,PREC,ANS_Ep,KF,2)
-c$$$      ENDIF
-c$$$      ANS_Ep = ANS_Ep
-c$$$      
-c$$$      SIGRAD = SIGRAD + ANS_Es + ANS_Ep
-c$$$
-c$$$      RETURN
-c$$$      END
-c$$$
-c$$$*VALY
-c$$$      SUBROUTINE VALY_bosted(X,F,IFUNC)
-c$$$      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-c$$$C     DOUBLE PRECISION FUNCTION F(X)
-c$$$      COMMON/PAR/E,TH,W,Z,A,SPENCE
-c$$$      COMMON/ADDONS/Tb,Ta
-c$$$
-c$$$      ALPH  = 1./137.03604
-c$$$      EMASS = 0.511
-c$$$      PI    = ACOS(-1.)
-c$$$      THR   = TH*PI/180.
-c$$$      xb    = 4./3.
-c$$$      XM    = 931.49 ! Mass of the nucleon
-c$$$      XMT   = A*XM   ! Mass of the target
-c$$$
-c$$$      eta = LOG(1440.*Z**(-2./3.) )/LOG(183.*Z**(-1./3.) )
-c$$$      xi  = (PI*EMASS/2./ALPH)*(Ta+Tb)
-c$$$      xi  = xi/( (Z+eta)*LOG(183.*Z**(-1./3.)) )
-c$$$      R   = ( XMT+E*(1-COS(THR)) )/( XMT-(E-W)*(1-COS(THR)) )
-c$$$C
-c$$$C-----Stein's 2nd integral dEp'
-c$$$C
-c$$$      QMS2  = 4.*E*(E-X)*SIN(THR/2.)**2  ! 1/15/03
-c$$$      tr2   = 1./xb*(ALPH/PI)*(LOG(QMS2/EMASS**2)-1.)
-c$$$      Tpb   = tr2 + Tb
-c$$$      Tpa   = tr2 + Ta
-c$$$
-c$$$      D2    = 13.*(LOG(QMS2/EMASS**2)-1.)/12.-17./36.
-c$$$      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !KS. Correction to peak. 
-C$$$c                                              !approx.
-c$$$      D2    = D2 + 0.5*(PI**2/6.-SPENCE)
-c$$$      D2    = D2 * (2.*ALPH/PI)
-c$$$      D2    = D2 + 0.5772*xb*(Tb+Ta)
-c$$$
-c$$$      SIG2  = bostedxs(Z,A,E/1000.,(E-X)/1000.,TH)
-c$$$
-c$$$      F2    = ( xb*Tpa/(W-X) ) *phi((W-X)/(E-X))
-c$$$      F2    = F2 + xi/(2.*(W-X)**2)
-c$$$      F2    = F2 * SIG2*(1.+D2)
-c$$$      F2    = F2 * ( (W-X)/(E-X) )**(xb*Tpa)
-c$$$      F2    = F2 * ( (W-X)*R/(E) )**(xb*Tpb)
-c$$$C
-c$$$C-----Stein's 1st integral dEs'
-c$$$C
-c$$$      QMS1  = 4.*(E-W+X)*(E-W)*SIN(THR/2.)**2    !    1/15/03
-c$$$      tr1   = 1./xb*(ALPH/PI)*(LOG(QMS1/EMASS**2)-1.)
-c$$$      Tpb   = tr1 + Tb
-c$$$      Tpa   = tr1 + Ta
-c$$$
-c$$$      D2    = 13.*(LOG(QMS1/EMASS**2)-1.)/12.-17./36.
-c$$$      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !Corr. to peak. approx.
-c$$$      D2    = D2 + 0.5*(PI**2/6.-SPENCE)
-c$$$      D2    = D2 * (2.*ALPH/PI)
-c$$$      D2    = D2 + 0.5772*xb*(Tb+Ta) ! 1/14/02
-c$$$
-c$$$      SIG1  = bostedxs(Z,A,(E-W+X)/1000.,(E-W)/1000.,TH)
-c$$$
-c$$$      F1    = ( xb*Tpb/(W-X) ) *phi((W-X)/(E))   ! 
-c$$$      F1    = F1 + xi/(2.*(W-X)**2)
-c$$$      F1    = F1 * SIG1*(1.+D2)
-c$$$      F1    = F1 * ( (W-X)/((E-W)*R) )**(xb*Tpa)
-c$$$      F1    = F1 * ( (W-X)/ (E)      )**(xb*Tpb) ! 
-c$$$
-c$$$      IF(IFUNC.EQ.2) THEN      ! dEp'
-c$$$        F=F2
-c$$$      ELSEIF (IFUNC.EQ.1) THEN ! dEs'
-c$$$        F=F1
-c$$$      ENDIF
-c$$$      RETURN
-c$$$      END
-c$$$
-c$$$      SUBROUTINE ROM_bosted(A,B,EPS,ANS,K,IFUNC)
-c$$$      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
-c$$$      COMMON/ADDONS/Tb,Ta
-c$$$C  ROMBERG METHOD OF INTEGRATION
-c$$$      DIMENSION W(2,50)
-c$$$      H=B-A
-c$$$      K=0
-c$$$      CALL VALY_bosted(A,FA,IFUNC)
-c$$$      CALL VALY_bosted(B,FB,IFUNC)
-c$$$      W(2,1)=(FA+FB)*H/2.
-c$$$    4 K=K+1
-c$$$      IF(K.GE.49)GO TO 5
-c$$$      DO 100 I=1,K
-c$$$  100 W(1,I)=W(2,I)
-c$$$      H=H/2.
-c$$$      SIG=0.
-c$$$      M=2**(K-1)
-c$$$      DO 1 J=1,M
-c$$$      J1=2*J-1
-c$$$      X=A+FLOAT(J1)*H
-c$$$      CALL VALY_bosted(X,F,IFUNC)
-c$$$    1 SIG=SIG+F
-c$$$      W(2,1)=W(1,1)/2.+H*SIG
-c$$$      DO 2 L=1,K
-c$$$    2 W(2,L+1)=(4.**(L)*W(2,L)-W(1,L))/(4.**(L)-1.)
-c$$$      E=(W(2,K+1)-W(1,K))/W(2,K+1)
-c$$$      IF(ABS(E)-EPS) 3,3,4
-c$$$    3 ANS=W(2,K+1)
-c$$$      RETURN
-c$$$    5 ANS=W(2,K+1)
-c$$$      END
+      SUBROUTINE RADIATE_bosted(Z0,A0,E0,TH0,W0,SIGNR,SIGRAD)
+C     DOES NOT INCLUDE CONTRIBUTION FROM ELASTIC SCATTERING
+C
+C-----K. Slifer. 09/16/02
+C
+C     Rewrote subroutine to include external bremsstrahlung using
+C     formalism from S. Stein et al. Phys. Rev. D 12 7. Equation (A82)
+C     Where possible the equation number is given with each expression.
+C----------------------------------------------------------------------
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      COMMON/PAR/E,TH,W,Z,A,SPENCE
+      COMMON/ADDONS/Tb,Ta
+
+      Z=Z0
+      A=A0
+      E=E0
+      TH=TH0
+      W=W0
+
+      DEL   = 10
+      PREC  = .001  ! 0.001 gets rid of glitches
+
+      xb    = 4./3.  ! A45
+      XM    = 931.49 ! Mass of the nucleon
+      XMT   = A*XM   ! Mass of the target
+      ALPH  = 1./137.03604
+      EMASS = 0.511
+      PI    = ACOS(-1.)
+      THR   = TH*PI/180.
+      ARG   = COS(THR/2.)**2
+
+      SPENCE= PI**2/6.-LOG(ARG)*LOG(1.-ARG)
+      DO 10 NSP=1,50
+ 10     SPENCE = SPENCE-ARG**NSP/FLOAT(NSP)**2
+
+      QMS   = 4.*E*(E-W)*SIN(THR/2.)**2
+
+      D1=(2.*ALPH/PI)*(LOG(QMS/EMASS**2)-1.)      ! =2b*tr (A57)
+      tr=D1/2./xb
+
+      D2 = 13.*(LOG(QMS/EMASS**2)-1.)/12.-17./36. ! this term dominates D2
+      D2 = D2 +0.5*(PI**2/6.-SPENCE)
+      D2 = D2 -1./4.*( LOG( E/(E-W) ) )**2        ! Correct. to peak. appr.
+      D2 = D2*(2.*ALPH/PI)                 
+      D2 = D2+0.5772*xb*(Tb+Ta)                   ! Here D2= F-1
+      xF = (1.+D2)                                ! (A44)
+
+      Tpb = tr + Tb
+      Tpa = tr + Ta  
+   
+      R   = ( XMT+E*(1-COS(THR)) )/( XMT-(E-W)*(1-COS(THR)) ) ! (A83)
+      eta = LOG(1440.*Z**(-2./3.) )/LOG(183.*Z**(-1./3.) )    ! (A46)
+      xi  = (PI*EMASS/2./ALPH)*(Ta+Tb)
+      xi  = xi/( (Z+eta)*LOG(183.*Z**(-1./3.)) )              ! (A52)
+
+      SIGRAD = SIGNR * xF
+      SIGRAD = SIGRAD*( (R*DEL/E  )**(xb*Tpb) )
+      SIGRAD = SIGRAD*( (DEL/(E-W))**(xb*Tpa) )
+      SIGRAD = SIGRAD*(1. - xi/DEL/( 1.-xb*(Tpb+Tpa)) )
+
+      TERM1=(R*DEL/E  )**(xb*Tpb)
+      TERM2=(DEL/(E-W))**(xb*Tpa)
+      TERM3=(1. - xi/DEL/( 1.-xb*(Tpb+Tpa)) )
+      TERM4=xF
+C
+C-----Stein's 1st integral wrt dEs' (A82)
+C
+C     limits of 0 to W-DEL give almost same results
+C
+      X1LO   = (E-W)*( XMT/( XMT-2.*(E-W)*(SIN(THR/2.))**2) -1.0 )
+      X1HI   = W-R*DEL
+      ANS_Es = 0.
+      IF (X1HI.GT.X1LO) THEN
+        CALL ROM_bosted(X1LO,X1HI,PREC,ANS_Es,KF,1)
+      ENDIF
+      ANS_Es = ANS_Es
+C
+C-----Stein's 2nd integral wrt dEp' (A82)
+C
+C     limits of 0 to W-DEL give almost same results
+C
+      X2LO   = E*( 1.0-XMT/( XMT+2.*E*(SIN(THR/2.))**2) )
+      X2HI   = W-DEL 
+      ANS_Ep = 0.
+      IF (X2HI.GT.X2LO) THEN
+         CALL ROM_bosted(X2LO,X2HI,PREC,ANS_Ep,KF,2)
+      ENDIF
+      ANS_Ep = ANS_Ep
+      
+      SIGRAD = SIGRAD + ANS_Es + ANS_Ep
+
+      RETURN
+      END
+
+*VALY
+      SUBROUTINE VALY_bosted(X,F,IFUNC)
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+C     DOUBLE PRECISION FUNCTION F(X)
+      COMMON/PAR/E,TH,W,Z,A,SPENCE
+      COMMON/ADDONS/Tb,Ta
+
+      ALPH  = 1./137.03604
+      EMASS = 0.511
+      PI    = ACOS(-1.)
+      THR   = TH*PI/180.
+      xb    = 4./3.
+      XM    = 931.49 ! Mass of the nucleon
+      XMT   = A*XM   ! Mass of the target
+
+      eta = LOG(1440.*Z**(-2./3.) )/LOG(183.*Z**(-1./3.) )
+      xi  = (PI*EMASS/2./ALPH)*(Ta+Tb)
+      xi  = xi/( (Z+eta)*LOG(183.*Z**(-1./3.)) )
+      R   = ( XMT+E*(1-COS(THR)) )/( XMT-(E-W)*(1-COS(THR)) )
+C
+C-----Stein's 2nd integral dEp'
+C
+      QMS2  = 4.*E*(E-X)*SIN(THR/2.)**2  ! 1/15/03
+      tr2   = 1./xb*(ALPH/PI)*(LOG(QMS2/EMASS**2)-1.)
+      Tpb   = tr2 + Tb
+      Tpa   = tr2 + Ta
+
+      D2    = 13.*(LOG(QMS2/EMASS**2)-1.)/12.-17./36.
+      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !KS. Correction to peak. 
+c                                              !approx.
+      D2    = D2 + 0.5*(PI**2/6.-SPENCE)
+      D2    = D2 * (2.*ALPH/PI)
+      D2    = D2 + 0.5772*xb*(Tb+Ta)
+
+      SIG2  = bostedxs(Z,A,E/1000.,(E-X)/1000.,THR)
+
+      F2    = ( xb*Tpa/(W-X) ) *phi((W-X)/(E-X))
+      F2    = F2 + xi/(2.*(W-X)**2)
+      F2    = F2 * SIG2*(1.+D2)
+      F2    = F2 * ( (W-X)/(E-X) )**(xb*Tpa)
+      F2    = F2 * ( (W-X)*R/(E) )**(xb*Tpb)
+C
+C-----Stein's 1st integral dEs'
+C
+      QMS1  = 4.*(E-W+X)*(E-W)*SIN(THR/2.)**2    !    1/15/03
+      tr1   = 1./xb*(ALPH/PI)*(LOG(QMS1/EMASS**2)-1.)
+      Tpb   = tr1 + Tb
+      Tpa   = tr1 + Ta
+
+      D2    = 13.*(LOG(QMS1/EMASS**2)-1.)/12.-17./36.
+      D2    = D2 - 1./4.*( LOG( E/(E-W) ) )**2 !Corr. to peak. approx.
+      D2    = D2 + 0.5*(PI**2/6.-SPENCE)
+      D2    = D2 * (2.*ALPH/PI)
+      D2    = D2 + 0.5772*xb*(Tb+Ta) ! 1/14/02
+
+      SIG1  = bostedxs(Z,A,(E-W+X)/1000.,(E-W)/1000.,THR)
+
+      F1    = ( xb*Tpb/(W-X) ) *phi((W-X)/(E))   ! 
+      F1    = F1 + xi/(2.*(W-X)**2)
+      F1    = F1 * SIG1*(1.+D2)
+      F1    = F1 * ( (W-X)/((E-W)*R) )**(xb*Tpa)
+      F1    = F1 * ( (W-X)/ (E)      )**(xb*Tpb) ! 
+
+      IF(IFUNC.EQ.2) THEN      ! dEp'
+        F=F2
+      ELSEIF (IFUNC.EQ.1) THEN ! dEs'
+        F=F1
+      ENDIF
+      RETURN
+      END
+
+      SUBROUTINE ROM_bosted(A,B,EPS,ANS,K,IFUNC)
+      IMPLICIT DOUBLE PRECISION(A-H,O-Z)
+      COMMON/ADDONS/Tb,Ta
+C  ROMBERG METHOD OF INTEGRATION
+      DIMENSION W(2,50)
+      H=B-A
+      K=0
+      CALL VALY_bosted(A,FA,IFUNC)
+      CALL VALY_bosted(B,FB,IFUNC)
+      W(2,1)=(FA+FB)*H/2.
+    4 K=K+1
+      IF(K.GE.49)GO TO 5
+      DO 100 I=1,K
+  100 W(1,I)=W(2,I)
+      H=H/2.
+      SIG=0.
+      M=2**(K-1)
+      DO 1 J=1,M
+      J1=2*J-1
+      X=A+FLOAT(J1)*H
+      CALL VALY_bosted(X,F,IFUNC)
+    1 SIG=SIG+F
+      W(2,1)=W(1,1)/2.+H*SIG
+      DO 2 L=1,K
+    2 W(2,L+1)=(4.**(L)*W(2,L)-W(1,L))/(4.**(L)-1.)
+      E=(W(2,K+1)-W(1,K))/W(2,K+1)
+      IF(ABS(E)-EPS) 3,3,4
+    3 ANS=W(2,K+1)
+      RETURN
+    5 ANS=W(2,K+1)
+      END

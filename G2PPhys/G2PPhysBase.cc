@@ -29,6 +29,8 @@ void G2PPhysBase::SetTarget(int Z, int A)
 
 void G2PPhysBase::SetPars(double* array, int n)
 {
+    fPars.clear();
+
     for (int i = 0; i<n; i++) fPars.push_back(array[i]);
 }
 

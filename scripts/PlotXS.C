@@ -34,7 +34,7 @@ void PlotDelta()
 
     c110->cd();
 
-    TH1F* h1101 = new TH1F("h1101", "Delta (weight by XS)", 100, -0.05, 0.05);
+    TH1F* h1101 = new TH1F("h1101", "Delta (weight by XS)", 50, -0.05, 0.05);
     h1101->SetXTitle("Delta");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -47,7 +47,7 @@ void PlotDelta()
 
     h1101->Draw();
 
-    TH1F* h1102 = new TH1F("h1102", "Delta (weight by XS)", 100, -0.05, 0.05);
+    TH1F* h1102 = new TH1F("h1102", "Delta (weight by XS)", 50, -0.05, 0.05);
     h1102->SetXTitle("Delta");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -73,7 +73,7 @@ void PlotTheta()
 
     c111->cd();
 
-    TH1F* h1111 = new TH1F("h1111", "Scat Angle (weight by XS)", 100, 0.08, 0.12);
+    TH1F* h1111 = new TH1F("h1111", "Scat Angle (weight by XS)", 50, 0.08, 0.12);
     h1111->SetXTitle("Scat Angle");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -86,7 +86,7 @@ void PlotTheta()
 
     h1111->Draw();
 
-    TH1F* h1112 = new TH1F("h1112", "Scat Angle (weight by XS)", 100, 0.08, 0.12);
+    TH1F* h1112 = new TH1F("h1112", "Scat Angle (weight by XS)", 50, 0.08, 0.12);
     h1112->SetXTitle("Scat Angle");
 
     for (int i = 0; i<T->GetEntries(); i++) {
@@ -112,26 +112,26 @@ void PlotXS()
 
     c112->cd();
 
-    TH1F* h1121 = new TH1F("h1121", "Cross section central value", 100, 0.05, 0.30);
-    h1121->SetXTitle("XS(ub/MeV-sr)");
+    TH1F* h1121 = new TH1F("h1121", "Cross section central value", 50, 0.00, 0.80);
+    h1121->SetXTitle("XS(mb)");
 
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
         //if (IsGood&&TMath::Abs(Tfp)<0.05&&TMath::Abs(Pfp-1e-3)<0.01) {
         if (TMath::Abs(IsGood-1.0)<1e-8) {
-            h1121->Fill(XSinit);
+            h1121->Fill(XSinit/1000);
         }
     }
 
     h1121->Draw();
 
-    TH1F* h1122 = new TH1F("h1122", "Cross section central value", 100, 0.05, 0.30);
-    h1122->SetXTitle("XS(ub/MeV-sr)");
+    TH1F* h1122 = new TH1F("h1122", "Cross section central value", 50, 0.00, 0.80);
+    h1122->SetXTitle("XS(mb)");
 
     for (int i = 0; i<T->GetEntries(); i++) {
         T->GetEntry(i);
         if (TMath::Abs(IsGood-1.0)<1e-8) {
-            h1122->Fill(XSrec);
+            h1122->Fill(XSrec/1000);
         }
     }
 
@@ -150,7 +150,7 @@ void LoadTree(const char* filename = "test.root"){
     f = new TFile(filename);
     T = (TTree *)f->Get("T");
 
-    T->SetBranchAddress("fwd.isgood", &IsGood);
+    T->SetBranchAddress("isgood", &IsGood);
     T->SetBranchAddress("gun.react.d", &Delta);
     T->SetBranchAddress("bwd.rec.d", &Deltarec);
     T->SetBranchAddress("phy.react.xs", &XSinit);

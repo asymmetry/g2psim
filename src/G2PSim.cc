@@ -76,8 +76,6 @@ int G2PSim::Init()
     while (TObject* obj = next()) {
         if (obj->IsZombie()) gG2PApps->Remove(obj);
     }
-
-    fApps->Print();
     
     next.Reset();
     while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
