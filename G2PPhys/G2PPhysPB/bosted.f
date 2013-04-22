@@ -73,7 +73,7 @@ c
 
       angdeg=ang*180.0D0/3.14192654D0
 
-      if ((Tb.le.0.0D0).and.(Ta.le.0.0D0)) then  
+      if ((Tb.gt.0.0D0).or.(Ta.gt.0.0D0)) then  
       CALL RADIATE_bosted(Z,A,Ei*1000.,ang,nu*1000.,xs,SIGRAD)
       xs=SIGRAD
       endif

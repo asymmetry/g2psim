@@ -50,7 +50,7 @@ C Modified by C. Gu for a library used by Geant4 similation
       SIG2NA=SIG2N(E,TH,W,Z,A,PF)*SCALE
       SIG=SIGQFZA+SIGDA+SIGXA+SIGR1A+SIGR2A+SIG2NA
       xs=SIG*1.D+30
-      if ((TB.le.0.0D0).and.(Ta.le.0.0D0)) then
+      if ((TB.gt.0.0D0).and.(Ta.gt.0.0D0)) then
       CALL RADIATE(E,TH,W,SIG,SIGRAD)
       xs=SIGRAD*1.D+30
       endif

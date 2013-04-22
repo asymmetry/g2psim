@@ -1,4 +1,4 @@
-                                                                                                                                    ########################################################################
+########################################################################
 #   This Makefile shows how to compile all C++, C and Fortran
 #   files found in $(SRCDIR) directory.
 #   Linking is done with g++. Need to have $ROOTSYS defined
