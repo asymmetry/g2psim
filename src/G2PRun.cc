@@ -45,6 +45,7 @@ int G2PRun::Init()
 
     vector<const char*> fwdreqs; fwdreqs.clear();
     fwdreqs.push_back("fV5tg_tr");
+    fwdreqs.push_back("fV5react_lab");
     fProcReqs.push_back(fwdreqs);
 
     vector<const char*> bwdreqs; bwdreqs.clear();

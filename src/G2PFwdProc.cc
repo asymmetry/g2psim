@@ -26,6 +26,7 @@ G2PFwdProc::G2PFwdProc() :
     pDrift(NULL), pHRS(NULL), pDBRec(NULL)
 {
     mName["fV5tg_tr"] = fV5tg_tr; mLength["fV5tg_tr"] = 5;
+    mName["fV5react_lab"] = fV5react_lab; mLength["fV5react_lab"] = 5;
     mName["fV5sieve_tr"] = fV5sieve_tr; mLength["fV5sieve_tr"] = 5;
     mName["fV5projtg_tr"] = fV5projtg_tr; mLength["fV5projtg_tr"] = 5;
     mName["fV5fp_tr"] = fV5fp_tr; mLength["fV5fp_tr"] = 5;
@@ -78,7 +79,19 @@ int G2PFwdProc::Process()
 {
     static const char* const here = "Process()";
 
-    //double V5[5];
+    double x[3] = { fV5react_lab[0], fV5react_lab[2], fV5react_lab[4] };
+    double pp = fHRSMomentum*(1+fV5tg_tr[4]);
+    double p[3] = { pp*sin(fV5react_lab[1])*cos(fV5react_lab[3]),
+                    pp*sin(fV5react_lab[1])*sin(fV5react_lab[3]),
+                    pp*cos(fV5react_lab[1]) };
+    // Local dump front face
+    pDrift->Drift(x, p, 640.0e-3, 10.0, x, p);
+    if ((fabs(x[0])<46.0e-3)||(fabs(x[0])>87.0e-3)) return -1;
+    if ((x[1]<-43.0e-3)||(x[1]>50.0e-3)) return -1;
+    // Local dump back face
+    pDrift->Drift(x, p, 790.0e-3, 10.0, x, p);
+    if ((fabs(x[0])<58.0e-3)||(fabs(x[0])>106.0e-3)) return -1;
+    if ((x[1]<-53.0e-3)||(x[1]>58.0e-3)) return -1;
 
     pDrift->Drift(fV5tg_tr, fHRSMomentum, 0.0, fHRSAngle, fSieve.fZ, 10.0, fV5sieve_tr);
 
@@ -109,6 +122,7 @@ int G2PFwdProc::Process()
 void G2PFwdProc::Clear()
 {
     memset(fV5tg_tr, 0, sizeof(fV5tg_tr));
+    memset(fV5react_lab, 0, sizeof(fV5react_lab));
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
     memset(fV5projtg_tr, 0, sizeof(fV5projtg_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));

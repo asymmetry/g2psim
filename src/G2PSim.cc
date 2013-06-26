@@ -88,6 +88,7 @@ int G2PSim::Init()
     }
 
     fFile = new TFile(pOutFile, "RECREATE");
+    fFile->cd();
 
     gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
     gG2PVars->DefineByType("isgood", "Good event", &bIsGood, kBool);
@@ -144,8 +145,6 @@ void G2PSim::Run()
         Error(here, "Critical error, program will stop.");
         return;
     }
-
-    fFile->cd();
 
     while (nCounter<=nEvent) {
         bIsGood = false;

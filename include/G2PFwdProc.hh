@@ -30,6 +30,7 @@ protected:
     double fHRSMomentum;
 
     double fV5tg_tr[5];
+    double fV5react_lab[5];
 
     double fV5sieve_tr[5];
     double fV5projtg_tr[5];
