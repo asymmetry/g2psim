@@ -1,9 +1,15 @@
-// This file defines a class G2PBPM.
-// This class is a tool class.
-// G2PProcBase classes will call GetBPMValue() to get bpm readouts.
-// The BPM values are in a special coords, TransBPM2Lab() will transform it to
-//+lab coords
-//
+// -*- C++ -*-
+
+/* class G2PBPM
+ * This file defines a class G2PBPM.
+ * It calculates the beam position at BPM and target using kinematics from event generator.
+ * G2PProcBase classes will call GetBPMValue() to get BPM readouts.
+ * G2PDrift is used in this class.
+ * Transport functions defined in G2PBPMTrans is used in this class.
+ *
+ * Variables ending with "_bpm" are defined in a special coordinates, TransBPM2Lab() will transform it to lab coordinates.
+ */
+
 // History:
 //   Mar 2013, C. Gu, First public version.
 //
@@ -15,24 +21,28 @@
 
 class G2PDrift;
 
-class G2PBPM : public G2PAppBase
-{
+class G2PBPM : public G2PAppBase {
 public:
     G2PBPM();
     ~G2PBPM();
 
     typedef void (G2PBPM::*pfGetBPMValue_)(const double*, double*);
 
-    void SetBPMRes(double a, double b) { fBPMARes = a; fBPMBRes = b; }
+    void SetBPMRes(double a, double b) {
+        fBPMARes = a;
+        fBPMBRes = b;
+    }
 
     int Init();
     int Begin();
 
     void GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm);
-    
+
     void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
 
-    static G2PBPM* GetInstance() { return pG2PBPM; }
+    static G2PBPM* GetInstance() {
+        return pG2PBPM;
+    }
 
 protected:
     void SetBPM();

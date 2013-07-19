@@ -1,3 +1,16 @@
+// -*- C++ -*-
+
+/* class G2PAppBase
+ * This file defines a class G2PAppBase.
+ * It is the base class of g2p tool classes.
+ * It provides fundamental functions like coordinates transport.
+ * An index is set when first instance of G2PAppBase is allocated.
+ */
+
+// History:
+//   Mar 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_APPBASE_H
 #define G2P_APPBASE_H
 
@@ -9,28 +22,45 @@
 class TList;
 class TTree;
 
-class G2PAppBase : public TObject
-{
+class G2PAppBase : public TObject {
 public:
     virtual ~G2PAppBase();
 
-    enum EStatus { kOK = 0, kNOTINIT, kINITERROR, kERROR };
-    enum EMode { kDefine = 0, kDelete };
+    enum EStatus {
+        kOK = 0, kNOTINIT, kINITERROR, kERROR
+    };
+
+    enum EMode {
+        kDefine = 0, kDelete
+    };
 
     const double kLARGE;
 
-    void SetDebug(int level) { fDebug = level; }
+    void SetDebug(int level) {
+        fDebug = level;
+    }
 
     virtual int Init();
     virtual int Begin();
     virtual int End();
+
     virtual void Clear() { }
 
-    bool IsInit() const { return IsOK(); }
-    bool IsOK() const { return (fStatus==kOK); }
-    EStatus Status() const { return fStatus; }
+    bool IsInit() const {
+        return IsOK();
+    }
 
-    static void SetSeed(int n) { pRand->SetSeed(n); }
+    bool IsOK() const {
+        return (fStatus == kOK);
+    }
+
+    EStatus Status() const {
+        return fStatus;
+    }
+
+    static void SetSeed(int n) {
+        pRand->SetSeed(n);
+    }
 
 protected:
     G2PAppBase(); // No instance allowed for this class
@@ -42,7 +72,9 @@ protected:
     virtual void HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr);
     virtual void Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout);
 
-    virtual int DefineVariables(EMode mode = kDefine) { return 0; }
+    virtual int DefineVariables(EMode mode = kDefine) {
+        return 0;
+    }
     int DefineVarsFromList(const VarDef* list, EMode mode = kDefine) const;
 
     virtual void MakePrefix() { }

@@ -1,3 +1,15 @@
+// -*- C++ -*-
+
+/* class G2PSieve
+ * This file defines a class G2PSieve.
+ * It defines geometry of the sieve slit.
+ * G2PGun classes will inherit this class to get sieve slit geometry.
+ */
+
+// History:
+//   Mar 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_SIEVE_H
 #define G2P_SIEVE_H
 
@@ -7,8 +19,7 @@
 
 using namespace std;
 
-class G2PSieve
-{
+class G2PSieve {
 public:
     virtual ~G2PSieve();
 

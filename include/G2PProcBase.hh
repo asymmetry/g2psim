@@ -1,3 +1,15 @@
+// -*- C++ -*-
+
+/* class G2PProcBase
+ * This file defines a class G2PProcBase.
+ * It is the base class of g2p process classes.
+ * It provides fundamental functions like pass variables between processes.
+ */
+
+// History:
+//   Apr 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_PROCBASE_H
 #define G2P_PROCBASE_H
 
@@ -11,14 +23,14 @@ using namespace std;
 
 class TList;
 
-class G2PProcBase : public G2PAppBase
-{
+class G2PProcBase : public G2PAppBase {
 public:
     virtual ~G2PProcBase();
 
     virtual int Init();
     virtual int Begin();
     virtual int Process() = 0;
+
     virtual void Clear() { }
 
     virtual int SetValue(const char* name, double* value);
@@ -31,7 +43,9 @@ protected:
 
     int ArrayCopy(double* out, const double* in, int length);
 
-    virtual int DefineVariables(EMode mode = kDefine) { return 0; }    
+    virtual int DefineVariables(EMode mode = kDefine) {
+        return 0;
+    }
 
     virtual void MakePrefix() { }
 

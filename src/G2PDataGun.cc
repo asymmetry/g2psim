@@ -1,3 +1,15 @@
+// -*- C++ -*-
+
+/* class G2PDataGun
+ * This file defines a class G2PDataGun.
+ * It reads kinematics from real data and generate events for simulation.
+ * G2PProcBase classes will call Shoot() to get reaction point kinematics.
+ */
+
+// History:
+//   Mar 2013, C. Gu, First public version.
+//
+
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -19,33 +31,29 @@ using namespace std;
 static const double kU = 0.93149406121;
 
 G2PDataGun::G2PDataGun(const char* filename) :
-    bIsOptics(false), pDataFileName(filename),
-    fTargetMass(0.0), fEnergyLoss(0.0), pfGun(NULL)
-{
+bIsOptics(false), pDataFileName(filename), fTargetMass(0.0), fEnergyLoss(0.0), pfGun(NULL) {
     fData.clear();
 }
 
-G2PDataGun::~G2PDataGun()
-{
+G2PDataGun::~G2PDataGun() {
     // Nothing to do
 }
 
-int G2PDataGun::Begin()
-{
+int G2PDataGun::Begin() {
     static const char* const here = "Begin()";
 
-    if (G2PGun::Begin()!=0) return fStatus;
+    if (G2PGun::Begin() != 0) return fStatus;
 
-    if (fFieldRatio>0) bIsOptics = false;
+    if (fFieldRatio > 0) bIsOptics = false;
 
     if (bIsOptics) {
         pfGun = &G2PDataGun::ShootOptics;
-        fTargetMass = gG2PRun->GetTargetMass()*kU;
+        fTargetMass = gG2PRun->GetTargetMass() * kU;
         fEnergyLoss = gG2PRun->GetEnergyLoss();
     }
     else pfGun = &G2PDataGun::ShootNormal;
 
-    if (LoadData()!=0) {
+    if (LoadData() != 0) {
         Error(here, "Cannot read data.");
         return (fStatus = kERROR);
     }
@@ -55,8 +63,7 @@ int G2PDataGun::Begin()
     return (fStatus = kOK);
 }
 
-int G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
-{
+int G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr) {
     static const char* const here = "Shoot()";
 
     sData tempdata;
@@ -74,7 +81,7 @@ int G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     V5fp_tr[3] = tempdata.pf;
     V5fp_tr[4] = 0.0;
 
-    if (fDebug>2) {
+    if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_lab[0], V5bpm_lab[1], V5bpm_lab[2], V5bpm_lab[3], V5bpm_lab[4]);
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
     }
@@ -83,8 +90,7 @@ int G2PDataGun::ShootNormal(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     return 0;
 }
 
-int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr)
-{
+int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_tr) {
     static const char* const here = "Shoot()";
 
     sData tempdata;
@@ -103,8 +109,8 @@ int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     V5fp_tr[3] = tempdata.pf;
     V5fp_tr[4] = 0.0;
 
-    int col = index/(fSieve.nRow);
-    int row = index%(fSieve.nRow);
+    int col = index / (fSieve.nRow);
+    int row = index % (fSieve.nRow);
 
     double Xreact_tr, Yreact_tr, Zreact_tr;
     HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
@@ -112,26 +118,26 @@ int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     double V3sieve_tr[3];
     double V3pd_tr[3];
 
-    V3sieve_tr[0] = fSieve.fXOffset+fSieve.fX[row];
-    V3sieve_tr[1] = fSieve.fYOffset+fSieve.fY[col];
+    V3sieve_tr[0] = fSieve.fXOffset + fSieve.fX[row];
+    V3sieve_tr[1] = fSieve.fYOffset + fSieve.fY[col];
     V3sieve_tr[2] = fSieve.fZ;
 
-    V3pd_tr[0] = V3sieve_tr[0]-Xreact_tr;
-    V3pd_tr[1] = V3sieve_tr[1]-Yreact_tr;
-    V3pd_tr[2] = V3sieve_tr[2]-Zreact_tr;
+    V3pd_tr[0] = V3sieve_tr[0] - Xreact_tr;
+    V3pd_tr[1] = V3sieve_tr[1] - Yreact_tr;
+    V3pd_tr[2] = V3sieve_tr[2] - Zreact_tr;
 
-    double Thetareact_tr = atan(V3pd_tr[0]/V3pd_tr[2]);
-    double Phireact_tr = atan(V3pd_tr[1]/V3pd_tr[2]);
+    double Thetareact_tr = atan(V3pd_tr[0] / V3pd_tr[2]);
+    double Phireact_tr = atan(V3pd_tr[1] / V3pd_tr[2]);
 
     // Calculate delta based on angle
     double V3pd_lab[3];
     TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], fHRSAngle, V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
 
-    double cosscatangle = V3pd_lab[2]/(sqrt(V3pd_lab[0]*V3pd_lab[0]+V3pd_lab[1]*V3pd_lab[1]+V3pd_lab[2]*V3pd_lab[2]));
+    double cosscatangle = V3pd_lab[2] / (sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
 
-    double scatmom = (fTargetMass*fBeamEnergy)/(fTargetMass+fBeamEnergy-fBeamEnergy*cosscatangle);
+    double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
 
-    double Delta = scatmom/fHRSMomentum-1-fEnergyLoss/fHRSMomentum;
+    double Delta = scatmom / fHRSMomentum - 1 - fEnergyLoss / fHRSMomentum;
 
     V5react_tr[0] = Xreact_tr;
     V5react_tr[1] = Thetareact_tr;
@@ -139,7 +145,7 @@ int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     V5react_tr[3] = Phireact_tr;
     V5react_tr[4] = Delta;
 
-    if (fDebug>2) {
+    if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_lab[0], V5bpm_lab[1], V5bpm_lab[2], V5bpm_lab[3], V5bpm_lab[4]);
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
     }
@@ -147,11 +153,10 @@ int G2PDataGun::ShootOptics(double* V5bpm_lab, double* V5react_tr, double* V5fp_
     return 0;
 }
 
-int G2PDataGun::LoadData()
-{
+int G2PDataGun::LoadData() {
     FILE *fp;
 
-    if ((fp=fopen(pDataFileName, "r"))==NULL) return -1;
+    if ((fp = fopen(pDataFileName, "r")) == NULL) return -1;
 
     sData temp;
     fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);

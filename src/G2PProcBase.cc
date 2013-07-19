@@ -1,3 +1,15 @@
+// -*- C++ -*-
+
+/* class G2PProcBase
+ * This file defines a class G2PProcBase.
+ * It is the base class of g2p process classes.
+ * It provides fundamental functions like pass variables between processes.
+ */
+
+// History:
+//   Apr 2013, C. Gu, First public version.
+//
+
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
@@ -18,12 +30,12 @@
 #include "G2PPointGun.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PPhys.hh"
+
 #include "G2PProcBase.hh"
 
 using namespace std;
 
-G2PProcBase::G2PProcBase()
-{
+G2PProcBase::G2PProcBase() {
     mName.clear();
     mLength.clear();
 
@@ -33,62 +45,56 @@ G2PProcBase::G2PProcBase()
     Clear();
 }
 
-G2PProcBase::~G2PProcBase()
-{
+G2PProcBase::~G2PProcBase() {
     TIter next(fApps);
-    while (TObject* obj = next()) fApps->Remove(obj);
+    while (TObject * obj = next()) fApps->Remove(obj);
     delete fApps;
 }
 
-int G2PProcBase::Init()
-{
+int G2PProcBase::Init() {
     //static const char* const here = "Init()";
 
-    if (G2PAppBase::Init()!=0) return fStatus;
+    if (G2PAppBase::Init() != 0) return fStatus;
 
-    for (vector<const char*>::iterator it = fAppsList.begin(); it!=fAppsList.end(); it++) {
-        if (FindModule(*it)==NULL) {
+    for (vector<const char*>::iterator it = fAppsList.begin(); it != fAppsList.end(); it++) {
+        if (FindModule(*it) == NULL) {
             const char* name = *it;
-            if (Add(name)!=0) return (fStatus = kINITERROR);
+            if (Add(name) != 0) return (fStatus = kINITERROR);
         }
     }
 
     return (fStatus = kOK);
 }
 
-int G2PProcBase::Begin()
-{
+int G2PProcBase::Begin() {
     static const char* const here = "Begin()";
 
-    if (G2PAppBase::Begin()!=0) return fStatus;
+    if (G2PAppBase::Begin() != 0) return fStatus;
 
-    if (fDebug>0) Info(here, "Beginning ...");
+    if (fDebug > 0) Info(here, "Beginning ...");
 
     EStatus status = kOK;
     TIter next(fApps);
-    while (G2PProcBase* aobj = static_cast<G2PProcBase*>(next())) {
+    while (G2PProcBase * aobj = static_cast<G2PProcBase*> (next())) {
         if (!aobj->IsInit()) status = kERROR;
     }
 
     return (fStatus = status);
 }
 
-int G2PProcBase::SetValue(const char* name, double* value)
-{
-    if (mName.find(name)==mName.end()) return -1;
-    
+int G2PProcBase::SetValue(const char* name, double* value) {
+    if (mName.find(name) == mName.end()) return -1;
+
     return ArrayCopy(mName[name], value, mLength[name]);
 }
 
-int G2PProcBase::GetValue(const char* name, double* value)
-{
-    if (mName.find(name)==mName.end()) return -1;
+int G2PProcBase::GetValue(const char* name, double* value) {
+    if (mName.find(name) == mName.end()) return -1;
 
     return ArrayCopy(value, mName[name], mLength[name]);
 }
 
-int G2PProcBase::Add(const char* name)
-{
+int G2PProcBase::Add(const char* name) {
     static const char* const here = "Add()";
 
     map<string, int> temp;
@@ -126,11 +132,10 @@ int G2PProcBase::Add(const char* name)
     return 0;
 }
 
-int G2PProcBase::ArrayCopy(double* out, const double* in, int length)
-{
-    if (!(out&&in)) return -1;
-    
-    for (int i = 0; i<length; i++) out[i] = in[i];
+int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
+    if (!(out && in)) return -1;
+
+    for (int i = 0; i < length; i++) out[i] = in[i];
 
     return 0;
 }
