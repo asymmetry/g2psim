@@ -1,10 +1,14 @@
-// This file defines a class G2PRand.
-// It is the rand of the whole simulation package.
-// It uses TRandom2 as uniform random number generator. TRandom2 is fastest.
-//
+// -*- C++ -*-
+
+/* class G2PRand
+ * This file defines a class G2PRand.
+ * It is the random number generator of the simulation package.
+ * It uses TRandom2 class as uniform random number generator. TRandom2 is fastest in ROOT random number generators.
+ */
+
 // History:
 //   Jan 2013, C. Gu, First public version.
-//   Feb 2013, C. Gu, Change it to a class.
+//   Feb 2013, C. Gu, Change it to a class
 //
 
 #ifndef G2P_RAND_H
@@ -13,14 +17,15 @@
 #include "TObject.h"
 #include "TRandom2.h"
 
-class G2PRand : public TObject
-{
+class G2PRand : public TObject {
 public:
     static G2PRand* GetInstance();
-    
+
     typedef double (*pfFunc1D_)(double);
 
-    void SetSeed(int n) { pRG->SetSeed(n); }
+    void SetSeed(int n) {
+        pRG->SetSeed(n);
+    }
 
     int Integer(int max);
     double Uniform();

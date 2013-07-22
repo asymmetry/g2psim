@@ -3,7 +3,7 @@
 /* class G2PProcBase
  * This file defines a class G2PProcBase.
  * It is the base class of g2p process classes.
- * It provides fundamental functions like pass variables between processes.
+ * It provides fundamental functions like passing variables between processes.
  */
 
 // History:

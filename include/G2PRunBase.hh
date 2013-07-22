@@ -1,3 +1,19 @@
+// -*- C++ -*-
+
+/* class G2PRunBase
+ * This file defines a class G2PRunBase.
+ * It is the base class of g2p run classes.
+ * For a particular simulation, it should be derived as a new class.
+ * Processes and their input variables should be registered in the new class's Init() method.
+ * G2PRun class is an example.
+ * G2PSim class will call Process() to process any of registered G2PProcBase classes.
+ */
+
+// History:
+//   Jan 2013, C. Gu, First public version.
+//   May 2013, C. Gu, Add G2PProcBase classes, G2PRunBase is more general.
+//
+
 #ifndef G2P_RUNBASE_H
 #define G2P_RUNBASE_H
 
@@ -9,43 +25,107 @@ using namespace std;
 
 class TList;
 
-class G2PRunBase : public TObject
-{
+class G2PRunBase : public TObject {
 public:
     virtual ~G2PRunBase();
-    
-    enum EStatus { kOK = 0, kNOTINIT, kINITERROR, kERROR };
 
-    void SetHRSAngle(double angle) { fHRSAngle = angle; }
-    void SetHRSMomentum(double momentum) { fHRSMomentum = momentum; }
-    void SetBeamEnergy(double value) { fBeamEnergy = value; }
-    void SetTarget(int Z, int A) { iTargetZ = Z; iTargetA = A; }
-    void SetTargetMass(double M) { fTargetMass = M; }
-    void SetEnergyLoss(double E) { fEnergyLoss = E; }
-    void SetParticlePID(int pid) { iParticlePID = pid; }
-    void SetParticleMass(double M0) { fParticleM0 = M0; }
-    void SetParticleCharge(double Q) { fParticleQ = Q; }
+    enum EStatus {
+        kOK = 0, kNOTINIT, kINITERROR, kERROR
+    };
 
-    void SetDebug(int n) { fDebug = n; }
+    void SetHRSAngle(double angle) {
+        fHRSAngle = angle;
+    }
+
+    void SetHRSMomentum(double momentum) {
+        fHRSMomentum = momentum;
+    }
+
+    void SetBeamEnergy(double value) {
+        fBeamEnergy = value;
+    }
+
+    void SetTarget(int Z, int A) {
+        iTargetZ = Z;
+        iTargetA = A;
+    }
+
+    void SetTargetMass(double M) {
+        fTargetMass = M;
+    }
+
+    void SetEnergyLoss(double E) {
+        fEnergyLoss = E;
+    }
+
+    void SetParticlePID(int pid) {
+        iParticlePID = pid;
+    }
+
+    void SetParticleMass(double M0) {
+        fParticleM0 = M0;
+    }
+
+    void SetParticleCharge(double Q) {
+        fParticleQ = Q;
+    }
+
+    void SetDebug(int n) {
+        fDebug = n;
+    }
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual int End() { return 0; }
+
+    virtual int End() {
+        return 0;
+    }
     virtual void Clear();
 
-    double GetHRSAngle() { return fHRSAngle; }
-    double GetHRSMomentum() { return fHRSMomentum; }
-    double GetBeamEnergy() { return fBeamEnergy; }
-    int GetTargetZ() { return iTargetZ; }
-    int GetTargetA() { return iTargetA; }
-    double GetTargetMass() { return fTargetMass; }
-    double GetEnergyLoss() { return fEnergyLoss; }
-    int GetParticlePID() { return iParticlePID; }
-    double GetParticleMass() { return fParticleM0; }
-    double GetParticleCharge() { return fParticleQ; }
+    double GetHRSAngle() {
+        return fHRSAngle;
+    }
 
-    static G2PRunBase* GetInstance() { return pG2PRunBase; }
+    double GetHRSMomentum() {
+        return fHRSMomentum;
+    }
+
+    double GetBeamEnergy() {
+        return fBeamEnergy;
+    }
+
+    int GetTargetZ() {
+        return iTargetZ;
+    }
+
+    int GetTargetA() {
+        return iTargetA;
+    }
+
+    double GetTargetMass() {
+        return fTargetMass;
+    }
+
+    double GetEnergyLoss() {
+        return fEnergyLoss;
+    }
+
+    int GetParticlePID() {
+        return iParticlePID;
+    }
+
+    double GetParticleMass() {
+        return fParticleM0;
+    }
+
+    double GetParticleCharge() {
+        return fParticleQ;
+    }
+
+    static G2PRunBase* GetInstance() {
+        return pG2PRunBase;
+    }
 
 protected:
     G2PRunBase();

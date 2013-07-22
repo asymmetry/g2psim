@@ -1,6 +1,10 @@
-// This file defines a class G2PSim.
-// This class is the main class for this sim package.
-//
+// -*- C++ -*-
+
+/* class G2PSim
+ * This file defines a class G2PSim.
+ * It is the main class of this simulation package.
+ */
+
 // History:
 //   Jan 2013, C. Gu, First public version.
 //
@@ -29,10 +33,7 @@ G2PVarList* gG2PVars = new G2PVarList();
 G2PSim* G2PSim::pG2PSim = NULL;
 
 G2PSim::G2PSim() :
-    fDebug(1), fFile(NULL), pOutFile(NULL),
-    nEvent(50000), nCounter(1), 
-    fApps(NULL), pRun(NULL), pOutput(NULL)
-{
+fDebug(1), fFile(NULL), pOutFile(NULL), nEvent(50000), nCounter(1), fApps(NULL), pRun(NULL), pOutput(NULL) {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
         MakeZombie();
@@ -43,12 +44,11 @@ G2PSim::G2PSim() :
     fApps = gG2PApps;
 }
 
-G2PSim::~G2PSim()
-{
-    if (pG2PSim==this) pG2PSim = NULL;
+G2PSim::~G2PSim() {
+    if (pG2PSim == this) pG2PSim = NULL;
 
     TIter next(fApps);
-    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
+    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
         fApps->Remove(aobj);
         aobj->Delete();
     }
@@ -56,35 +56,33 @@ G2PSim::~G2PSim()
     if (pOutput) delete pOutput;
 }
 
-void G2PSim::SetSeed(int n)
-{
+void G2PSim::SetSeed(int n) {
     G2PAppBase::SetSeed(n);
 }
 
-int G2PSim::Init()
-{
+int G2PSim::Init() {
     static const char* const here = "Init()";
 
-    if (fDebug>0) Info(here, "Initialize tools ......");
+    if (fDebug > 0) Info(here, "Initialize tools ......");
 
     gG2PRun = pRun;
     pRun->SetDebug(fDebug);
 
-    if (pRun->Init()!=0) return -1;
-    
+    if (pRun->Init() != 0) return -1;
+
     TIter next(fApps);
-    while (TObject* obj = next()) {
+    while (TObject * obj = next()) {
         if (obj->IsZombie()) gG2PApps->Remove(obj);
     }
-    
+
     next.Reset();
-    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
+    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
         aobj->SetDebug(fDebug);
     }
 
     next.Reset();
-    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
-        if (aobj->Init()!=0) return -1;
+    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+        if (aobj->Init() != 0) return -1;
     }
 
     fFile = new TFile(pOutFile, "RECREATE");
@@ -93,66 +91,63 @@ int G2PSim::Init()
     gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
     gG2PVars->DefineByType("isgood", "Good event", &bIsGood, kBool);
     pOutput = new G2POutput();
-    if (pOutput->Init()!=0) return -1;
+    if (pOutput->Init() != 0) return -1;
 
-    if (fDebug>0) Info(here, "Initialize done!");
+    if (fDebug > 0) Info(here, "Initialize done!");
 
     return 0;
 }
 
-int G2PSim::Begin()
-{
+int G2PSim::Begin() {
     static const char* const here = "Begin()";
 
-    if (fDebug>0) Info(here, "Start run ......");
-    
+    if (fDebug > 0) Info(here, "Start run ......");
+
     TIter next(fApps);
-    while (G2PAppBase* aobj = static_cast<G2PAppBase*>(next())) {
-        if (aobj->Begin()!=0) return -1;
+    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+        if (aobj->Begin() != 0) return -1;
     }
 
-    if (pRun->Begin()!=0) return -1;
+    if (pRun->Begin() != 0) return -1;
 
-    if (fDebug>0) Info(here, "Ready to go!");
+    if (fDebug > 0) Info(here, "Ready to go!");
 
     return 0;
 }
 
-int G2PSim::End()
-{
+int G2PSim::End() {
     static const char* const here = "End()";
 
-    if (fDebug>0) Info(here, "Cleaning ......");
-    
+    if (fDebug > 0) Info(here, "Cleaning ......");
+
     pOutput->End();
     fFile->Close();
 
-    if (fDebug>0) Info(here, "Run finished!");
+    if (fDebug > 0) Info(here, "Run finished!");
 
     return 0;
 }
 
-void G2PSim::Run()
-{
+void G2PSim::Run() {
     static const char* const here = "Run()";
 
-    if (Init()!=0) {
+    if (Init() != 0) {
         Error(here, "Cannot initialize, program will stop.");
         return;
     }
 
-    if (Begin()!=0) {
+    if (Begin() != 0) {
         Error(here, "Critical error, program will stop.");
         return;
     }
 
-    while (nCounter<=nEvent) {
+    while (nCounter <= nEvent) {
         bIsGood = false;
-        if (fDebug>1) Info(here, "Processing event %d ...", nCounter);
+        if (fDebug > 1) Info(here, "Processing event %d ...", nCounter);
         pRun->Clear();
-        if (pRun->Process()==0) bIsGood = true;
+        if (pRun->Process() == 0) bIsGood = true;
         pOutput->Process();
-        if ((nCounter%100==0)&&(fDebug>0)) Info(here, "%d events processed ...", nCounter);
+        if ((nCounter % 100 == 0)&&(fDebug > 0)) Info(here, "%d events processed ...", nCounter);
         nCounter++;
     }
 
@@ -192,7 +187,7 @@ void G2PSim::Run()
 //         pFile->Write("", TObject::kOverwrite);
 
 //         delete pConfig;
-        
+
 //         it++; i++;
 //     }
 // }

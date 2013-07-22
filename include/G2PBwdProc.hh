@@ -1,3 +1,16 @@
+// -*- C++ -*-
+
+/* class G2PBwdProc
+ * This file defines a class G2PBwdProc.
+ * It simulates the reconstruction of g2p kinematics.
+ * G2PBPM, G2PDBRec, G2PDrift, G2PHRSTrans are used in this class.
+ * Input variables: fV5bpm_bpm, fV5projtg_tr, fV5fp_tr (register in G2PRun).
+ */
+
+// History:
+//   Apr 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_BWDPROC_H
 #define G2P_BWDPROC_H
 
@@ -9,8 +22,7 @@ class G2PDrift;
 class G2PHRSTrans;
 class G2PDBRec;
 
-class G2PBwdProc : public G2PProcBase, public G2PSieve
-{
+class G2PBwdProc : public G2PProcBase, public G2PSieve {
 public:
     G2PBwdProc();
     ~G2PBwdProc();

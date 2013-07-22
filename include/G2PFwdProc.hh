@@ -1,3 +1,16 @@
+// -*- C++ -*-
+
+/* class G2PFwdProc
+ * This file defines a class G2PFwdProc.
+ * It simulates the transport of the scatted particles in the spectrometers.
+ * G2PDBRec, G2PDrift, G2PHRSTrans are used in this class.
+ * Input variables: fV5tg_tr, fV5react_lab (register in G2PRun).
+ */
+
+// History:
+//   Apr 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_FWDPROC_H
 #define G2P_FWDPROC_H
 
@@ -8,8 +21,7 @@ class G2PDrift;
 class G2PHRSTrans;
 class G2PDBRec;
 
-class G2PFwdProc : public G2PProcBase, public G2PSieve
-{
+class G2PFwdProc : public G2PProcBase, public G2PSieve {
 public:
     G2PFwdProc();
     ~G2PFwdProc();

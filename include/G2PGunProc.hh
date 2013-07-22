@@ -1,3 +1,16 @@
+// -*- C++ -*-
+
+/* class G2PFwdProc
+ * This file defines a class G2PGunProc.
+ * It uses pre-defined G2PGun to generate events.
+ * G2PBPM, G2PDrift, G2PGun are used in this class.
+ * Input variables: none.
+ */
+
+// History:
+//   Apr 2013, C. Gu, First public version.
+//
+
 #ifndef G2P_GUNPROC_H
 #define G2P_GUNPROC_H
 
@@ -7,8 +20,7 @@ class G2PBPM;
 class G2PDrift;
 class G2PGun;
 
-class G2PGunProc : public G2PProcBase
-{
+class G2PGunProc : public G2PProcBase {
 public:
     G2PGunProc();
     ~G2PGunProc();
@@ -25,7 +37,7 @@ protected:
 
     double fHRSAngle;
     double fHRSMomentum;
-   
+
     double fV5beam_lab[5];
     double fV5react_tr[5];
     double fV5react_lab[5];
