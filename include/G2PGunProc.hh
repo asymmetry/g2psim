@@ -43,6 +43,8 @@ protected:
     double fV5react_lab[5];
 
     double fV5bpm_bpm[5];
+    double fV2bpma_bpm[2];
+    double fV2bpmb_bpm[2];
     double fV5bpm_lab[5];
 
     double fV5tg_tr[5];

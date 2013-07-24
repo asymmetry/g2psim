@@ -52,7 +52,7 @@ void G2PSieve::SetSieve(double angle) {
         fSieve.fX.clear();
         for (int i = 0; i < fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
         fSieve.fY.clear();
-        for (int i = 0; i < fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
+        for (int i = 0; i < fSieve.nCol; i++) fSieve.fY.push_back(kSIEVEY[i]);
         fSieve.fZ = 799.60e-3;
         fSieve.fXOffset = 0.0;
         fSieve.fYOffset = 0.0;
@@ -84,7 +84,7 @@ void G2PSieve::SetSieve(double angle) {
         fSieve.fX.clear();
         for (int i = 0; i < fSieve.nRow; i++) fSieve.fX.push_back(kSIEVEX[i]);
         fSieve.fY.clear();
-        for (int i = 0; i < fSieve.nCol; i++) fSieve.fX.push_back(kSIEVEY[i]);
+        for (int i = 0; i < fSieve.nCol; i++) fSieve.fY.push_back(kSIEVEY[i]);
         fSieve.fZ = 799.46e-3;
         fSieve.fXOffset = 0.0;
         fSieve.fYOffset = 0.0;

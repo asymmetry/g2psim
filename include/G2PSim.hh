@@ -1,4 +1,4 @@
-/// -*- C++ -*-
+// -*- C++ -*-
 
 /* class G2PSim
  * This file defines a class G2PSim.
