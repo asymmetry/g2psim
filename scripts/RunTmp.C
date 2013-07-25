@@ -3,47 +3,11 @@
 /* script Run.C
  * This file defines a function Run().
  * This file is able to run directly in ROOT as a script.
- * It is also included in Main.cc as a function so it could be compiled.
  */
 
 // History:
-//   Jan 2013, C. Gu, First public version.
-//   Jul 2013, C. Gu, Add support to work with Main.cc.
+//   Mar 2013, C. Gu, First public version.
 //
-
-#include <cstdio>
-#include <cstdlib>
-#include <time.h>
-
-#include "TROOT.h"
-
-#include "G2PDBRec.hh"
-#include "G2PGlobals.hh"
-#include "G2PRun.hh"
-#include "G2PRunBase.hh"
-#include "G2PSim.hh"
-
-#include "G2PField.hh"
-#include "G2PHallBField.hh"
-#include "G2PMapField.hh"
-#include "G2PUniField.hh"
-
-#include "G2PGun.hh"
-#include "G2PDataGun.hh"
-#include "G2PFlatGun.hh"
-#include "G2PPointGun.hh"
-#include "G2PSieveGun.hh"
-
-#include "G2PHRSTrans.hh"
-#include "HRSTrans/G2PTrans400016/G2PTrans400016.hh"
-#include "HRSTrans/G2PTrans484816/G2PTrans484816.hh"
-#include "HRSTrans/HRSTransSTD/HRSTransSTD.hh"
-
-#include "G2PPhys.hh"
-#include "G2PPhys/G2PPhysEl/G2PPhysEl.hh"
-#include "G2PPhys/G2PPhysPB/G2PPhysPB.hh"
-#include "G2PPhys/G2PPhysQFS/G2PPhysQFS.hh"
-#include "G2PPhys/G2PPhysWISER/G2PPhysWISER.hh"
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
@@ -51,7 +15,6 @@ int Run() {
     ///////////////////////////////////////////////////////////////////////////
     // gun
     ///////////////////////////////////////////////////////////////////////////
-    //G2PPointGun* gun = new G2PPointGun();
     //G2PFlatGun* gun = new G2PFlatGun();
     G2PSieveGun* gun = new G2PSieveGun();
     //G2PDataGun* gun = new G2PDataGun("input_fp_tr.dat");
@@ -63,9 +26,9 @@ int Run() {
     gun->SetBeamX(0.0);
     gun->SetBeamY(0.0);
     //gun->SetReactZ(0.0);
-    //gun->SetReactZ(-13.6271e-3); // 40mil
+    gun->SetReactZ(-13.6271e-3); // 40mil
     //gun->SetReactZ(-12.5476e-3); // 125mil
-    gun->SetReactZRange(-14.1350e-3, -13.1191e-3); //40mil
+    //gun->SetReactZRange(-14.1350e-3,-13.1191e-3); //40mil
     //gun->SetReactZRange(-14.1350e-3,-10.9600e-3); //125mil
     //gun->SetBeamR(15.0e-3);
     //gun->SetReactZRange(-14.135e-3, 14.135e-3);
@@ -112,7 +75,7 @@ int Run() {
     // BPM
     ///////////////////////////////////////////////////////////////////////////
     G2PBPM* bpm = new G2PBPM();
-    bpm->SetBPMRes(0.2e-3, 0.4e-3);
+    bpm->SetBPMRes(0.2e-3, 0.0e-3);
     gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -145,8 +108,7 @@ int Run() {
     sim->SetSeed(1);
     sim->SetDebug(1);
     //sim->SetOutFile("run1019_flat_484816.root");
-    sim->SetOutFile("run_1027_bpm_ave_484816.root");
-    //sim->SetOutFile("run_test.root");
+    sim->SetOutFile("run_1024.root");
     sim->SetRun(run);
 
     clock_t start = clock();

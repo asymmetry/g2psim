@@ -27,7 +27,7 @@
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PGun.hh"
-#include "G2PPointGun.hh"
+#include "G2PFlatGun.hh"
 #include "G2PHRSTrans.hh"
 #include "G2PPhys.hh"
 
@@ -116,7 +116,7 @@ int G2PProcBase::Add(const char* name) {
         gG2PApps->Add(new G2PDrift());
         break;
     case 3:
-        gG2PApps->Add(new G2PPointGun());
+        gG2PApps->Add(new G2PFlatGun());
         break;
     case 4:
         gG2PApps->Add(new G2PHRSTrans("484816"));
