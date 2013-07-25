@@ -36,6 +36,8 @@
 
 #include "G2PBwdProc.hh"
 
+#define USE_DEFAULT_LIMIT 1
+
 G2PBwdProc::G2PBwdProc() :
 fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDrift(NULL), pHRS(NULL), pDBRec(NULL) {
     mName["fV5bpm_bpm"] = fV5bpm_bpm;
@@ -136,6 +138,22 @@ int G2PBwdProc::Process() {
     pDrift->Drift(fV5recsiv_tr, fHRSMomentum, fSieve.fZ, fHRSAngle, 0.0, 10.0, fV5rec_tr);
     TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]);
     TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, fV5rec_lab[1], fV5rec_lab[3]);
+
+#ifndef USE_DEFAULT_LIMIT
+    double x[3] = {fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]};
+    double p[3] = {fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * cos(fV5rec_lab[3]),
+                   fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * sin(fV5rec_lab[3]),
+                   fHRSMomentum * (1 + fV5rec_tr[4]) * cos(fV5rec_lab[1])};
+    pDrift->Drift(x, p, -13.6271e-3, 10.0, x, p);
+    double tempd;
+    fV5rec_lab[0] = x[0];
+    fV5rec_lab[1] = acos(p[2] / (fHRSMomentum * (1 + fV5rec_tr[4])));
+    fV5rec_lab[2] = x[1];
+    fV5rec_lab[3] = atan2(p[1], p[0]);
+    fV5rec_lab[4] = x[2];
+    HCS2TCS(x[0], x[1], x[2], fHRSAngle, fV5rec_tr[0], fV5rec_tr[2], tempd);
+    HCS2TCS(fV5rec_lab[1], fV5rec_lab[2], fHRSAngle, fV5rec_tr[1], fV5rec_tr[3]);
+#endif
 
     if (fDebug > 1) {
         Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);

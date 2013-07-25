@@ -12,6 +12,8 @@
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Apr 2013, C. Gu, Add Pengjia's fitting result.
+//   Jul 2013, C. Gu, Treat optics (no field) case specially.
 //
 
 #include <cstdio>
@@ -31,6 +33,8 @@
 #include "G2PRunBase.hh"
 
 #include "G2PBPM.hh"
+
+#define USE_SINGLE_BPM 1
 
 G2PBPM* G2PBPM::pG2PBPM = NULL;
 
@@ -77,10 +81,15 @@ int G2PBPM::Begin() {
     return (fStatus = kOK);
 }
 
-void G2PBPM::GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm, double* V2bpma_bpm, double* V2bpmb_bpm) {
     static const char* const here = "GetBPMValue()";
 
-    (this->*pfGetBPMValue)(V5beam_lab, V5bpm_bpm);
+    double V4[4];
+    (this->*pfGetBPMValue)(V5beam_lab, V5bpm_bpm, V4);
+    V2bpma_bpm[0] = V4[0];
+    V2bpma_bpm[1] = V4[1];
+    V2bpmb_bpm[0] = V4[2];
+    V2bpmb_bpm[1] = V4[3];
 
     if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5bpm_bpm[0], V5bpm_bpm[1], V5bpm_bpm[2], V5bpm_bpm[3], V5bpm_bpm[4]);
 }
@@ -166,6 +175,10 @@ void G2PBPM::SetBPM() {
             orbit = 0;
         }
     }
+    else if (fabs(fFieldRatio) < 1e-8) {
+        pfGetBPMValue = &G2PBPM::GetBPMValueO;
+        orbit = 0;
+    }
     else {
         pfGetBPMValue = &G2PBPM::GetBPMValue0;
         orbit = 0;
@@ -174,13 +187,21 @@ void G2PBPM::SetBPM() {
     if (fDebug > 0) Info(here, "Using orbit %d.", orbit);
 }
 
-void G2PBPM::GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
+    // it is an estimation when there is target field
+    // need to find better method
     double x[3] = {V5beam_lab[0], V5beam_lab[2], V5beam_lab[4]};
     double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) * cos(V5beam_lab[3]),
                    fBeamEnergy * sin(V5beam_lab[1]) * sin(V5beam_lab[3]),
                    fBeamEnergy * cos(V5beam_lab[1])};
 
+    pDrift->Drift(x, p, fBPMBZ, 10.0, x, p);
+    V4[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes)*1e3;
+    V4[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes)*1e3;
     pDrift->Drift(x, p, fBPMAZ, 10.0, x, p);
+    V4[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes)*1e3;
+    V4[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes)*1e3;
+
     double res = fBPMBRes / (fBPMBZ - fBPMAZ);
     // here theta phi are special coords defined by Pengjia
     // theta is dy/dz in hall coords
@@ -203,12 +224,12 @@ void G2PBPM::GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm) {
     V5bpm_bpm[4] = x[2];
 }
 
-void G2PBPM::GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
     using namespace Orbit1;
 
     float x[4];
-
     GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
@@ -217,12 +238,12 @@ void G2PBPM::GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm) {
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
     using namespace Orbit4;
 
     float x[4];
-
     GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
@@ -231,12 +252,12 @@ void G2PBPM::GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm) {
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
     using namespace Orbit5;
 
     float x[4];
-
     GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
@@ -245,12 +266,12 @@ void G2PBPM::GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm) {
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
     using namespace Orbit7;
 
     float x[4];
-
     GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
@@ -259,18 +280,50 @@ void G2PBPM::GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm) {
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm) {
+void G2PBPM::GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
     using namespace Orbit9;
 
     float x[4];
-
     GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
     V5bpm_bpm[0] = target_x(x, 4)*1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
     V5bpm_bpm[2] = target_y(x, 4)*1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
+}
+
+void G2PBPM::GetBPMValueO(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
+    // optics (no field) situation
+    float x[4];
+    GetBPMAB(V5beam_lab, x);
+    for (int i = 0; i < 4; i++) V4[i] = x[i];
+
+    double xbpm[4];
+    xbpm[0] = x[0]*1e-3;
+    xbpm[1] = x[1]*1e-3;
+    xbpm[2] = x[2]*1e-3;
+    xbpm[3] = x[3]*1e-3;
+
+#ifdef USE_SINGLE_BPM
+    V5bpm_bpm[0] = (xbpm[0] + xbpm[2]) / 2.0;
+    V5bpm_bpm[1] = 0.0;
+    V5bpm_bpm[2] = (xbpm[1] + xbpm[3]) / 2.0;
+    V5bpm_bpm[3] = 0.0;
+    V5bpm_bpm[4] = 0.0;
+#else
+    // here theta phi are special coords defined by Pengjia
+    // theta is dy/dz in hall coords
+    // phi is dx/dz in hall coords
+    double theta = atan2(xbpm[1] - xbpm[3], fBPMAZ - fBPMBZ);
+    double phi = atan2(xbpm[0] - xbpm[2], fBPMAZ - fBPMBZ);
+    V5bpm_bpm[0] = xbpm[0] + fBPMAZ * tan(phi);
+    V5bpm_bpm[1] = theta;
+    V5bpm_bpm[2] = xbpm[1] + fBPMAZ * tan(theta);
+    V5bpm_bpm[3] = phi;
+    V5bpm_bpm[4] = 0.0;
+#endif
 }
 
 void G2PBPM::GetBPMAB(const double* V5beam_lab, float* xout) {

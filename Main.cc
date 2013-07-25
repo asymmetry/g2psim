@@ -7,26 +7,25 @@
 
 void usage(int argc, char** argv);
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     int c;
 
-    int nEvent = 50000;    // default 50000
-    char pSnake[300] = "484816";     // default 484816 septa with shim
+    int nEvent = 50000; // default 50000
+    char pSnake[300] = "484816"; // default 484816 septa with shim
     char pField[300] = "hallb";
     // char pExperiment[300] = "g2p";
     char pPhysics[300] = "qfs";
     char pGun[300] = "data";
-    char pArm[300] = "L";          // default left arm
+    char pArm[300] = "L"; // default left arm
 
     while (1) {
         static struct option long_options[] = {
-            {"help",        no_argument,       0, 'h'},
-            {"snake",       required_argument, 0, 's'},
-            {"arm",         required_argument, 0, 'a'},
-            {"field",       required_argument, 0, 'f'},
-            {"physics",     required_argument, 0, 'p'},
-            {"gun",         required_argument, 0, 'g'},
+            {"help", no_argument, 0, 'h'},
+            {"snake", required_argument, 0, 's'},
+            {"arm", required_argument, 0, 'a'},
+            {"field", required_argument, 0, 'f'},
+            {"physics", required_argument, 0, 'p'},
+            {"gun", required_argument, 0, 'g'},
             {0, 0, 0, 0}
         };
 
@@ -34,7 +33,7 @@ int main(int argc, char** argv)
 
         c = getopt_long(argc, argv, "a:f:g:hp:s:", long_options, &option_index);
 
-        if (c==-1) break;
+        if (c == -1) break;
 
         switch (c) {
         case 'a':
@@ -61,7 +60,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (optind<argc) {
+    if (optind < argc) {
         nEvent = atoi(argv[optind++]);
     }
     else {
@@ -114,7 +113,7 @@ int main(int argc, char** argv)
 
     // run->SetNEvent(nEvent);
     // run->SetRootName("result_test.root");
-    
+
     // run->Run();
 
     // clock_t end = clock();
@@ -136,14 +135,13 @@ int main(int argc, char** argv)
     //     printf("%e\t%e\t%e\t%e\t%e\n", x[0], x[1], x[2], x[3], x[4]);
     //     G2PDrift::Drift(x, 2.251, 0.1, 0.8, 0.0, 10.0, x);
     //     printf("%e\t%e\t%e\t%e\t%e\n", x[0], x[1], x[2], x[3], x[4]);
-    // } 
-    
-    
-	return 0;
+    // }
+
+
+    return 0;
 }
 
-void usage(int argc, char** argv)
-{
+void usage(int argc, char** argv) {
     printf("usage: %s [options] NEvent\n", argv[0]);
     printf("  -a, --arm=L           Set arm: L or R\n");
     printf("  -f, --field=hallb     Set field: uniform or hallb \n");

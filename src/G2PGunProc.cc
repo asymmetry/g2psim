@@ -43,6 +43,10 @@ fHRSAngle(0.0), fHRSMomentum(0.0), pBPM(NULL), pDrift(NULL), pGun(NULL) {
     mLength["fV5react_lab"] = 5;
     mName["fV5bpm_bpm"] = fV5bpm_bpm;
     mLength["fV5bpm_bpm"] = 5;
+    mName["fV2bpma_bpm"] = fV2bpma_bpm;
+    mLength["fV2bpma_bpm"] = 2;
+    mName["fV2bpmb_bpm"] = fV2bpmb_bpm;
+    mLength["fV2bpmb_bpm"] = 2;
     mName["fV5bpm_lab"] = fV5bpm_lab;
     mLength["fV5bpm_lab"] = 5;
     mName["fV5tg_tr"] = fV5tg_tr;
@@ -99,7 +103,7 @@ int G2PGunProc::Process() {
         Info(here, "beam_lab  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5beam_lab[0], fV5beam_lab[1], fV5beam_lab[2], fV5beam_lab[3], fV5beam_lab[4]);
     }
 
-    pBPM->GetBPMValue(fV5beam_lab, fV5bpm_bpm);
+    pBPM->GetBPMValue(fV5beam_lab, fV5bpm_bpm, fV2bpma_bpm, fV2bpmb_bpm);
     pBPM->TransBPM2Lab(fV5bpm_bpm, fV5bpm_lab);
 
     if (fDebug > 1) {
@@ -121,6 +125,8 @@ void G2PGunProc::Clear() {
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5bpm_bpm, 0, sizeof (fV5bpm_bpm));
+    memset(fV2bpma_bpm, 0, sizeof (fV2bpma_bpm));
+    memset(fV2bpmb_bpm, 0, sizeof (fV2bpmb_bpm));
     memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
     memset(fV5tg_tr, 0, sizeof (fV5tg_tr));
 }
@@ -149,6 +155,10 @@ int G2PGunProc::DefineVariables(EMode mode) {
         {"bpm.l_y", "BPM Y (lab)", kDouble, &fV5bpm_lab[2]},
         {"bpm.l_p", "BPM P (lab)", kDouble, &fV5bpm_lab[3]},
         {"bpm.l_z", "BPM Z (lab)", kDouble, &fV5bpm_lab[4]},
+        {"bpm.a.x", "BPMA X", kDouble, &fV2bpma_bpm[0]},
+        {"bpm.a.y", "BPMA X", kDouble, &fV2bpma_bpm[1]},
+        {"bpm.b.x", "BPMB X", kDouble, &fV2bpmb_bpm[0]},
+        {"bpm.b.y", "BPMB X", kDouble, &fV2bpmb_bpm[1]},
         {"target.x", "Target plane X", kDouble, &fV5tg_tr[0]},
         {"target.t", "Target plane T", kDouble, &fV5tg_tr[1]},
         {"target.y", "Target plane Y", kDouble, &fV5tg_tr[2]},

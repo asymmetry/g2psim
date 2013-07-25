@@ -12,6 +12,8 @@
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Apr 2013, C. Gu, Add Pengjia's fitting result.
+//   Jul 2013, C. Gu, Treat optics (no field) case specially.
 //
 
 #ifndef G2P_BPM_H
@@ -26,7 +28,7 @@ public:
     G2PBPM();
     ~G2PBPM();
 
-    typedef void (G2PBPM::*pfGetBPMValue_)(const double*, double*);
+    typedef void (G2PBPM::*pfGetBPMValue_)(const double*, double*, double*);
 
     void SetBPMRes(double a, double b) {
         fBPMARes = a;
@@ -36,7 +38,7 @@ public:
     int Init();
     int Begin();
 
-    void GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm);
+    void GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm, double* V2bpma_bpm, double* V2bpmb_bpm);
 
     void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
 
@@ -47,12 +49,13 @@ public:
 protected:
     void SetBPM();
 
-    void GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm);
-    void GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm);
-    void GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm);
-    void GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm);
-    void GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm);
-    void GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm);
+    void GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMValueO(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
 
     void GetBPMAB(const double* V5beam_lab, float* xout);
 

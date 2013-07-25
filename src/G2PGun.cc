@@ -93,7 +93,7 @@ void G2PGun::SetTiltAngle() {
     }
     else fBeamTiltAngle = 0.0;
 
-    if (fDebug > 0) Info(here, "Beam tile angle is %10.3e deg.", fBeamTiltAngle / kDEG);
+    if (fDebug > 0) Info(here, "Beam tilt angle is %10.3e deg.", fBeamTiltAngle / kDEG);
 }
 
 void G2PGun::GetReactPoint(double x, double y, double z, double* V5) {
