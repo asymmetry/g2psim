@@ -1,66 +1,62 @@
 // -*- C++ -*-
 
 /* class G2PAppBase
- * This file defines a class G2PAppBase.
- * It is the base class of g2p tool classes.
+ * Abstract base class for g2p simulation tools.
  * It provides fundamental functions like coordinates transport.
- * An index is set when first instance of G2PAppBase is allocated.
+ * No instance allowed for this class.
+ * Many functions are modified from THaAnalysisObject. Thanks to O. Hansen.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Add configure functions.
 //
 
 #ifndef G2P_APPBASE_H
 #define G2P_APPBASE_H
 
+#include <map>
+
 #include "TObject.h"
 
-#include "G2PRand.hh"
 #include "G2PVarDef.hh"
 
-class TList;
-class TTree;
+using namespace std;
+
+class G2PRand;
 
 class G2PAppBase : public TObject {
 public:
     virtual ~G2PAppBase();
 
     enum EStatus {
-        kOK = 0, kNOTINIT, kINITERROR, kERROR
+        kOK = 0, kNOTINIT, kINITERROR
     };
 
     enum EMode {
-        kDefine = 0, kDelete
+        kREAD = 0, kWRITE, kTWOWAY, kDEFINE = 0, kDELETE
     };
 
-    const double kLARGE;
+    static const double kLARGE;
 
-    void SetDebug(int level) {
-        fDebug = level;
-    }
-
+    // General processes
     virtual int Init();
     virtual int Begin();
     virtual int End();
+    virtual void Clear();
 
-    virtual void Clear() { }
+    // Gets
+    int GetDebug() const;
+    const char* GetPrefix() const;
+    bool IsInit() const;
+    bool IsOK() const;
+    EStatus Status() const;
+    int GetPriority() const;
 
-    bool IsInit() const {
-        return IsOK();
-    }
+    // Sets
+    void SetDebugLevel(int level);
 
-    bool IsOK() const {
-        return (fStatus == kOK);
-    }
-
-    EStatus Status() const {
-        return fStatus;
-    }
-
-    static void SetSeed(int n) {
-        pRand->SetSeed(n);
-    }
+    static void SetSeed(unsigned n);
 
 protected:
     G2PAppBase(); // No instance allowed for this class
@@ -72,30 +68,77 @@ protected:
     virtual void HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr);
     virtual void Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout);
 
-    virtual int DefineVariables(EMode mode = kDefine) {
-        return 0;
-    }
-    int DefineVarsFromList(const VarDef* list, EMode mode = kDefine) const;
+    virtual void TRCS2FCS(const double* V5_tr, double angle, double* V5_fp);
+    virtual void FCS2TRCS(const double* V5_fp, double angle, double* V5_tr);
+    virtual void TRCS2DCS(const double* V5_tr, double angle, double* V5_det);
+    virtual void DCS2TRCS(const double* V5_det, double angle, double* V5_tr);
+    virtual void FCS2DCS(const double* V5_fp, double angle, double* V5_det);
+    virtual void DCS2FCS(const double* V5_det, double angle, double* V5_fp);
 
-    virtual void MakePrefix() { }
+    // Configure functions
+    virtual int Configure(EMode mode = kTWOWAY) = 0;
+    int ConfigureFromList(const ConfDef* list, EMode mode = kTWOWAY);
+    virtual int WriteConfs();
+
+    // Make Prefix
+    virtual void MakePrefix() = 0;
     void MakePrefix(const char* basename);
 
-    G2PAppBase* FindModule(const char* classname) const;
-    void FindModule(const char* classname, TList* list) const;
-
-    bool bIsSetup;
-
-    EStatus fStatus;
+    // General status variables
     char* fPrefix;
-
+    EStatus fStatus;
     int fDebug;
+    bool fIsInit;
+    bool fIsSetup;
 
+    // FIXME :
+    // I understand that to use a priority variable is a bad idea.
+    // If anyone has a better idea to organize the processing order of processes, I will appreciate that.
+    int fPriority;
+
+    map<void*, bool> fConfigIsSet;
+
+    // Random number generator
     static G2PRand* pRand;
 
 private:
-    static TList* fgAppBase;
+    // Prevent default copy and assignment function
+    G2PAppBase(const G2PAppBase&);
+    G2PAppBase& operator=(const G2PAppBase&);
 
     ClassDef(G2PAppBase, 1)
 };
+
+// inline functions
+
+inline int G2PAppBase::GetDebug() const {
+    return fDebug;
+}
+
+inline const char* G2PAppBase::GetPrefix() const {
+    return fPrefix;
+}
+
+inline bool G2PAppBase::IsInit() const {
+    return IsOK();
+}
+
+inline bool G2PAppBase::IsOK() const {
+    return (fStatus == kOK);
+}
+
+inline G2PAppBase::EStatus G2PAppBase::Status() const {
+    return fStatus;
+}
+
+inline int G2PAppBase::GetPriority() const {
+    return fPriority;
+}
+
+inline void G2PAppBase::SetDebugLevel(int level) {
+    fDebug = level;
+
+    fConfigIsSet[&fDebug] = true;
+}
 
 #endif

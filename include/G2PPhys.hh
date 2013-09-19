@@ -1,16 +1,14 @@
 // -*- C++ -*-
 
 /* class G2PPhys
- * This file defines a class G2PPhys.
- * It is the interface class of G2PPhys package. It provides physics models.
- * G2PProcBase classes will call GetXS() to calculate cross sections.
+ * It will calculate cross sections at reaction point.
  *
  * Meaning of parameters:
- * iPID: incident particle ID, following the PDG definition:
+ * fPID: incident particle ID, following the PDG definition:
  *       2212 for p        ;   2112 for n     ;   211 for pi+   ;
  *       -211 for pi-      ;   111  for pi0   ;   11  for e-    ;
  *       22   for photon   ;
- * iZ, iA: proton and mass number of the nucleus.
+ * fZ, fA: proton and mass number of the nucleus.
  *
  * Radiative correction parameters:
  * Tb: total radiative length before scattering in radiation length;
@@ -33,43 +31,52 @@
 #ifndef G2P_PHYS_H
 #define G2P_PHYS_H
 
-#include <vector>
-
-#include "G2PAppBase.hh"
+#include "G2PProcBase.hh"
 
 class G2PPhysBase;
 
-class G2PPhys : public G2PAppBase {
+class G2PPhys : public G2PProcBase {
 public:
     G2PPhys(const char *name);
-    ~G2PPhys();
+    virtual ~G2PPhys();
 
-    void SetPars(double* array, int n) {
-        fPars = array;
-        nPars = n;
-    }
+    virtual int Begin();
+    virtual int Process();
+    virtual void Clear();
 
-    int Init();
-    int Begin();
+    // Gets
 
-    double GetXS(double Eb, double Ef, double theta);
-
-    static G2PPhys* GetInstance() {
-        return pG2PPhys;
-    }
+    // Sets
+    void SetPars(double* array, int n);
 
 protected:
-    G2PPhys();
+    G2PPhys(); // Only for ROOT I/O
 
-    int iSetting;
+    double CalXS(const double* V5lab, const double* V5tr, double& scatangle);
 
-    int iZ, iA; // Define Target
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual int DefineVariables(EMode mode = kDEFINE);
+    virtual void MakePrefix();
+
+    int fSetting;
+
+    int fPID;
+
+    int fZ, fA; // Define Target
     double fTargetMass;
 
-    int iPID;
-
     double* fPars;
-    int nPars;
+    int fNPars;
+
+    double fHRSAngle;
+    double fHRSMomentum;
+
+    double fBeamEnergy;
+
+    double fXSreact;
+    double fTHreact;
+    double fXSrec;
+    double fTHrec;
 
     G2PPhysBase* pModel;
 
@@ -78,5 +85,12 @@ private:
 
     ClassDef(G2PPhys, 1)
 };
+
+// inline functions
+
+inline void G2PPhys::SetPars(double* array, int n) {
+    fPars = array;
+    fNPars = n;
+}
 
 #endif

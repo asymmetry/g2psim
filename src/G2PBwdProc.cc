@@ -1,70 +1,57 @@
 // -*- C++ -*-
 
 /* class G2PBwdProc
- * This file defines a class G2PBwdProc.
  * It simulates the reconstruction of g2p kinematics.
- * G2PBPM, G2PDBRec, G2PDrift, G2PHRSTrans are used in this class.
- * Input variables: fV5bpm_bpm, fV5projtg_tr, fV5fp_tr (register in G2PRun).
+ * G2PDrift, G2PHRS and G2PSieve are used in this class.
+ * Input variables: fV5bpm_lab, fV5fp_tr (register in gG2PVars).
  */
 
 // History:
 //   Apr 2013, C. Gu, First public version.
 //
 
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
+#include <cstdio>
 #include <cmath>
-#include <map>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
 #include "G2PAppBase.hh"
-#include "G2PBPM.hh"
-#include "G2PDBRec.hh"
+#include "G2PAppList.hh"
 #include "G2PDrift.hh"
-#include "G2PField.hh"
 #include "G2PGlobals.hh"
-#include "G2PHRSTrans.hh"
+#include "G2PHRS.hh"
 #include "G2PProcBase.hh"
-#include "G2PRunBase.hh"
 #include "G2PSieve.hh"
+#include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
 #include "G2PBwdProc.hh"
 
-#define USE_DEFAULT_LIMIT 1
+#define USE_DEFAULT_ENDZ 1
+
+using namespace std;
+
+G2PBwdProc* G2PBwdProc::pG2PBwdProc = NULL;
 
 G2PBwdProc::G2PBwdProc() :
-fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDrift(NULL), pHRS(NULL), pDBRec(NULL) {
-    mName["fV5bpm_bpm"] = fV5bpm_bpm;
-    mLength["fV5bpm_bpm"] = 5;
-    mName["fV5projtg_tr"] = fV5projtg_tr;
-    mLength["fV5projtg_tr"] = 5;
-    mName["fV5fp_tr"] = fV5fp_tr;
-    mLength["fV5fp_tr"] = 5;
-    mName["fV5rectg_tr"] = fV5rectg_tr;
-    mLength["fV5rectg_tr"] = 5;
-    mName["fV5recsiv_tr"] = fV5recsiv_tr;
-    mLength["fV5recsiv_tr"] = 5;
-    mName["fV5rec_tr"] = fV5rec_tr;
-    mLength["fV5rec_tr"] = 5;
-    mName["fV5rec_lab"] = fV5rec_lab;
-    mLength["fV5rec_lab"] = 5;
+fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDrift(NULL), pHRS(NULL), pSieve(NULL) {
+    if (pG2PBwdProc) {
+        Error("G2PBwdProc()", "Only one instance of G2PBwdProc allowed.");
+        MakeZombie();
+        return;
+    }
+    pG2PBwdProc = this;
 
-    fAppsList.push_back("G2PBPM");
-    fAppsList.push_back("G2PDBRec");
-    fAppsList.push_back("G2PDrift");
-    fAppsList.push_back("G2PHRSTrans");
-
+    fPriority = 5;
     Clear();
 }
 
 G2PBwdProc::~G2PBwdProc() {
-    // Nothing to do
+    if (pG2PBwdProc == this) pG2PBwdProc = NULL;
 }
 
 int G2PBwdProc::Init() {
@@ -72,15 +59,20 @@ int G2PBwdProc::Init() {
 
     if (G2PProcBase::Init() != 0) return fStatus;
 
-    pBPM = G2PBPM::GetInstance();
-    pDrift = G2PDrift::GetInstance();
-    pHRS = G2PHRSTrans::GetInstance();
-    pDBRec = G2PDBRec::GetInstance();
+    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    if (!pDrift) {
+        pDrift = new G2PDrift();
+        gG2PApps->Add(pDrift);
+    }
 
-    fApps->Add(pBPM);
-    fApps->Add(pDrift);
-    fApps->Add(pHRS);
-    fApps->Add(pDBRec);
+    pSieve = static_cast<G2PSieve*> (gG2PApps->Find("G2PSieve"));
+    if (!pSieve) {
+        pSieve = new G2PSieve();
+        gG2PApps->Add(pSieve);
+    }
+
+    pHRS = static_cast<G2PHRS*> (gG2PApps->Find("G2PHRS"));
+    if (!pHRS) return (fStatus == kINITERROR);
 
     return (fStatus = kOK);
 }
@@ -90,56 +82,58 @@ int G2PBwdProc::Begin() {
 
     if (G2PProcBase::Begin() != 0) return fStatus;
 
-    fBeamEnergy = gG2PRun->GetBeamEnergy();
-    fHRSAngle = gG2PRun->GetHRSAngle();
-    fHRSMomentum = gG2PRun->GetHRSMomentum();
-    G2PField* field = G2PField::GetInstance();
-    if (field) fFieldRatio = field->GetRatio();
-    else fFieldRatio = 0.0;
-
-    SetSieve(fHRSAngle);
-
     return (fStatus = kOK);
 }
 
 int G2PBwdProc::Process() {
     static const char* const here = "Process()";
 
-    double V5[5];
+    double V5bpm_lab[5], V5fp_tr[5];
 
-    pBPM->TransBPM2Lab(fV5bpm_bpm, V5);
+    V5bpm_lab[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
+    V5bpm_lab[1] = gG2PVars->FindSuffix("bpm.l_t")->GetValue();
+    V5bpm_lab[2] = gG2PVars->FindSuffix("bpm.l_y")->GetValue();
+    V5bpm_lab[3] = gG2PVars->FindSuffix("bpm.l_p")->GetValue();
+    V5bpm_lab[4] = gG2PVars->FindSuffix("bpm.l_z")->GetValue();
+
+    V5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
+    V5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
+    V5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
+    V5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
+    V5fp_tr[4] = gG2PVars->FindSuffix("fp.d")->GetValue();
+
     double V5bpm_tr[5], z_tr;
-    HCS2TCS(V5[0], V5[2], V5[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
-    HCS2TCS(V5[1], V5[3], fHRSAngle, V5bpm_tr[1], V5bpm_tr[3]);
+    HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
+    HCS2TCS(V5bpm_lab[1], V5bpm_lab[3], fHRSAngle, V5bpm_tr[1], V5bpm_tr[3]);
     V5bpm_tr[4] = 0.0;
     pDrift->Drift(V5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, V5bpm_tr);
-    double fEffXbeam = GetEffBPM(V5bpm_tr[0], fV5fp_tr);
+    double fEffXbeam = GetEffBPM(V5bpm_tr[0], V5fp_tr);
 
     if (fDebug > 1) {
         Info(here, "xeff_tr   : %10.3e", fEffXbeam);
     }
 
-    fV5fp_tr[4] = fEffXbeam;
-    if (!pHRS->Backward(fV5fp_tr, fV5rectg_tr)) return -1;
+    V5fp_tr[4] = fEffXbeam;
+    if (!pHRS->Backward(V5fp_tr, fV5rectg_tr)) return -1;
 
     if (fDebug > 1) {
         Info(here, "rectg_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);
     }
 
-    Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, fSieve.fZ, fV5rectg_tr[1], fV5rectg_tr[3], fV5recsiv_tr[0], fV5recsiv_tr[2]);
-    fV5recsiv_tr[1] = fV5rectg_tr[1];
-    fV5recsiv_tr[3] = fV5rectg_tr[3];
-    fV5recsiv_tr[4] = fV5rectg_tr[4];
+    Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, pSieve->GetZ(), fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
+    fV5recsieve_tr[1] = fV5rectg_tr[1];
+    fV5recsieve_tr[3] = fV5rectg_tr[3];
+    fV5recsieve_tr[4] = fV5rectg_tr[4];
 
     if (fDebug > 1) {
-        Info(here, "recsiv_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsiv_tr[0], fV5recsiv_tr[1], fV5recsiv_tr[2], fV5recsiv_tr[3], fV5recsiv_tr[4]);
+        Info(here, "recsiv_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsieve_tr[0], fV5recsieve_tr[1], fV5recsieve_tr[2], fV5recsieve_tr[3], fV5recsieve_tr[4]);
     }
 
-    pDrift->Drift(fV5recsiv_tr, fHRSMomentum, fSieve.fZ, fHRSAngle, 0.0, 10.0, fV5rec_tr);
+    pDrift->Drift(fV5recsieve_tr, fHRSMomentum, pSieve->GetZ(), fHRSAngle, 0.0, 10.0, fV5rec_tr);
     TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]);
     TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, fV5rec_lab[1], fV5rec_lab[3]);
 
-#ifndef USE_DEFAULT_LIMIT
+#ifndef USE_DEFAULT_ENDZ
     double x[3] = {fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]};
     double p[3] = {fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * cos(fV5rec_lab[3]),
                    fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * sin(fV5rec_lab[3]),
@@ -163,57 +157,21 @@ int G2PBwdProc::Process() {
 }
 
 void G2PBwdProc::Clear() {
-    memset(fV5bpm_bpm, 0, sizeof (fV5bpm_bpm));
-    memset(fV5projtg_tr, 0, sizeof (fV5projtg_tr));
-    memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5rectg_tr, 0, sizeof (fV5rectg_tr));
-    memset(fV5recsiv_tr, 0, sizeof (fV5recsiv_tr));
+    memset(fV5recsieve_tr, 0, sizeof (fV5recsieve_tr));
     memset(fV5rec_tr, 0, sizeof (fV5rec_tr));
     memset(fV5rec_lab, 0, sizeof (fV5rec_lab));
 }
 
-int G2PBwdProc::DefineVariables(EMode mode) {
-    if (mode == kDefine && bIsSetup) return 0;
-    bIsSetup = (mode == kDefine);
-
-    VarDef vars[] = {
-        {"rectg.x", "SNAKE rec to target plane X", kDouble, &fV5rectg_tr[0]},
-        {"rectg.t", "SNAKE rec to target plane T", kDouble, &fV5rectg_tr[1]},
-        {"rectg.y", "SNAKE rec to target plane Y", kDouble, &fV5rectg_tr[2]},
-        {"rectg.p", "SNAKE rec to target plane P", kDouble, &fV5rectg_tr[3]},
-        {"recsieve.x", "Project to sieve X", kDouble, &fV5recsiv_tr[0]},
-        {"recsieve.t", "Project to sieve T", kDouble, &fV5recsiv_tr[1]},
-        {"recsieve.y", "Project to sieve Y", kDouble, &fV5recsiv_tr[2]},
-        {"recsieve.p", "Project to sieve P", kDouble, &fV5recsiv_tr[3]},
-        {"rec.x", "Rec target plane X", kDouble, &fV5rec_tr[0]},
-        {"rec.t", "Rec target plane T", kDouble, &fV5rec_tr[1]},
-        {"rec.y", "Rec target plane Y", kDouble, &fV5rec_tr[2]},
-        {"rec.p", "Rec target plane P", kDouble, &fV5rec_tr[3]},
-        {"rec.d", "Delta (rec)", kDouble, &fV5rec_tr[4]},
-        {"rec.l_x", "Rec target plane X (lab)", kDouble, &fV5rec_lab[0]},
-        {"rec.l_t", "Rec target plane T (lab)", kDouble, &fV5rec_lab[1]},
-        {"rec.l_y", "Rec target plane Y (lab)", kDouble, &fV5rec_lab[2]},
-        {"rec.l_p", "Rec target plane P (lab)", kDouble, &fV5rec_lab[3]},
-        {"rec.l_z", "Rec target plane Z (lab)", kDouble, &fV5rec_lab[4]},
-        {0}
-    };
-
-    return DefineVarsFromList(vars, mode);
-}
-
-void G2PBwdProc::MakePrefix() {
-    const char* basename = "bwd";
-
-    G2PAppBase::MakePrefix(basename);
-}
-
 double G2PBwdProc::GetEffBPM(double xbpm_tr, const double* V5fp) {
+    // Fit result:
+    //
     // (Xbpm_tr-Xtg_tr) vs Z
     // ([0]+[1]*x)
     // Fitting result of (Xbpm_tr-Xtg_tr) vs Z @ 2.5T
     // p0                        =    -0.011838   +/-   0.00132798
     // p1                        =      49.856    +/-   0.163115
-
+    //
     // (Xtg_tr-Xtgproj_tr) vs P
     // ([0]+[1]/x)
     // Fitting result of (Xtg_tr-Xtgproj_tr) vs P @ 2.5T
@@ -222,6 +180,7 @@ double G2PBwdProc::GetEffBPM(double xbpm_tr, const double* V5fp) {
     // Fitting result of (Xtg_tr-Xtgproj_tr) vs P @ 5.0T
     // p0                        =      0.14139   +/-   0.018683
     // p1                        =      6.11766   +/-   0.0187211
+    //
 
     double xbpm_tr_eff = xbpm_tr;
 
@@ -255,4 +214,118 @@ double G2PBwdProc::GetEffBPM(double xbpm_tr, const double* V5fp) {
     return xbpm_tr_eff;
 }
 
+int G2PBwdProc::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
+        {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
+        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
+        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+int G2PBwdProc::DefineVariables(EMode mode) {
+    if (mode == kDEFINE && fIsSetup) return 0;
+    fIsSetup = (mode == kDEFINE);
+
+    VarDef vars[] = {
+        {"tp.rec.snake.x", "SNAKE rec to target plane X", kDOUBLE, &fV5rectg_tr[0]},
+        {"tp.rec.snake.t", "SNAKE rec to target plane T", kDOUBLE, &fV5rectg_tr[1]},
+        {"tp.rec.snake.y", "SNAKE rec to target plane Y", kDOUBLE, &fV5rectg_tr[2]},
+        {"tp.rec.snake.p", "SNAKE rec to target plane P", kDOUBLE, &fV5rectg_tr[3]},
+        {"sieve.proj.x", "Project to sieve X", kDOUBLE, &fV5recsieve_tr[0]},
+        {"sieve.proj.t", "Project to sieve T", kDOUBLE, &fV5recsieve_tr[1]},
+        {"sieve.proj.y", "Project to sieve Y", kDOUBLE, &fV5recsieve_tr[2]},
+        {"sieve.proj.p", "Project to sieve P", kDOUBLE, &fV5recsieve_tr[3]},
+        {"tp.rec.x", "Rec X", kDOUBLE, &fV5rec_tr[0]},
+        {"tp.rec.t", "Rec T", kDOUBLE, &fV5rec_tr[1]},
+        {"tp.rec.y", "Rec Y", kDOUBLE, &fV5rec_tr[2]},
+        {"tp.rec.p", "Rec P", kDOUBLE, &fV5rec_tr[3]},
+        {"tp.rec.d", "Rec D", kDOUBLE, &fV5rec_tr[4]},
+        {"tp.rec.l_x", "Rec X (lab)", kDOUBLE, &fV5rec_lab[0]},
+        {"tp.rec.l_t", "Rec T (lab)", kDOUBLE, &fV5rec_lab[1]},
+        {"tp.rec.l_y", "Rec Y (lab)", kDOUBLE, &fV5rec_lab[2]},
+        {"tp.rec.l_p", "Rec P (lab)", kDOUBLE, &fV5rec_lab[3]},
+        {"tp.rec.l_z", "Rec Z (lab)", kDOUBLE, &fV5rec_lab[4]},
+        {0}
+    };
+
+    return DefineVarsFromList(vars, mode);
+}
+
+void G2PBwdProc::MakePrefix() {
+    const char* basename = "bwd";
+
+    G2PAppBase::MakePrefix(basename);
+}
+
 ClassImp(G2PBwdProc)
+
+//double G2PRun::DriftPath() {
+//    if (bUseField) {
+//        double x[3] = {fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4]};
+//        double p[3] = {fBeamEnergy * sin(fV5bpm_lab[1]) * cos(fV5bpm_lab[3]), fBeamEnergy * sin(fV5bpm_lab[1]) * sin(fV5bpm_lab[3]), fBeamEnergy * cos(fV5bpm_lab[1])};
+//
+//        double xrec[3];
+//        HRSTransTCSNHCS::X_TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
+//        double theta, phi;
+//        HRSTransTCSNHCS::P_TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, theta, phi);
+//        double prec[3] = {fHRSMomentum * (1 + fV5rec_tr[4]) * sin(theta) * cos(phi), fHRSMomentum * (1 + fV5rec_tr[4]) * sin(theta) * sin(phi), fHRSMomentum * (1 + fV5rec_tr[4]) * cos(theta)};
+//        pDrift->Drift(xrec, prec, 0, 10.0, xrec, prec);
+//
+//        double z = 0.0;
+//        double zmin = 0.0;
+//        double distmin = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
+//        for (int i = 1; i < 150; i++) {
+//            z = 0.1e-3 * i;
+//            pDrift->Drift(x, p, z, 10.0, x, p);
+//            pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
+//            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
+//            double distance = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
+//            if (distance < distmin) {
+//                zmin = z;
+//                distmin = distance;
+//            }
+//        }
+//
+//        // for (int i = 20; i<200; i++) {
+//        //     z = 1e-3*i;
+//        //     pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
+//        //     printf("%e\t%e\t%e\t%e\t%e\n", z, 1000.0, 1000.0, xrec[0], xrec[1]);
+//        // }
+//
+//        for (int i = 1; i < 150; i++) {
+//            z = -0.1e-3 * i;
+//            pDrift->Drift(x, p, z, 10.0, x, p);
+//            pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
+//            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
+//            double distance = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
+//            if (distance < distmin) {
+//                zmin = z;
+//                distmin = distance;
+//            }
+//        }
+//
+//        // for (int i = -20; i>-200; i--) {
+//        //     z = 1e-3*i;
+//        //     pDrift->Drift(x, p, z, 10.0, x, p);
+//        //     printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], 1000.0, 1000.0);
+//        // }
+//
+//        pDrift->Drift(x, p, zmin, 10.0, x, p);
+//        pDrift->Drift(xrec, prec, zmin, 10.0, xrec, prec);
+//
+//        double x_tr, y_tr, z_tr;
+//        HRSTransTCSNHCS::X_HCS2TCS(xrec[0], xrec[1], xrec[2], fHRSAngle, x_tr, y_tr, z_tr);
+//        return (z_tr);
+//    }
+//    else return 0;
+//}

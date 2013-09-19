@@ -1,10 +1,9 @@
 // -*- C++ -*-
 
 /* class G2PFwdProc
- * This file defines a class G2PFwdProc.
- * It simulates the transport of the scatted particles in the spectrometers.
- * G2PDBRec, G2PDrift, G2PHRSTrans are used in this class.
- * Input variables: fV5tg_tr, fV5react_lab (register in G2PRun).
+ * It simulates the movement of the scatted particles in the spectrometers.
+ * G2PDrift, G2PHRS and G2PSieve are used in this class.
+ * Input variables: fV5tg_tr, fV5react_lab (register in gG2PVars).
  */
 
 // History:
@@ -13,51 +12,46 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <cmath>
-#include <map>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
 #include "G2PAppBase.hh"
-#include "G2PDBRec.hh"
+#include "G2PAppList.hh"
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
-#include "G2PHRSTrans.hh"
+#include "G2PHRS.hh"
 #include "G2PProcBase.hh"
-#include "G2PRunBase.hh"
+#include "G2PRand.hh"
 #include "G2PSieve.hh"
+#include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
 #include "G2PFwdProc.hh"
 
-G2PFwdProc::G2PFwdProc() :
-fHRSAngle(0.0), fHRSMomentum(0.0), pDrift(NULL), pHRS(NULL), pDBRec(NULL) {
-    mName["fV5tg_tr"] = fV5tg_tr;
-    mLength["fV5tg_tr"] = 5;
-    mName["fV5react_lab"] = fV5react_lab;
-    mLength["fV5react_lab"] = 5;
-    mName["fV5sieve_tr"] = fV5sieve_tr;
-    mLength["fV5sieve_tr"] = 5;
-    mName["fV5projtg_tr"] = fV5projtg_tr;
-    mLength["fV5projtg_tr"] = 5;
-    mName["fV5fp_tr"] = fV5fp_tr;
-    mLength["fV5fp_tr"] = 5;
-    mName["fV5fp_rot"] = fV5fp_rot;
-    mLength["fV5fp_rot"] = 5;
+using namespace std;
 
-    fAppsList.push_back("G2PDBRec");
-    fAppsList.push_back("G2PDrift");
-    fAppsList.push_back("G2PHRSTrans");
+G2PFwdProc* G2PFwdProc::pG2PFwdProc = NULL;
+
+G2PFwdProc::G2PFwdProc() :
+fHRSAngle(0.0), fHRSMomentum(0.0), fSieveOn(false), pDrift(NULL), pHRS(NULL), pSieve(NULL) {
+    if (pG2PFwdProc) {
+        Error("G2PFwdProc()", "Only one instance of G2PFwdProc allowed.");
+        MakeZombie();
+        return;
+    }
+    pG2PFwdProc = this;
+
+    fPriority = 3;
 
     Clear();
 }
 
 G2PFwdProc::~G2PFwdProc() {
-    // Nothing to do
+    if (pG2PFwdProc == this) pG2PFwdProc = NULL;
 }
 
 int G2PFwdProc::Init() {
@@ -65,13 +59,20 @@ int G2PFwdProc::Init() {
 
     if (G2PProcBase::Init() != 0) return fStatus;
 
-    pDrift = G2PDrift::GetInstance();
-    pHRS = G2PHRSTrans::GetInstance();
-    pDBRec = G2PDBRec::GetInstance();
+    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    if (!pDrift) {
+        pDrift = new G2PDrift();
+        gG2PApps->Add(pDrift);
+    }
 
-    fApps->Add(pDrift);
-    fApps->Add(pHRS);
-    fApps->Add(pDBRec);
+    pSieve = static_cast<G2PSieve*> (gG2PApps->Find("G2PSieve"));
+    if (!pSieve) {
+        pSieve = new G2PSieve();
+        gG2PApps->Add(pSieve);
+    }
+
+    pHRS = static_cast<G2PHRS*> (gG2PApps->Find("G2PHRS"));
+    if (!pHRS) return (fStatus == kINITERROR);
 
     return (fStatus = kOK);
 }
@@ -81,22 +82,31 @@ int G2PFwdProc::Begin() {
 
     if (G2PProcBase::Begin() != 0) return fStatus;
 
-    fHRSAngle = gG2PRun->GetHRSAngle();
-    fHRSMomentum = gG2PRun->GetHRSMomentum();
-
-    SetSieve(fHRSAngle);
-
     return (fStatus = kOK);
 }
 
 int G2PFwdProc::Process() {
     static const char* const here = "Process()";
 
-    double x[3] = {fV5react_lab[0], fV5react_lab[2], fV5react_lab[4]};
-    double pp = fHRSMomentum * (1 + fV5tg_tr[4]);
-    double p[3] = {pp * sin(fV5react_lab[1]) * cos(fV5react_lab[3]),
-                   pp * sin(fV5react_lab[1]) * sin(fV5react_lab[3]),
-                   pp * cos(fV5react_lab[1])};
+    double V5react_lab[5], V5tg_tr[5];
+
+    V5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
+    V5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
+    V5react_lab[2] = gG2PVars->FindSuffix("react.l_y")->GetValue();
+    V5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
+    V5react_lab[4] = gG2PVars->FindSuffix("react.l_z")->GetValue();
+
+    V5tg_tr[0] = gG2PVars->FindSuffix("tp.x")->GetValue();
+    V5tg_tr[1] = gG2PVars->FindSuffix("tp.t")->GetValue();
+    V5tg_tr[2] = gG2PVars->FindSuffix("tp.y")->GetValue();
+    V5tg_tr[3] = gG2PVars->FindSuffix("tp.p")->GetValue();
+    V5tg_tr[4] = gG2PVars->FindSuffix("tp.d")->GetValue();
+
+    double x[3] = {V5react_lab[0], V5react_lab[2], V5react_lab[4]};
+    double pp = fHRSMomentum * (1 + V5tg_tr[4]);
+    double p[3] = {pp * sin(V5react_lab[1]) * cos(V5react_lab[3]),
+                   pp * sin(V5react_lab[1]) * sin(V5react_lab[3]),
+                   pp * cos(V5react_lab[1])};
     // Local dump front face
     pDrift->Drift(x, p, 640.0e-3, 10.0, x, p);
     if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3)) return -1;
@@ -106,13 +116,17 @@ int G2PFwdProc::Process() {
     if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3)) return -1;
     if ((x[1]<-53.0e-3) || (x[1] > 58.0e-3)) return -1;
 
-    pDrift->Drift(fV5tg_tr, fHRSMomentum, 0.0, fHRSAngle, fSieve.fZ, 10.0, fV5sieve_tr);
+    pDrift->Drift(V5tg_tr, fHRSMomentum, 0.0, fHRSAngle, pSieve->GetZ(), 10.0, fV5sieve_tr);
 
     if (fDebug > 1) {
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
     }
 
-    Project(fV5sieve_tr[0], fV5sieve_tr[2], fSieve.fZ, 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5projtg_tr[0], fV5projtg_tr[2]);
+    if (fSieveOn) {
+        if (!pSieve->CanPass(fV5sieve_tr)) return -1;
+    }
+
+    Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5projtg_tr[0], fV5projtg_tr[2]);
     fV5projtg_tr[1] = fV5sieve_tr[1];
     fV5projtg_tr[3] = fV5sieve_tr[3];
     fV5projtg_tr[4] = fV5sieve_tr[4];
@@ -123,7 +137,7 @@ int G2PFwdProc::Process() {
 
     if (!pHRS->Forward(fV5projtg_tr, fV5fp_tr)) return -1;
     ApplyVDCRes(fV5fp_tr);
-    pDBRec->TransTr2Rot(fV5fp_tr, fV5fp_rot);
+    TRCS2FCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
 
     if (fDebug > 1) {
         Info(here, "fp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
@@ -133,45 +147,10 @@ int G2PFwdProc::Process() {
 }
 
 void G2PFwdProc::Clear() {
-    memset(fV5tg_tr, 0, sizeof (fV5tg_tr));
-    memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
     memset(fV5projtg_tr, 0, sizeof (fV5projtg_tr));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
-}
-
-int G2PFwdProc::DefineVariables(EMode mode) {
-    if (mode == kDefine && bIsSetup) return 0;
-    bIsSetup = (mode == kDefine);
-
-    VarDef vars[] = {
-        {"sieve.x", "Sieve X", kDouble, &fV5sieve_tr[0]},
-        {"sieve.t", "Sieve T", kDouble, &fV5sieve_tr[1]},
-        {"sieve.y", "Sieve Y", kDouble, &fV5sieve_tr[2]},
-        {"sieve.p", "Sieve P", kDouble, &fV5sieve_tr[3]},
-        {"projtg.x", "Project to target plane X", kDouble, &fV5projtg_tr[0]},
-        {"projtg.t", "Project to target plane T", kDouble, &fV5projtg_tr[1]},
-        {"projtg.y", "Project to target plane Y", kDouble, &fV5projtg_tr[2]},
-        {"projtg.p", "Project to target plane P", kDouble, &fV5projtg_tr[3]},
-        {"focus.x", "Focus plane X", kDouble, &fV5fp_tr[0]},
-        {"focus.t", "Focus plane T", kDouble, &fV5fp_tr[1]},
-        {"focus.y", "Focus plane Y", kDouble, &fV5fp_tr[2]},
-        {"focus.p", "Focus plane P", kDouble, &fV5fp_tr[3]},
-        {"focus.r_x", "Focus plane X (rot)", kDouble, &fV5fp_rot[0]},
-        {"focus.r_t", "Focus plane T (rot)", kDouble, &fV5fp_rot[1]},
-        {"focus.r_y", "Focus plane Y (rot)", kDouble, &fV5fp_rot[2]},
-        {"focus.r_p", "Focus plane P (rot)", kDouble, &fV5fp_rot[3]},
-        {0}
-    };
-
-    return DefineVarsFromList(vars, mode);
-}
-
-void G2PFwdProc::MakePrefix() {
-    const char* basename = "fwd";
-
-    G2PAppBase::MakePrefix(basename);
 }
 
 void G2PFwdProc::ApplyVDCRes(double* V5fp) {
@@ -184,6 +163,56 @@ void G2PFwdProc::ApplyVDCRes(double* V5fp) {
     V5fp[1] = pRand->Gaus(V5fp[1], WireChamberResT);
     V5fp[2] = pRand->Gaus(V5fp[2], WireChamberResY);
     V5fp[3] = pRand->Gaus(V5fp[3], WireChamberResP);
+}
+
+int G2PFwdProc::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
+        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {"run.sieve.on", "Sieve On", kBOOL, &fSieveOn},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+int G2PFwdProc::DefineVariables(EMode mode) {
+    if (mode == kDEFINE && fIsSetup) return 0;
+    fIsSetup = (mode == kDEFINE);
+
+    VarDef vars[] = {
+        {"sieve.x", "Sieve X", kDOUBLE, &fV5sieve_tr[0]},
+        {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
+        {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},
+        {"sieve.p", "Sieve P", kDOUBLE, &fV5sieve_tr[3]},
+        {"tp.proj.x", "Project to target plane X", kDOUBLE, &fV5projtg_tr[0]},
+        {"tp.proj.t", "Project to target plane T", kDOUBLE, &fV5projtg_tr[1]},
+        {"tp.proj.y", "Project to target plane Y", kDOUBLE, &fV5projtg_tr[2]},
+        {"tp.proj.p", "Project to target plane P", kDOUBLE, &fV5projtg_tr[3]},
+        {"fp.x", "Focus plane X", kDOUBLE, &fV5fp_tr[0]},
+        {"fp.t", "Focus plane T", kDOUBLE, &fV5fp_tr[1]},
+        {"fp.y", "Focus plane Y", kDOUBLE, &fV5fp_tr[2]},
+        {"fp.p", "Focus plane P", kDOUBLE, &fV5fp_tr[3]},
+        {"fp.r_x", "Focus plane X (rot)", kDOUBLE, &fV5fp_rot[0]},
+        {"fp.r_t", "Focus plane T (rot)", kDOUBLE, &fV5fp_rot[1]},
+        {"fp.r_y", "Focus plane Y (rot)", kDOUBLE, &fV5fp_rot[2]},
+        {"fp.r_p", "Focus plane P (rot)", kDOUBLE, &fV5fp_rot[3]},
+        {0}
+    };
+
+    return DefineVarsFromList(vars, mode);
+}
+
+void G2PFwdProc::MakePrefix() {
+    const char* basename = "fwd";
+
+    G2PAppBase::MakePrefix(basename);
 }
 
 ClassImp(G2PFwdProc)

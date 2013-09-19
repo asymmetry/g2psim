@@ -1,10 +1,8 @@
 // -*- C++ -*-
 
 /* class G2PVar
- * This file defines a class G2PVar.
- * It defines the data structure of output variables in the simulation.
- *
- * Use this class, different types of data can be put in one TList.
+ * Global variables in the simulation.
+ * It can be used to retrieve data from an object.
  */
 
 // History:
@@ -23,79 +21,56 @@ public:
     G2PVar();
     G2PVar(const G2PVar& rhs);
     G2PVar& operator=(const G2PVar&);
-    ~G2PVar();
+    virtual ~G2PVar();
 
-    G2PVar(const char* name, const char* descript, const char* var) :
-    TNamed(name, descript), fValueC(var), fType(kChar) { }
-
-    G2PVar(const char* name, const char* descript, const int* var) :
-    TNamed(name, descript), fValueI(var), fType(kInt) { }
-
-    G2PVar(const char* name, const char* descript, const short* var) :
-    TNamed(name, descript), fValueS(var), fType(kShort) { }
-
-    G2PVar(const char* name, const char* descript, const long* var) :
-    TNamed(name, descript), fValueL(var), fType(kLong) { }
-
-    G2PVar(const char* name, const char* descript, const float* var) :
-    TNamed(name, descript), fValueF(var), fType(kFloat) { }
-
-    G2PVar(const char* name, const char* descript, const double* var) :
-    TNamed(name, descript), fValueD(var), fType(kDouble) { }
+    // Constructors by type
 
     G2PVar(const char* name, const char* descript, const bool* var) :
-    TNamed(name, descript), fValueB(var), fType(kBool) { }
+    TNamed(name, descript), fValueB(var), fType(kBOOL) { }
 
-    void SetVar(const char& var) {
-        fValueC = &var;
-        fType = kChar;
-    }
+    G2PVar(const char* name, const char* descript, const char* var) :
+    TNamed(name, descript), fValueC(var), fType(kCHAR) { }
 
-    void SetVar(const int& var) {
-        fValueI = &var;
-        fType = kInt;
-    }
+    G2PVar(const char* name, const char* descript, const int* var) :
+    TNamed(name, descript), fValueI(var), fType(kINT) { }
 
-    void SetVar(const short& var) {
-        fValueS = &var;
-        fType = kShort;
-    }
+    G2PVar(const char* name, const char* descript, const short* var) :
+    TNamed(name, descript), fValueS(var), fType(kSHORT) { }
 
-    void SetVar(const long& var) {
-        fValueL = &var;
-        fType = kLong;
-    }
+    G2PVar(const char* name, const char* descript, const long* var) :
+    TNamed(name, descript), fValueL(var), fType(kLONG) { }
 
-    void SetVar(const float& var) {
-        fValueF = &var;
-        fType = kFloat;
-    }
+    G2PVar(const char* name, const char* descript, const float* var) :
+    TNamed(name, descript), fValueF(var), fType(kFLOAT) { }
 
-    void SetVar(const double& var) {
-        fValueD = &var;
-        fType = kDouble;
-    }
+    G2PVar(const char* name, const char* descript, const double* var) :
+    TNamed(name, descript), fValueD(var), fType(kDOUBLE) { }
 
-    void SetVar(const bool& var) {
-        fValueB = &var;
-        fType = kBool;
-    }
-
-    VarType GetType() const {
-        return fType;
-    }
+    // Gets
+    VarType GetType() const;
+    const char* GetTypeName() const;
+    int GetTypeSize() const;
     double GetValue() const;
+
+    // Sets
+    void SetVar(const bool& var);
+    void SetVar(const char& var);
+    void SetVar(const int& var);
+    void SetVar(const short& var);
+    void SetVar(const long& var);
+    void SetVar(const float& var);
+    void SetVar(const double& var);
 
 protected:
 
     union {
+        const bool* fValueB;
         const char* fValueC;
         const int* fValueI;
         const short* fValueS;
         const long* fValueL;
         const float* fValueF;
         const double* fValueD;
-        const bool* fValueB;
     };
 
     VarType fType;
@@ -103,5 +78,46 @@ protected:
 private:
     ClassDef(G2PVar, 0)
 };
+
+// inline functions
+
+inline VarType G2PVar::GetType() const {
+    return fType;
+}
+
+inline void G2PVar::SetVar(const bool& var) {
+    fValueB = &var;
+    fType = kBOOL;
+}
+
+inline void G2PVar::SetVar(const char& var) {
+    fValueC = &var;
+    fType = kCHAR;
+}
+
+inline void G2PVar::SetVar(const int& var) {
+    fValueI = &var;
+    fType = kINT;
+}
+
+inline void G2PVar::SetVar(const short& var) {
+    fValueS = &var;
+    fType = kSHORT;
+}
+
+inline void G2PVar::SetVar(const long& var) {
+    fValueL = &var;
+    fType = kLONG;
+}
+
+inline void G2PVar::SetVar(const float& var) {
+    fValueF = &var;
+    fType = kFLOAT;
+}
+
+inline void G2PVar::SetVar(const double& var) {
+    fValueD = &var;
+    fType = kDOUBLE;
+}
 
 #endif

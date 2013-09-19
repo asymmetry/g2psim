@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PDrift
- * This file defines a class G2PDrift.
- * It use Nystrom-Runge-Kutta method to derive the trajectory of a charged particle in static magnetic field.
+ * Use Nystrom-Runge-Kutta method to derive the trajectory of a charged particle in static magnetic field.
  * G2PProcBase classes will call Drift() to get the end point position and momentum of the trajectory.
  * Drift() has 2 prototypes, one for lab coordinates and one for HRS transportation coordinates.
  */
@@ -14,18 +13,21 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
 #include "G2PAppBase.hh"
+#include "G2PAppList.hh"
 #include "G2PField.hh"
 #include "G2PGlobals.hh"
-#include "G2PRunBase.hh"
 
 #include "G2PDrift.hh"
+
+using namespace std;
 
 static const double c = 2.99792458e8;
 static const double e = 1.60217656535e-19;
@@ -36,7 +38,7 @@ static const double kOneSixth = 1.0 / 6.0;
 G2PDrift* G2PDrift::pG2PDrift = NULL;
 
 G2PDrift::G2PDrift() :
-fM0(0.51099892811e-3), fQ(-1 * e), fQsave(-1 * e), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6), fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL) {
+fM0(0.51099892811e-3), fQ(-1 * e), fQSave(-1 * e), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6), fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL) {
     if (pG2PDrift) {
         Error("G2PDrift()", "Only one instance of G2PDrift allowed.");
         MakeZombie();
@@ -56,7 +58,7 @@ int G2PDrift::Init() {
 
     if (G2PAppBase::Init() != 0) return fStatus;
 
-    pField = G2PField::GetInstance();
+    pField = static_cast<G2PField*> (gG2PApps->Find("G2PField"));
 
     return (fStatus = kOK);
 }
@@ -74,10 +76,6 @@ int G2PDrift::Begin() {
         pfDriftHCS = &G2PDrift::DriftHCSNF;
         pfDriftTCS = &G2PDrift::DriftTCSNF;
     }
-
-    fQ = gG2PRun->GetParticleCharge();
-    fQsave = fQ;
-    fM0 = gG2PRun->GetParticleMass();
 
     return (fStatus = kOK);
 }
@@ -140,7 +138,7 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
         xi[3] *= -1.0;
         xi[4] *= -1.0;
         xi[5] *= -1.0;
-        fQ = -1.0 * fQsave;
+        fQ = -1.0 * fQSave;
     }
 
     double dxdt[6], err[6];
@@ -178,7 +176,7 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
         xf[3] *= -1.0;
         xf[4] *= -1.0;
         xf[5] *= -1.0;
-        fQ = fQsave;
+        fQ = fQSave;
     }
 
     xout[0] = xf[0];
@@ -227,7 +225,7 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
         xi[3] *= -1.0;
         xi[4] *= -1.0;
         xi[5] *= -1.0;
-        fQ = -1.0 * fQsave;
+        fQ = -1.0 * fQSave;
     }
 
     double dxdt[6], err[6];
@@ -268,7 +266,7 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
         xf[3] *= -1.0;
         xf[4] *= -1.0;
         xf[5] *= -1.0;
-        fQ = fQsave;
+        fQ = fQSave;
     }
 
     theta = acos(xf[5] / fVelocity);
@@ -413,6 +411,32 @@ void G2PDrift::ComputeRHS(const double* x, double* dxdt) {
         Info(here, "   x: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", x[0], x[1], x[2], x[3], x[4], x[5]);
         Info(here, "dxdt: %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", dxdt[0], dxdt[1], dxdt[2], dxdt[3], dxdt[4], dxdt[5]);
     }
+}
+
+int G2PDrift::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"run.particle.mass", "Particle Mass", kDOUBLE, &fM0},
+        {"run.particle.charge", "Particle Charge", kDOUBLE, &fQ},
+        {"step", "Particle Charge", kDOUBLE, &fStep},
+        {"step.limit", "Particle Charge", kDOUBLE, &fStepLimit},
+        {"error.low", "Lower limit", kDOUBLE, &fErrLoLimit},
+        {"error.high", "Upper Limit", kDOUBLE, &fErrHiLimit},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+void G2PDrift::MakePrefix() {
+    const char* base = "drift";
+
+    G2PAppBase::MakePrefix(base);
 }
 
 ClassImp(G2PDrift)

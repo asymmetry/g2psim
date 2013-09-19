@@ -1,149 +1,315 @@
 // -*- C++ -*-
 
 /* class G2PRun
- * This file defines a class G2PRun.
- * It describes the procedure of a simulation.
- * G2PProcBase classes and their input variables should be registered here.
+ * Run manager for g2p simulation.
+ * Parse the configuration file and store all run parameters.
+ * It will allocate G2PFwdProc and G2PBwdProc automatically.
  */
 
 // History:
 //   Jan 2013, C. Gu, First public version.
-//   May 2013, C. Gu, Add G2PProcBase classes, G2PRun uses these classes to describe the simulation procedure.
+//   May 2013, C. Gu, Add G2PProcBase classes, G2PRunBase is more general.
+//   Sep 2013, C. Gu, Combine G2PRunBase and G2PRun to be the new run manager.
 //
 
 #include <cstdlib>
-#include <cmath>
-#include <vector>
+#include <cstdio>
+#include <cstring>
+#include <map>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
+#include "TList.h"
 
-#include "G2PBwdProc.hh"
+#include "G2PAppBase.hh"
+#include "G2PAppList.hh"
 #include "G2PFwdProc.hh"
+#include "G2PBwdProc.hh"
 #include "G2PGlobals.hh"
-#include "G2PGunProc.hh"
-#include "G2PRunBase.hh"
-#include "G2PPhyProc.hh"
-#include "G2PProcBase.hh"
+#include "G2PVarDef.hh"
 
 #include "G2PRun.hh"
 
 using namespace std;
 
+static const double e = 1.60217656535e-19;
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PRun::G2PRun() {
-    // Nothing to do
+G2PRun* G2PRun::pG2PRun = NULL;
+
+G2PRun::G2PRun() : fConfigFile(NULL) {
+    // Constructor
+
+    if (pG2PRun) {
+        Error("G2PRun()", "Only one instance of G2PRun allowed.");
+        MakeZombie();
+        return;
+    }
+    pG2PRun = this;
+
+    fConfig.clear();
+    fConfig["run.debuglevel"] = 0;
+    fConfig["run.hrs.angle"] = 5.767 * kDEG;
+    fConfig["run.hrs.p0"] = 2.251;
+    fConfig["run.particle.id"] = 11;
+    fConfig["run.particle.mass"] = 0.51099892811e-3;
+    fConfig["run.particle.charge"] = -1 * e;
+    fConfig["run.e0"] = 2.254;
+    fConfig["run.target.z"] = 1;
+    fConfig["run.target.a"] = 1;
+    fConfig["run.target.mass"] = 1.008 * 0.931494028;
+    fConfig["field.ratio"] = 0.0;
+
+    gG2PApps->Add(new G2PFwdProc());
+    gG2PApps->Add(new G2PBwdProc());
+
+    gG2PRun = this;
 }
 
 G2PRun::~G2PRun() {
-    // Nothing to do
+    // Destructor
+
+    Clear();
+
+    if (pG2PRun == this) pG2PRun = NULL;
+    gG2PRun = NULL;
 }
 
 int G2PRun::Init() {
-    //static const char* const here = "Init()";
+    static const char* const here = "Init()";
 
-    // Notice: the order is important
-    fProcs->Add(new G2PGunProc());
-    fProcs->Add(new G2PFwdProc());
-    fProcs->Add(new G2PBwdProc());
-    fProcs->Add(new G2PPhyProc());
+    Info(here, "Initializing ...");
 
-    vector<const char*> gunreqs;
-    gunreqs.clear();
-    fProcReqs.push_back(gunreqs);
-
-    vector<const char*> fwdreqs;
-    fwdreqs.clear();
-    fwdreqs.push_back("fV5tg_tr");
-    fwdreqs.push_back("fV5react_lab");
-    fProcReqs.push_back(fwdreqs);
-
-    vector<const char*> bwdreqs;
-    bwdreqs.clear();
-    bwdreqs.push_back("fV5bpm_bpm");
-    bwdreqs.push_back("fV5projtg_tr");
-    bwdreqs.push_back("fV5fp_tr");
-    fProcReqs.push_back(bwdreqs);
-
-    vector<const char*> phyreqs;
-    phyreqs.clear();
-    phyreqs.push_back("fV5beam_lab");
-    phyreqs.push_back("fV5bpm_lab");
-    phyreqs.push_back("fV5react_tr");
-    phyreqs.push_back("fV5rec_tr");
-    fProcReqs.push_back(phyreqs);
-
-    if (G2PRunBase::Init() != 0) return fStatus;
-
-    return (fStatus = kOK);
+    return 0;
 }
 
-// double G2PRun::DriftPath()
-// {
-//     if (bUseField) {
-//         double x[3] = { fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4] };
-//         double p[3] = { fBeamEnergy*sin(fV5bpm_lab[1])*cos(fV5bpm_lab[3]),
-//                         fBeamEnergy*sin(fV5bpm_lab[1])*sin(fV5bpm_lab[3]),
-//                         fBeamEnergy*cos(fV5bpm_lab[1]) };
+int G2PRun::Begin() {
+    // Default does nothing
 
-//         double xrec[3];
-//         HRSTransTCSNHCS::X_TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
-//         double theta,phi;
-//         HRSTransTCSNHCS::P_TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, theta, phi);
-//         double prec[3] = { fHRSMomentum*(1+fV5rec_tr[4])*sin(theta)*cos(phi),
-//                            fHRSMomentum*(1+fV5rec_tr[4])*sin(theta)*sin(phi),
-//                            fHRSMomentum*(1+fV5rec_tr[4])*cos(theta) };
-//         pDrift->Drift(xrec, prec, 0, 10.0, xrec, prec);
+    return 0;
+}
 
-//         double z = 0.0;
-//         double zmin = 0.0;
-//         double distmin = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
-//         for (int i = 1; i<150; i++) {
-//             z = 0.1e-3*i;
-//             pDrift->Drift(x, p, z, 10.0, x, p);
-//             pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//             //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
-//             double distance = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
-//             if (distance<distmin) {
-//                 zmin = z;
-//                 distmin = distance;
-//             }
-//         }
+int G2PRun::End() {
+    // Default does nothing
 
-//         // for (int i = 20; i<200; i++) {
-//         //     z = 1e-3*i;
-//         //     pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//         //     printf("%e\t%e\t%e\t%e\t%e\n", z, 1000.0, 1000.0, xrec[0], xrec[1]);
-//         // }
+    return 0;
+}
 
-//         for (int i = 1; i<150; i++) {
-//             z = -0.1e-3*i;
-//             pDrift->Drift(x, p, z, 10.0, x, p);
-//             pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//             //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
-//             double distance = sqrt((x[0]-xrec[0])*(x[0]-xrec[0])+(x[1]-xrec[1])*(x[1]-xrec[1]));
-//             if (distance<distmin) {
-//                 zmin = z;
-//                 distmin = distance;
-//             }
-//         }
+void G2PRun::Clear() {
+    fConfig.clear();
 
-//         // for (int i = -20; i>-200; i--) {
-//         //     z = 1e-3*i;
-//         //     pDrift->Drift(x, p, z, 10.0, x, p);
-//         //     printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], 1000.0, 1000.0);
-//         // }
+    return;
+}
 
-//         pDrift->Drift(x, p, zmin, 10.0, x, p);
-//         pDrift->Drift(xrec, prec, zmin, 10.0, xrec, prec);
+int G2PRun::GetConfig(const ConfDef* item, const char* prefix) {
+    // Get value of item
 
-//         double x_tr,y_tr,z_tr;
-//         HRSTransTCSNHCS::X_HCS2TCS(xrec[0], xrec[1], xrec[2], fHRSAngle, x_tr, y_tr, z_tr);
-//         return (z_tr);
-//     }
-//     else return 0;
-// }
+    static const char* const here = "GetConfig()";
+
+    if (!item) {
+        Error(here, "Bad variable.");
+        return 0;
+    }
+
+    if (item->var) {
+        double dval;
+        string keystr(prefix);
+        keystr.append(item->name);
+        string key(item->name);
+        if (fConfig.count(key) > 0) {
+            dval = fConfig[key];
+        }
+        else if (fConfig.count(keystr) > 0) {
+            dval = fConfig[keystr];
+        }
+        else {
+            return 0;
+        }
+
+        switch (item->type) {
+        case kBOOL:
+            *((bool*) item->var) = (bool) dval;
+            break;
+        case kCHAR:
+            *((char*) item->var) = (char) dval;
+            break;
+        case kINT:
+            *((int*) item->var) = (int) dval;
+            break;
+        case kSHORT:
+            *((short*) item->var) = (short) dval;
+            break;
+        case kLONG:
+            *((long*) item->var) = (long) dval;
+            break;
+        case kFLOAT:
+            *((float*) item->var) = (float) dval;
+            break;
+        case kDOUBLE:
+            *((double*) item->var) = dval;
+            break;
+        }
+    }
+
+    return 1;
+}
+
+int G2PRun::SetConfig(const ConfDef* item, const char* prefix) {
+    // Get value of item
+
+    static const char* const here = "SetConfig()";
+
+    if (!item) {
+        Error(here, "Bad variable.");
+        return 0;
+    }
+
+    if (item->var) {
+        double dval;
+        switch (item->type) {
+        case kBOOL:
+            dval = (double) (*((bool*) item->var));
+            break;
+        case kCHAR:
+            dval = (double) (*((char*) item->var));
+            break;
+        case kINT:
+            dval = (double) (*((int*) item->var));
+            break;
+        case kSHORT:
+            dval = (double) (*((short*) item->var));
+            break;
+        case kLONG:
+            dval = (double) (*((long*) item->var));
+            break;
+        case kFLOAT:
+            dval = (double) (*((float*) item->var));
+            break;
+        case kDOUBLE:
+            dval = *((double*) item->var);
+            break;
+        }
+        string keystr(prefix);
+        keystr.append(item->name);
+        string key(item->name);
+        if (fConfig.count(keystr) > 0) {
+            fConfig[keystr] = dval;
+        }
+        else if (fConfig.count(key) > 0) {
+            fConfig[key] = dval;
+        }
+        else {
+            fConfig[keystr] = dval;
+        }
+    }
+
+    return 1;
+}
+
+int G2PRun::GetDebugLevel() {
+    return (int) (fConfig["run.debuglevel"]);
+}
+
+double G2PRun::GetHRSAngle() {
+    return fConfig["run.hrs.angle"];
+}
+
+double G2PRun::GetHRSMomentum() {
+    return fConfig["run.hrs.p0"];
+}
+
+double G2PRun::GetBeamEnergy() {
+    return fConfig["run.e0"];
+}
+
+int G2PRun::GetParticleID() {
+    return (int) (fConfig["run.particle.id"]);
+}
+
+double G2PRun::GetParticleMass() {
+    return fConfig["run.particle.mass"];
+}
+
+double G2PRun::GetParticleCharge() {
+    return fConfig["run.particle.charge"];
+}
+
+int G2PRun::GetTargetZ() {
+    return (int) (fConfig["run.target.z"]);
+}
+
+int G2PRun::GetTargetA() {
+    return (int) (fConfig["run.target.a"]);
+}
+
+double G2PRun::GetTargetMass() {
+    return fConfig["run.target.mass"];
+}
+
+double G2PRun::GetFieldRatio() {
+    return fConfig["field.ratio"];
+}
+
+//double G2PRun::GetEnergyLoss() {
+//    return fEnergyLoss;
+//}
+
+void G2PRun::SetConfigFile(const char* file) {
+    fConfigFile = file;
+}
+
+void G2PRun::SetDebugLevel(int n) {
+    fConfig["run.debuglevel"] = (double) n;
+}
+
+void G2PRun::SetSeed(unsigned n) {
+    G2PAppBase::SetSeed(n);
+}
+
+void G2PRun::SetHRSAngle(double angle) {
+    fConfig["run.hrs.angle"] = angle;
+}
+
+void G2PRun::SetHRSMomentum(double P0) {
+    fConfig["run.hrs.p0"] = P0;
+}
+
+void G2PRun::SetParticleID(int pid) {
+    fConfig["run.particle.id"] = (double) pid;
+}
+
+void G2PRun::SetParticleMass(double M0) {
+    fConfig["run.particle.mass"] = M0;
+}
+
+void G2PRun::SetParticleCharge(double Q) {
+    fConfig["run.particle.charge"] = Q;
+}
+
+void G2PRun::SetBeamEnergy(double E) {
+    fConfig["run.e0"] = E;
+}
+
+void G2PRun::SetTarget(int Z, int A) {
+    fConfig["run.target.z"] = (double) Z;
+    fConfig["run.target.a"] = (double) A;
+}
+
+void G2PRun::SetTargetMass(double M) {
+    fConfig["run.target.mass"] = M;
+}
+
+void G2PRun::SetFieldRatio(double ratio) {
+    fConfig["field.ratio"] = ratio;
+}
+
+void G2PRun::SetSieve() {
+    fConfig["run.sieve.on"] = (double) (true);
+}
+
+//void G2PRun::SetEnergyLoss(double E) {
+//    fEnergyLoss = E;
+//}
 
 ClassImp(G2PRun)

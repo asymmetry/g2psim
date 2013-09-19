@@ -15,37 +15,55 @@
 
 #include <vector>
 
-#include "TObject.h"
+#include "G2PAppBase.hh"
 
 using namespace std;
 
-class G2PSieve {
+class G2PSieve : public G2PAppBase {
 public:
+    G2PSieve();
     virtual ~G2PSieve();
 
+    virtual int Begin();
+
+    virtual int GetPos(double* V3);
+    virtual int CanPass(double* V5);
+
+    // Gets
+    double GetZ();
+
+    // Sets
+
 protected:
-    G2PSieve(); // No instance allowed for this class
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual void MakePrefix();
 
-    virtual void SetSieve(double angle);
+    double fHRSAngle;
 
-    typedef struct {
-        int nRow;
-        int nCol;
-        vector<double> fX;
-        vector<double> fY;
-        double fZ;
-        double fXOffset;
-        double fYOffset;
-        int nLargerHole;
-        vector<int> iLargerHole;
-        vector<bool> bOpen;
-        double fDHole;
-        double fDLargerHole;
-    } sSieve;
+    int fNRow;
+    int fNCol;
+    vector<double> fX;
+    vector<double> fY;
+    double fZ;
+    double fXOffset;
+    double fYOffset;
+    int fNLargerHole;
+    vector<int> fLargerHole;
+    vector<bool> fIsOpen;
+    double fDHole;
+    double fDLargerHole;
+    double fThreshold;
 
-    sSieve fSieve;
+private:
+    static G2PSieve* pG2PSieve;
 
     ClassDef(G2PSieve, 1)
 };
+
+// inline functions
+
+inline double G2PSieve::GetZ() {
+    return fZ;
+}
 
 #endif

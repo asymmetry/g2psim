@@ -1,9 +1,10 @@
 // -*- C++ -*-
 
-/* class G2PHRSTrans
- * This file defines a class G2PHRSTrans.
- * It is the interface class of HRSTrans package. It provides HRS transport functions.
- * G2PProcBase classes will call Forward() to transport target plane kinematics to focus plane, call Backward() to transport focus plane readout to target plane.
+/* class G2PHRS
+ * Interface class of HRSTrans package.
+ * It provides HRS transport functions.
+ * G2PProcBase classes will call Forward() to get focus plane kinematics to focus plane,
+ * will call Backward() to get target plane kinematics.
  *
  * The definition of variables and the list of available models can be found in the comments in the body.
  */
@@ -13,18 +14,18 @@
 //   Feb 2013, C. Gu, Add correction function.
 //
 
-#ifndef G2P_HRSTRANS_H
-#define G2P_HRSTRANS_H
+#ifndef G2P_HRS_H
+#define G2P_HRS_H
 
 #include "G2PAppBase.hh"
 
 class HRSTransBase;
 
-class G2PHRSTrans : public G2PAppBase {
+class G2PHRS : public G2PAppBase {
 public:
-    G2PHRSTrans(const char* name);
-    G2PHRSTrans(int setting);
-    ~G2PHRSTrans();
+    G2PHRS(const char* name);
+    G2PHRS(int setting);
+    ~G2PHRS();
 
     ///////////////////////////////////////////////////////////////////////////
     // Transport particles through HRS using SNAKE model
@@ -36,7 +37,6 @@ public:
     // 11: 484816 with shim, 5.76 deg, no raster, by Min
     // May add more HRS packages later
     ///////////////////////////////////////////////////////////////////////////
-    int Init();
     int Begin();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -56,14 +56,13 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     bool Backward(const double* V5_fp, double* V5_tg);
 
-    static G2PHRSTrans* GetInstance() {
-        return pG2PHRSTrans;
-    }
-
 protected:
-    G2PHRSTrans(); // Only for ROOT I/O
+    G2PHRS(); // Only for ROOT I/O
 
-    int iSetting;
+    int Configure(EMode mode = kTWOWAY);
+    void MakePrefix();
+
+    int fSetting;
 
     double fHRSAngle;
     double fModelAngle;
@@ -71,9 +70,9 @@ protected:
     HRSTransBase* pModel;
 
 private:
-    static G2PHRSTrans* pG2PHRSTrans;
+    static G2PHRS* pG2PHRS;
 
-    ClassDef(G2PHRSTrans, 1)
+    ClassDef(G2PHRS, 1)
 };
 
 #endif

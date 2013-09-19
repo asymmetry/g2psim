@@ -11,37 +11,9 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <time.h>
 #include <getopt.h>
 
 #include "TROOT.h"
-
-#include "G2PDBRec.hh"
-#include "G2PGlobals.hh"
-#include "G2PRun.hh"
-#include "G2PRunBase.hh"
-#include "G2PSim.hh"
-
-#include "G2PField.hh"
-#include "G2PHallBField.hh"
-#include "G2PMapField.hh"
-#include "G2PUniField.hh"
-
-#include "G2PGun.hh"
-#include "G2PDataGun.hh"
-#include "G2PFlatGun.hh"
-#include "G2PSieveGun.hh"
-
-#include "G2PHRSTrans.hh"
-#include "HRSTrans/G2PTrans400016/G2PTrans400016.hh"
-#include "HRSTrans/G2PTrans484816/G2PTrans484816.hh"
-#include "HRSTrans/HRSTransSTD/HRSTransSTD.hh"
-
-#include "G2PPhys.hh"
-#include "G2PPhys/G2PPhysEl/G2PPhysEl.hh"
-#include "G2PPhys/G2PPhysPB/G2PPhysPB.hh"
-#include "G2PPhys/G2PPhysQFS/G2PPhysQFS.hh"
-#include "G2PPhys/G2PPhysWISER/G2PPhysWISER.hh"
 
 void usage(int argc, char** argv);
 

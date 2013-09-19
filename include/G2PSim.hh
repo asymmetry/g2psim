@@ -7,6 +7,7 @@
 
 // History:
 //   Jan 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Rewrite the structure of the simulation.
 //
 
 #ifndef G2P_SIM_H
@@ -15,67 +16,59 @@
 #include "TObject.h"
 
 class TFile;
-class TList;
-class G2PRunBase;
+
+class G2PAppList;
 class G2POutput;
+class G2PRun;
 
 class G2PSim : public TObject {
 public:
     G2PSim();
-    ~G2PSim();
+    virtual ~G2PSim();
 
-    void SetNEvent(int n) {
-        nEvent = n;
-    }
-    void SetSeed(int n);
+    virtual int Run();
+    // Sets
+    void SetNEvent(int n);
+    void SetOutFile(const char* name);
 
-    void SetDebug(int n) {
-        fDebug = n;
-    }
-
-    void SetOutFile(const char* name) {
-        pOutFile = name;
-    }
-
-    void SetRun(G2PRunBase* run) {
-        pRun = run;
-    }
-
-    int Init();
-    int Begin();
-    int End();
-
-    void Run();
-
-    void Run(int n) {
-        nEvent = n;
-        Run();
-    }
-
-    static G2PSim* GetInstance() {
-        return pG2PSim;
-    }
+    // Gets
 
 protected:
-    int fDebug;
+    virtual int Init();
+    virtual int Begin();
+    virtual int End();
+
+    int Process();
+    bool IsAllDone(G2PAppList* procs);
 
     TFile* fFile;
-    const char* pOutFile;
+    const char* fOutFile;
 
-    int nEvent;
-    int nCounter;
+    int fN;
+    int fIndex;
 
-    bool bIsGood;
+    int fDebug;
 
-    TList* fApps;
-    G2PRunBase* pRun;
+    bool fIsGood;
 
     G2POutput* pOutput;
+
+    G2PAppList* fApps;
+    G2PAppList* fProcs;
+    G2PRun* pRun;
 
 private:
     static G2PSim* pG2PSim;
 
-    ClassDef(G2PSim, 1)
+    ClassDef(G2PSim, 0)
 };
+
+inline void G2PSim::SetNEvent(int n) {
+    fN = n;
+}
+
+inline void G2PSim::SetOutFile(const char* name) {
+    fOutFile = name;
+}
 
 #endif

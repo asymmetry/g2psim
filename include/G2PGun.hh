@@ -1,111 +1,52 @@
 // -*- C++ -*-
 
 /* class G2PGun
- * This file defines a class G2PGun.
- * It is the base class of g2p event generator classes.
- * G2PProcBase classes will call Shoot() to get reaction point kinematics.
- * Shoot() is a pure virtual method so each derived class has its own implement.
- * G2PDrift is used in this class.
+ * Abstract base class of g2p event generator classes.
+ * Use function Shoot() to get reaction point kinematics.
+ * Shoot() is a pure virtual method so each derived class should define its own implement.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //
 
 #ifndef G2P_GUNBASE_H
 #define G2P_GUNBASE_H
 
-#include "G2PAppBase.hh"
+#include "G2PProcBase.hh"
 
 class G2PDrift;
 
-class G2PGun : public G2PAppBase {
+class G2PGun : public G2PProcBase {
 public:
     G2PGun();
-    ~G2PGun();
-
-    void SetBeamX(double value) {
-        fBeamX_lab = value;
-    }
-
-    void SetBeamY(double value) {
-        fBeamY_lab = value;
-    }
-
-    void SetBeamR(double value) {
-        fBeamR_lab = value;
-    }
-
-    void SetReactZ(double value) {
-        fReactZLow_lab = value;
-        fReactZHigh_lab = value;
-    }
-
-    void SetReactZRange(double low, double high) {
-        fReactZLow_lab = low;
-        fReactZHigh_lab = high;
-    }
-
-    void SetTargetTh(double value) {
-        fTargetThLow_tr = value;
-        fTargetThHigh_tr = value;
-    }
-
-    void SetTargetThRange(double low, double high) {
-        fTargetThLow_tr = low;
-        fTargetThHigh_tr = high;
-    }
-
-    void SetTargetPh(double value) {
-        fTargetPhLow_tr = value;
-        fTargetPhHigh_tr = value;
-    }
-
-    void SetTargetPhRange(double low, double high) {
-        fTargetPhLow_tr = low;
-        fTargetPhHigh_tr = high;
-    }
-
-    void SetDelta(double value) {
-        fDeltaLow = value;
-        fDeltaHigh = value;
-    }
-
-    void SetDeltaRange(double low, double high) {
-        fDeltaLow = low;
-        fDeltaHigh = high;
-    }
-
-    void SetSigmaPosLab(double value) {
-        fSigmaPos_lab = value;
-    }
-
-    void SetSigmaAngLab(double value) {
-        fSigmaAng_lab = value;
-    }
-
-    void SetSigmaAngTr(double value) {
-        fSigmaAng_tr = value;
-    }
-
-    void SetSigmaDelta(double value) {
-        fSigmaDelta = value;
-    }
+    virtual ~G2PGun();
 
     virtual int Init();
     virtual int Begin();
+    virtual int Process();
+    virtual void Clear();
 
-    virtual int Shoot(double* V51, double* V52, double* V53 = NULL) = 0;
+    // Gets
 
-    virtual bool UseData() = 0;
-
-    static G2PGun* GetInstance() {
-        return pG2PGun;
-    }
+    // Sets
+    void SetBeamPos(double x, double y);
+    void SetReactZ(double low, double high);
+    void SetRasterSize(double val);
+    void SetTargetTh(double low, double high);
+    void SetTargetPh(double low, double high);
+    void SetDelta(double low, double high);
 
 protected:
-    virtual void SetTiltAngle();
-    virtual void GetReactPoint(double x, double y, double z, double* V5);
+    virtual int Shoot(double* V51, double* V52) = 0;
+
+    void SetTiltAngle();
+    void GetReactPoint(double x, double y, double z, double* V5);
+
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual int DefineVariables(EMode mode = kDEFINE);
+    virtual void MakePrefix();
 
     double fHRSAngle;
     double fHRSMomentum;
@@ -113,7 +54,6 @@ protected:
     double fFieldRatio;
 
     double fBeamX_lab, fBeamY_lab;
-    double fBeamTiltAngle;
     double fBeamR_lab;
 
     double fReactZLow_lab;
@@ -127,10 +67,13 @@ protected:
     double fDeltaLow; // in the unit of delta
     double fDeltaHigh;
 
-    double fSigmaPos_lab;
-    double fSigmaAng_lab;
-    double fSigmaAng_tr;
-    double fSigmaDelta;
+    double fBeamTiltAngle;
+
+    double fV5beam_lab[5];
+    double fV5react_tr[5];
+    double fV5react_lab[5];
+
+    double fV5tg_tr[5];
 
     G2PDrift* pDrift;
 
@@ -139,5 +82,51 @@ private:
 
     ClassDef(G2PGun, 1)
 };
+
+inline void G2PGun::SetBeamPos(double x, double y) {
+    fBeamX_lab = x;
+    fBeamY_lab = y;
+
+    fConfigIsSet[&fBeamX_lab] = true;
+    fConfigIsSet[&fBeamY_lab] = true;
+}
+
+inline void G2PGun::SetReactZ(double low, double high) {
+    fReactZLow_lab = low;
+    fReactZHigh_lab = high;
+
+    fConfigIsSet[&fReactZLow_lab] = true;
+    fConfigIsSet[&fReactZHigh_lab] = true;
+}
+
+inline void G2PGun::SetRasterSize(double val) {
+    fBeamR_lab = val;
+
+    fConfigIsSet[&fBeamR_lab] = true;
+}
+
+inline void G2PGun::SetTargetTh(double low, double high) {
+    fTargetThLow_tr = low;
+    fTargetThHigh_tr = high;
+
+    fConfigIsSet[&fTargetThLow_tr] = true;
+    fConfigIsSet[&fTargetThHigh_tr] = true;
+}
+
+inline void G2PGun::SetTargetPh(double low, double high) {
+    fTargetPhLow_tr = low;
+    fTargetPhHigh_tr = high;
+
+    fConfigIsSet[&fTargetPhLow_tr] = true;
+    fConfigIsSet[&fTargetPhHigh_tr] = true;
+}
+
+inline void G2PGun::SetDelta(double low, double high) {
+    fDeltaLow = low;
+    fDeltaHigh = high;
+
+    fConfigIsSet[&fDeltaLow] = true;
+    fConfigIsSet[&fDeltaHigh] = true;
+}
 
 #endif

@@ -1,7 +1,10 @@
 // -*- C++ -*-
 
-/*
- * This file contains type definition of G2PVar and G2POutput.
+/* struct VarDef
+ * Type definition of G2PVar and G2POutput.
+ *
+ * struct ConfDef
+ * Type definition of configurations of G2PAppBase.
  */
 
 // History:
@@ -12,7 +15,7 @@
 #define G2P_VARDEF_H
 
 enum VarType {
-    kChar = 0, kInt, kShort, kLong, kFloat, kDouble, kBool
+    kBOOL = 0, kCHAR, kINT, kSHORT, kLONG, kFLOAT, kDOUBLE
 };
 
 struct VarDef {
@@ -20,6 +23,13 @@ struct VarDef {
     const char* desc;
     VarType type;
     const void* loc;
+};
+
+struct ConfDef {
+    const char* name;
+    const char* desc;
+    VarType type;
+    void* var;
 };
 
 #endif

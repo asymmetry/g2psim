@@ -1,9 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PFlatGun
- * This file defines a class G2PFlatGun.
- * It generates events around one particular 4-D point using Gaussian distribution.
- * G2PProcBase classes will call Shoot() to get reaction point kinematics.
+ * It generates events in flat distribution.
  */
 
 // History:
@@ -11,17 +9,20 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
 #include "G2PGlobals.hh"
 #include "G2PGun.hh"
 #include "G2PRand.hh"
 
 #include "G2PFlatGun.hh"
+
+using namespace std;
 
 G2PFlatGun::G2PFlatGun() {
     // Nothing to do
@@ -31,7 +32,7 @@ G2PFlatGun::~G2PFlatGun() {
     // Nothing to do
 }
 
-int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr, double* reserved) {
+int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr) {
     static const char* const here = "Shoot()";
 
     double X_lab, Y_lab;

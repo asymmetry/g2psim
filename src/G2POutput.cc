@@ -12,9 +12,12 @@
 //   Apr 2013, C. Gu, First public version.
 //
 
+#include <cstdlib>
+#include <cstdio>
+
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 #include "TTree.h"
 
 #include "G2PGlobals.hh"
@@ -23,6 +26,8 @@
 #include "G2PVarList.hh"
 
 #include "G2POutput.hh"
+
+using namespace std;
 
 G2POutput::G2POutput() :
 fNVar(0), fVar(NULL), fTree(NULL) {

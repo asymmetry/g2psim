@@ -1,47 +1,33 @@
 // -*- C++ -*-
 
 /* class G2PDBRec
- * This file defines a class G2PDBRec.
- * It use the analyzer database to reconstruct target variables.
- * It also provides transform functions among 3 different coordinates on focus plane.
- * It calculates the beam position at BPM and target using kinematics from event generator.
+ * Use the analyzer database to reconstruct target variables.
  * Several functions is developed from J. Huang's HRS optics class.
- * G2PProcBase classes will call CalcTargetCoords() to get target variables.
  */
 
 // History:
 //   Jun 2010, J. Huang, HRS optics matrix optimization class.
 //   Jan 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //
 
-#ifndef G2P_RECUSEDB_H
-#define G2P_RECUSEDB_H
+#ifndef G2P_DBREC_H
+#define G2P_DBREC_H
 
 #include <vector>
 
-#include "G2PAppBase.hh"
+#include "G2PProcBase.hh"
 
 using namespace std;
 
-class G2PDBRec : public G2PAppBase {
+class G2PDBRec : public G2PProcBase {
 public:
     G2PDBRec();
-    ~G2PDBRec();
+    virtual ~G2PDBRec();
 
-    int Init();
-
-    void CalcTargetCoords(const double* V5fp_rot, double* V5tg_tr);
-
-    void TransTr2Rot(const double* V5fp_tr, double* V5fp_rot);
-    void TransRot2Tr(const double* V5fp_rot, double* V5fp_tr);
-    void TransTr2Det(const double* V5fp_tr, double* V5fp_det);
-    void TransDet2Tr(const double* V5fp_det, double* V5fp_tr);
-    void TransRot2Det(const double* V5fp_rot, double* V5fp_det);
-    void TransDet2Rot(const double* V5fp_det, double* V5fp_rot);
-
-    static G2PDBRec* GetInstance() {
-        return pG2PDBRec;
-    }
+    virtual int Begin();
+    virtual int Process();
+    virtual void Clear();
 
 protected:
 
@@ -63,10 +49,10 @@ protected:
         bool IsMatch(const THaMatrixElement& rhs) const;
         void Print();
 
-        bool bIsZero; // whether the element is zero
-        vector<int> iPower; // exponents of matrix element, e.g. D100 = {1, 0, 0}
+        bool fIsZero; // whether the element is zero
+        vector<int> fPower; // exponents of matrix element, e.g. D100 = {1, 0, 0}
 
-        int iOrder;
+        int fOrder;
         vector<double> fPoly; // the associated polynomial
 
         double fValue; // the final value once x is given
@@ -75,8 +61,12 @@ protected:
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
 
-    const char* pPrefix;
-    const char* pDBName;
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual int DefineVariables(EMode mode = kDEFINE);
+    virtual void MakePrefix();
+
+    const char* fDBPrefix;
+    const char* fDBFile;
 
     vector<THaMatrixElement>* fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;
@@ -88,6 +78,13 @@ protected:
     vector<THaMatrixElement> fPTAMatrixElems; // involves abs(theta_fp)
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
+
+    double fHRSAngle;
+
+    double fV5fp_tr[5];
+    double fV5fp_rot[5];
+    double fV5rec_tr[5];
+    double fV5rec_lab[5];
 
 private:
     static G2PDBRec* pG2PDBRec;

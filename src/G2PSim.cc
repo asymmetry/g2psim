@@ -7,41 +7,44 @@
 
 // History:
 //   Jan 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Rewrite the structure of the simulation.
 //
 
 #include <cstdlib>
-#include <cmath>
+#include <cstdio>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
+#include "TClass.h"
 #include "TFile.h"
-#include "TList.h"
 
 #include "G2PAppBase.hh"
+#include "G2PAppList.hh"
 #include "G2POutput.hh"
-#include "G2PRunBase.hh"
+#include "G2PProcBase.hh"
+#include "G2PRun.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
 #include "G2PSim.hh"
 
-TList* gG2PApps = new TList();
-G2PRunBase* gG2PRun = NULL;
+using namespace std;
+
+G2PAppList* gG2PApps = new G2PAppList();
+G2PRun* gG2PRun = NULL;
 G2PVarList* gG2PVars = new G2PVarList();
 
 G2PSim* G2PSim::pG2PSim = NULL;
 
 G2PSim::G2PSim() :
-fDebug(1), fFile(NULL), pOutFile(NULL), nEvent(50000), nCounter(1), fApps(NULL), pRun(NULL), pOutput(NULL) {
+fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fApps(NULL), fProcs(NULL), pRun(NULL) {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
         MakeZombie();
         return;
     }
     pG2PSim = this;
-
-    fApps = gG2PApps;
 }
 
 G2PSim::~G2PSim() {
@@ -56,40 +59,64 @@ G2PSim::~G2PSim() {
     if (pOutput) delete pOutput;
 }
 
-void G2PSim::SetSeed(int n) {
-    G2PAppBase::SetSeed(n);
+int G2PSim::Run() {
+    static const char* const here = "Run()";
+
+    if (Init() != 0) {
+        Error(here, "Cannot initialize, program will stop.");
+        return -1;
+    }
+
+    if (Begin() != 0) {
+        Error(here, "Critical error, program will stop.");
+        return -1;
+    }
+
+    while (fIndex <= fN) {
+        fIsGood = false;
+        if (fDebug > 1) Info(here, "Processing event %d ...", fIndex);
+        if (Process() == 0) fIsGood = true;
+        pOutput->Process();
+        if ((fIndex % 100 == 0)&&(fDebug == 0)) Info(here, "%d events processed ...", fIndex);
+        fIndex++;
+    }
+
+    End();
+
+    return 0;
 }
 
 int G2PSim::Init() {
     static const char* const here = "Init()";
 
-    if (fDebug > 0) Info(here, "Initialize tools ......");
+    fApps = gG2PApps;
+    pRun = gG2PRun;
 
-    gG2PRun = pRun;
-    pRun->SetDebug(fDebug);
+    if (pRun == NULL) Error((here), "No run manager found.");
+
+    fDebug = pRun->GetDebugLevel();
+
+    if (fDebug > 0) Info(here, "Initialize tools ......");
 
     if (pRun->Init() != 0) return -1;
 
     TIter next(fApps);
-    while (TObject * obj = next()) {
-        if (obj->IsZombie()) gG2PApps->Remove(obj);
-    }
-
-    next.Reset();
     while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
-        aobj->SetDebug(fDebug);
-    }
-
-    next.Reset();
-    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+        if (aobj->IsZombie()) {
+            fApps->Remove(aobj);
+            continue;
+        }
         if (aobj->Init() != 0) return -1;
     }
 
-    fFile = new TFile(pOutFile, "RECREATE");
+    fProcs = fApps->FindList("G2PProcBase");
+
+    fFile = new TFile(fOutFile, "RECREATE");
     fFile->cd();
 
-    gG2PVars->DefineByType("event", "Event number", &nCounter, kInt);
-    gG2PVars->DefineByType("isgood", "Good event", &bIsGood, kBool);
+    gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
+    gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
+
     pOutput = new G2POutput();
     if (pOutput->Init() != 0) return -1;
 
@@ -103,12 +130,12 @@ int G2PSim::Begin() {
 
     if (fDebug > 0) Info(here, "Start run ......");
 
+    if (pRun->Begin() != 0) return -1;
+
     TIter next(fApps);
     while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
         if (aobj->Begin() != 0) return -1;
     }
-
-    if (pRun->Begin() != 0) return -1;
 
     if (fDebug > 0) Info(here, "Ready to go!");
 
@@ -128,68 +155,42 @@ int G2PSim::End() {
     return 0;
 }
 
-void G2PSim::Run() {
-    static const char* const here = "Run()";
+int G2PSim::Process() {
+    TIter ne(fProcs);
+    while (G2PProcBase * pobj = static_cast<G2PProcBase*> (ne())) pobj->SetStage(G2PProcBase::kWAIT);
 
-    if (Init() != 0) {
-        Error(here, "Cannot initialize, program will stop.");
-        return;
+    int step = 0;
+    int status = 0;
+    while (!IsAllDone(fProcs)) {
+        G2PAppList* list = fProcs->FindList(step);
+        TIter next(list);
+        while (G2PProcBase * pobj = static_cast<G2PProcBase*> (next())) {
+            if (pobj->Process() != 0) status = -1;
+            pobj->SetStage(G2PProcBase::kDONE);
+        }
+        step++;
     }
 
-    if (Begin() != 0) {
-        Error(here, "Critical error, program will stop.");
-        return;
-    }
-
-    while (nCounter <= nEvent) {
-        bIsGood = false;
-        if (fDebug > 1) Info(here, "Processing event %d ...", nCounter);
-        pRun->Clear();
-        if (pRun->Process() == 0) bIsGood = true;
-        pOutput->Process();
-        if ((nCounter % 100 == 0)&&(fDebug > 0)) Info(here, "%d events processed ...", nCounter);
-        nCounter++;
-    }
-
-    End();
+    return status;
 }
 
-// void G2PSim::InitTree()
-// {
-//     pFile = new TFile(pFileName, "recreate");
-// 	pTree = new TTree("T", "sim result");
+bool G2PSim::IsAllDone(G2PAppList* procs) {
+    static const char* const g2pproc = "G2PProcBase";
 
-//     vector<G2PGun*>::iterator it = pGunList.begin();
-//     int i = 0;
-//     while (it!=pGunList.end()){
-//         pGun = (*it);
-//         pConfig = new TTree(Form("config%d", i), "sim configure");
+    bool done = true;
+    TIter next(procs);
+    while (TObject * obj = next()) {
+        if (obj->IsA()->InheritsFrom(g2pproc)) {
+            G2PProcBase* pobj = static_cast<G2PProcBase*> (obj);
+            if (pobj->GetStage() == G2PProcBase::kWAIT) done = false;
+        }
+        else {
+            Error("Process()", "Processing list contains non G2PProcBase classes.");
+            continue;
+        }
+    }
 
-//         pConfig->Branch("NEvent", &nEvent, "NEvent/I");
-
-//         pConfig->Branch("IsLeftArm", &bIsLeftArm, "IsLeftArm/O");
-//         pConfig->Branch("HRSAngle", &fHRSAngle, "HRSAngle/D");
-//         pConfig->Branch("HRSMomentum", &fHRSMomentum, "HRSMomentum/D");
-//         pConfig->Branch("BeamEnergy", &fBeamEnergy, "BeamEnergy/D");
-
-//         int hrssetting = pHRS->GetModelIndex();
-//         pConfig->Branch("HRSModel", &hrssetting, "HRSModel/I");
-
-//         int gunsetting = pGun->GetSetting();
-//         double resa = pBPM->GetBPMARes();
-//         double resb = pBPM->GetBPMBRes();
-//         pConfig->Branch("GunSetting", &gunsetting, "GunSetting/I");
-//         pConfig->Branch("BPMARes", &resa, "BPMARes/D");
-//         pConfig->Branch("BPMBRes", &resb, "BPMBRes/D");
-
-//         pConfig->Fill();
-
-//         pFile->Write("", TObject::kOverwrite);
-
-//         delete pConfig;
-
-//         it++; i++;
-//     }
-// }
+    return done;
+}
 
 ClassImp(G2PSim)

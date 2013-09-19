@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PVarList
- * This file defines a class G2PVarList.
- * It defines a collection of G2PVar variables.
+ * A collection of G2PVar variables.
  */
 
 // History:
@@ -10,11 +9,13 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 
 #include "TROOT.h"
-#include "TList.h"
 #include "TError.h"
+#include "TObject.h"
+#include "TList.h"
 #include "TRegexp.h"
 
 #include "G2PVar.hh"
@@ -22,8 +23,9 @@
 
 #include "G2PVarList.hh"
 
-G2PVarList::G2PVarList() :
-TList() {
+using namespace std;
+
+G2PVarList::G2PVarList() {
     // Nothing to do
 }
 
@@ -31,16 +33,12 @@ G2PVarList::~G2PVarList() {
     Clear();
 }
 
-void G2PVarList::Clear() {
-    while (fFirst) {
-        G2PVar* obj = (G2PVar*) TList::Remove(fFirst);
-        delete obj;
-    }
-}
-
 G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const void* var, VarType type) {
+    // Define a variable in the list with given type
+
     static const char* const here = "DefineByType()";
 
+    // Check duplicate names
     G2PVar* ptr = Find(name);
     if (ptr) {
         Warning(here, "Variable %s already exists. Not redefined.", ptr->GetName());
@@ -48,26 +46,26 @@ G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const v
     }
 
     switch (type) {
-    case kChar:
+    case kBOOL:
+        ptr = new G2PVar(name, descript, static_cast<const bool*> (var));
+        break;
+    case kCHAR:
         ptr = new G2PVar(name, descript, static_cast<const char*> (var));
         break;
-    case kInt:
+    case kINT:
         ptr = new G2PVar(name, descript, static_cast<const int*> (var));
         break;
-    case kShort:
+    case kSHORT:
         ptr = new G2PVar(name, descript, static_cast<const short*> (var));
         break;
-    case kLong:
+    case kLONG:
         ptr = new G2PVar(name, descript, static_cast<const long*> (var));
         break;
-    case kFloat:
+    case kFLOAT:
         ptr = new G2PVar(name, descript, static_cast<const float*> (var));
         break;
-    case kDouble:
+    case kDOUBLE:
         ptr = new G2PVar(name, descript, static_cast<const double*> (var));
-        break;
-    case kBool:
-        ptr = new G2PVar(name, descript, static_cast<const bool*> (var));
         break;
     }
 
@@ -80,7 +78,14 @@ G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const v
 }
 
 int G2PVarList::DefineVariables(const VarDef* list, const char* prefix) {
-    if (!list) return -1;
+    // Add variables in "list" to the list
+
+    static const char* const here = "DefineVariables()";
+
+    if (!list) {
+        Warning(here, "No input variable list.");
+        return -1;
+    }
 
     const VarDef* item = list;
     int ndef = 0;
@@ -93,6 +98,57 @@ int G2PVarList::DefineVariables(const VarDef* list, const char* prefix) {
     }
 
     return ndef;
+}
+
+G2PVar* G2PVarList::Find(const char* name) const {
+    return static_cast<G2PVar*> (FindObject(name));
+}
+
+G2PVar* G2PVarList::FindSuffix(const char* suf) const {
+    static const char* const here = "FindRegexp()";
+
+    G2PVar* p = NULL;
+    int nfind = 0;
+    TString name;
+    TIter next(this);
+    while (G2PVar * ptr = static_cast<G2PVar*> (next())) {
+        name = ptr->GetName();
+        if (name.Index(suf) != kNPOS) {
+            if (nfind == 0) p = ptr;
+            nfind++;
+        }
+    }
+
+    if (nfind > 1) {
+        Warning(here, "Find %d variables name contain \"%s\", check definition.", nfind, suf);
+    }
+
+    return p;
+}
+
+G2PVar* G2PVarList::FindRegexp(const char* expr) const {
+    static const char* const here = "FindRegexp()";
+
+    G2PVar* p = NULL;
+    TRegexp re(expr, kTRUE);
+    if (re.Status()) return NULL;
+
+    int nfind = 0;
+    TString name;
+    TIter next(this);
+    while (G2PVar * ptr = static_cast<G2PVar*> (next())) {
+        name = ptr->GetName();
+        if (name.Index(re) != kNPOS) {
+            if (nfind == 0) p = ptr;
+            nfind++;
+        }
+    }
+
+    if (nfind > 1) {
+        Warning(here, "Find %d variables name satisfy \"%s\", check definition.", nfind, expr);
+    }
+
+    return p;
 }
 
 int G2PVarList::RemoveName(const char* name) {

@@ -1,63 +1,64 @@
 // -*- C++ -*-
 
 /* class G2PBPM
- * This file defines a class G2PBPM.
- * It calculates the beam position at BPM and target using kinematics from event generator.
- * G2PProcBase classes will call GetBPMValue() to get BPM readouts.
- * G2PDrift is used in this class.
+ * Calculate beam readout at BPM and target using kinematics from event generator.
  * Transport functions defined in G2PBPMTrans is used in this class.
+ * Orbits are defined in G2PBPMTrans.
  *
- * Variables ending with "_bpm" are defined in a special coordinates, TransBPM2Lab() will transform it to lab coordinates.
+ * Variables ending with "_bpm" are defined in a special coordinates.
+ * TransBPM2Lab() will transform it to lab coordinates.
+ * In output, these variables are labeled as "b_".
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Apr 2013, C. Gu, Add Pengjia's fitting result.
 //   Jul 2013, C. Gu, Treat optics (no field) case specially.
+//   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //
 
 #ifndef G2P_BPM_H
 #define G2P_BPM_H
 
-#include "G2PAppBase.hh"
+#include "G2PProcBase.hh"
 
 class G2PDrift;
 
-class G2PBPM : public G2PAppBase {
+class G2PBPM : public G2PProcBase {
 public:
     G2PBPM();
-    ~G2PBPM();
+    virtual ~G2PBPM();
 
-    typedef void (G2PBPM::*pfGetBPMValue_)(const double*, double*, double*);
+    typedef void (G2PBPM::*pfGetBPM_)(const double*, double*, double*);
 
-    void SetBPMRes(double a, double b) {
-        fBPMARes = a;
-        fBPMBRes = b;
-    }
+    virtual int Init();
+    virtual int Begin();
+    virtual int Process();
+    virtual void Clear();
 
-    int Init();
-    int Begin();
+    // Gets
 
-    void GetBPMValue(const double* V5beam_lab, double* V5bpm_bpm, double* V2bpma_bpm, double* V2bpmb_bpm);
-
-    void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
-
-    static G2PBPM* GetInstance() {
-        return pG2PBPM;
-    }
+    // Sets
+    void SetBPMRes(double a, double b);
 
 protected:
-    void SetBPM();
+    void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
 
-    void GetBPMValue0(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValue1(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValue4(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValue5(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValue7(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValue9(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMValueO(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM1(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM4(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM5(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM7(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM9(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPMO(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
 
     void GetBPMAB(const double* V5beam_lab, float* xout);
+
+    void SetBPMPos();
+
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual int DefineVariables(EMode mode = kDEFINE);
+    virtual void MakePrefix();
 
     double fBeamEnergy;
     double fFieldRatio;
@@ -67,14 +68,30 @@ protected:
     double fBPMAZ, fBPMBZ;
     double fBPMARes, fBPMBRes;
 
+    double fV5beam_lab[5];
+    double fV5bpm_bpm[5];
+    double fV5bpm_lab[5];
+    double fV2bpma_bpm[2];
+    double fV2bpmb_bpm[2];
+
     G2PDrift* pDrift;
 
-    pfGetBPMValue_ pfGetBPMValue;
+    pfGetBPM_ pfGetBPM;
 
 private:
     static G2PBPM* pG2PBPM;
 
     ClassDef(G2PBPM, 1)
 };
+
+// inline functions
+
+inline void G2PBPM::SetBPMRes(double a, double b) {
+    fBPMARes = a;
+    fBPMBRes = b;
+
+    fConfigIsSet[&fBPMARes] = true;
+    fConfigIsSet[&fBPMBRes] = true;
+}
 
 #endif

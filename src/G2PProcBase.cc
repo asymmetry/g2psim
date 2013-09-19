@@ -1,54 +1,41 @@
 // -*- C++ -*-
 
 /* class G2PProcBase
- * This file defines a class G2PProcBase.
- * It is the base class of g2p process classes.
- * It provides fundamental functions like passing variables between processes.
+ * Abstract base class for g2p simulation processes.
+ * It provides fundamental functions like variable registration.
+ * No instance allowed for this class.
+ * Derived class must set its own internal variables and register them to the global variable list.
  */
 
 // History:
 //   Apr 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Move global variable functions from G2PAppBase to here.
 //
 
 #include <cstdlib>
-#include <cstring>
+#include <cstdio>
 #include <cmath>
-#include <vector>
-#include <map>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
-#include "TList.h"
+#include "TObject.h"
 
 #include "G2PAppBase.hh"
-#include "G2PBPM.hh"
-#include "G2PDBRec.hh"
-#include "G2PDrift.hh"
+#include "G2PAppList.hh"
 #include "G2PGlobals.hh"
-#include "G2PGun.hh"
-#include "G2PFlatGun.hh"
-#include "G2PHRSTrans.hh"
-#include "G2PPhys.hh"
+#include "G2PVarDef.hh"
+#include "G2PVarList.hh"
 
 #include "G2PProcBase.hh"
 
 using namespace std;
 
-G2PProcBase::G2PProcBase() {
-    mName.clear();
-    mLength.clear();
-
-    fApps = new TList;
-    fAppsList.clear();
-
-    Clear();
+G2PProcBase::G2PProcBase() : fStage(kWAIT) {
+    // Nothing to do
 }
 
 G2PProcBase::~G2PProcBase() {
-    TIter next(fApps);
-    while (TObject * obj = next()) fApps->Remove(obj);
-    delete fApps;
+    // Nothing to do
 }
 
 int G2PProcBase::Init() {
@@ -56,80 +43,28 @@ int G2PProcBase::Init() {
 
     if (G2PAppBase::Init() != 0) return fStatus;
 
-    for (vector<const char*>::iterator it = fAppsList.begin(); it != fAppsList.end(); it++) {
-        if (FindModule(*it) == NULL) {
-            const char* name = *it;
-            if (Add(name) != 0) return (fStatus = kINITERROR);
-        }
-    }
-
-    return (fStatus = kOK);
-}
-
-int G2PProcBase::Begin() {
-    static const char* const here = "Begin()";
-
-    if (G2PAppBase::Begin() != 0) return fStatus;
-
-    if (fDebug > 0) Info(here, "Beginning ...");
-
     EStatus status = kOK;
-    TIter next(fApps);
-    while (G2PProcBase * aobj = static_cast<G2PProcBase*> (next())) {
-        if (!aobj->IsInit()) status = kERROR;
-    }
+    if (DefineVariables(kDEFINE)) status = kINITERROR;
 
     return (fStatus = status);
 }
 
-int G2PProcBase::SetValue(const char* name, double* value) {
-    if (mName.find(name) == mName.end()) return -1;
+int G2PProcBase::Begin() {
+    // Default does nothing
 
-    return ArrayCopy(mName[name], value, mLength[name]);
+    return (G2PAppBase::Begin());
 }
 
-int G2PProcBase::GetValue(const char* name, double* value) {
-    if (mName.find(name) == mName.end()) return -1;
+int G2PProcBase::End() {
+    // Default does nothing
 
-    return ArrayCopy(value, mName[name], mLength[name]);
+    return (G2PAppBase::End());
 }
 
-int G2PProcBase::Add(const char* name) {
-    static const char* const here = "Add()";
+void G2PProcBase::Clear() {
+    // Default does nothing
 
-    map<string, int> temp;
-    temp["G2PBPM"] = 0;
-    temp["G2PDBRec"] = 1;
-    temp["G2PDrift"] = 2;
-    temp["G2PGun"] = 3;
-    temp["G2PHRSTrans"] = 4;
-    temp["G2PPhys"] = 5;
-
-    switch (temp[name]) {
-    case 0:
-        gG2PApps->Add(new G2PBPM());
-        break;
-    case 1:
-        gG2PApps->Add(new G2PDBRec());
-        break;
-    case 2:
-        gG2PApps->Add(new G2PDrift());
-        break;
-    case 3:
-        gG2PApps->Add(new G2PFlatGun());
-        break;
-    case 4:
-        gG2PApps->Add(new G2PHRSTrans("484816"));
-        break;
-    case 5:
-        gG2PApps->Add(new G2PPhys("elastic"));
-        break;
-    default:
-        Error(here, "Bad app name.");
-        return -1;
-    }
-
-    return 0;
+    G2PAppBase::Clear();
 }
 
 int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
@@ -138,6 +73,36 @@ int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
     for (int i = 0; i < length; i++) out[i] = in[i];
 
     return 0;
+}
+
+int G2PProcBase::DefineVarsFromList(const VarDef* list, EMode mode) const {
+    // Add or delete global variables in "list" to the global list
+
+    static const char* const here = "DefineVarsFromList()";
+
+    if (!gG2PVars) {
+        Warning(here, "No global variable list found.");
+        return (mode == kDEFINE ? kINITERROR : kOK);
+    }
+
+    if (mode == kDEFINE) {
+        gG2PVars->DefineVariables(list, fPrefix);
+    }
+    else if (mode == kDELETE) {
+        const VarDef* item;
+        while ((item = list++) && item->name) {
+            gG2PVars->RemoveName(Form("%s%s", fPrefix, item->name));
+        }
+    }
+    else return kINITERROR;
+
+    return kOK;
+}
+
+int G2PProcBase::RemoveVariables() {
+    // Default method for removing global variables
+
+    return DefineVariables(kDELETE);
 }
 
 ClassImp(G2PProcBase)

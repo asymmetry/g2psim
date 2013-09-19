@@ -1,9 +1,8 @@
 // -*- C++ -*-
 
 /* class G2PSieveGun
- * This file defines a class G2PSieveGun.
  * It generates special events which can pass through the holes on sieve slit.
- * G2PProcBase classes will call Shoot() to get reaction point kinematics.
+ * Only work for no target field situation.
  */
 
 // History:
@@ -11,28 +10,26 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
-#include <vector>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
-#include "G2PDrift.hh"
+#include "G2PAppList.hh"
 #include "G2PGlobals.hh"
 #include "G2PGun.hh"
 #include "G2PRand.hh"
-#include "G2PRunBase.hh"
 #include "G2PSieve.hh"
+#include "G2PVarDef.hh"
 
 #include "G2PSieveGun.hh"
 
 using namespace std;
 
-static const double kU = 0.93149406121;
-
 G2PSieveGun::G2PSieveGun() :
-bUseFast(true), fTargetMass(0.0), fEnergyLoss(0.0), fThreshold(0.0), pfGun(NULL) {
+fTargetMass(0.0), pSieve(NULL) {
     // Nothing to do
 }
 
@@ -40,108 +37,22 @@ G2PSieveGun::~G2PSieveGun() {
     // Nothing to do
 }
 
-int G2PSieveGun::Begin() {
-    //static const char* const here = "Begin()";
+int G2PSieveGun::Init() {
+    //static const char* const here = "Init()";
 
-    if (G2PGun::Begin() != 0) return fStatus;
+    if (G2PGun::Init() != 0) return fStatus;
 
-    if (fFieldRatio > 0) bUseFast = false;
-
-    if (bUseFast) pfGun = &G2PSieveGun::ShootFast;
-    else pfGun = &G2PSieveGun::ShootNormal;
-
-    fTargetMass = gG2PRun->GetTargetMass() * kU;
-    fEnergyLoss = gG2PRun->GetEnergyLoss();
-
-    SetSieve(fHRSAngle);
-    double ratio = fSieve.fDLargerHole * fSieve.fDLargerHole / (fSieve.fDHole * fSieve.fDHole);
-    fThreshold = (ratio - 1) / ((ratio - 1) * fSieve.nLargerHole + fSieve.nRow * fSieve.nCol);
+    pSieve = static_cast<G2PSieve*> (gG2PApps->Find("G2PSieve"));
+    if (!pSieve) {
+        pSieve = new G2PSieve();
+        gG2PApps->Add(pSieve);
+    }
 
     return (fStatus = kOK);
 }
 
-int G2PSieveGun::ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved) {
+int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
     static const char* const here = "Shoot()";
-
-    bool found = false;
-
-    while (!found) {
-        // generate flat distribution
-        double X_lab, Y_lab;
-        if (fBeamR_lab > 1e-5) {
-            do {
-                X_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
-                Y_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
-            } while (X_lab * X_lab + Y_lab * Y_lab > fBeamR_lab * fBeamR_lab);
-        }
-        else {
-            X_lab = 0.0;
-            Y_lab = 0.0;
-        }
-
-        X_lab += fBeamX_lab;
-        Y_lab += fBeamY_lab;
-        double Z_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
-        GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
-
-        double Xreact_tr, Yreact_tr, Zreact_tr;
-        HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
-
-        V5react_tr[0] = Xreact_tr;
-        V5react_tr[1] = pRand->Uniform(fTargetThLow_tr, fTargetThHigh_tr);
-        V5react_tr[2] = Yreact_tr;
-        V5react_tr[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
-        V5react_tr[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);
-
-        // drift to sieve slit
-        double V5siv_tr[5];
-        pDrift->Drift(V5react_tr, fHRSMomentum, Zreact_tr, fHRSAngle, fSieve.fZ, 0, V5siv_tr);
-
-        // check if it passed the sieve slit
-        for (int i = 0; i < fSieve.nRow * fSieve.nCol; i++) {
-            double dhole = fSieve.fDHole;
-            for (int j = 0; j < fSieve.nLargerHole; j++)
-                if (i == fSieve.iLargerHole[j]) dhole = fSieve.fDLargerHole;
-            int col = i / (fSieve.nRow);
-            int row = i % (fSieve.nRow);
-            if (fSieve.bOpen[i]) {
-                double distance = V5siv_tr[0] - fSieve.fX[row] - fSieve.fXOffset * V5siv_tr[0] - fSieve.fX[row] - fSieve.fXOffset;
-                distance += V5siv_tr[2] - fSieve.fY[col] - fSieve.fYOffset * V5siv_tr[2] - fSieve.fY[col] - fSieve.fYOffset;
-                distance = sqrt(distance);
-                if (distance < dhole / 2.0) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
-    }
-
-    return 0;
-}
-
-int G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved) {
-    static const char* const here = "Shoot()";
-
-    double dhole;
-
-    int selector;
-    do {
-        dhole = fSieve.fDHole;
-        selector = pRand->Integer(fSieve.nRow * fSieve.nCol);
-        double temp = pRand->Uniform();
-        for (int i = 0; i < fSieve.nLargerHole; i++)
-            if (temp < i * fThreshold) {
-                selector = fSieve.iLargerHole[i];
-                dhole = fSieve.fDLargerHole;
-            }
-    } while (fSieve.bOpen[selector] == 0);
-
-    int col = selector / (fSieve.nRow);
-    int row = selector % (fSieve.nRow);
 
     double X_lab, Y_lab;
     if (fBeamR_lab > 1e-5) {
@@ -166,14 +77,7 @@ int G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reser
     double V3sieve_tr[3];
     double V3pd_tr[3];
 
-    double Xsiv_tr, Ysiv_tr;
-    do {
-        Xsiv_tr = pRand->Uniform(-dhole / 2, dhole / 2);
-        Ysiv_tr = pRand->Uniform(-dhole / 2, dhole / 2);
-    } while (Xsiv_tr * Xsiv_tr + Ysiv_tr * Ysiv_tr > dhole * dhole / 4.0);
-    V3sieve_tr[0] = fSieve.fXOffset + fSieve.fX[row] + Xsiv_tr;
-    V3sieve_tr[1] = fSieve.fYOffset + fSieve.fY[col] + Ysiv_tr;
-    V3sieve_tr[2] = fSieve.fZ;
+    pSieve->GetPos(V3sieve_tr);
 
     V3pd_tr[0] = V3sieve_tr[0] - Xreact_tr;
     V3pd_tr[1] = V3sieve_tr[1] - Yreact_tr;
@@ -190,7 +94,7 @@ int G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reser
 
     double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
 
-    double Delta = scatmom / fHRSMomentum - 1 - fEnergyLoss / fHRSMomentum;
+    double Delta = scatmom / fHRSMomentum - 1;
 
     V5react_tr[0] = Xreact_tr;
     V5react_tr[1] = Thetareact_tr;
@@ -203,6 +107,35 @@ int G2PSieveGun::ShootFast(double* V5beam_lab, double* V5react_tr, double* reser
     }
 
     return 0;
+}
+
+int G2PSieveGun::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
+        {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
+        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
+        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
+        {"l_x", "Beam X", kDOUBLE, &fBeamX_lab},
+        {"l_y", "Beam Y", kDOUBLE, &fBeamY_lab},
+        {"l_z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
+        {"l_z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
+        {"t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
+        {"t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
+        {"p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},
+        {"p.max", "Phi Max", kDOUBLE, &fTargetPhHigh_tr},
+        {"d.min", "Delta Min", kDOUBLE, &fDeltaLow},
+        {"d.max", "Delta Max", kDOUBLE, &fDeltaLow},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
 }
 
 ClassImp(G2PSieveGun)

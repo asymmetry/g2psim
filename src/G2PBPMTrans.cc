@@ -17,6 +17,7 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 
 #include "G2PBPMTrans.hh"

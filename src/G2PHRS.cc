@@ -1,9 +1,10 @@
 // -*- C++ -*-
 
-/* class G2PHRSTrans
- * This file defines a class G2PHRSTrans.
- * It is the interface class of HRSTrans package. It provides HRS transport functions.
- * G2PProcBase classes will call Forward() to transport target plane kinematics to focus plane, call Backward() to transport focus plane readout to target plane.
+/* class G2PHRS
+ * Interface class of HRSTrans package.
+ * It provides HRS transport functions.
+ * G2PProcBase classes will call Forward() to get focus plane kinematics to focus plane,
+ * will call Backward() to get target plane kinematics.
  *
  * The definition of variables and the list of available models can be found in the comments in the body.
  */
@@ -14,13 +15,14 @@
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 #include <cstring>
 #include <map>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 
 #include "HRSTransBase.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
@@ -29,52 +31,51 @@
 
 #include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
-#include "G2PRunBase.hh"
 
-#include "G2PHRSTrans.hh"
+#include "G2PHRS.hh"
 
 using namespace std;
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PHRSTrans* G2PHRSTrans::pG2PHRSTrans = NULL;
+G2PHRS* G2PHRS::pG2PHRS = NULL;
 
-G2PHRSTrans::G2PHRSTrans() :
-iSetting(1), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NULL) {
-    // Nothing to do
+G2PHRS::G2PHRS() : pModel(NULL) {
+    // Only for ROOT I/O
 }
 
-G2PHRSTrans::G2PHRSTrans(const char* name) :
-iSetting(1), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG),
-pModel(NULL) {
-    if (pG2PHRSTrans) {
-        Error("G2PHRSTrans()", "Only one instance of G2PHRSTrans allowed.");
+G2PHRS::G2PHRS(const char* name) :
+fSetting(1), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NULL) {
+    if (pG2PHRS) {
+        Error("G2PHRS()", "Only one instance of G2PHRS allowed.");
         MakeZombie();
         return;
     }
-    pG2PHRSTrans = this;
+    pG2PHRS = this;
 
     map<string, int> model_map;
     model_map["484816"] = 1;
     model_map["400016"] = 3;
     model_map["484816R00"] = 11;
 
-    iSetting = model_map[name];
+    fSetting = model_map[name];
+    fConfigIsSet[&fSetting] = true;
 }
 
-G2PHRSTrans::G2PHRSTrans(int setting) :
-iSetting(setting), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG),
-pModel(NULL) {
-    if (pG2PHRSTrans) {
-        Error("G2PHRSTrans()", "Only one instance of G2PHRSTrans allowed.");
+G2PHRS::G2PHRS(int setting) :
+fSetting(setting), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NULL) {
+    if (pG2PHRS) {
+        Error("G2PHRS()", "Only one instance of G2PHRS allowed.");
         MakeZombie();
         return;
     }
-    pG2PHRSTrans = this;
+    pG2PHRS = this;
+
+    fConfigIsSet[&fSetting] = true;
 }
 
-G2PHRSTrans::~G2PHRSTrans() {
-    if (pG2PHRSTrans == this) pG2PHRSTrans = NULL;
+G2PHRS::~G2PHRS() {
+    if (pG2PHRS == this) pG2PHRS = NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,12 +89,12 @@ G2PHRSTrans::~G2PHRSTrans() {
 // May add more HRS packages later
 ////////////////////////////////////////////////////////////////////////////////
 
-int G2PHRSTrans::Init() {
-    static const char* const here = "Init()";
+int G2PHRS::Begin() {
+    static const char* const here = "Begin()";
 
-    if (G2PAppBase::Init() != 0) return fStatus;
+    if (G2PAppBase::Begin() != 0) return fStatus;
 
-    switch (iSetting) {
+    switch (fSetting) {
     case 1:
         pModel = new G2PTrans484816();
         break;
@@ -108,15 +109,7 @@ int G2PHRSTrans::Init() {
         return (fStatus = kINITERROR);
         break;
     }
-    return (fStatus = kOK);
-}
 
-int G2PHRSTrans::Begin() {
-    static const char* const here = "Begin()";
-
-    if (G2PAppBase::Begin() != 0) return fStatus;
-
-    fHRSAngle = gG2PRun->GetHRSAngle();
     fModelAngle = pModel->GetAngle();
 
     if (fDebug > 0) Info(here, "Model angle is %10.3e.", fModelAngle / kDEG);
@@ -124,7 +117,7 @@ int G2PHRSTrans::Begin() {
     return (fStatus = kOK);
 }
 
-bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp) {
+bool G2PHRS::Forward(const double* V5_tg, double* V5_fp) {
     static const char* const here = "Forward()";
 
     // Definition of variables
@@ -139,16 +132,16 @@ bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp) {
     V5[3] = tan(V5_tg[3]);
     V5[4] = V5_tg[4];
 
-    bool bGoodParticle = false;
+    bool isgood = false;
 
     if (fHRSAngle > 0) {
         //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
-        bGoodParticle = pModel->TransLeftHRS(V5);
+        isgood = pModel->TransLeftHRS(V5);
         //pModel->FPCorrLeft(V5_tg, V5);
     }
     else {
         //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
-        bGoodParticle = pModel->TransRightHRS(V5);
+        isgood = pModel->TransRightHRS(V5);
         //pModel->FPCorrRight(V5_tg, V5);
     }
 
@@ -162,10 +155,10 @@ bool G2PHRSTrans::Forward(const double* V5_tg, double* V5_fp) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4]);
     }
 
-    return bGoodParticle;
+    return isgood;
 }
 
-bool G2PHRSTrans::Backward(const double* V5_fp, double* V5_tg) {
+bool G2PHRS::Backward(const double* V5_fp, double* V5_tg) {
     static const char* const here = "Backward()";
 
     // Definition of variables
@@ -196,15 +189,37 @@ bool G2PHRSTrans::Backward(const double* V5_fp, double* V5_tg) {
     V5_tg[3] = atan(V5[3]);
     V5_tg[4] = V5[4];
 
-    bool bGoodParticle = false;
+    bool isgood = false;
 
-    if (V5_tg[4] < 1.0) bGoodParticle = true;
+    if (V5_tg[4] < 1.0) isgood = true;
 
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_fp[4], V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
     }
 
-    return bGoodParticle;
+    return isgood;
 }
 
-ClassImp(G2PHRSTrans)
+int G2PHRS::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"run.hrs.angle", "Beam Energy", kDOUBLE, &fHRSAngle},
+        {"model.id", "Setting ID", kINT, &fSetting},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+void G2PHRS::MakePrefix() {
+    const char* base = "hrs";
+
+    G2PAppBase::MakePrefix(base);
+}
+
+ClassImp(G2PHRS)

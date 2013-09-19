@@ -1,9 +1,8 @@
 // -*- C++ -*-
 
 /* class G2PSieveGun
- * This file defines a class G2PSieveGun.
  * It generates special events which can pass through the holes on sieve slit.
- * G2PProcBase classes will call Shoot() to get reaction point kinematics.
+ * Only work for no target field situation.
  */
 
 // History:
@@ -16,45 +15,26 @@
 #include <vector>
 
 #include "G2PGun.hh"
-#include "G2PSieve.hh"
 
-using namespace std;
+class G2PSieve;
 
-class G2PSieveGun : public G2PGun, public G2PSieve {
+class G2PSieveGun : public G2PGun {
 public:
     G2PSieveGun();
-    ~G2PSieveGun();
+    virtual ~G2PSieveGun();
 
-    typedef int (G2PSieveGun::*pfGun_)(double*, double*, double*);
-
-    void SetUseFast(bool fast) {
-        bUseFast = fast;
-    }
-
-    int Begin();
-
-    int Shoot(double* V51, double* V52, double* V53 = NULL) {
-        return (this->*pfGun)(V51, V52, V53);
-    }
-
-    bool UseData() {
-        return false;
-    }
+    virtual int Init();
 
 protected:
-    int ShootNormal(double* V5beam_lab, double* V5react_tr, double* reserved);
-    int ShootFast(double* V5beam_lab, double* V5react_tr, double* reserved);
+    virtual int Shoot(double* V5beam_lab, double* V5react_tr);
 
-    bool bUseFast;
+    virtual int Configure(EMode mode = kTWOWAY);
 
     double fTargetMass;
-    double fEnergyLoss;
 
-    double fThreshold;
+    G2PSieve* pSieve;
 
 private:
-    pfGun_ pfGun;
-
     ClassDef(G2PSieveGun, 1)
 };
 

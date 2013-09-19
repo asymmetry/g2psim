@@ -1,26 +1,30 @@
 // -*- C++ -*-
 
 /* class G2PField
- * This file defines a class G2PField.
- * It is the base class of g2p target field classes.
- * It calculates field strength of a particular point from the field map using Lagrange polynomial interpolation, default is 2nd order.
+ * Generate field map for HallB magnets.
+ * Calculate field strength of a particular point from the field map using Lagrange polynomial interpolation, default is 2nd order.
  * G2PProcBase classes will call GetField() to get field values.
  *
  * Field map may have an angle respect to the lab coordinates.
- * Use SetEularAngle() to set this angle in Eular angles and the program will rotate the field map to correct direction.
+ * Use SetEulerAngle() to set this angle and the program will rotate the field map to correct direction.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Sep 2013, C. Gu, Put HallB field map into G2PField.
 //
 
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "TROOT.h"
-#include "TObject.h"
 #include "TError.h"
+#include "TObject.h"
 #include "TFile.h"
 #include "TTree.h"
 
@@ -31,12 +35,35 @@
 
 using namespace std;
 
+static const double kCM = 1.0e-2;
+static const double kKG = 1.0e-1;
+static const double kSCALE = 4.9788476 / 5.0938709;
 static const double kDEG = 3.14159265358979323846 / 180.0;
+
+extern "C" {
+void sda_ptf_(float*, float*); // routine to calculate the field of HallB coil, which is not symmetric
+}
+
+static void GetHallBField(const double* pos, double* field) {
+    float x[3], b[3];
+
+    x[0] = pos[0] / kCM;
+    x[1] = pos[1] / kCM;
+    x[2] = pos[2] / kCM;
+
+    sda_ptf_(x, b);
+
+    // The routine will return fields in kG, maximum is 5.0938709T
+    // Match it to the TOSCA map maximum 4.9788476T
+    field[0] = b[0] * kKG*kSCALE;
+    field[1] = b[1] * kKG*kSCALE;
+    field[2] = b[2] * kKG*kSCALE;
+}
 
 G2PField* G2PField::pG2PField = NULL;
 
 G2PField::G2PField() :
-pMapFileName(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), bRotation(false), fRatio(1.0) {
+fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(1.0) {
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");
         MakeZombie();
@@ -48,6 +75,8 @@ pMapFileName(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.0
     memset(fEulerAngle, 0, sizeof (fEulerAngle));
     memset(fRotationMatrix, 0, sizeof (fRotationMatrix));
     fBField.clear();
+
+    fMapFile = "hallbfield.map";
 }
 
 G2PField::~G2PField() {
@@ -63,8 +92,54 @@ G2PField::~G2PField() {
     if (pG2PField == this) pG2PField = NULL;
 }
 
+int G2PField::Init() {
+    //static const char* const here = "Init()";
+
+    if (G2PAppBase::Init() != 0) return fStatus;
+
+    nZ = int((fZMax - fZMin) / fZStep + 1e-8) + 1;
+    nR = int((fRMax - fRMin) / fRStep + 1e-8) + 1;
+
+    fBField.resize(nR);
+    for (int i = 0; i < nR; i++) {
+        fBField[i].resize(nZ);
+        for (int j = 0; j < nZ; j++) {
+            fBField[i][j].resize(5, 0.0);
+        }
+    }
+
+    return (fStatus = kOK);
+}
+
+int G2PField::Begin() {
+    static const char* const here = "Begin()";
+
+    if (G2PAppBase::Begin() != 0) return fStatus;
+
+    EStatus status = kINITERROR;
+    if (ReadMap() == 0) status = kOK;
+    else if (CreateMap() == 0) status = kOK;
+    else Error(here, "Cannot create field map.");
+
+    return (fStatus = status);
+}
+
+void G2PField::GetField(const double* x, double* b) {
+    static const char* const here = "GetField()";
+
+    double pos[3], field[3];
+    TransLab2Field(x, pos);
+    Interpolate(pos, field, 2);
+    TransField2Lab(field, b);
+    b[0] *= fRatio;
+    b[1] *= fRatio;
+    b[2] *= fRatio;
+    if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
+}
+
 void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
     // The Euler angle is defined using Z-X'-Z" convention
+
     fEulerAngle[0] = alpha*kDEG;
     fEulerAngle[1] = beta*kDEG;
     fEulerAngle[2] = gamma*kDEG;
@@ -97,67 +172,108 @@ void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
     fRotationMatrix[1][2][1] = c3*s2;
     fRotationMatrix[1][2][2] = c2;
 
-    bRotation = true;
-}
-
-int G2PField::Init() {
-    //static const char* const here = "Init()";
-
-    if (G2PAppBase::Init() != 0) return fStatus;
-
-    nZ = int((fZMax - fZMin) / fZStep + 1e-8) + 1;
-    nR = int((fRMax - fRMin) / fRStep + 1e-8) + 1;
-
-    fBField.resize(nR);
-    for (int i = 0; i < nR; i++) {
-        fBField[i].resize(nZ);
-        for (int j = 0; j < nZ; j++) {
-            fBField[i][j].resize(5, 0.0);
-        }
-    }
-
-    return (fStatus = kOK);
-}
-
-int G2PField::Begin() {
-    //static const char* const here = "Begin()";
-
-    if (G2PAppBase::Begin() != 0) return fStatus;
-
-    return (fStatus = kOK);
-}
-
-void G2PField::GetField(const double* x, double* b) {
-    static const char* const here = "GetField()";
-
-    double pos[3], field[3];
-    TransLab2Field(x, pos);
-    Interpolate(pos, field, 2);
-    TransField2Lab(field, b);
-    b[0] *= fRatio;
-    b[1] *= fRatio;
-    b[2] *= fRatio;
-    if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
+    fRotation = true;
 }
 
 int G2PField::ReadMap() {
     static const char* const here = "ReadMap()";
 
-    if (fDebug > 0) Info(here, "Reading field map ...");
+    if (G2PField::ReadMap() != 0) return -1;
 
+    ifstream ifs;
+    int count = 0;
+
+    ifs.open(fMapFile);
+    if (ifs.fail()) return -1;
+
+    const int LEN = 300;
+    char buff[LEN];
+
+    ifs.getline(buff, LEN); // eat the first line
+
+    while (ifs.getline(buff, LEN) != NULL) {
+        TString tmpline(buff);
+
+        if (tmpline.EndsWith("\n")) tmpline.Chop();
+
+        istringstream ist(tmpline.Data());
+        string tmpstr;
+        vector<string> line_spl;
+        while (ist >> tmpstr) {
+            line_spl.push_back(tmpstr);
+        }
+
+        if (line_spl.empty()) continue; // ignore empty lines
+
+        double tempZ = atof(line_spl[0].c_str()) * kCM;
+        double tempR = atof(line_spl[1].c_str()) * kCM;
+
+        if ((tempZ >= fZMin)&&(tempZ <= fZMax)&&(tempR >= fRMin)&&(tempR <= fRMax)) {
+            // store the value
+            double tempBz = atof(line_spl[2].c_str());
+            double tempBr = atof(line_spl[3].c_str());
+            double tempB = atof(line_spl[4].c_str());
+
+            int indexZ = int((tempZ - fZMin) / fZStep + 1e-8);
+            int indexR = int((tempR - fRMin) / fRStep + 1e-8);
+
+            fBField[indexR][indexZ][0] = tempZ;
+            fBField[indexR][indexZ][1] = tempR;
+            fBField[indexR][indexZ][2] = tempBz;
+            fBField[indexR][indexZ][3] = tempBr;
+            fBField[indexR][indexZ][4] = tempB;
+
+            if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
+
+            count++;
+        }
+    }
+
+    ifs.close();
+
+    if (count == 0) return -1;
     return 0;
 }
 
 int G2PField::CreateMap() {
     static const char* const here = "CreateMap()";
 
-    if (fDebug > 0) Info(here, "Creating field map ...");
+    if (G2PField::CreateMap() != 0) return -1;
+
+    FILE* fp;
+
+    if ((fp = fopen(fMapFile, "w")) == NULL) return -1;
+
+    fprintf(fp, "   z        r       Bz              Br              Btot\n");
+    double x[3], b[3];
+
+    x[1] = 0;
+
+    for (int i = 0; i < nR; i++) {
+        x[0] = i*fRStep;
+        for (int j = 0; j < nZ; j++) {
+            x[2] = j*fZStep;
+
+            GetHallBField(x, b);
+
+            fBField[i][j][0] = j*fZStep;
+            fBField[i][j][1] = i*fRStep;
+            fBField[i][j][2] = b[2];
+            fBField[i][j][3] = sqrt(b[0] * b[0] + b[1] * b[1]);
+            fBField[i][j][4] = sqrt(b[0] * b[0] + b[1] * b[1] + b[2] * b[2]);
+
+            fprintf(fp, "%8.3f %8.3f\t%e\t%e\t%e\n", x[2] / kCM, x[0] / kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
+
+            if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", x[2] / kCM, x[0] / kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
+        }
+    }
+
+    fclose(fp);
 
     return 0;
 }
 
 int G2PField::Interpolate(const double* pos, double* b, int order) {
-
     // Calculate the nth order Lagrange polynomial interpolation
     // 1) Find out (B[R0][Z0],...,B[Rn][Zn]), which is a (n+1)by(n+1) matrix
     // 2) Interpolate by Z first, get (B[R0][Z],...,B[Rn][Z]), which is a 1x(n+1)
@@ -240,13 +356,13 @@ void G2PField::TransLab2Field(const double* x, double* xout) {
     double temp[3] = {x[0], x[1], x[2]};
     for (int i = 0; i < 3; i++) temp[i] -= fOrigin[i];
 
-    if (bRotation) {
+    if (fRotation) {
         for (int i = 0; i < 3; i++) xout[i] = fRotationMatrix[0][i][0] * temp[0] + fRotationMatrix[0][i][1] * temp[1] + fRotationMatrix[0][i][2] * temp[2];
     }
 }
 
 void G2PField::TransField2Lab(const double* b, double* bout) {
-    if (bRotation) {
+    if (fRotation) {
         for (int i = 0; i < 3; i++) bout[i] = fRotationMatrix[1][i][0] * b[0] + fRotationMatrix[1][i][1] * b[1] + fRotationMatrix[1][i][2] * b[2];
     }
 }
@@ -286,6 +402,36 @@ void G2PField::SaveRootFile() {
             }
     file->Write();
     file->Close();
+}
+
+int G2PField::Configure(EMode mode) {
+    if (mode == kREAD || mode == kTWOWAY) {
+        if (fIsInit) return 0;
+        else fIsInit = true;
+    }
+
+    ConfDef confs[] = {
+        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
+        {"ratio", "Field Ratio", kDOUBLE, &fRatio},
+        {"origin.x", "Origin X", kDOUBLE, &fOrigin[0]},
+        {"origin.y", "Origin Y", kDOUBLE, &fOrigin[1]},
+        {"origin.z", "Origin Z", kDOUBLE, &fOrigin[2]},
+        {"r.min", "R Range", kDOUBLE, &fRMin},
+        {"r.max", "R Range", kDOUBLE, &fRMax},
+        {"r.step", "R Step", kDOUBLE, &fRStep},
+        {"z.min", "Z Range", kDOUBLE, &fZMin},
+        {"z.max", "Z Range", kDOUBLE, &fZMax},
+        {"z.step", "Z Step", kDOUBLE, &fZStep},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+void G2PField::MakePrefix() {
+    const char* base = "field";
+
+    G2PAppBase::MakePrefix(base);
 }
 
 ClassImp(G2PField)

@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PDrift
- * This file defines a class G2PDrift.
- * It use Nystrom-Runge-Kutta method to derive the trajectory of a charged particle in static magnetic field.
+ * Use Nystrom-Runge-Kutta method to derive the trajectory of a charged particle in static magnetic field.
  * G2PProcBase classes will call Drift() to get the end point position and momentum of the trajectory.
  * Drift() has 2 prototypes, one for lab coordinates and one for HRS transportation coordinates.
  */
@@ -23,26 +22,22 @@ class G2PField;
 class G2PDrift : public G2PAppBase {
 public:
     G2PDrift();
-    ~G2PDrift();
+    virtual ~G2PDrift();
 
     typedef void (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
     typedef void (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
 
-    void SetLimit(double lo, double hi) {
-        fErrLoLimit = lo;
-        fErrHiLimit = hi;
-    }
+    virtual int Init();
+    virtual int Begin();
+    virtual void Clear();
 
-    int Init();
-    int Begin();
-    void Clear();
+    virtual void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    virtual void Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
 
-    void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    void Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    // Gets
 
-    static G2PDrift* GetInstance() {
-        return pG2PDrift;
-    }
+    // Sets
+    void SetLimit(double lo, double hi);
 
 protected:
     void DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
@@ -54,8 +49,11 @@ protected:
     double DistChord();
     void ComputeRHS(const double* x, double* dxdt);
 
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual void MakePrefix();
+
     double fM0;
-    double fQ, fQsave;
+    double fQ, fQSave;
     double fStep, fStepLimit, fErrLoLimit, fErrHiLimit;
     double fVelocity, fVelocity2, fGamma;
     double fCof;
@@ -74,5 +72,15 @@ private:
 
     ClassDef(G2PDrift, 1)
 };
+
+// inline functions
+
+inline void G2PDrift::SetLimit(double lo, double hi) {
+    fErrLoLimit = lo;
+    fErrHiLimit = hi;
+
+    fConfigIsSet[&fErrLoLimit] = true;
+    fConfigIsSet[&fErrHiLimit] = true;
+}
 
 #endif

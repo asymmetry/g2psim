@@ -1,26 +1,30 @@
 // -*- C++ -*-
 
 /* class G2PVar
- * This file defines a class G2PVar.
- * It defines the data structure of output variables in the simulation.
- *
- * Use this class, different types of data can be put in one TList.
+ * Global variables in the simulation.
+ * It can be used to retrieve data from an object.
  */
 
 // History:
 //   Apr 2013, C. Gu, First public version.
 //
 
+#include <cstdlib>
+#include <cstdio>
+
 #include "TROOT.h"
-#include "TNamed.h"
 #include "TError.h"
+#include "TObject.h"
+#include "TNamed.h"
 
 #include "G2PVarDef.hh"
 
 #include "G2PVar.hh"
 
+using namespace std;
+
 G2PVar::G2PVar() :
-fValueD(0), fType(kDouble) {
+fValueD(NULL), fType(kDOUBLE) {
     // Nothing to do
 }
 
@@ -42,22 +46,34 @@ G2PVar::~G2PVar() {
     // Nothing to do
 }
 
+const char* G2PVar::GetTypeName() const {
+    static const char* const type[] = {"Bool", "Char", "Int", "Short", "Long", "Float", "Double"};
+
+    return type[fType];
+}
+
+int G2PVar::GetTypeSize() const {
+    static const int size[] = {sizeof (bool), sizeof (char), sizeof (int), sizeof (short), sizeof (long), sizeof (float), sizeof (double)};
+
+    return size[fType];
+}
+
 double G2PVar::GetValue() const {
     switch (fType) {
-    case kChar:
-        return static_cast<double> (*fValueC);
-    case kInt:
-        return static_cast<double> (*fValueI);
-    case kShort:
-        return static_cast<double> (*fValueS);
-    case kLong:
-        return static_cast<double> (*fValueL);
-    case kFloat:
-        return static_cast<double> (*fValueF);
-    case kDouble:
-        return static_cast<double> (*fValueD);
-    case kBool:
+    case kBOOL:
         return static_cast<double> (*fValueB);
+    case kCHAR:
+        return static_cast<double> (*fValueC);
+    case kINT:
+        return static_cast<double> (*fValueI);
+    case kSHORT:
+        return static_cast<double> (*fValueS);
+    case kLONG:
+        return static_cast<double> (*fValueL);
+    case kFLOAT:
+        return static_cast<double> (*fValueF);
+    case kDOUBLE:
+        return static_cast<double> (*fValueD);
     }
 
     return 1.0e38;
