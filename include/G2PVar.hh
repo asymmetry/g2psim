@@ -79,45 +79,4 @@ private:
     ClassDef(G2PVar, 0)
 };
 
-// inline functions
-
-inline VarType G2PVar::GetType() const {
-    return fType;
-}
-
-inline void G2PVar::SetVar(const bool& var) {
-    fValueB = &var;
-    fType = kBOOL;
-}
-
-inline void G2PVar::SetVar(const char& var) {
-    fValueC = &var;
-    fType = kCHAR;
-}
-
-inline void G2PVar::SetVar(const int& var) {
-    fValueI = &var;
-    fType = kINT;
-}
-
-inline void G2PVar::SetVar(const short& var) {
-    fValueS = &var;
-    fType = kSHORT;
-}
-
-inline void G2PVar::SetVar(const long& var) {
-    fValueL = &var;
-    fType = kLONG;
-}
-
-inline void G2PVar::SetVar(const float& var) {
-    fValueF = &var;
-    fType = kFLOAT;
-}
-
-inline void G2PVar::SetVar(const double& var) {
-    fValueD = &var;
-    fType = kDOUBLE;
-}
-
 #endif

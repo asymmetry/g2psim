@@ -15,7 +15,7 @@
 #ifndef G2P_APPBASE_H
 #define G2P_APPBASE_H
 
-#include <map>
+#include <set>
 
 #include "TObject.h"
 
@@ -96,7 +96,7 @@ protected:
     // If anyone has a better idea to organize the processing order of processes, I will appreciate that.
     int fPriority;
 
-    map<void*, bool> fConfigIsSet;
+    set<unsigned long> fConfigIsSet;
 
     // Random number generator
     static G2PRand* pRand;
@@ -108,37 +108,5 @@ private:
 
     ClassDef(G2PAppBase, 1)
 };
-
-// inline functions
-
-inline int G2PAppBase::GetDebug() const {
-    return fDebug;
-}
-
-inline const char* G2PAppBase::GetPrefix() const {
-    return fPrefix;
-}
-
-inline bool G2PAppBase::IsInit() const {
-    return IsOK();
-}
-
-inline bool G2PAppBase::IsOK() const {
-    return (fStatus == kOK);
-}
-
-inline G2PAppBase::EStatus G2PAppBase::Status() const {
-    return fStatus;
-}
-
-inline int G2PAppBase::GetPriority() const {
-    return fPriority;
-}
-
-inline void G2PAppBase::SetDebugLevel(int level) {
-    fDebug = level;
-
-    fConfigIsSet[&fDebug] = true;
-}
 
 #endif

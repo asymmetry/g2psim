@@ -166,6 +166,11 @@ void G2PPhys::Clear() {
     fXSrec = 0.0;
 }
 
+void G2PPhys::SetPars(double* array, int n) {
+    fPars = array;
+    fNPars = n;
+}
+
 double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle) {
     double Eb[3] = {sin(V5lab[1]) * cos(V5lab[3]), sin(V5lab[1]) * sin(V5lab[3]), cos(V5lab[1])};
 
@@ -189,7 +194,6 @@ int G2PPhys::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.particle.id", "Particle ID", kINT, &fPID},
         {"run.target.z", "Target Z", kINT, &fZ},
         {"run.target.a", "Target A", kINT, &fA},

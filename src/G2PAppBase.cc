@@ -59,9 +59,9 @@ G2PAppBase::~G2PAppBase() {
 }
 
 int G2PAppBase::Init() {
-    static const char* const here = "Init()";
+    //static const char* const here = "Init()";
 
-    if (fDebug > 0) Info(here, "Initializing ...");
+    //if (fDebug > 0) Info(here, "Initializing ...");
 
     if (IsZombie()) return (fStatus = kNOTINIT);
 
@@ -92,6 +92,34 @@ void G2PAppBase::Clear() {
     // Default does nothing
 
     return;
+}
+
+int G2PAppBase::GetDebug() const {
+    return fDebug;
+}
+
+const char* G2PAppBase::GetPrefix() const {
+    return fPrefix;
+}
+
+bool G2PAppBase::IsInit() const {
+    return IsOK();
+}
+
+bool G2PAppBase::IsOK() const {
+    return (fStatus == kOK);
+}
+
+G2PAppBase::EStatus G2PAppBase::Status() const {
+    return fStatus;
+}
+
+int G2PAppBase::GetPriority() const {
+    return fPriority;
+}
+
+void G2PAppBase::SetDebugLevel(int level) {
+    fDebug = level;
 }
 
 void G2PAppBase::SetSeed(unsigned n) {
@@ -391,14 +419,14 @@ int G2PAppBase::ConfigureFromList(const ConfDef* list, EMode mode) {
     if (mode == kREAD || mode == kTWOWAY) {
         while (item->name) {
             bool isset = false;
-            if (fConfigIsSet.count(item->var) > 0) isset = fConfigIsSet[item->var];
+            if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end()) isset = true;
             if (isset) {
                 if (mode == kTWOWAY)
                     gG2PRun->SetConfig(item, fPrefix);
             }
             else {
                 if (gG2PRun->GetConfig(item, fPrefix))
-                    fConfigIsSet[item->var] = true;
+                    fConfigIsSet.insert((unsigned long) item->var);
             }
             item++;
         }

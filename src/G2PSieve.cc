@@ -169,6 +169,10 @@ int G2PSieve::CanPass(double* V5) {
     return id;
 }
 
+double G2PSieve::GetZ() {
+    return fZ;
+}
+
 int G2PSieve::Configure(EMode mode) {
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;

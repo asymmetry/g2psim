@@ -55,3 +55,7 @@ void HRSTransBase::CoordsCorrection(double angle, double* v) {
     v[2] = y_p - p_p*z_p;
     v[3] = p_p;
 }
+
+double HRSTransBase::GetAngle() {
+    return fModelAngle;
+}

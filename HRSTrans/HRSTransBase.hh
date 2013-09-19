@@ -39,10 +39,4 @@ protected:
     double fModelAngle;
 };
 
-// inline functions
-
-inline double HRSTransBase::GetAngle() {
-    return fModelAngle;
-}
-
 #endif

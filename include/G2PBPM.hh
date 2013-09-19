@@ -84,14 +84,4 @@ private:
     ClassDef(G2PBPM, 1)
 };
 
-// inline functions
-
-inline void G2PBPM::SetBPMRes(double a, double b) {
-    fBPMARes = a;
-    fBPMBRes = b;
-
-    fConfigIsSet[&fBPMARes] = true;
-    fConfigIsSet[&fBPMBRes] = true;
-}
-
 #endif

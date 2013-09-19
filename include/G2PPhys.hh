@@ -86,11 +86,4 @@ private:
     ClassDef(G2PPhys, 1)
 };
 
-// inline functions
-
-inline void G2PPhys::SetPars(double* array, int n) {
-    fPars = array;
-    fNPars = n;
-}
-
 #endif

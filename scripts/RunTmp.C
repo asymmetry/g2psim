@@ -10,38 +10,23 @@
 //   Jan 2013, C. Gu, First public version.
 //
 
-#include <cstdio>
 #include <cstdlib>
+#include <cstdio>
 #include <time.h>
 
 #include "TROOT.h"
 
+#include "G2PData.hh"
 #include "G2PDBRec.hh"
-#include "G2PGlobals.hh"
-#include "G2PRun.hh"
-#include "G2PRunBase.hh"
-#include "G2PSim.hh"
-
 #include "G2PField.hh"
-#include "G2PHallBField.hh"
-#include "G2PMapField.hh"
-#include "G2PUniField.hh"
-
-#include "G2PGun.hh"
-#include "G2PDataGun.hh"
 #include "G2PFlatGun.hh"
-#include "G2PSieveGun.hh"
-
-#include "G2PHRSTrans.hh"
-#include "HRSTrans/G2PTrans400016/G2PTrans400016.hh"
-#include "HRSTrans/G2PTrans484816/G2PTrans484816.hh"
-#include "HRSTrans/HRSTransSTD/HRSTransSTD.hh"
-
+#include "G2PGlobals.hh"
+#include "G2PGun.hh"
+#include "G2PHRS.hh"
 #include "G2PPhys.hh"
-#include "G2PPhys/G2PPhysEl/G2PPhysEl.hh"
-#include "G2PPhys/G2PPhysPB/G2PPhysPB.hh"
-#include "G2PPhys/G2PPhysQFS/G2PPhysQFS.hh"
-#include "G2PPhys/G2PPhysWISER/G2PPhysWISER.hh"
+#include "G2PRun.hh"
+#include "G2PSieveGun.hh"
+#include "G2PSim.hh"
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 static const double e = 1.60217656535e-19;
@@ -49,13 +34,21 @@ static const double kU = 0.931494028;
 
 int Run() {
     ///////////////////////////////////////////////////////////////////////////
+    // field
+    ///////////////////////////////////////////////////////////////////////////
+    //G2PField* field = new G2PField();
+    //field->SetEulerAngle(90, 90, -90); // transverse, g2p
+    //field->SetEulerAngle(90, 6, -90);  // 6 deg, gep
+    //gG2PApps->Add(field);
+
+    ///////////////////////////////////////////////////////////////////////////
     // gun
     ///////////////////////////////////////////////////////////////////////////
     //G2PFlatGun* gun = new G2PFlatGun();
     G2PSieveGun* gun = new G2PSieveGun();
     //G2PData* gun = new G2PData("input_fp_tr.dat");
     //gun->SetBeamPos(4.134e-3, 1.176e-3);     // 0T,6deg
-    gun->SetBeamPos(0.005, 0.0);
+    gun->SetBeamPos(0.0, 0.0);
     gun->SetReactZ(-14.1350e-3, -13.1191e-3); //40mil
     //gun->SetReactZ(-14.1350e-3, -10.9600e-3); //125mil
     //gun->SetReactZ(-14.135e-3, 14.135e-3); // full size
@@ -66,27 +59,19 @@ int Run() {
     gG2PApps->Add(gun);
 
     ///////////////////////////////////////////////////////////////////////////
+    // BPM
+    ///////////////////////////////////////////////////////////////////////////
+    G2PBPM* bpm = new G2PBPM();
+    bpm->SetBPMRes(0.2e-3, 0.4e-3);
+    gG2PApps->Add(bpm);
+
+    ///////////////////////////////////////////////////////////////////////////
     // HRS
     ///////////////////////////////////////////////////////////////////////////
     G2PHRS* hrs = new G2PHRS("484816");
     gG2PApps->Add(hrs);
     G2PDBRec* rec = new G2PDBRec();
     gG2PApps->Add(rec);
-
-    ///////////////////////////////////////////////////////////////////////////
-    // field
-    ///////////////////////////////////////////////////////////////////////////
-    //G2PField* field = new G2PField();
-    //field->SetEulerAngle(90, 90, -90); // transverse, g2p
-    //field->SetEulerAngle(90, 6, -90);  // 6 deg, gep
-    //gG2PApps->Add(field);
-
-    ///////////////////////////////////////////////////////////////////////////
-    // BPM
-    ///////////////////////////////////////////////////////////////////////////
-    G2PBPM* bpm = new G2PBPM();
-    bpm->SetBPMRes(0.2e-3, 0.4e-3);
-    gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////
     // cross section
@@ -98,7 +83,7 @@ int Run() {
     // run parameters
     ///////////////////////////////////////////////////////////////////////////
     G2PRun* run = new G2PRun();
-    run->SetDebugLevel(1);
+    run->SetDebugLevel(2);
     run->SetSeed(1);
     run->SetHRSAngle(5.65 * kDEG);
     run->SetHRSMomentum(2.249497);
@@ -116,10 +101,10 @@ int Run() {
     // simulation
     ///////////////////////////////////////////////////////////////////////////
     G2PSim *sim = new G2PSim();
-    int N = 50000;
+    int N = 10;
     sim->SetNEvent(N);
-    sim->SetOutFile("run_1029_optics_484816.root");
-    //sim->SetOutFile("run_test.root");
+    //sim->SetOutFile("run_1029_optics_484816.root");
+    sim->SetOutFile("run_test.root");
     sim->SetRun(run);
 
     clock_t start = clock();

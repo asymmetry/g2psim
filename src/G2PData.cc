@@ -128,7 +128,6 @@ int G2PData::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {0}
     };

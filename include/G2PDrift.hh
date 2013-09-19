@@ -73,14 +73,4 @@ private:
     ClassDef(G2PDrift, 1)
 };
 
-// inline functions
-
-inline void G2PDrift::SetLimit(double lo, double hi) {
-    fErrLoLimit = lo;
-    fErrHiLimit = hi;
-
-    fConfigIsSet[&fErrLoLimit] = true;
-    fConfigIsSet[&fErrHiLimit] = true;
-}
-
 #endif

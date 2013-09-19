@@ -172,7 +172,6 @@ int G2PFwdProc::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"run.sieve.on", "Sieve On", kBOOL, &fSieveOn},

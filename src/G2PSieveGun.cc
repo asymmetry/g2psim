@@ -116,7 +116,6 @@ int G2PSieveGun::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},

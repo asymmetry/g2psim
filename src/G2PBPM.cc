@@ -62,7 +62,7 @@ G2PBPM::~G2PBPM() {
 int G2PBPM::Init() {
     //static const char* const here = "Init()";
 
-    if (G2PAppBase::Init() != 0) return fStatus;
+    if (G2PProcBase::Init() != 0) return fStatus;
 
     pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
     if (!pDrift) {
@@ -76,7 +76,7 @@ int G2PBPM::Init() {
 int G2PBPM::Begin() {
     //static const char* const here = "Begin()";
 
-    if (G2PAppBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0) return fStatus;
 
     SetBPMPos();
 
@@ -112,6 +112,14 @@ void G2PBPM::Clear() {
     memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
     memset(fV2bpma_bpm, 0, sizeof (fV2bpma_bpm));
     memset(fV2bpmb_bpm, 0, sizeof (fV2bpmb_bpm));
+}
+
+void G2PBPM::SetBPMRes(double a, double b) {
+    fBPMARes = a;
+    fBPMBRes = b;
+
+    fConfigIsSet.insert((unsigned long) &fBPMARes);
+    fConfigIsSet.insert((unsigned long) &fBPMBRes);
 }
 
 void G2PBPM::TransBPM2Lab(const double* V5_bpm, double* V5_lab) {
@@ -352,14 +360,17 @@ void G2PBPM::SetBPMPos() {
     }
     else if (fabs(fFieldRatio) < 1e-8) {
         pfGetBPM = &G2PBPM::GetBPMO;
-        orbit = 0;
+        orbit = -1;
     }
     else {
         pfGetBPM = &G2PBPM::GetBPM0;
         orbit = 0;
     }
 
-    if (fDebug > 0) Info(here, "Using orbit %d.", orbit);
+    if (fDebug > 0) {
+        if (orbit >= 0) Info(here, "Using orbit %d.", orbit);
+        else if (orbit == -1) Info(here, "Using optics orbit.");
+    }
 }
 
 int G2PBPM::Configure(EMode mode) {
@@ -369,7 +380,6 @@ int G2PBPM::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"a.res", "BPM A Resolution", kDOUBLE, &fBPMARes},

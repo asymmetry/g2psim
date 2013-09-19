@@ -67,6 +67,14 @@ void G2PProcBase::Clear() {
     G2PAppBase::Clear();
 }
 
+G2PProcBase::EStage G2PProcBase::GetStage() {
+    return fStage;
+}
+
+void G2PProcBase::SetStage(EStage stage) {
+    fStage = stage;
+}
+
 int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
     if (!(out && in)) return -1;
 

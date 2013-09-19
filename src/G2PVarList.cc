@@ -17,6 +17,7 @@
 #include "TObject.h"
 #include "TList.h"
 #include "TRegexp.h"
+#include "TString.h"
 
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
@@ -105,7 +106,7 @@ G2PVar* G2PVarList::Find(const char* name) const {
 }
 
 G2PVar* G2PVarList::FindSuffix(const char* suf) const {
-    static const char* const here = "FindRegexp()";
+    static const char* const here = "FindSuffix()";
 
     G2PVar* p = NULL;
     int nfind = 0;
@@ -113,7 +114,7 @@ G2PVar* G2PVarList::FindSuffix(const char* suf) const {
     TIter next(this);
     while (G2PVar * ptr = static_cast<G2PVar*> (next())) {
         name = ptr->GetName();
-        if (name.Index(suf) != kNPOS) {
+        if (name.EndsWith(suf)) {
             if (nfind == 0) p = ptr;
             nfind++;
         }

@@ -79,4 +79,43 @@ double G2PVar::GetValue() const {
     return 1.0e38;
 }
 
+VarType G2PVar::GetType() const {
+    return fType;
+}
+
+void G2PVar::SetVar(const bool& var) {
+    fValueB = &var;
+    fType = kBOOL;
+}
+
+void G2PVar::SetVar(const char& var) {
+    fValueC = &var;
+    fType = kCHAR;
+}
+
+void G2PVar::SetVar(const int& var) {
+    fValueI = &var;
+    fType = kINT;
+}
+
+void G2PVar::SetVar(const short& var) {
+    fValueS = &var;
+    fType = kSHORT;
+}
+
+void G2PVar::SetVar(const long& var) {
+    fValueL = &var;
+    fType = kLONG;
+}
+
+void G2PVar::SetVar(const float& var) {
+    fValueF = &var;
+    fType = kFLOAT;
+}
+
+void G2PVar::SetVar(const double& var) {
+    fValueD = &var;
+    fType = kDOUBLE;
+}
+
 ClassImp(G2PVar)

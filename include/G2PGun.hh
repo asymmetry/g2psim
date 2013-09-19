@@ -11,10 +11,12 @@
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //
 
-#ifndef G2P_GUNBASE_H
-#define G2P_GUNBASE_H
+#ifndef G2P_GUN_H
+#define G2P_GUN_H
 
 #include "G2PProcBase.hh"
+
+using namespace std;
 
 class G2PDrift;
 
@@ -82,51 +84,5 @@ private:
 
     ClassDef(G2PGun, 1)
 };
-
-inline void G2PGun::SetBeamPos(double x, double y) {
-    fBeamX_lab = x;
-    fBeamY_lab = y;
-
-    fConfigIsSet[&fBeamX_lab] = true;
-    fConfigIsSet[&fBeamY_lab] = true;
-}
-
-inline void G2PGun::SetReactZ(double low, double high) {
-    fReactZLow_lab = low;
-    fReactZHigh_lab = high;
-
-    fConfigIsSet[&fReactZLow_lab] = true;
-    fConfigIsSet[&fReactZHigh_lab] = true;
-}
-
-inline void G2PGun::SetRasterSize(double val) {
-    fBeamR_lab = val;
-
-    fConfigIsSet[&fBeamR_lab] = true;
-}
-
-inline void G2PGun::SetTargetTh(double low, double high) {
-    fTargetThLow_tr = low;
-    fTargetThHigh_tr = high;
-
-    fConfigIsSet[&fTargetThLow_tr] = true;
-    fConfigIsSet[&fTargetThHigh_tr] = true;
-}
-
-inline void G2PGun::SetTargetPh(double low, double high) {
-    fTargetPhLow_tr = low;
-    fTargetPhHigh_tr = high;
-
-    fConfigIsSet[&fTargetPhLow_tr] = true;
-    fConfigIsSet[&fTargetPhHigh_tr] = true;
-}
-
-inline void G2PGun::SetDelta(double low, double high) {
-    fDeltaLow = low;
-    fDeltaHigh = high;
-
-    fConfigIsSet[&fDeltaLow] = true;
-    fConfigIsSet[&fDeltaHigh] = true;
-}
 
 #endif

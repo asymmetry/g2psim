@@ -77,13 +77,21 @@ int G2PSim::Run() {
         if (fDebug > 1) Info(here, "Processing event %d ...", fIndex);
         if (Process() == 0) fIsGood = true;
         pOutput->Process();
-        if ((fIndex % 100 == 0)&&(fDebug == 0)) Info(here, "%d events processed ...", fIndex);
+        if ((fIndex % 1000 == 0)&&(fDebug <= 1)) Info(here, "%d events processed ...", fIndex);
         fIndex++;
     }
 
     End();
 
     return 0;
+}
+
+void G2PSim::SetNEvent(int n) {
+    fN = n;
+}
+
+void G2PSim::SetOutFile(const char* name) {
+    fOutFile = name;
 }
 
 int G2PSim::Init() {
@@ -96,7 +104,7 @@ int G2PSim::Init() {
 
     fDebug = pRun->GetDebugLevel();
 
-    if (fDebug > 0) Info(here, "Initialize tools ......");
+    if (fDebug > 0) Info(here, "Initializing tools ......");
 
     if (pRun->Init() != 0) return -1;
 
@@ -106,6 +114,7 @@ int G2PSim::Init() {
             fApps->Remove(aobj);
             continue;
         }
+        aobj->SetDebugLevel(fDebug);
         if (aobj->Init() != 0) return -1;
     }
 
@@ -120,7 +129,7 @@ int G2PSim::Init() {
     pOutput = new G2POutput();
     if (pOutput->Init() != 0) return -1;
 
-    if (fDebug > 0) Info(here, "Initialize done!");
+    if (fDebug > 0) Info(here, "Initialized!");
 
     return 0;
 }
@@ -128,7 +137,7 @@ int G2PSim::Init() {
 int G2PSim::Begin() {
     static const char* const here = "Begin()";
 
-    if (fDebug > 0) Info(here, "Start run ......");
+    if (fDebug > 0) Info(here, "Starting run ......");
 
     if (pRun->Begin() != 0) return -1;
 

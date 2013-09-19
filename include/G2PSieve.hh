@@ -60,10 +60,4 @@ private:
     ClassDef(G2PSieve, 1)
 };
 
-// inline functions
-
-inline double G2PSieve::GetZ() {
-    return fZ;
-}
-
 #endif

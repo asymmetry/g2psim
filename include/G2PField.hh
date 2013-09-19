@@ -80,44 +80,4 @@ private:
     ClassDef(G2PField, 1)
 };
 
-// inline functions
-
-inline void G2PField::SetOrigin(double x, double y, double z) {
-    fOrigin[0] = x;
-    fOrigin[1] = y;
-    fOrigin[2] = z;
-
-    fConfigIsSet[&fOrigin[0]] = true;
-    fConfigIsSet[&fOrigin[1]] = true;
-    fConfigIsSet[&fOrigin[2]] = true;
-}
-
-inline void G2PField::SetZRange(double zmin, double zmax) {
-    fZMin = zmin;
-    fZMax = zmax;
-
-    fConfigIsSet[&fZMin] = true;
-    fConfigIsSet[&fZMax] = true;
-}
-
-inline void G2PField::SetRRange(double rmin, double rmax) {
-    fRMin = rmin;
-    fRMax = rmax;
-
-    fConfigIsSet[&fRMin] = true;
-    fConfigIsSet[&fRMax] = true;
-}
-
-inline void G2PField::SetZStep(double stepz) {
-    fZStep = stepz;
-
-    fConfigIsSet[&fZStep] = true;
-}
-
-inline void G2PField::SetRStep(double stepr) {
-    fRStep = stepr;
-
-    fConfigIsSet[&fRStep] = true;
-}
-
 #endif

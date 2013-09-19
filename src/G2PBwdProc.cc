@@ -100,7 +100,6 @@ int G2PBwdProc::Process() {
     V5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
     V5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
     V5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
-    V5fp_tr[4] = gG2PVars->FindSuffix("fp.d")->GetValue();
 
     double V5bpm_tr[5], z_tr;
     HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
@@ -221,7 +220,6 @@ int G2PBwdProc::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},

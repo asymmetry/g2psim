@@ -115,6 +115,14 @@ void G2PDrift::Drift(const double* x, double p, double z_tr, double angle, doubl
     }
 }
 
+void G2PDrift::SetLimit(double lo, double hi) {
+    fErrLoLimit = lo;
+    fErrHiLimit = hi;
+
+    fConfigIsSet.insert((unsigned long) &fErrLoLimit);
+    fConfigIsSet.insert((unsigned long) &fErrHiLimit);
+}
+
 void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
     double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -420,7 +428,6 @@ int G2PDrift::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.particle.mass", "Particle Mass", kDOUBLE, &fM0},
         {"run.particle.charge", "Particle Charge", kDOUBLE, &fQ},
         {"step", "Particle Charge", kDOUBLE, &fStep},

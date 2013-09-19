@@ -59,14 +59,4 @@ private:
     ClassDef(G2PProcBase, 1)
 };
 
-// inline functions
-
-inline G2PProcBase::EStage G2PProcBase::GetStage() {
-    return fStage;
-}
-
-inline void G2PProcBase::SetStage(EStage stage) {
-    fStage = stage;
-}
-
 #endif

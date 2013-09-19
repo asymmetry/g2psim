@@ -59,7 +59,7 @@ fSetting(1), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NULL) {
     model_map["484816R00"] = 11;
 
     fSetting = model_map[name];
-    fConfigIsSet[&fSetting] = true;
+    fConfigIsSet.insert((unsigned long) &fSetting);
 }
 
 G2PHRS::G2PHRS(int setting) :
@@ -71,7 +71,7 @@ fSetting(setting), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NU
     }
     pG2PHRS = this;
 
-    fConfigIsSet[&fSetting] = true;
+    fConfigIsSet.insert((unsigned long) &fSetting);
 }
 
 G2PHRS::~G2PHRS() {
@@ -207,7 +207,6 @@ int G2PHRS::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.hrs.angle", "Beam Energy", kDOUBLE, &fHRSAngle},
         {"model.id", "Setting ID", kINT, &fSetting},
         {0}

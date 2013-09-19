@@ -137,6 +137,44 @@ void G2PField::GetField(const double* x, double* b) {
     if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
+void G2PField::SetOrigin(double x, double y, double z) {
+    fOrigin[0] = x;
+    fOrigin[1] = y;
+    fOrigin[2] = z;
+
+    fConfigIsSet.insert((unsigned long) &fOrigin[0]);
+    fConfigIsSet.insert((unsigned long) &fOrigin[1]);
+    fConfigIsSet.insert((unsigned long) &fOrigin[2]);
+}
+
+void G2PField::SetZRange(double zmin, double zmax) {
+    fZMin = zmin;
+    fZMax = zmax;
+
+    fConfigIsSet.insert((unsigned long) &fZMin);
+    fConfigIsSet.insert((unsigned long) &fZMax);
+}
+
+void G2PField::SetRRange(double rmin, double rmax) {
+    fRMin = rmin;
+    fRMax = rmax;
+
+    fConfigIsSet.insert((unsigned long) &fRMin);
+    fConfigIsSet.insert((unsigned long) &fRMax);
+}
+
+void G2PField::SetZStep(double stepz) {
+    fZStep = stepz;
+
+    fConfigIsSet.insert((unsigned long) &fZStep);
+}
+
+void G2PField::SetRStep(double stepr) {
+    fRStep = stepr;
+
+    fConfigIsSet.insert((unsigned long) &fRStep);
+}
+
 void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
     // The Euler angle is defined using Z-X'-Z" convention
 
@@ -177,8 +215,6 @@ void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
 
 int G2PField::ReadMap() {
     static const char* const here = "ReadMap()";
-
-    if (G2PField::ReadMap() != 0) return -1;
 
     ifstream ifs;
     int count = 0;
@@ -237,8 +273,6 @@ int G2PField::ReadMap() {
 
 int G2PField::CreateMap() {
     static const char* const here = "CreateMap()";
-
-    if (G2PField::CreateMap() != 0) return -1;
 
     FILE* fp;
 
@@ -411,7 +445,6 @@ int G2PField::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"ratio", "Field Ratio", kDOUBLE, &fRatio},
         {"origin.x", "Origin X", kDOUBLE, &fOrigin[0]},
         {"origin.y", "Origin Y", kDOUBLE, &fOrigin[1]},

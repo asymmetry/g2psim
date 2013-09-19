@@ -347,7 +347,6 @@ int G2PDBRec::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.hrs.angle", "Beam Energy", kDOUBLE, &fHRSAngle},
         {0}
     };

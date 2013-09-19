@@ -63,12 +63,4 @@ private:
     ClassDef(G2PSim, 0)
 };
 
-inline void G2PSim::SetNEvent(int n) {
-    fN = n;
-}
-
-inline void G2PSim::SetOutFile(const char* name) {
-    fOutFile = name;
-}
-
 #endif

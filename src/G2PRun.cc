@@ -77,9 +77,7 @@ G2PRun::~G2PRun() {
 }
 
 int G2PRun::Init() {
-    static const char* const here = "Init()";
-
-    Info(here, "Initializing ...");
+    // Default does nothing
 
     return 0;
 }

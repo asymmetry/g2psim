@@ -105,6 +105,56 @@ void G2PGun::Clear() {
     memset(fV5tg_tr, 0, sizeof (fV5tg_tr));
 }
 
+void G2PGun::SetBeamPos(double x, double y) {
+    fBeamX_lab = x;
+    fBeamY_lab = y;
+
+    fConfigIsSet.insert((unsigned long) &fBeamX_lab);
+    fConfigIsSet.insert((unsigned long) &fBeamY_lab);
+}
+
+void G2PGun::SetReactZ(double low, double high) {
+
+    fReactZLow_lab = low;
+    fReactZHigh_lab = high;
+
+    fConfigIsSet.insert((unsigned long) &fReactZLow_lab);
+    fConfigIsSet.insert((unsigned long) &fReactZHigh_lab);
+}
+
+void G2PGun::SetRasterSize(double val) {
+
+    fBeamR_lab = val;
+
+    fConfigIsSet.insert((unsigned long) &fBeamR_lab);
+}
+
+void G2PGun::SetTargetTh(double low, double high) {
+
+    fTargetThLow_tr = low;
+    fTargetThHigh_tr = high;
+
+    fConfigIsSet.insert((unsigned long) &fTargetThLow_tr);
+    fConfigIsSet.insert((unsigned long) &fTargetThHigh_tr);
+}
+
+void G2PGun::SetTargetPh(double low, double high) {
+
+    fTargetPhLow_tr = low;
+    fTargetPhHigh_tr = high;
+
+    fConfigIsSet.insert((unsigned long) &fTargetPhLow_tr);
+    fConfigIsSet.insert((unsigned long) &fTargetPhHigh_tr);
+}
+
+void G2PGun::SetDelta(double low, double high) {
+    fDeltaLow = low;
+    fDeltaHigh = high;
+
+    fConfigIsSet.insert((unsigned long) &fDeltaLow);
+    fConfigIsSet.insert((unsigned long) &fDeltaHigh);
+}
+
 void G2PGun::SetTiltAngle() {
     static const char* const here = "SetTiltAngle()";
 
@@ -147,7 +197,6 @@ int G2PGun::Configure(EMode mode) {
     }
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Global Debug Level", kINT, &fDebug},
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
