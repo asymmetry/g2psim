@@ -1,19 +1,25 @@
-//This file is supposed to declare the forward and backward functions for GDH exp (E97110)
-//In this experiment,HRS was at 6 degrees and a septum was used
-//including both c++ and fortran routines
+// -*- C++ -*-
 
-#ifndef GDH_TRANSLARGEX0_H
-#define GDH_TRANSLARGEX0_H
+/* class GDHTransLargeX0
+ * 6 deg with septum, for GDH experiment (E97110), large X0
+ * By J.J. LeRose 10/05/2012
+ */
 
+// History:
+//   Sep 2013, J. Zhang, First public version.
+//
 
-//For transportation, the input array is 
+#ifndef HRSTRANS_GDH_LARGEX0_H
+#define HRSTRANS_GDH_LARGEX0_H
+
+//For transportation, the input array is
 //the detail of input vector is
 //vector_jjl[0] = x_tr;
 //vector_jjl[1] = theta_tr;
 //vector_jjl[2] = y_tr;
 //vector_jjl[3] = phi_tr;
 //vector_jjl[4] = delta_tr;
-//the output is 
+//the output is
 //vector_jjl[0] = x_fp;
 //vector_jjl[1] = theta_fp;
 //vector_jjl[2] = y_fp;
@@ -24,22 +30,15 @@
 
 #include "HRSTransBase.hh"
 
-
-class GDHTransLargeX0 : public HRSTransBase
-{
+class GDHTransLargeX0 : public HRSTransBase {
 public:
     GDHTransLargeX0();
     ~GDHTransLargeX0();
-    
+
     bool TransLeftHRS(double* vector_jjl);
     bool TransRightHRS(double* vector_jjl);
     void ReconLeftHRS(double* vector_jjl);
     void ReconRightHRS(double* vector_jjl);
-
-    double GetAngle() { return cModelAngle; }
-
-private:
-    const double cModelAngle;
 };
 
 #endif
@@ -49,7 +48,7 @@ private:
 //vector_jjl[2] = y_tr;
 //vector_jjl[3] = phi_tr;
 //vector_jjl[4] = delta_tr;
-//the output is 
+//the output is
 //vector_jjl[0] = x_fp;
 //vector_jjl[1] = theta_fp;
 //vector_jjl[2] = y_fp;
@@ -69,8 +68,8 @@ private:
 //c     q1ex is a circle of radius 0.1492 m
 //c     dent is a trapazoid:
 //c                                   -5.22008 < x < -4.98099
-//c             -(-0.192436784*x -0.192436784) < y < -0.192436784*x -0.192436784  
-//c     dext is also a trapazoid: 
+//c             -(-0.192436784*x -0.192436784) < y < -0.192436784*x -0.192436784
+//c     dext is also a trapazoid:
 //c                                   -0.46188 < x < 0.46188
 //c                   -(-0.01610808*x + 0.125) < y < -0.01610808*x + 0.125
 //c     q3en is a circle of radius 0.3 m
@@ -78,7 +77,7 @@ private:
 //c
 
 //C Transport electron thru septum magnet, rectangle defined by (jjl)
-//! includes reduced aperatures due to bore cooler, 
+//! includes reduced aperatures due to bore cooler,
 //! assumes 0.8 cm thick side and 1.1 cm thick top and bottom
 //Target to Septum entrance, -14.06cm>x>8.87cm, -9.9cm<y<9.9cm
 
