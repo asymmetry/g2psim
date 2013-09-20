@@ -39,7 +39,7 @@ static const double kRT[4] = {-1.004600e+00, -3.349200e-01, -4.078700e-02, +0.00
 static const double kRY[4] = {-5.157400e-03, +2.642400e-04, +2.234600e-03, +0.000000e+00};
 static const double kRP[4] = {-7.435500e-04, -2.130200e-03, +1.195000e-03, +0.000000e+00};
 
-const double G2PAppBase::kLARGE = 1.e38;
+//const double G2PAppBase::kLARGE = 1.e38;
 G2PRand* G2PAppBase::pRand = G2PRand::GetInstance();
 
 G2PAppBase::G2PAppBase() :
@@ -94,7 +94,7 @@ void G2PAppBase::Clear() {
     return;
 }
 
-int G2PAppBase::GetDebug() const {
+int G2PAppBase::GetDebugLevel() const {
     return fDebug;
 }
 
@@ -169,6 +169,35 @@ void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double angle,
     z_tr = x_lab * sinang + z_lab*cosang;
 
     if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_lab, y_lab, z_lab, x_tr, y_tr, z_tr);
+}
+
+void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr) {
+    // Angle transform function from HCS to TCS
+
+    static const char* const here = "HCS2TCS()";
+
+    double x = sin(t_lab) * cos(p_lab);
+    double y = sin(t_lab) * sin(p_lab);
+    double z = cos(t_lab);
+    HCS2TCS(x, y, z, angle, x, y, z);
+    t_tr = atan2(x, z);
+    p_tr = atan2(y, z);
+
+    if (fDebug > 3) Info(here, "%10.3e %10.3e -> %10.3e %10.3e", t_lab, p_lab, t_tr, p_tr);
+}
+
+void G2PAppBase::Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout) {
+    // Project along z direction
+
+    static const char* const here = "Project()";
+
+    double xsave = x;
+    double ysave = y;
+
+    xout = xsave + (zout - z) * tan(t);
+    yout = ysave + (zout - z) * tan(p);
+
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
 }
 
 void G2PAppBase::TRCS2FCS(const double* V5_tr, double angle, double* V5_fp) {
@@ -374,35 +403,6 @@ void G2PAppBase::DCS2FCS(const double* V5_det, double angle, double* V5_fp) {
     fDebug = save;
 
     if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
-}
-
-void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr) {
-    // Angle transform function from HCS to TCS
-
-    static const char* const here = "HCS2TCS()";
-
-    double x = sin(t_lab) * cos(p_lab);
-    double y = sin(t_lab) * sin(p_lab);
-    double z = cos(t_lab);
-    HCS2TCS(x, y, z, angle, x, y, z);
-    t_tr = atan2(x, z);
-    p_tr = atan2(y, z);
-
-    if (fDebug > 3) Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", t_lab, p_lab, t_tr, p_tr);
-}
-
-void G2PAppBase::Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout) {
-    // Project along z direction
-
-    static const char* const here = "Project()";
-
-    double xsave = x;
-    double ysave = y;
-
-    xout = xsave + (z_out - z) * tan(t);
-    yout = ysave + (z_out - z) * tan(p);
-
-    if (fDebug > 3) Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", xsave, ysave, xout, yout);
 }
 
 int G2PAppBase::ConfigureFromList(const ConfDef* list, EMode mode) {

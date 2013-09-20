@@ -37,7 +37,7 @@ public:
         kREAD = 0, kWRITE, kTWOWAY, kDEFINE = 0, kDELETE
     };
 
-    static const double kLARGE;
+    //static const double kLARGE;
 
     // General processes
     virtual int Init();
@@ -46,7 +46,7 @@ public:
     virtual void Clear();
 
     // Gets
-    int GetDebug() const;
+    int GetDebugLevel() const;
     const char* GetPrefix() const;
     bool IsInit() const;
     bool IsOK() const;
@@ -66,7 +66,7 @@ protected:
     virtual void TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, double &p_lab);
     virtual void HCS2TCS(double x_lab, double y_lab, double z_lab, double angle, double &x_tr, double &y_tr, double &z_tr);
     virtual void HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr);
-    virtual void Project(double x, double y, double z, double z_out, double t, double p, double &xout, double &yout);
+    virtual void Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout);
 
     virtual void TRCS2FCS(const double* V5_tr, double angle, double* V5_fp);
     virtual void FCS2TRCS(const double* V5_fp, double angle, double* V5_tr);

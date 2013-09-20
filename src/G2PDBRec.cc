@@ -218,6 +218,8 @@ int G2PDBRec::Begin() {
 int G2PDBRec::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
     fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
     fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
@@ -255,10 +257,10 @@ int G2PDBRec::Process() {
     fV5rec_tr[3] = atan(CalcVar(powers, fPMatrixElems));
     fV5rec_tr[4] = CalcVar(powers, fDMatrixElems);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_rot[0], fV5fp_rot[1], fV5fp_rot[2], fV5fp_rot[3], fV5fp_rot[4], fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
-
     TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]);
     TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, fV5rec_lab[1], fV5rec_lab[3]);
+
+    if (fDebug > 1) Info(here, "dbrec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
 
     return 0;
 }

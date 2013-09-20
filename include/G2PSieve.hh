@@ -31,6 +31,7 @@ public:
 
     // Gets
     double GetZ();
+    int GetNRow();
 
     // Sets
 

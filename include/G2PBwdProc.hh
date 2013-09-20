@@ -30,7 +30,7 @@ public:
     virtual void Clear();
 
 protected:
-    double GetEffBPM(double xbpm_tr, const double* V5fp);
+    double GetEffBPM(const double* V5bpm_lab, const double* V5fp);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -41,11 +41,11 @@ protected:
     double fHRSMomentum;
     double fFieldRatio;
 
-    double fV5rectg_tr[5];
-    double fV5recsieve_tr[5];
+    double fV5tpsnake_tr[5];
+    double fV5sieveproj_tr[5];
 
-    double fV5rec_tr[5];
-    double fV5rec_lab[5];
+    double fV5tprec_tr[5];
+    double fV5tprec_lab[5];
 
     G2PDrift* pDrift;
     G2PHRS* pHRS;

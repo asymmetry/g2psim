@@ -209,50 +209,6 @@ int G2PRun::GetDebugLevel() {
     return (int) (fConfig["run.debuglevel"]);
 }
 
-double G2PRun::GetHRSAngle() {
-    return fConfig["run.hrs.angle"];
-}
-
-double G2PRun::GetHRSMomentum() {
-    return fConfig["run.hrs.p0"];
-}
-
-double G2PRun::GetBeamEnergy() {
-    return fConfig["run.e0"];
-}
-
-int G2PRun::GetParticleID() {
-    return (int) (fConfig["run.particle.id"]);
-}
-
-double G2PRun::GetParticleMass() {
-    return fConfig["run.particle.mass"];
-}
-
-double G2PRun::GetParticleCharge() {
-    return fConfig["run.particle.charge"];
-}
-
-int G2PRun::GetTargetZ() {
-    return (int) (fConfig["run.target.z"]);
-}
-
-int G2PRun::GetTargetA() {
-    return (int) (fConfig["run.target.a"]);
-}
-
-double G2PRun::GetTargetMass() {
-    return fConfig["run.target.mass"];
-}
-
-double G2PRun::GetFieldRatio() {
-    return fConfig["field.ratio"];
-}
-
-//double G2PRun::GetEnergyLoss() {
-//    return fEnergyLoss;
-//}
-
 void G2PRun::SetConfigFile(const char* file) {
     fConfigFile = file;
 }
@@ -303,7 +259,7 @@ void G2PRun::SetFieldRatio(double ratio) {
 }
 
 void G2PRun::SetSieve() {
-    fConfig["run.sieve.on"] = (double) (true);
+    fConfig["run.sieveon"] = (double) (true);
 }
 
 //void G2PRun::SetEnergyLoss(double E) {

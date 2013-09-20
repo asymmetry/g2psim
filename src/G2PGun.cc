@@ -78,6 +78,8 @@ int G2PGun::Begin() {
 int G2PGun::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     double V5[5];
 
     Shoot(fV5beam_lab, fV5react_tr);
@@ -89,10 +91,10 @@ int G2PGun::Process() {
     }
 
     HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, V5[0], V5[2], V5[4]);
-    pDrift->Drift(fV5react_tr, fHRSMomentum, V5[4], fHRSAngle, 0.0, 10.0, fV5tg_tr);
+    pDrift->Drift(fV5react_tr, fHRSMomentum, V5[4], fHRSAngle, 0.0, 10.0, fV5tp_tr);
 
     if (fDebug > 1) {
-        Info(here, "tg_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tg_tr[0], fV5tg_tr[1], fV5tg_tr[2], fV5tg_tr[3], fV5tg_tr[4]);
+        Info(here, "tp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tp_tr[0], fV5tp_tr[1], fV5tp_tr[2], fV5tp_tr[3], fV5tp_tr[4]);
     }
 
     return 0;
@@ -102,7 +104,7 @@ void G2PGun::Clear() {
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
-    memset(fV5tg_tr, 0, sizeof (fV5tg_tr));
+    memset(fV5tp_tr, 0, sizeof (fV5tp_tr));
 }
 
 void G2PGun::SetBeamPos(double x, double y) {
@@ -187,7 +189,7 @@ void G2PGun::GetReactPoint(double x, double y, double z, double* V5) {
     V5[3] = atan2(pb[1], pb[0]);
     V5[4] = xb[2];
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", V5[0], V5[1], V5[2], V5[3], V5[4]);
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, z, V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
 int G2PGun::Configure(EMode mode) {
@@ -227,21 +229,21 @@ int G2PGun::DefineVariables(EMode mode) {
         {"beam.l_y", "Beam Y (lab)", kDOUBLE, &fV5beam_lab[2]},
         {"beam.l_p", "Beam P (lab)", kDOUBLE, &fV5beam_lab[3]},
         {"beam.l_z", "Beam Z (lab)", kDOUBLE, &fV5beam_lab[4]},
-        {"react.x", "React point X", kDOUBLE, &fV5react_tr[0]},
-        {"react.t", "React point T", kDOUBLE, &fV5react_tr[1]},
-        {"react.y", "React point Y", kDOUBLE, &fV5react_tr[2]},
-        {"react.p", "React point P", kDOUBLE, &fV5react_tr[3]},
-        {"react.d", "React point D", kDOUBLE, &fV5react_tr[4]},
-        {"react.l_x", "React point X (lab)", kDOUBLE, &fV5react_lab[0]},
-        {"react.l_t", "React point T (lab)", kDOUBLE, &fV5react_lab[1]},
-        {"react.l_y", "React point Y (lab)", kDOUBLE, &fV5react_lab[2]},
-        {"react.l_p", "React point P (lab)", kDOUBLE, &fV5react_lab[3]},
-        {"react.l_z", "React point Z (lab)", kDOUBLE, &fV5react_lab[4]},
-        {"tp.x", "TP X", kDOUBLE, &fV5tg_tr[0]},
-        {"tp.t", "TP T", kDOUBLE, &fV5tg_tr[1]},
-        {"tp.y", "TP Y", kDOUBLE, &fV5tg_tr[2]},
-        {"tp.p", "TP P", kDOUBLE, &fV5tg_tr[3]},
-        {"tp.d", "TP D", kDOUBLE, &fV5tg_tr[4]},
+        {"react.x", "React Point X", kDOUBLE, &fV5react_tr[0]},
+        {"react.t", "React Point T", kDOUBLE, &fV5react_tr[1]},
+        {"react.y", "React Point Y", kDOUBLE, &fV5react_tr[2]},
+        {"react.p", "React Point P", kDOUBLE, &fV5react_tr[3]},
+        {"react.d", "React Point D", kDOUBLE, &fV5react_tr[4]},
+        {"react.l_x", "React Point X (lab)", kDOUBLE, &fV5react_lab[0]},
+        {"react.l_t", "React Point T (lab)", kDOUBLE, &fV5react_lab[1]},
+        {"react.l_y", "React Point Y (lab)", kDOUBLE, &fV5react_lab[2]},
+        {"react.l_p", "React Point P (lab)", kDOUBLE, &fV5react_lab[3]},
+        {"react.l_z", "React Point Z (lab)", kDOUBLE, &fV5react_lab[4]},
+        {"tp.x", "Target Plane X", kDOUBLE, &fV5tp_tr[0]},
+        {"tp.t", "Target Plane T", kDOUBLE, &fV5tp_tr[1]},
+        {"tp.y", "Target Plane Y", kDOUBLE, &fV5tp_tr[2]},
+        {"tp.p", "Target Plane P", kDOUBLE, &fV5tp_tr[3]},
+        {"tp.d", "Target Plane D", kDOUBLE, &fV5tp_tr[4]},
         {0}
     };
 

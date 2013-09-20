@@ -121,6 +121,8 @@ int G2PPhys::Begin() {
 int G2PPhys::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     double V51[5], V52[5];
 
     V51[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
@@ -172,6 +174,8 @@ void G2PPhys::SetPars(double* array, int n) {
 }
 
 double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle) {
+    static const char* const here = "CalXS()";
+
     double Eb[3] = {sin(V5lab[1]) * cos(V5lab[3]), sin(V5lab[1]) * sin(V5lab[3]), cos(V5lab[1])};
 
     double theta, phi;
@@ -183,6 +187,10 @@ double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle
 
     double Ebval = fBeamEnergy;
     double Efval = (1 + V5tr[4]) * fHRSMomentum;
+
+    if (fDebug > 2) {
+        Info(here, "%10.3e %10.3e %10.3e", Ebval, Efval, scatangle / kDEG);
+    }
 
     return pModel->GetXS(Ebval, Efval, scatangle);
 }

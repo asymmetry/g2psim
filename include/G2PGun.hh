@@ -75,7 +75,7 @@ protected:
     double fV5react_tr[5];
     double fV5react_lab[5];
 
-    double fV5tg_tr[5];
+    double fV5tp_tr[5];
 
     G2PDrift* pDrift;
 

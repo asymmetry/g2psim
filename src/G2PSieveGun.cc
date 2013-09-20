@@ -77,7 +77,11 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
     double V3sieve_tr[3];
     double V3pd_tr[3];
 
-    pSieve->GetPos(V3sieve_tr);
+    int index = pSieve->GetPos(V3sieve_tr);
+
+    if (fDebug > 2) {
+        Info(here, "(%d,%d)", index % pSieve->GetNRow(), index % pSieve->GetNRow());
+    }
 
     V3pd_tr[0] = V3sieve_tr[0] - Xreact_tr;
     V3pd_tr[1] = V3sieve_tr[1] - Yreact_tr;
@@ -103,7 +107,7 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
     V5react_tr[4] = Delta;
 
     if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);
     }
 
     return 0;

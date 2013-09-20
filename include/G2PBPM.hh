@@ -42,6 +42,7 @@ public:
     void SetBPMRes(double a, double b);
 
 protected:
+    void GetBPM(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
     void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
 
     void GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4);

@@ -39,16 +39,6 @@ public:
 
     //Gets
     int GetDebugLevel();
-    double GetHRSAngle();
-    double GetHRSMomentum();
-    int GetParticleID();
-    double GetParticleMass();
-    double GetParticleCharge();
-    double GetBeamEnergy();
-    int GetTargetZ();
-    int GetTargetA();
-    double GetTargetMass();
-    double GetFieldRatio();
 
     //Sets
     void SetConfigFile(const char* file);

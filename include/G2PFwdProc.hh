@@ -42,7 +42,7 @@ protected:
     bool fSieveOn;
 
     double fV5sieve_tr[5];
-    double fV5projtg_tr[5];
+    double fV5tpproj_tr[5];
 
     double fV5fp_tr[5];
     double fV5fp_rot[5];

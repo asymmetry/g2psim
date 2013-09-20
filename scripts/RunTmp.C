@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <time.h>
+#include <set>
 
 #include "TROOT.h"
 
@@ -34,34 +35,53 @@ static const double kU = 0.931494028;
 
 int Run() {
     ///////////////////////////////////////////////////////////////////////////
+    // run parameters
+    ///////////////////////////////////////////////////////////////////////////
+    G2PRun* run = new G2PRun();
+    run->SetHRSAngle(5.65 * kDEG);
+    run->SetHRSMomentum(2.249497);
+    //run->SetHRSMomentum(1.5);
+    run->SetParticleID(11);
+    run->SetParticleMass(0.51099892811e-3);
+    run->SetParticleCharge(-1 * e);
+    run->SetBeamEnergy(2.253207);
+    run->SetTarget(6, 12);
+    run->SetTargetMass(12.0107 * kU);
+    //run->SetEnergyLoss(1.009711e-3 + 0.501422e-3);
+    run->SetFieldRatio(0.5);
+
+    ///////////////////////////////////////////////////////////////////////////
     // field
     ///////////////////////////////////////////////////////////////////////////
-    //G2PField* field = new G2PField();
-    //field->SetEulerAngle(90, 90, -90); // transverse, g2p
+    G2PField* field = new G2PField();
+    field->SetEulerAngle(90, 90, -90); // transverse, g2p
     //field->SetEulerAngle(90, 6, -90);  // 6 deg, gep
-    //gG2PApps->Add(field);
+    gG2PApps->Add(field);
 
     ///////////////////////////////////////////////////////////////////////////
     // gun
     ///////////////////////////////////////////////////////////////////////////
-    //G2PFlatGun* gun = new G2PFlatGun();
-    G2PSieveGun* gun = new G2PSieveGun();
+    G2PFlatGun* gun = new G2PFlatGun();
+    //G2PSieveGun* gun = new G2PSieveGun();
+
     //G2PData* gun = new G2PData("input_fp_tr.dat");
     //gun->SetBeamPos(4.134e-3, 1.176e-3);     // 0T,6deg
     gun->SetBeamPos(0.0, 0.0);
-    gun->SetReactZ(-14.1350e-3, -13.1191e-3); //40mil
+    //gun->SetReactZ(0.0, 0.0);
+    //gun->SetReactZ(-14.1350e-3, -13.1191e-3); //40mil
     //gun->SetReactZ(-14.1350e-3, -10.9600e-3); //125mil
-    //gun->SetReactZ(-14.135e-3, 14.135e-3); // full size
-    //gun->SetRasterSize(15.0e-3);
-    //gun->SetTargetTh(-75.0e-3, -55.0e-3);
-    //gun->SetTargetPh(-10.0e-3, 10.0e-3);
-    //gun->SetDelta(-0.04, 0.04);
+    gun->SetReactZ(-14.135e-3, 14.135e-3); // full size
+    gun->SetRasterSize(14.0e-3);
+    gun->SetTargetTh(-75.0e-3, -55.0e-3);
+    gun->SetTargetPh(-10.0e-3, 10.0e-3);
+    gun->SetDelta(-0.04, 0.04);
     gG2PApps->Add(gun);
 
     ///////////////////////////////////////////////////////////////////////////
     // BPM
     ///////////////////////////////////////////////////////////////////////////
     G2PBPM* bpm = new G2PBPM();
+    //bpm->SetBPMRes(0, 0);
     bpm->SetBPMRes(0.2e-3, 0.4e-3);
     gG2PApps->Add(bpm);
 
@@ -70,8 +90,8 @@ int Run() {
     ///////////////////////////////////////////////////////////////////////////
     G2PHRS* hrs = new G2PHRS("484816");
     gG2PApps->Add(hrs);
-    G2PDBRec* rec = new G2PDBRec();
-    gG2PApps->Add(rec);
+    //G2PDBRec* rec = new G2PDBRec();
+    //gG2PApps->Add(rec);
 
     ///////////////////////////////////////////////////////////////////////////
     // cross section
@@ -80,38 +100,22 @@ int Run() {
     gG2PApps->Add(model);
 
     ///////////////////////////////////////////////////////////////////////////
-    // run parameters
-    ///////////////////////////////////////////////////////////////////////////
-    G2PRun* run = new G2PRun();
-    run->SetDebugLevel(2);
-    run->SetSeed(1);
-    run->SetHRSAngle(5.65 * kDEG);
-    run->SetHRSMomentum(2.249497);
-    //run->SetHRSMomentum(1.5);
-    run->SetParticlePID(11);
-    run->SetParticleMass(0.51099892811e-3);
-    run->SetParticleCharge(-1 * e);
-    run->SetBeamEnergy(2.253207);
-    run->SetTarget(6, 12);
-    run->SetTargetMass(12.0107 * kU);
-    //run->SetEnergyLoss(1.009711e-3 + 0.501422e-3);
-    //run->SetFieldRatio(0.5);
-
-    ///////////////////////////////////////////////////////////////////////////
     // simulation
     ///////////////////////////////////////////////////////////////////////////
     G2PSim *sim = new G2PSim();
-    int N = 10;
+    run->SetDebugLevel(1);
+    run->SetSeed(1);
+    //int N = 1;
+    int N = 50000;
     sim->SetNEvent(N);
     //sim->SetOutFile("run_1029_optics_484816.root");
     sim->SetOutFile("run_test.root");
-    sim->SetRun(run);
 
     clock_t start = clock();
     sim->Run();
     clock_t end = clock();
 #define CLOCKS_PER_SEC 1000000
-    printf("Average calcualtion time for one event: %8.4f ms\n", (double) (end - start)*1000.0 / (double) CLOCKS_PER_SEC / N);
+    printf("Average calculation time for one event: %8.4f ms\n", (double) (end - start)*1000.0 / (double) CLOCKS_PER_SEC / N);
 
     return 0;
 }

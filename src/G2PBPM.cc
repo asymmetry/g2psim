@@ -51,7 +51,7 @@ fBeamEnergy(2.254), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBP
     }
     pG2PBPM = this;
 
-    fPriority = 3;
+    fPriority = 2;
     Clear();
 }
 
@@ -86,6 +86,8 @@ int G2PBPM::Begin() {
 int G2PBPM::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     fV5beam_lab[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
     fV5beam_lab[1] = gG2PVars->FindSuffix("gun.beam.l_t")->GetValue();
     fV5beam_lab[2] = gG2PVars->FindSuffix("gun.beam.l_y")->GetValue();
@@ -93,15 +95,15 @@ int G2PBPM::Process() {
     fV5beam_lab[4] = gG2PVars->FindSuffix("gun.beam.l_z")->GetValue();
 
     double V4[4];
-    (this->*pfGetBPM)(fV5beam_lab, fV5bpm_bpm, V4);
+    GetBPM(fV5beam_lab, fV5bpm_bpm, V4);
     fV2bpma_bpm[0] = V4[0];
     fV2bpma_bpm[1] = V4[1];
     fV2bpmb_bpm[0] = V4[2];
     fV2bpmb_bpm[1] = V4[3];
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", fV5beam_lab[0], fV5beam_lab[1], fV5beam_lab[2], fV5beam_lab[3], fV5beam_lab[4], fV5bpm_bpm[0], fV5bpm_bpm[1], fV5bpm_bpm[2], fV5bpm_bpm[3], fV5bpm_bpm[4]);
-
     TransBPM2Lab(fV5bpm_bpm, fV5bpm_lab);
+
+    if (fDebug > 1) Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
 
     return 0;
 }
@@ -120,6 +122,14 @@ void G2PBPM::SetBPMRes(double a, double b) {
 
     fConfigIsSet.insert((unsigned long) &fBPMARes);
     fConfigIsSet.insert((unsigned long) &fBPMBRes);
+}
+
+void G2PBPM::GetBPM(const double* V5beam_lab, double* V5bpm_bpm, double* V4) {
+    static const char* const here = "GetBPM()";
+
+    (this->*pfGetBPM)(V5beam_lab, V5bpm_bpm, V4);
+
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5bpm_bpm[0], V5bpm_bpm[1], V5bpm_bpm[2], V5bpm_bpm[3], V5bpm_bpm[4]);
 }
 
 void G2PBPM::TransBPM2Lab(const double* V5_bpm, double* V5_lab) {

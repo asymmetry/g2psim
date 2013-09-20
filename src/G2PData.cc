@@ -70,6 +70,8 @@ int G2PData::Begin() {
 int G2PData::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     sData tempdata;
 
     if (fData.empty()) return -1;
@@ -87,9 +89,9 @@ int G2PData::Process() {
 
     TRCS2DCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
 
-    if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
+    if (fDebug > 1) {
+        Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
+        Info(here, "fp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
     }
 
     fData.pop_back();

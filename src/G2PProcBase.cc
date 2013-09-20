@@ -30,7 +30,7 @@
 
 using namespace std;
 
-G2PProcBase::G2PProcBase() : fStage(kWAIT) {
+G2PProcBase::G2PProcBase() : fStage(kREADY) {
     // Nothing to do
 }
 

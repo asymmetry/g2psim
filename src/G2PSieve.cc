@@ -25,6 +25,8 @@
 
 #include "G2PSieve.hh"
 
+//#define USE_CENTRAL_HOLE 1
+
 using namespace std;
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
@@ -62,7 +64,12 @@ int G2PSieve::Begin() {
         const double kSIEVEX[7] = {-3 * 13.3096e-3, -2 * 13.3096e-3, -1 * 13.3096e-3, 0.0, 1 * 13.3096e-3, 2 * 13.3096e-3, 3 * 13.3096e-3};
         const double kSIEVEY[7] = {3 * 6.1214e-3, 2 * 6.1214e-3, 1 * 6.1214e-3, 0.0, -1 * 4.7752e-3, -2 * 4.7752e-3, -3 * 4.7752e-3};
         const int kLARGERHOLE[2] = {15, 24};
+
+#ifdef USE_CENTRAL_HOLE
+        const int kSIEVEOPEN[49] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+#else
         const int kSIEVEOPEN[49] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+#endif
 
         fNRow = 7;
         fNCol = 7;
@@ -171,6 +178,10 @@ int G2PSieve::CanPass(double* V5) {
 
 double G2PSieve::GetZ() {
     return fZ;
+}
+
+int G2PSieve::GetNRow() {
+    return fNRow;
 }
 
 int G2PSieve::Configure(EMode mode) {

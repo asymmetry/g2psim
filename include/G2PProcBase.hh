@@ -24,7 +24,7 @@ public:
     virtual ~G2PProcBase();
 
     enum EStage {
-        kWAIT = 0, kDONE
+        kREADY = 0, kDONE, kSTOP
     };
 
     virtual int Init();

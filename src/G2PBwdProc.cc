@@ -88,6 +88,8 @@ int G2PBwdProc::Begin() {
 int G2PBwdProc::Process() {
     static const char* const here = "Process()";
 
+    if (fDebug > 2) Info(here, " ");
+
     double V5bpm_lab[5], V5fp_tr[5];
 
     V5bpm_lab[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
@@ -101,68 +103,61 @@ int G2PBwdProc::Process() {
     V5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
     V5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
 
-    double V5bpm_tr[5], z_tr;
-    HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
-    HCS2TCS(V5bpm_lab[1], V5bpm_lab[3], fHRSAngle, V5bpm_tr[1], V5bpm_tr[3]);
-    V5bpm_tr[4] = 0.0;
-    pDrift->Drift(V5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, V5bpm_tr);
-    double fEffXbeam = GetEffBPM(V5bpm_tr[0], V5fp_tr);
+    V5fp_tr[4] = GetEffBPM(V5bpm_lab, V5fp_tr);
+
+    if (!pHRS->Backward(V5fp_tr, fV5tpsnake_tr)) return -1;
 
     if (fDebug > 1) {
-        Info(here, "xeff_tr   : %10.3e", fEffXbeam);
+        Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpsnake_tr[0], fV5tpsnake_tr[1], fV5tpsnake_tr[2], fV5tpsnake_tr[3], fV5tpsnake_tr[4]);
     }
 
-    V5fp_tr[4] = fEffXbeam;
-    if (!pHRS->Backward(V5fp_tr, fV5rectg_tr)) return -1;
+    Project(fV5tpsnake_tr[0], fV5tpsnake_tr[2], 0.0, pSieve->GetZ(), fV5tpsnake_tr[1], fV5tpsnake_tr[3], fV5sieveproj_tr[0], fV5sieveproj_tr[2]);
+    fV5sieveproj_tr[1] = fV5tpsnake_tr[1];
+    fV5sieveproj_tr[3] = fV5tpsnake_tr[3];
+    fV5sieveproj_tr[4] = fV5tpsnake_tr[4];
 
     if (fDebug > 1) {
-        Info(here, "rectg_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rectg_tr[0], fV5rectg_tr[1], fV5rectg_tr[2], fV5rectg_tr[3], fV5rectg_tr[4]);
+        Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
     }
 
-    Project(fV5rectg_tr[0], fV5rectg_tr[2], 0.0, pSieve->GetZ(), fV5rectg_tr[1], fV5rectg_tr[3], fV5recsieve_tr[0], fV5recsieve_tr[2]);
-    fV5recsieve_tr[1] = fV5rectg_tr[1];
-    fV5recsieve_tr[3] = fV5rectg_tr[3];
-    fV5recsieve_tr[4] = fV5rectg_tr[4];
+    pDrift->Drift(fV5sieveproj_tr, fHRSMomentum, pSieve->GetZ(), fHRSAngle, 0.0, 10.0, fV5tprec_tr);
+    TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fHRSAngle, fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]);
+    TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fHRSAngle, fV5tprec_lab[1], fV5tprec_lab[3]);
 
-    if (fDebug > 1) {
-        Info(here, "recsiv_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5recsieve_tr[0], fV5recsieve_tr[1], fV5recsieve_tr[2], fV5recsieve_tr[3], fV5recsieve_tr[4]);
-    }
-
-    pDrift->Drift(fV5recsieve_tr, fHRSMomentum, pSieve->GetZ(), fHRSAngle, 0.0, 10.0, fV5rec_tr);
-    TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]);
-    TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, fV5rec_lab[1], fV5rec_lab[3]);
-
+    // FIXME : should use variables to control this
 #ifndef USE_DEFAULT_ENDZ
-    double x[3] = {fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]};
-    double p[3] = {fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * cos(fV5rec_lab[3]),
-                   fHRSMomentum * (1 + fV5rec_tr[4]) * sin(fV5rec_lab[1]) * sin(fV5rec_lab[3]),
-                   fHRSMomentum * (1 + fV5rec_tr[4]) * cos(fV5rec_lab[1])};
+    double x[3] = {fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]};
+    double p[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * cos(fV5tprec_lab[3]),
+                   fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * sin(fV5tprec_lab[3]),
+                   fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(fV5tprec_lab[1])};
     pDrift->Drift(x, p, -13.6271e-3, 10.0, x, p);
     double tempd;
-    fV5rec_lab[0] = x[0];
-    fV5rec_lab[1] = acos(p[2] / (fHRSMomentum * (1 + fV5rec_tr[4])));
-    fV5rec_lab[2] = x[1];
-    fV5rec_lab[3] = atan2(p[1], p[0]);
-    fV5rec_lab[4] = x[2];
-    HCS2TCS(x[0], x[1], x[2], fHRSAngle, fV5rec_tr[0], fV5rec_tr[2], tempd);
-    HCS2TCS(fV5rec_lab[1], fV5rec_lab[2], fHRSAngle, fV5rec_tr[1], fV5rec_tr[3]);
+    fV5tprec_lab[0] = x[0];
+    fV5tprec_lab[1] = acos(p[2] / (fHRSMomentum * (1 + fV5tprec_tr[4])));
+    fV5tprec_lab[2] = x[1];
+    fV5tprec_lab[3] = atan2(p[1], p[0]);
+    fV5tprec_lab[4] = x[2];
+    HCS2TCS(x[0], x[1], x[2], fHRSAngle, fV5tprec_tr[0], fV5tprec_tr[2], tempd);
+    HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[2], fHRSAngle, fV5tprec_tr[1], fV5tprec_tr[3]);
 #endif
 
     if (fDebug > 1) {
-        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
+        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
     }
 
     return 0;
 }
 
 void G2PBwdProc::Clear() {
-    memset(fV5rectg_tr, 0, sizeof (fV5rectg_tr));
-    memset(fV5recsieve_tr, 0, sizeof (fV5recsieve_tr));
-    memset(fV5rec_tr, 0, sizeof (fV5rec_tr));
-    memset(fV5rec_lab, 0, sizeof (fV5rec_lab));
+    memset(fV5tpsnake_tr, 0, sizeof (fV5tpsnake_tr));
+    memset(fV5sieveproj_tr, 0, sizeof (fV5sieveproj_tr));
+    memset(fV5tprec_tr, 0, sizeof (fV5tprec_tr));
+    memset(fV5tprec_lab, 0, sizeof (fV5tprec_lab));
 }
 
-double G2PBwdProc::GetEffBPM(double xbpm_tr, const double* V5fp) {
+double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp) {
+    static const char* const here = "GetEffBPM()";
+
     // Fit result:
     //
     // (Xbpm_tr-Xtg_tr) vs Z
@@ -181,34 +176,50 @@ double G2PBwdProc::GetEffBPM(double xbpm_tr, const double* V5fp) {
     // p1                        =      6.11766   +/-   0.0187211
     //
 
+    int save = pDrift->GetDebugLevel();
+    if (fDebug <= 3) pDrift->SetDebugLevel(0);
+    double V5bpm_tr[5], z_tr;
+    HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
+    HCS2TCS(V5bpm_lab[1], V5bpm_lab[3], fHRSAngle, V5bpm_tr[1], V5bpm_tr[3]);
+    V5bpm_tr[4] = 0.0;
+    pDrift->Drift(V5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, V5bpm_tr);
+
+    double xbpm_tr = V5bpm_tr[0];
     double xbpm_tr_eff = xbpm_tr;
 
-    if (fabs(fFieldRatio) < 1e-8) return xbpm_tr_eff;
+    if (fabs(fFieldRatio) > 1e-8) {
 
-    double V5_fp[5] = {V5fp[0], V5fp[1], V5fp[2], V5fp[3], V5fp[4]};
-    double V5_tg[5] = {0, 0, 0, 0, 0};
+        double V5_fp[5] = {V5fp[0], V5fp[1], V5fp[2], V5fp[3], V5fp[4]};
+        double V5_tg[5] = {0, 0, 0, 0, 0};
 
-    double p = fHRSMomentum;
-    double ratio = fFieldRatio;
+        double p = fHRSMomentum;
+        double ratio = fFieldRatio;
 
-    if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
-    else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+        if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+        else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
 
-    V5_fp[4] = xbpm_tr_eff;
-    pHRS->Backward(V5_fp, V5_tg);
+        V5_fp[4] = xbpm_tr_eff;
+        pHRS->Backward(V5_fp, V5_tg);
 
-    p = (1 + V5_tg[4]) * fHRSMomentum;
-    xbpm_tr_eff = xbpm_tr;
-    if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
-    else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+        p = (1 + V5_tg[4]) * fHRSMomentum;
+        xbpm_tr_eff = xbpm_tr;
+        if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+        else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
 
-    V5_fp[4] = xbpm_tr_eff;
-    pHRS->Backward(V5_fp, V5_tg);
+        V5_fp[4] = xbpm_tr_eff;
+        pHRS->Backward(V5_fp, V5_tg);
 
-    p = (1 + V5_tg[4]) * fHRSMomentum;
-    xbpm_tr_eff = xbpm_tr;
-    if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
-    else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+        p = (1 + V5_tg[4]) * fHRSMomentum;
+        xbpm_tr_eff = xbpm_tr;
+        if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+        else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+    }
+
+    pDrift->SetDebugLevel(save);
+
+    if (fDebug > 2) {
+        Info(here, "%10.3e", xbpm_tr_eff);
+    }
 
     return xbpm_tr_eff;
 }
@@ -235,24 +246,26 @@ int G2PBwdProc::DefineVariables(EMode mode) {
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
-        {"tp.rec.snake.x", "SNAKE rec to target plane X", kDOUBLE, &fV5rectg_tr[0]},
-        {"tp.rec.snake.t", "SNAKE rec to target plane T", kDOUBLE, &fV5rectg_tr[1]},
-        {"tp.rec.snake.y", "SNAKE rec to target plane Y", kDOUBLE, &fV5rectg_tr[2]},
-        {"tp.rec.snake.p", "SNAKE rec to target plane P", kDOUBLE, &fV5rectg_tr[3]},
-        {"sieve.proj.x", "Project to sieve X", kDOUBLE, &fV5recsieve_tr[0]},
-        {"sieve.proj.t", "Project to sieve T", kDOUBLE, &fV5recsieve_tr[1]},
-        {"sieve.proj.y", "Project to sieve Y", kDOUBLE, &fV5recsieve_tr[2]},
-        {"sieve.proj.p", "Project to sieve P", kDOUBLE, &fV5recsieve_tr[3]},
-        {"tp.rec.x", "Rec X", kDOUBLE, &fV5rec_tr[0]},
-        {"tp.rec.t", "Rec T", kDOUBLE, &fV5rec_tr[1]},
-        {"tp.rec.y", "Rec Y", kDOUBLE, &fV5rec_tr[2]},
-        {"tp.rec.p", "Rec P", kDOUBLE, &fV5rec_tr[3]},
-        {"tp.rec.d", "Rec D", kDOUBLE, &fV5rec_tr[4]},
-        {"tp.rec.l_x", "Rec X (lab)", kDOUBLE, &fV5rec_lab[0]},
-        {"tp.rec.l_t", "Rec T (lab)", kDOUBLE, &fV5rec_lab[1]},
-        {"tp.rec.l_y", "Rec Y (lab)", kDOUBLE, &fV5rec_lab[2]},
-        {"tp.rec.l_p", "Rec P (lab)", kDOUBLE, &fV5rec_lab[3]},
-        {"tp.rec.l_z", "Rec Z (lab)", kDOUBLE, &fV5rec_lab[4]},
+        {"tp.snake.x", "SNAKE rec to Target Plane X", kDOUBLE, &fV5tpsnake_tr[0]},
+        {"tp.snake.t", "SNAKE rec to Target Plane T", kDOUBLE, &fV5tpsnake_tr[1]},
+        {"tp.snake.y", "SNAKE rec to Target Plane Y", kDOUBLE, &fV5tpsnake_tr[2]},
+        {"tp.snake.p", "SNAKE rec to Target Plane P", kDOUBLE, &fV5tpsnake_tr[3]},
+        {"tp.snake.d", "SNAKE rec to Target Plane D", kDOUBLE, &fV5tpsnake_tr[4]},
+        {"sieve.proj.x", "Project to Sieve X", kDOUBLE, &fV5sieveproj_tr[0]},
+        {"sieve.proj.t", "Project to Sieve T", kDOUBLE, &fV5sieveproj_tr[1]},
+        {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
+        {"sieve.proj.p", "Project to Sieve P", kDOUBLE, &fV5sieveproj_tr[3]},
+        {"sieve.proj.d", "Project to Sieve D", kDOUBLE, &fV5sieveproj_tr[3]},
+        {"tp.rec.x", "Rec X", kDOUBLE, &fV5tprec_tr[0]},
+        {"tp.rec.t", "Rec T", kDOUBLE, &fV5tprec_tr[1]},
+        {"tp.rec.y", "Rec Y", kDOUBLE, &fV5tprec_tr[2]},
+        {"tp.rec.p", "Rec P", kDOUBLE, &fV5tprec_tr[3]},
+        {"tp.rec.d", "Rec D", kDOUBLE, &fV5tprec_tr[4]},
+        {"tp.rec.l_x", "Rec X (lab)", kDOUBLE, &fV5tprec_lab[0]},
+        {"tp.rec.l_t", "Rec T (lab)", kDOUBLE, &fV5tprec_lab[1]},
+        {"tp.rec.l_y", "Rec Y (lab)", kDOUBLE, &fV5tprec_lab[2]},
+        {"tp.rec.l_p", "Rec P (lab)", kDOUBLE, &fV5tprec_lab[3]},
+        {"tp.rec.l_z", "Rec Z (lab)", kDOUBLE, &fV5tprec_lab[4]},
         {0}
     };
 
@@ -273,10 +286,10 @@ ClassImp(G2PBwdProc)
 //        double p[3] = {fBeamEnergy * sin(fV5bpm_lab[1]) * cos(fV5bpm_lab[3]), fBeamEnergy * sin(fV5bpm_lab[1]) * sin(fV5bpm_lab[3]), fBeamEnergy * cos(fV5bpm_lab[1])};
 //
 //        double xrec[3];
-//        HRSTransTCSNHCS::X_TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
+//        HRSTransTCSNHCS::X_TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
 //        double theta, phi;
-//        HRSTransTCSNHCS::P_TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, theta, phi);
-//        double prec[3] = {fHRSMomentum * (1 + fV5rec_tr[4]) * sin(theta) * cos(phi), fHRSMomentum * (1 + fV5rec_tr[4]) * sin(theta) * sin(phi), fHRSMomentum * (1 + fV5rec_tr[4]) * cos(theta)};
+//        HRSTransTCSNHCS::P_TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fHRSAngle, theta, phi);
+//        double prec[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(theta) * cos(phi), fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(theta) * sin(phi), fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(theta)};
 //        pDrift->Drift(xrec, prec, 0, 10.0, xrec, prec);
 //
 //        double z = 0.0;

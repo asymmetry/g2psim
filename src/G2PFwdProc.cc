@@ -3,7 +3,7 @@
 /* class G2PFwdProc
  * It simulates the movement of the scatted particles in the spectrometers.
  * G2PDrift, G2PHRS and G2PSieve are used in this class.
- * Input variables: fV5tg_tr, fV5react_lab (register in gG2PVars).
+ * Input variables: fV5tp_tr, fV5react_lab (register in gG2PVars).
  */
 
 // History:
@@ -88,7 +88,9 @@ int G2PFwdProc::Begin() {
 int G2PFwdProc::Process() {
     static const char* const here = "Process()";
 
-    double V5react_lab[5], V5tg_tr[5];
+    if (fDebug > 2) Info(here, " ");
+
+    double V5react_lab[5], V5tp_tr[5];
 
     V5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
     V5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
@@ -96,14 +98,14 @@ int G2PFwdProc::Process() {
     V5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
     V5react_lab[4] = gG2PVars->FindSuffix("react.l_z")->GetValue();
 
-    V5tg_tr[0] = gG2PVars->FindSuffix("tp.x")->GetValue();
-    V5tg_tr[1] = gG2PVars->FindSuffix("tp.t")->GetValue();
-    V5tg_tr[2] = gG2PVars->FindSuffix("tp.y")->GetValue();
-    V5tg_tr[3] = gG2PVars->FindSuffix("tp.p")->GetValue();
-    V5tg_tr[4] = gG2PVars->FindSuffix("tp.d")->GetValue();
+    V5tp_tr[0] = gG2PVars->FindSuffix("tp.x")->GetValue();
+    V5tp_tr[1] = gG2PVars->FindSuffix("tp.t")->GetValue();
+    V5tp_tr[2] = gG2PVars->FindSuffix("tp.y")->GetValue();
+    V5tp_tr[3] = gG2PVars->FindSuffix("tp.p")->GetValue();
+    V5tp_tr[4] = gG2PVars->FindSuffix("tp.d")->GetValue();
 
     double x[3] = {V5react_lab[0], V5react_lab[2], V5react_lab[4]};
-    double pp = fHRSMomentum * (1 + V5tg_tr[4]);
+    double pp = fHRSMomentum * (1 + V5tp_tr[4]);
     double p[3] = {pp * sin(V5react_lab[1]) * cos(V5react_lab[3]),
                    pp * sin(V5react_lab[1]) * sin(V5react_lab[3]),
                    pp * cos(V5react_lab[1])};
@@ -116,7 +118,7 @@ int G2PFwdProc::Process() {
     if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3)) return -1;
     if ((x[1]<-53.0e-3) || (x[1] > 58.0e-3)) return -1;
 
-    pDrift->Drift(V5tg_tr, fHRSMomentum, 0.0, fHRSAngle, pSieve->GetZ(), 10.0, fV5sieve_tr);
+    pDrift->Drift(V5tp_tr, fHRSMomentum, 0.0, fHRSAngle, pSieve->GetZ(), 10.0, fV5sieve_tr);
 
     if (fDebug > 1) {
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
@@ -126,16 +128,16 @@ int G2PFwdProc::Process() {
         if (!pSieve->CanPass(fV5sieve_tr)) return -1;
     }
 
-    Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5projtg_tr[0], fV5projtg_tr[2]);
-    fV5projtg_tr[1] = fV5sieve_tr[1];
-    fV5projtg_tr[3] = fV5sieve_tr[3];
-    fV5projtg_tr[4] = fV5sieve_tr[4];
+    Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
+    fV5tpproj_tr[1] = fV5sieve_tr[1];
+    fV5tpproj_tr[3] = fV5sieve_tr[3];
+    fV5tpproj_tr[4] = fV5sieve_tr[4];
 
     if (fDebug > 1) {
-        Info(here, "projtg_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5projtg_tr[0], fV5projtg_tr[1], fV5projtg_tr[2], fV5projtg_tr[3], fV5projtg_tr[4]);
+        Info(here, "tpproj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpproj_tr[0], fV5tpproj_tr[1], fV5tpproj_tr[2], fV5tpproj_tr[3], fV5tpproj_tr[4]);
     }
 
-    if (!pHRS->Forward(fV5projtg_tr, fV5fp_tr)) return -1;
+    if (!pHRS->Forward(fV5tpproj_tr, fV5fp_tr)) return -1;
     ApplyVDCRes(fV5fp_tr);
     TRCS2FCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
 
@@ -148,7 +150,7 @@ int G2PFwdProc::Process() {
 
 void G2PFwdProc::Clear() {
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
-    memset(fV5projtg_tr, 0, sizeof (fV5projtg_tr));
+    memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
 }
@@ -174,7 +176,7 @@ int G2PFwdProc::Configure(EMode mode) {
     ConfDef confs[] = {
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
-        {"run.sieve.on", "Sieve On", kBOOL, &fSieveOn},
+        {"run.sieveon", "Sieve On", kBOOL, &fSieveOn},
         {0}
     };
 
@@ -190,18 +192,20 @@ int G2PFwdProc::DefineVariables(EMode mode) {
         {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
         {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},
         {"sieve.p", "Sieve P", kDOUBLE, &fV5sieve_tr[3]},
-        {"tp.proj.x", "Project to target plane X", kDOUBLE, &fV5projtg_tr[0]},
-        {"tp.proj.t", "Project to target plane T", kDOUBLE, &fV5projtg_tr[1]},
-        {"tp.proj.y", "Project to target plane Y", kDOUBLE, &fV5projtg_tr[2]},
-        {"tp.proj.p", "Project to target plane P", kDOUBLE, &fV5projtg_tr[3]},
-        {"fp.x", "Focus plane X", kDOUBLE, &fV5fp_tr[0]},
-        {"fp.t", "Focus plane T", kDOUBLE, &fV5fp_tr[1]},
-        {"fp.y", "Focus plane Y", kDOUBLE, &fV5fp_tr[2]},
-        {"fp.p", "Focus plane P", kDOUBLE, &fV5fp_tr[3]},
-        {"fp.r_x", "Focus plane X (rot)", kDOUBLE, &fV5fp_rot[0]},
-        {"fp.r_t", "Focus plane T (rot)", kDOUBLE, &fV5fp_rot[1]},
-        {"fp.r_y", "Focus plane Y (rot)", kDOUBLE, &fV5fp_rot[2]},
-        {"fp.r_p", "Focus plane P (rot)", kDOUBLE, &fV5fp_rot[3]},
+        {"sieve.d", "Sieve D", kDOUBLE, &fV5sieve_tr[4]},
+        {"tp.proj.x", "Project to Target Plane X", kDOUBLE, &fV5tpproj_tr[0]},
+        {"tp.proj.t", "Project to Target Plane T", kDOUBLE, &fV5tpproj_tr[1]},
+        {"tp.proj.y", "Project to Target Plane Y", kDOUBLE, &fV5tpproj_tr[2]},
+        {"tp.proj.p", "Project to Target Plane P", kDOUBLE, &fV5tpproj_tr[3]},
+        {"tp.proj.d", "Project to Target Plane D", kDOUBLE, &fV5tpproj_tr[4]},
+        {"fp.x", "Focus Plane X", kDOUBLE, &fV5fp_tr[0]},
+        {"fp.t", "Focus Plane T", kDOUBLE, &fV5fp_tr[1]},
+        {"fp.y", "Focus Plane Y", kDOUBLE, &fV5fp_tr[2]},
+        {"fp.p", "Focus Plane P", kDOUBLE, &fV5fp_tr[3]},
+        {"fp.r_x", "Focus Plane X (rot)", kDOUBLE, &fV5fp_rot[0]},
+        {"fp.r_t", "Focus Plane T (rot)", kDOUBLE, &fV5fp_rot[1]},
+        {"fp.r_y", "Focus Plane Y (rot)", kDOUBLE, &fV5fp_rot[2]},
+        {"fp.r_p", "Focus Plane P (rot)", kDOUBLE, &fV5fp_rot[3]},
         {0}
     };
 
