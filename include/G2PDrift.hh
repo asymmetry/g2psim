@@ -24,15 +24,15 @@ public:
     G2PDrift();
     virtual ~G2PDrift();
 
-    typedef void (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
-    typedef void (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
+    typedef double (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
+    typedef double (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
 
     virtual int Init();
     virtual int Begin();
     virtual void Clear();
 
-    virtual void Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    virtual void Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    virtual double Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
 
     // Gets
 
@@ -40,10 +40,10 @@ public:
     void SetLimit(double lo, double hi);
 
 protected:
-    void DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    void DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    void DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
-    void DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    double DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    double DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
+    double DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    double DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
 
     void NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err);
     double DistChord();

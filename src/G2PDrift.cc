@@ -89,30 +89,33 @@ void G2PDrift::Clear() {
     memset(fEPoint, 0, sizeof (fEPoint));
 }
 
-void G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
+double G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
     static const char* const here = "Drift()";
 
     double xx[3] = {x[0], x[1], x[2]};
     double pp[3] = {p[0], p[1], p[2]};
 
-    (this->*pfDriftHCS)(x, p, zlimit, llimit, xout, pout);
+    double result = (this->*pfDriftHCS)(x, p, zlimit, llimit, xout, pout);
 
     if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xout[0], xout[1], xout[2]);
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", pp[0], pp[1], pp[2], pout[0], pout[1], pout[2]);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], pp[0], pp[1], pp[2], xout[0], xout[1], xout[2], pout[0], pout[1], pout[2]);
     }
+
+    return result;
 }
 
-void G2PDrift::Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
+double G2PDrift::Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
     static const char* const here = "Drift()";
 
     double xx[5] = {x[0], x[1], x[2], x[3], x[4]};
 
-    (this->*pfDriftTCS)(x, p, z_tr, angle, zlimit, llimit, xout);
+    double result = (this->*pfDriftTCS)(x, p, z_tr, angle, zlimit, llimit, xout);
 
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
     }
+
+    return result;
 }
 
 void G2PDrift::SetLimit(double lo, double hi) {
@@ -123,7 +126,7 @@ void G2PDrift::SetLimit(double lo, double hi) {
     fConfigIsSet.insert((unsigned long) &fErrHiLimit);
 }
 
-void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
+double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
     double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
@@ -193,9 +196,11 @@ void G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double 
     pout[0] = xf[3] * M / c;
     pout[1] = xf[4] * M / c;
     pout[2] = xf[5] * M / c;
+
+    return l;
 }
 
-void G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
+double G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {
     xout[0] = x[0]+(zlimit - x[2]) * p[0] / p[2];
     xout[1] = x[1]+(zlimit - x[2]) * p[1] / p[2];
     xout[2] = zlimit;
@@ -203,9 +208,15 @@ void G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, doubl
     pout[0] = p[0];
     pout[1] = p[1];
     pout[2] = p[2];
+
+    double dx = xout[0] - x[0];
+    double dy = xout[1] - x[1];
+    double dz = xout[2] - x[2];
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
+double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
     double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
@@ -284,14 +295,23 @@ void G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, do
     double temp;
     HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], temp);
     xout[4] = x[4];
+
+    return l;
 }
 
-void G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
+double G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout) {
     xout[0] = x[0]+(zlimit - z_tr) * tan(x[1]);
     xout[1] = x[1];
     xout[2] = x[2]+(zlimit - z_tr) * tan(x[3]);
     xout[3] = x[3];
     xout[4] = x[4];
+
+    double dx = xout[0] - x[0];
+    double dy = xout[2] - x[2];
+    double dz = zlimit - z_tr;
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
+
 }
 
 void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err) {

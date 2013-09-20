@@ -108,6 +108,9 @@ int G2PSim::Init() {
 
     if (pRun->Init() != 0) return -1;
 
+    gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
+    gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
+
     TIter next(fApps);
     while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
         if (aobj->IsZombie()) {
@@ -122,9 +125,6 @@ int G2PSim::Init() {
 
     fFile = new TFile(fOutFile, "RECREATE");
     fFile->cd();
-
-    gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
-    gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
 
     pOutput = new G2POutput();
     if (pOutput->Init() != 0) return -1;
@@ -165,17 +165,25 @@ int G2PSim::End() {
 }
 
 int G2PSim::Process() {
-    TIter ne(fProcs);
-    while (G2PProcBase * pobj = static_cast<G2PProcBase*> (ne())) pobj->SetStage(G2PProcBase::kWAIT);
+    TIter next(fProcs);
+    while (G2PProcBase * pobj = static_cast<G2PProcBase*> (next())) {
+        pobj->Clear();
+        pobj->SetStage(G2PProcBase::kREADY);
+    }
 
     int step = 0;
     int status = 0;
     while (!IsAllDone(fProcs)) {
         G2PAppList* list = fProcs->FindList(step);
-        TIter next(list);
-        while (G2PProcBase * pobj = static_cast<G2PProcBase*> (next())) {
-            if (pobj->Process() != 0) status = -1;
-            pobj->SetStage(G2PProcBase::kDONE);
+        TIter it(list);
+        while (G2PProcBase * pobj = static_cast<G2PProcBase*> (it())) {
+            if (pobj->Process() != 0) {
+                status = -1;
+                pobj->SetStage(G2PProcBase::kSTOP);
+                break;
+            }
+            else
+                pobj->SetStage(G2PProcBase::kDONE);
         }
         step++;
     }
@@ -191,7 +199,8 @@ bool G2PSim::IsAllDone(G2PAppList* procs) {
     while (TObject * obj = next()) {
         if (obj->IsA()->InheritsFrom(g2pproc)) {
             G2PProcBase* pobj = static_cast<G2PProcBase*> (obj);
-            if (pobj->GetStage() == G2PProcBase::kWAIT) done = false;
+            if (pobj->GetStage() == G2PProcBase::kREADY) done = false;
+            if (pobj->GetStage() == G2PProcBase::kSTOP) return true;
         }
         else {
             Error("Process()", "Processing list contains non G2PProcBase classes.");
