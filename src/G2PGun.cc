@@ -212,7 +212,7 @@ int G2PGun::Configure(EMode mode) {
         {"p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},
         {"p.max", "Phi Max", kDOUBLE, &fTargetPhHigh_tr},
         {"d.min", "Delta Min", kDOUBLE, &fDeltaLow},
-        {"d.max", "Delta Max", kDOUBLE, &fDeltaLow},
+        {"d.max", "Delta Max", kDOUBLE, &fDeltaHigh},
         {0}
     };
 

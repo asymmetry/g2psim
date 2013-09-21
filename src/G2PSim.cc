@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PSim
- * This file defines a class G2PSim.
- * It is the main class of this simulation package.
+ * It is the main class to do the simulation.
  */
 
 // History:
@@ -153,6 +152,13 @@ int G2PSim::Begin() {
 
 int G2PSim::End() {
     static const char* const here = "End()";
+
+    TIter next(fApps);
+    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+        aobj->End();
+    }
+
+    pRun->End();
 
     if (fDebug > 0) Info(here, "Cleaning ......");
 

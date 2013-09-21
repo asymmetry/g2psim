@@ -75,6 +75,12 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ########################################################################
 # Libs
 SYSLIBS     := -lstdc++ -lgfortran
+ifdef LIBCONFIG
+CFLAGS      += -I$(LIBCONFIG)/include
+CXXFLAGS    += -I$(LIBCONFIG)/include
+#SYSLIBS     += $(LIBCONFIG)/lib/libconfig.a
+SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
+endif
 OTHERLIBS   := -LHRSTrans -lHRSTrans -LG2PPhys -lG2PPhys
 
 ########################################################################

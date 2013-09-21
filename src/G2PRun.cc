@@ -16,11 +16,13 @@
 #include <cstdio>
 #include <cstring>
 #include <map>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
-#include "TList.h"
+
+#include "libconfig.h"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -60,6 +62,7 @@ G2PRun::G2PRun() : fConfigFile(NULL) {
     fConfig["run.target.a"] = 1;
     fConfig["run.target.mass"] = 1.008 * 0.931494028;
     fConfig["field.ratio"] = 0.0;
+    fConfig["run.sieveon"] = 0;
 
     gG2PApps->Add(new G2PFwdProc());
     gG2PApps->Add(new G2PBwdProc());
@@ -83,13 +86,21 @@ int G2PRun::Init() {
 }
 
 int G2PRun::Begin() {
-    // Default does nothing
+    //static const char* const here = "Begin()";
+
+    if (fConfigFile && *fConfigFile) {
+        if (ParseConfigFile() != 0) return -1;
+    }
+
+    if (fConfig["run.debuglevel"] > 0) Print();
 
     return 0;
 }
 
 int G2PRun::End() {
     // Default does nothing
+
+    if (fConfig["run.debuglevel"] > 1) Print();
 
     return 0;
 }
@@ -164,7 +175,7 @@ int G2PRun::SetConfig(const ConfDef* item, const char* prefix) {
     }
 
     if (item->var) {
-        double dval;
+        double dval = 0;
         switch (item->type) {
         case kBOOL:
             dval = (double) (*((bool*) item->var));
@@ -218,6 +229,7 @@ void G2PRun::SetDebugLevel(int n) {
 }
 
 void G2PRun::SetSeed(unsigned n) {
+    fConfig["run.seed"] = (double) n;
     G2PAppBase::SetSeed(n);
 }
 
@@ -265,5 +277,103 @@ void G2PRun::SetSieve() {
 //void G2PRun::SetEnergyLoss(double E) {
 //    fEnergyLoss = E;
 //}
+
+int G2PRun::ParseConfigFile() {
+    static const char* const here = "ParseConfigFile()";
+
+    config_t cfg;
+    config_init(&cfg);
+
+    if (!config_read_file(&cfg, fConfigFile)) {
+        Error(here, "Parse error at %s:%d - %s", config_error_file(&cfg),
+                config_error_line(&cfg), config_error_text(&cfg));
+        config_destroy(&cfg);
+        return -1;
+    }
+
+    config_setting_t* root = config_root_setting(&cfg);
+
+    if (ParseSetting("", root)) return -1;
+
+    return 0;
+}
+
+int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting) {
+    static const char* const here = "ParseConfigFile()"; // Notice: this is not a typo
+
+    int type = config_setting_type(setting);
+    bool isgood = true;
+    switch (type) {
+    case CONFIG_TYPE_GROUP:
+        for (int i = 0; i < config_setting_length(setting); i++) {
+            config_setting_t* subsetting = config_setting_get_elem(setting, i);
+            const char* newprefix;
+            if (config_setting_name(setting) == NULL) {
+                newprefix = prefix;
+            }
+            else {
+                newprefix = Form("%s%s.", prefix, config_setting_name(setting));
+            }
+            if (ParseSetting(newprefix, subsetting)) {
+                isgood = false;
+                break;
+            }
+        }
+        break;
+    case CONFIG_TYPE_BOOL:
+    case CONFIG_TYPE_INT:
+    case CONFIG_TYPE_INT64:
+    case CONFIG_TYPE_FLOAT:
+    {
+        string name = Form("%s%s", prefix, config_setting_name(setting));
+        double value = GetValue(setting);
+        if (fConfig.count(name) == 0)
+            fConfig[name] = value;
+        return 0;
+    }
+    default:
+        Error(here, "Found illegal configuration, check the format.");
+        return -1;
+    }
+
+    return (isgood ? 0 : -1);
+}
+
+double G2PRun::GetValue(const config_setting_t* setting) {
+    double value = 0;
+
+    int type = config_setting_type(setting);
+    switch (type) {
+    case CONFIG_TYPE_INT:
+        value = (double) config_setting_get_int(setting);
+        break;
+    case CONFIG_TYPE_INT64:
+        value = (double) config_setting_get_int64(setting);
+        break;
+    case CONFIG_TYPE_FLOAT:
+        value = config_setting_get_float(setting);
+        break;
+    case CONFIG_TYPE_BOOL:
+        value = (double) config_setting_get_bool(setting);
+        break;
+    }
+
+    return value;
+}
+
+void G2PRun::Print() {
+    static const char* const here = "Print()";
+
+    Info(here, "The configuration is :");
+
+    map<string, double>::iterator it = fConfig.begin();
+
+    while (it != fConfig.end()) {
+        ostringstream ostr;
+        ostr << it->first << " = " << it->second;
+        Info(here, "%s", ostr.str().c_str());
+        it++;
+    }
+}
 
 ClassImp(G2PRun)

@@ -44,6 +44,8 @@ public:
     void SetRStep(double stepr);
 
 protected:
+    void SetRotationMatrix();
+
     virtual int ReadMap();
     virtual int CreateMap();
 

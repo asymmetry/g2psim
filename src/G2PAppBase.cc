@@ -72,9 +72,9 @@ int G2PAppBase::Init() {
 }
 
 int G2PAppBase::Begin() {
-    static const char* const here = "Begin()";
+    //static const char* const here = "Begin()";
 
-    if (fDebug > 0) Info(here, "Beginning ...");
+    //if (fDebug > 0) Info(here, "Beginning ...");
 
     EStatus status = kOK;
     if (Configure(kTWOWAY)) status = kINITERROR;

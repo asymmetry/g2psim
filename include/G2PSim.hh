@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PSim
- * This file defines a class G2PSim.
- * It is the main class of this simulation package.
+ * It is the main class to do the simulation.
  */
 
 // History:

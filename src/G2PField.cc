@@ -121,6 +121,8 @@ int G2PField::Begin() {
     else if (CreateMap() == 0) status = kOK;
     else Error(here, "Cannot create field map.");
 
+    SetRotationMatrix();
+
     return (fStatus = status);
 }
 
@@ -178,39 +180,51 @@ void G2PField::SetRStep(double stepr) {
 void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
     // The Euler angle is defined using Z-X'-Z" convention
 
-    fEulerAngle[0] = alpha*kDEG;
-    fEulerAngle[1] = beta*kDEG;
-    fEulerAngle[2] = gamma*kDEG;
+    fEulerAngle[0] = alpha;
+    fEulerAngle[1] = beta;
+    fEulerAngle[2] = gamma;
 
-    double s1 = sin(fEulerAngle[0]);
-    double c1 = cos(fEulerAngle[0]);
-    double s2 = sin(fEulerAngle[1]);
-    double c2 = cos(fEulerAngle[1]);
-    double s3 = sin(fEulerAngle[2]);
-    double c3 = cos(fEulerAngle[2]);
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[0]);
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[1]);
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
+}
 
-    fRotationMatrix[0][0][0] = c1 * c3 - c2 * s1*s3;
-    fRotationMatrix[0][1][0] = -c1 * s3 - c2 * s1*c3;
-    fRotationMatrix[0][2][0] = s2*s1;
-    fRotationMatrix[0][0][1] = s1 * c3 + c2 * c1*s3;
-    fRotationMatrix[0][1][1] = -s1 * s3 + c2 * c1*c3;
-    fRotationMatrix[0][2][1] = -s2*c1;
-    fRotationMatrix[0][0][2] = s2*s3;
-    fRotationMatrix[0][1][2] = s2*c3;
-    fRotationMatrix[0][2][2] = c2;
+void G2PField::SetRotationMatrix() {
+    // The Euler angle is defined using Z-X'-Z" convention
 
-    // inverse matrix
-    fRotationMatrix[1][0][0] = c1 * c3 - c2 * s1*s3;
-    fRotationMatrix[1][0][1] = -c1 * s3 - c2 * c3*s1;
-    fRotationMatrix[1][0][2] = s1*s2;
-    fRotationMatrix[1][1][0] = c3 * s1 + c1 * c2*s3;
-    fRotationMatrix[1][1][1] = c1 * c2 * c3 - s1*s3;
-    fRotationMatrix[1][1][2] = -c1*s2;
-    fRotationMatrix[1][2][0] = s2*s3;
-    fRotationMatrix[1][2][1] = c3*s2;
-    fRotationMatrix[1][2][2] = c2;
+    if ((fabs(fEulerAngle[0]) < 1e-5)&&(fabs(fEulerAngle[1]) < 1e-5)&&(fabs(fEulerAngle[2]) < 1e-5))
+        fRotation = false;
+    else {
+        double s1 = sin(fEulerAngle[0]);
+        double c1 = cos(fEulerAngle[0]);
+        double s2 = sin(fEulerAngle[1]);
+        double c2 = cos(fEulerAngle[1]);
+        double s3 = sin(fEulerAngle[2]);
+        double c3 = cos(fEulerAngle[2]);
 
-    fRotation = true;
+        fRotationMatrix[0][0][0] = c1 * c3 - c2 * s1*s3;
+        fRotationMatrix[0][1][0] = -c1 * s3 - c2 * s1*c3;
+        fRotationMatrix[0][2][0] = s2*s1;
+        fRotationMatrix[0][0][1] = s1 * c3 + c2 * c1*s3;
+        fRotationMatrix[0][1][1] = -s1 * s3 + c2 * c1*c3;
+        fRotationMatrix[0][2][1] = -s2*c1;
+        fRotationMatrix[0][0][2] = s2*s3;
+        fRotationMatrix[0][1][2] = s2*c3;
+        fRotationMatrix[0][2][2] = c2;
+
+        // inverse matrix
+        fRotationMatrix[1][0][0] = c1 * c3 - c2 * s1*s3;
+        fRotationMatrix[1][0][1] = -c1 * s3 - c2 * c3*s1;
+        fRotationMatrix[1][0][2] = s1*s2;
+        fRotationMatrix[1][1][0] = c3 * s1 + c1 * c2*s3;
+        fRotationMatrix[1][1][1] = c1 * c2 * c3 - s1*s3;
+        fRotationMatrix[1][1][2] = -c1*s2;
+        fRotationMatrix[1][2][0] = s2*s3;
+        fRotationMatrix[1][2][1] = c3*s2;
+        fRotationMatrix[1][2][2] = c2;
+
+        fRotation = true;
+    }
 }
 
 int G2PField::ReadMap() {
@@ -449,6 +463,9 @@ int G2PField::Configure(EMode mode) {
         {"origin.x", "Origin X", kDOUBLE, &fOrigin[0]},
         {"origin.y", "Origin Y", kDOUBLE, &fOrigin[1]},
         {"origin.z", "Origin Z", kDOUBLE, &fOrigin[2]},
+        {"angle.alpha", "Euler Angle Alpha", kDOUBLE, &fEulerAngle[0]},
+        {"angle.beta", "Euler Angle Beta", kDOUBLE, &fEulerAngle[1]},
+        {"angle.gamma", "Euler Angle Gamma", kDOUBLE, &fEulerAngle[2]},
         {"r.min", "R Range", kDOUBLE, &fRMin},
         {"r.max", "R Range", kDOUBLE, &fRMax},
         {"r.step", "R Step", kDOUBLE, &fRStep},

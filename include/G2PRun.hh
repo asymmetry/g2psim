@@ -20,6 +20,8 @@
 
 #include "TObject.h"
 
+#include "libconfig.h"
+
 #include "G2PVarDef.hh"
 
 using namespace std;
@@ -56,6 +58,12 @@ public:
     void SetSieve();
 
 protected:
+    int ParseConfigFile();
+    int ParseSetting(const char* prefix, const config_setting_t* setting);
+    double GetValue(const config_setting_t* setting);
+
+    void Print();
+
     const char* fConfigFile;
 
     map<string, double> fConfig;
