@@ -1,0 +1,69 @@
+// -*- C++ -*-
+
+/* configuration sim.cfg
+ * Use to configure all parts used in the simulation.
+ * The grammar of this configuration file followed the definition in libconfig:
+ *   key = value;
+ *   key = { subkey = value };
+ * The settings set by functions in Run.C will overwrite settings here.
+ * The settings are parsed by G2PRun.
+ * G2PAppBase classes will use Configure() to get the settings.
+ */
+
+run = {
+    debuglevel = 1;
+    particle = {
+        id = 11;
+        mass = 0.5109989281e-3; // GeV/c^2
+        charge = -1.6021765654e-19;
+    };
+    target = {
+        z = 6;
+        a = 12;
+        mass = 11.1878953221; // GeV/c^2
+    };
+    hrs = {
+        angle = 0.1006531360; // 5.767 deg
+        p0 = 2.251; // GeV
+    };
+};
+
+bpm = {
+    a = { res = 0.2e-3; };
+    b = { res = 0.4e-3; };
+};
+
+field = {
+    angle = {
+        alpha = 1.5707963267949; // 90 deg
+        beta = 1.5707963267949; // 90 deg // 0.10471975511966; // 6 deg
+        gamma = -1.5707963267949; // -90 deg,
+    };
+    ratio = 0.5;
+};
+
+gun = {
+    beam = {
+        l_x = 0.0;
+        l_y = 0.0;
+        l_z = {
+            min = -14.1350e-3;
+            max = 14.1350e-3;
+        };
+    };
+    raster = { size = 14.0e-3; };
+    react = {
+        t = {
+            min = -75e-3;
+            max = -55e-3;
+        };
+        p = {
+            min = -10e-3;
+            max = 10e-3;
+        };
+        d = {
+            min = -0.4;
+            max = 0.4;
+        };
+    };
+};

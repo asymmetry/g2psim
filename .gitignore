@@ -31,3 +31,4 @@ G2PSim
 Run.C
 update.sh
 gitrm.sh
+*.cfg

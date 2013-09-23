@@ -59,9 +59,9 @@ G2PAppBase::~G2PAppBase() {
 }
 
 int G2PAppBase::Init() {
-    //static const char* const here = "Init()";
+    static const char* const here = "Init()";
 
-    //if (fDebug > 0) Info(here, "Initializing ...");
+    if (fDebug > 1) Info(here, "Initializing ...");
 
     if (IsZombie()) return (fStatus = kNOTINIT);
 
@@ -72,9 +72,9 @@ int G2PAppBase::Init() {
 }
 
 int G2PAppBase::Begin() {
-    //static const char* const here = "Begin()";
+    static const char* const here = "Begin()";
 
-    //if (fDebug > 0) Info(here, "Beginning ...");
+    if (fDebug > 1) Info(here, "Beginning ...");
 
     EStatus status = kOK;
     if (Configure(kTWOWAY)) status = kINITERROR;

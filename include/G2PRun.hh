@@ -3,6 +3,7 @@
 /* class G2PRun
  * Run manager for g2p simulation.
  * Parse the configuration file and store all run parameters.
+ * It use libconfig, a 3rd party package, to do the parsing.
  * It will allocate G2PFwdProc and G2PBwdProc automatically.
  */
 
@@ -17,6 +18,7 @@
 
 #include <cstring>
 #include <map>
+#include <set>
 
 #include "TObject.h"
 
@@ -67,6 +69,7 @@ protected:
     const char* fConfigFile;
 
     map<string, double> fConfig;
+    set<string> fConfigIsSet;
 
 private:
     static G2PRun* pG2PRun;

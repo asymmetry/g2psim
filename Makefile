@@ -184,8 +184,10 @@ lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@echo "Linking $(LIBFILE) ...... done!"
 
 script:
-	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/RunTmp.C" "Run.C" ; \
+	@if [ ! -e "Run.C" ] ; then cp -pr "scripts/Run_Template.C" "Run.C" ; \
 	echo "Generate Run.C ...... done!"; fi
+	@if [ ! -e "sim.cfg" ] ; then cp -pr "scripts/sim.cfg.template" "sim.cfg" ; \
+	echo "Generate sim.cfg ...... done!"; fi
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT).cxx ......"

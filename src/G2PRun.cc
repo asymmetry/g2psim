@@ -3,6 +3,7 @@
 /* class G2PRun
  * Run manager for g2p simulation.
  * Parse the configuration file and store all run parameters.
+ * It use libconfig, a 3rd party package, to do the parsing.
  * It will allocate G2PFwdProc and G2PBwdProc automatically.
  */
 
@@ -16,6 +17,7 @@
 #include <cstdio>
 #include <cstring>
 #include <map>
+#include <set>
 #include <sstream>
 
 #include "TROOT.h"
@@ -64,6 +66,8 @@ G2PRun::G2PRun() : fConfigFile(NULL) {
     fConfig["field.ratio"] = 0.0;
     fConfig["run.sieveon"] = 0;
 
+    fConfigIsSet.clear();
+
     gG2PApps->Add(new G2PFwdProc());
     gG2PApps->Add(new G2PBwdProc());
 
@@ -92,6 +96,8 @@ int G2PRun::Begin() {
         if (ParseConfigFile() != 0) return -1;
     }
 
+    if (fConfigIsSet.find("run.seed") == fConfigIsSet.end())
+        SetSeed(0);
     if (fConfig["run.debuglevel"] > 0) Print();
 
     return 0;
@@ -107,6 +113,7 @@ int G2PRun::End() {
 
 void G2PRun::Clear() {
     fConfig.clear();
+    fConfigIsSet.clear();
 
     return;
 }
@@ -226,52 +233,77 @@ void G2PRun::SetConfigFile(const char* file) {
 
 void G2PRun::SetDebugLevel(int n) {
     fConfig["run.debuglevel"] = (double) n;
+
+    fConfigIsSet.insert("run.debuglevel");
 }
 
 void G2PRun::SetSeed(unsigned n) {
     fConfig["run.seed"] = (double) n;
     G2PAppBase::SetSeed(n);
+
+    fConfigIsSet.insert("run.seed");
 }
 
 void G2PRun::SetHRSAngle(double angle) {
     fConfig["run.hrs.angle"] = angle;
+
+    fConfigIsSet.insert("run.hrs.angle");
 }
 
 void G2PRun::SetHRSMomentum(double P0) {
     fConfig["run.hrs.p0"] = P0;
+
+    fConfigIsSet.insert("run.hrs.p0");
 }
 
 void G2PRun::SetParticleID(int pid) {
     fConfig["run.particle.id"] = (double) pid;
+
+    fConfigIsSet.insert("run.particle.id");
 }
 
 void G2PRun::SetParticleMass(double M0) {
     fConfig["run.particle.mass"] = M0;
+
+    fConfigIsSet.insert("run.particle.mass");
 }
 
 void G2PRun::SetParticleCharge(double Q) {
     fConfig["run.particle.charge"] = Q;
+
+    fConfigIsSet.insert("run.particle.charge");
 }
 
 void G2PRun::SetBeamEnergy(double E) {
     fConfig["run.e0"] = E;
+
+    fConfigIsSet.insert("run.e0");
 }
 
 void G2PRun::SetTarget(int Z, int A) {
     fConfig["run.target.z"] = (double) Z;
     fConfig["run.target.a"] = (double) A;
+
+    fConfigIsSet.insert("run.target.z");
+    fConfigIsSet.insert("run.target.a");
 }
 
 void G2PRun::SetTargetMass(double M) {
     fConfig["run.target.mass"] = M;
+
+    fConfigIsSet.insert("run.target.mass");
 }
 
 void G2PRun::SetFieldRatio(double ratio) {
     fConfig["field.ratio"] = ratio;
+
+    fConfigIsSet.insert("field.ratio");
 }
 
 void G2PRun::SetSieve() {
     fConfig["run.sieveon"] = (double) (true);
+
+    fConfigIsSet.insert("run.sieveon");
 }
 
 //void G2PRun::SetEnergyLoss(double E) {
@@ -293,8 +325,12 @@ int G2PRun::ParseConfigFile() {
 
     config_setting_t* root = config_root_setting(&cfg);
 
-    if (ParseSetting("", root)) return -1;
+    if (ParseSetting("", root)) {
+        config_destroy(&cfg);
+        return -1;
+    }
 
+    config_destroy(&cfg);
     return 0;
 }
 
@@ -327,7 +363,7 @@ int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting) {
     {
         string name = Form("%s%s", prefix, config_setting_name(setting));
         double value = GetValue(setting);
-        if (fConfig.count(name) == 0)
+        if (fConfigIsSet.find(name) == fConfigIsSet.end())
             fConfig[name] = value;
         return 0;
     }
