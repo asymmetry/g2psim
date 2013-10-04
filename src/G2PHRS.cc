@@ -12,6 +12,7 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
+//   Sep 2013, M. Huang, Add 484816R15 module
 //
 
 #include <cstdlib>
@@ -28,6 +29,7 @@
 #include "G2PTrans400016/G2PTrans400016.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816R00/G2PTrans484816R00.hh"
+#include "G2PTrans484816R15/G2PTrans484816R15.hh" 
 
 #include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
@@ -57,6 +59,7 @@ fSetting(1), fHRSAngle(5.767 * kDEG), fModelAngle(5.767 * kDEG), pModel(NULL) {
     model_map["484816"] = 1;
     model_map["400016"] = 3;
     model_map["484816R00"] = 11;
+    model_map["484816R15"] = 12;
 
     fSetting = model_map[name];
     fConfigIsSet.insert((unsigned long) &fSetting);
@@ -86,6 +89,7 @@ G2PHRS::~G2PHRS() {
 // 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
 // Index > 10 means test
 // 11: 484816 with shim, 5.76 deg, no raster, by Min
+// 12: 484816 with shim, 5.785 deg, 3cm raster, by Min
 // May add more HRS packages later
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -103,6 +107,9 @@ int G2PHRS::Begin() {
         break;
     case 11:
         pModel = new G2PTrans484816R00();
+        break;
+    case 12:
+        pModel = new G2PTrans484816R15();
         break;
     default:
         Error(here, "Cannot initialize, invalid setting.");
