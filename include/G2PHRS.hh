@@ -12,6 +12,7 @@
 // History:
 //   Jan 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Add correction function.
+//   Sep 2013, M. Huang, Add 484816R15 module in the comment block
 //
 
 #ifndef G2P_HRS_H
@@ -35,6 +36,7 @@ public:
     // 3: 400016 with shim, 5.65 deg, 3 cm raster, by Min
     // Index > 10 means test
     // 11: 484816 with shim, 5.76 deg, no raster, by Min
+    // 12: 484816 with shim, 5.785 deg, 3cm raster, by Min
     // May add more HRS packages later
     ///////////////////////////////////////////////////////////////////////////
     int Begin();
