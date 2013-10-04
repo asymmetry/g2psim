@@ -84,7 +84,12 @@ G2PRun::~G2PRun() {
 }
 
 int G2PRun::Init() {
-    // Default does nothing
+    //static const char* const here = "Init()"
+
+    if (static_cast<G2PProcBase*> (gG2PApps->Find("G2PData"))) {
+        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PFwdProc"))) gG2PApps->Remove(aobj);
+        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PBPM"))) gG2PApps->Remove(aobj);
+    }
 
     return 0;
 }

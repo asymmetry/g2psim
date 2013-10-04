@@ -18,6 +18,7 @@
 #include "TObject.h"
 
 #include "G2PAppBase.hh"
+#include "G2PAppList.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
 
@@ -57,7 +58,7 @@ G2PData::~G2PData() {
 int G2PData::Begin() {
     static const char* const here = "Begin()";
 
-    if (G2PData::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0) return fStatus;
 
     if (LoadData() != 0) {
         Error(here, "Cannot read data.");
