@@ -78,6 +78,7 @@ SYSLIBS     := -lstdc++ -lgfortran
 ifdef LIBCONFIG
 CFLAGS      += -I$(LIBCONFIG)/include
 CXXFLAGS    += -I$(LIBCONFIG)/include
+INCDIRS     += -I$(LIBCONFIG)/include
 #SYSLIBS     += $(LIBCONFIG)/lib/libconfig.a
 SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
 endif
@@ -191,7 +192,7 @@ script:
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT).cxx ......"
-		@$(ROOTSYS)/bin/rootcint -f $@ -c $(CXXFLAGS) $^
+		$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
 
 $(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
 	@echo Compiling $< ......

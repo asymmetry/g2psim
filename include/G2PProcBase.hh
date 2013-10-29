@@ -31,7 +31,7 @@ public:
     virtual int Begin();
     virtual int Process() = 0;
     virtual int End();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
 
     // Gets
     EStage GetStage();

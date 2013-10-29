@@ -133,9 +133,10 @@ int G2PSieve::GetPos(double* V3) {
         selector = pRand->Integer(fNRow * fNCol);
         double temp = pRand->Uniform();
         for (int i = 0; i < fNLargerHole; i++)
-            if (temp < i * fThreshold) {
+            if (temp < (i + 1) * fThreshold) {
                 selector = fLargerHole[i];
                 dhole = fDLargerHole;
+                break;
             }
     } while (!fIsOpen[selector]);
 

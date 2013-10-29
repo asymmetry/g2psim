@@ -43,7 +43,7 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int End();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
 
     // Gets
     int GetDebugLevel() const;

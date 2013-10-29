@@ -27,7 +27,7 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
 
 protected:
     double GetEffBPM(const double* V5bpm_lab, const double* V5fp);

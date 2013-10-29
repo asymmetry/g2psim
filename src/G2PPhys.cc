@@ -128,7 +128,7 @@ int G2PPhys::Process() {
             && gG2PVars->FindSuffix("gun.beam.l_t") && gG2PVars->FindSuffix("gun.react.t")
             && gG2PVars->FindSuffix("gun.beam.l_y") && gG2PVars->FindSuffix("gun.react.y")
             && gG2PVars->FindSuffix("gun.beam.l_p") && gG2PVars->FindSuffix("gun.react.p")
-            && gG2PVars->FindSuffix("gun.beam.l_z") && gG2PVars->FindSuffix("gun.react.z")) {
+            && gG2PVars->FindSuffix("gun.beam.l_z") && gG2PVars->FindSuffix("gun.react.d")) {
         V51[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
         V51[1] = gG2PVars->FindSuffix("gun.beam.l_t")->GetValue();
         V51[2] = gG2PVars->FindSuffix("gun.beam.l_y")->GetValue();
@@ -151,7 +151,7 @@ int G2PPhys::Process() {
             && gG2PVars->FindSuffix("bpm.l_t") && gG2PVars->FindSuffix("tp.rec.t")
             && gG2PVars->FindSuffix("bpm.l_y") && gG2PVars->FindSuffix("tp.rec.y")
             && gG2PVars->FindSuffix("bpm.l_p") && gG2PVars->FindSuffix("tp.rec.p")
-            && gG2PVars->FindSuffix("bpm.l_z") && gG2PVars->FindSuffix("tp.rec.z")) {
+            && gG2PVars->FindSuffix("bpm.l_z") && gG2PVars->FindSuffix("tp.rec.d")) {
         V51[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
         V51[1] = gG2PVars->FindSuffix("bpm.l_t")->GetValue();
         V51[2] = gG2PVars->FindSuffix("bpm.l_y")->GetValue();
@@ -178,11 +178,13 @@ int G2PPhys::Process() {
     return 0;
 }
 
-void G2PPhys::Clear() {
+void G2PPhys::Clear(Option_t* option) {
     fTHreact = 0.0;
     fXSreact = 0.0;
     fTHrec = 0.0;
     fXSrec = 0.0;
+
+    G2PProcBase::Clear(option);
 }
 
 void G2PPhys::SetPars(double* array, int n) {

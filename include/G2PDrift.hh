@@ -29,7 +29,7 @@ public:
 
     virtual int Init();
     virtual int Begin();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
 
     virtual double Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);

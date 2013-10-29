@@ -88,7 +88,7 @@ int G2PAppBase::End() {
     return (Configure(kWRITE));
 }
 
-void G2PAppBase::Clear() {
+void G2PAppBase::Clear(Option_t* option) {
     // Default does nothing
 
     return;

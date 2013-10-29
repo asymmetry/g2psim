@@ -116,11 +116,26 @@ int G2PRun::End() {
     return 0;
 }
 
-void G2PRun::Clear() {
+void G2PRun::Clear(Option_t* option) {
     fConfig.clear();
     fConfigIsSet.clear();
 
     return;
+}
+
+void G2PRun::Print(Option_t* option) const {
+    static const char* const here = "Print()";
+
+    Info(here, "The configuration is :");
+
+    map<string, double>::const_iterator it = fConfig.begin();
+
+    while (it != fConfig.end()) {
+        ostringstream ostr;
+        ostr << it->first << " = " << it->second;
+        Info(here, "%s", ostr.str().c_str());
+        it++;
+    }
 }
 
 int G2PRun::GetConfig(const ConfDef* item, const char* prefix) {
@@ -400,21 +415,6 @@ double G2PRun::GetValue(const config_setting_t* setting) {
     }
 
     return value;
-}
-
-void G2PRun::Print() {
-    static const char* const here = "Print()";
-
-    Info(here, "The configuration is :");
-
-    map<string, double>::iterator it = fConfig.begin();
-
-    while (it != fConfig.end()) {
-        ostringstream ostr;
-        ostr << it->first << " = " << it->second;
-        Info(here, "%s", ostr.str().c_str());
-        it++;
-    }
 }
 
 ClassImp(G2PRun)

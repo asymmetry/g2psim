@@ -100,11 +100,13 @@ int G2PGun::Process() {
     return 0;
 }
 
-void G2PGun::Clear() {
+void G2PGun::Clear(Option_t* option) {
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5tp_tr, 0, sizeof (fV5tp_tr));
+    
+    G2PProcBase::Clear(option);
 }
 
 void G2PGun::SetBeamPos(double x, double y) {

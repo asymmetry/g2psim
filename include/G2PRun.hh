@@ -36,7 +36,9 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int End();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
+
+    virtual void Print(Option_t* /*option*/ = "") const;
 
     int GetConfig(const ConfDef* item, const char* prefix);
     int SetConfig(const ConfDef* item, const char* prefix);
@@ -63,8 +65,6 @@ protected:
     int ParseConfigFile();
     int ParseSetting(const char* prefix, const config_setting_t* setting);
     double GetValue(const config_setting_t* setting);
-
-    void Print();
 
     const char* fConfigFile;
 

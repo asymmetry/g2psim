@@ -25,7 +25,7 @@ public:
 
     virtual int Begin();
     virtual int Process();
-    virtual void Clear();
+    virtual void Clear(Option_t* /*option*/ = "");
 
 protected:
     G2PData(); // Only for ROOT I/O

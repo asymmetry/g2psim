@@ -96,7 +96,7 @@ int G2PDBRec::Begin() {
 
     // Locate the matrix label in the database file
     bool found = false;
-    while ((!found)&&(ifs.getline(buff, LEN) != NULL)) {
+    while ((!found)&&(ifs.getline(buff, LEN) != 0)) {
         tmpline = ::Compress(buff); //strip blanks
 
         if (tmpline.EndsWith("\n")) tmpline.Chop();
@@ -157,7 +157,7 @@ int G2PDBRec::Begin() {
     if (fDebug > 0) Info(here, "Loading matrix from %s ...", fDBFile);
 
     // Read matrix elements line by line
-    while (ifs.getline(buff, LEN) != NULL) {
+    while (ifs.getline(buff, LEN) != 0) {
         TString tmpline(buff);
 
         if (tmpline.EndsWith("\n")) tmpline.Chop();
@@ -265,11 +265,13 @@ int G2PDBRec::Process() {
     return 0;
 }
 
-void G2PDBRec::Clear() {
+void G2PDBRec::Clear(Option_t* option) {
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
     memset(fV5rec_tr, 0, sizeof (fV5rec_tr));
     memset(fV5rec_lab, 0, sizeof (fV5rec_lab));
+    
+    G2PProcBase::Clear(option);
 }
 
 void G2PDBRec::PrintDataBase() {

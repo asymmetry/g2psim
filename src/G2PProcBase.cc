@@ -61,10 +61,10 @@ int G2PProcBase::End() {
     return (G2PAppBase::End());
 }
 
-void G2PProcBase::Clear() {
+void G2PProcBase::Clear(Option_t* option) {
     // Default does nothing
 
-    G2PAppBase::Clear();
+    G2PAppBase::Clear(option);
 }
 
 G2PProcBase::EStage G2PProcBase::GetStage() {

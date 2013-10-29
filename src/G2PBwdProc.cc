@@ -148,11 +148,13 @@ int G2PBwdProc::Process() {
     return 0;
 }
 
-void G2PBwdProc::Clear() {
+void G2PBwdProc::Clear(Option_t* option) {
     memset(fV5tpsnake_tr, 0, sizeof (fV5tpsnake_tr));
     memset(fV5sieveproj_tr, 0, sizeof (fV5sieveproj_tr));
     memset(fV5tprec_tr, 0, sizeof (fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof (fV5tprec_lab));
+    
+    G2PProcBase::Clear(option);
 }
 
 double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp) {

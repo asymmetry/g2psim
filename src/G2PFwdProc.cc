@@ -148,11 +148,13 @@ int G2PFwdProc::Process() {
     return 0;
 }
 
-void G2PFwdProc::Clear() {
+void G2PFwdProc::Clear(Option_t* option) {
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
+    
+    G2PProcBase::Clear(option);
 }
 
 void G2PFwdProc::ApplyVDCRes(double* V5fp) {

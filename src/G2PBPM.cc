@@ -108,12 +108,14 @@ int G2PBPM::Process() {
     return 0;
 }
 
-void G2PBPM::Clear() {
+void G2PBPM::Clear(Option_t* option) {
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5bpm_bpm, 0, sizeof (fV5bpm_bpm));
     memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
     memset(fV2bpma_bpm, 0, sizeof (fV2bpma_bpm));
     memset(fV2bpmb_bpm, 0, sizeof (fV2bpmb_bpm));
+    
+    G2PProcBase::Clear(option);
 }
 
 void G2PBPM::SetBPMRes(double a, double b) {

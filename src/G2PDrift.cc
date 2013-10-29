@@ -80,13 +80,13 @@ int G2PDrift::Begin() {
     return (fStatus = kOK);
 }
 
-void G2PDrift::Clear() {
-    G2PAppBase::Clear();
-
+void G2PDrift::Clear(Option_t* option) {
     memset(fField, 0, sizeof (fField));
     memset(fIPoint, 0, sizeof (fIPoint));
     memset(fMPoint, 0, sizeof (fMPoint));
     memset(fEPoint, 0, sizeof (fEPoint));
+    
+    G2PAppBase::Clear(option);
 }
 
 double G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout) {

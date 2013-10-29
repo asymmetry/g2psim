@@ -36,7 +36,7 @@
 #include "G2PSieveGun.hh"
 #include "G2PSim.hh"
 
-#define CLOCKS_PER_SEC 1000000
+// #define CLOCKS_PER_SEC 1000000
 
 using namespace std;
 
