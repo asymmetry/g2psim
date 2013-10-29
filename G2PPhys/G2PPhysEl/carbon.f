@@ -77,7 +77,7 @@
       IF (EX.NE.0.0D0) THEN
           IF (X0.LE.0.0D0) X0=3.0D0*RSQR*EX/HBARC
           X0=STEP*INT(X0/STEP)
-          IF (NF.LE.0) NF=1.0D0+3.0D0*X0
+          IF (NF.LE.0) NF=INT(1.0D0+3.0D0*X0)
           NF=MIN(NF,NFMX-1)
           IF ((OTEST.LE.0.0D0).AND.(2.0D0*EX*RSQR.LE.HBARC)) 
      1    OTEST=180.0D0

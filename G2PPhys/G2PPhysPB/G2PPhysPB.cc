@@ -7,16 +7,14 @@
 
 using namespace std;
 
-extern "C" 
-{
+extern "C" {
     void bosted_(double* Z, double* A, double* Ei, double* Ep, double* ang, double* xs, double *Tb, double *Ta);
 }
 
-static const double kDEG = 3.14159265358979323846/180.0;
+static const double kDEG = 3.14159265358979323846 / 180.0;
 static const double kMEV = 1.0e-3;
 
-static double PBosted(int Z, int A, double Ei, double Ef, double theta, double Tb, double Ta)
-{
+static double PBosted(int Z, int A, double Ei, double Ef, double theta, double Tb, double Ta) {
     double NZ, NA;
     NZ = Z;
     NA = A;
@@ -26,34 +24,31 @@ static double PBosted(int Z, int A, double Ei, double Ef, double theta, double T
 }
 
 G2PPhysPB::G2PPhysPB() :
-    fTb(0.0), fTa(0.0)
-{
+fTb(0.0), fTa(0.0) {
     // Nothing to do
 }
 
-G2PPhysPB::~G2PPhysPB()
-{
+G2PPhysPB::~G2PPhysPB() {
     // Nothing to do
 }
 
-void G2PPhysPB::SetPars(double* array, int n)
-{
+void G2PPhysPB::SetPars(double* array, int n) {
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
-    case 0:
-        break;
-    case 2:
-        fTb = fPars[0]; fTa = fPars[1];
-        break;
-    default:
-        printf("Error: G2PPhysPB::SetPars(): Invalid number of pars.\n");
-        break;
+        case 0:
+            break;
+        case 2:
+            fTb = fPars[0];
+            fTa = fPars[1];
+            break;
+        default:
+            printf("Error: G2PPhysPB::SetPars(): Invalid number of pars.\n");
+            break;
     }
 }
 
-double G2PPhysPB::GetXS(double Ei, double Ef, double theta)
-{
-    if (iPID==11) return PBosted(iZ, iA, Ei, Ef, theta, fTb, fTa);
+double G2PPhysPB::GetXS(double Ei, double Ef, double theta) {
+    if (iPID == 11) return PBosted(iZ, iA, Ei, Ef, theta, fTb, fTa);
     else return -1;
 }

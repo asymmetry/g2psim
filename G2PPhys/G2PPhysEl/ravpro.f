@@ -251,7 +251,7 @@ C    Calculation of RHO
 20      FN=N
       RHO=DSQRT(FN*FN-GAM*GAM)
       XDEQ=ZV15(1)
-      NS=FN*(10.0D0**(-11.0D0/FN))
+      NS=INT(FN*(10.0D0**(-11.0D0/FN)))
       IF (NS) 5015,5015,5012
 C
 C    Integration starting further away from the origin, XDEQ.
@@ -291,7 +291,7 @@ C    Set up for integration with N greater than NST.
       GO TO 9030
 C
 C    Starting at X not equal to XDEQ
-5213      I=(STRT*2.0D0/XDEQ)+.51D0
+5213      I=INT((STRT*2.0D0/XDEQ)+.51D0)
       IF (I.GT.NPOTMX) THEN
           WRITE (6,5217) I,NPOTMX
 5217     FORMAT (' The array dimension for the POT array is ',
@@ -735,7 +735,7 @@ C
 C
 C    Normalization integrals
       RETURN
-20      I=(XX*2.0D0/XDEQ)+.51D0
+20      I=INT((XX*2.0D0/XDEQ)+.51D0)
       IF (I.GT.NPOTMX) THEN
           WRITE (6,25) I,NPOTMX
 25     FORMAT (' The array dimension for the POT array is ',
@@ -1077,6 +1077,8 @@ C    Method taken from Davis Tables of Higher Mathematical Functions.
       DO 300 I=1,22
 300      RN=(RN+B(23-I))*AA
       RN=RN+1.0D0
+      NFACT=NFACT
+      NTEST=NTEST
 C
 C    Calculation of the coefficient for positive RHO
       IF(NN)350,350,390
