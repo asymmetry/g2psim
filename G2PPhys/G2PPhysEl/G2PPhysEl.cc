@@ -1,3 +1,19 @@
+// -*- C++ -*-
+
+/* class G2PPhysEl
+ * Elastic cross section models.
+ * He4: calculated from charge and magnetization densities, original coded by M. Friedman.
+ * C12: 1) calculated from fitted charge densities.
+ *      2) calculated from form factor.
+ * N14: same as He4.
+ */
+
+// History:
+//   Mar 2013, C. Gu, First public version, with C12 models.
+//   Apr 2013, C. Gu, Add L. Cardman's C12 charge densities.
+//   Nov 2013, C. Gu, Add He charge and magnetization densities from D. Jager, original coded by M. Friedman.
+//
+
 #include <cstdio>
 #include <cmath>
 #include <vector>
@@ -26,27 +42,42 @@ static const double kFm = kHbar*kC / 1e-15 / 1e9 / kQe;
 
 static const double kIntegralMin = 0.0;
 static const double kIntegralMax = 10.0;
-static double kRho0;
+static double kRho0GE_He4, kRho0GE_N14, kRho0GM_N14;
 
-static double rho_He4(double x, void* data) {
+static double rhoGE_He4(double x, void* data)
+{
     return 4 * kPi * x * x * (1 + 0.445 * x * x / 1.008 / 1.008) / (1 + exp((x - 1.008) / 0.327));
 }
 
-static double func_He4(double x, void* data) {
+static double funcGE_He4(double x, void* data)
+{
     double qfm = *(double*) data;
-    return kRho0 * rho_He4(x, NULL) * sin(qfm * x) / (qfm * x);
+    return kRho0GE_He4 * rhoGE_He4(x, NULL) * sin(qfm * x) / (qfm * x);
 }
 
-static double FF_He4(double q2) {
+static double GE_He4(double q2)
+{
     double q = sqrt(q2);
     // calculate FF from density function. q in units of GeV
     double qfm = q / kFm;
     // printf("θ = %3.1f.  Q2 = %3.1f\n", deg, qfm * qfm);
     double params[1] = {qfm};
-    return fabs(gauss_legendre(QUADRATURE_ORDER, func_He4, params, kIntegralMin, kIntegralMax));
+    return fabs(gauss_legendre(QUADRATURE_ORDER, funcGE_He4, params, kIntegralMin, kIntegralMax));
 }
 
-static double FF_C12(double Q2) {
+static double Carbon(double Ei, double theta)
+{
+    double e = Ei * 1000;
+    double t = theta / kDEG;
+    double XS;
+    carbon_(&e, &t, &XS);
+
+    XS *= 1.0e4; // fm^2 (1e-30m^2) to microbarn (1e-34m^2)
+    return XS;
+}
+
+static double FF_C12(double Q2)
+{
     /*
      * K. Slifer 10/04/02
      * 12C Form Factor
@@ -77,7 +108,57 @@ static double FF_C12(double Q2) {
     return Fc12;
 }
 
-static double FF_All(double Q2, double Z) {
+static double rhoGE_N14(double x, void* data)
+{
+    return 4 * kPi * x * x * (1 + 1.234 * x * x / 3.0976) * exp(-x * x / 3.0976);
+}
+
+static double funcGE_N14(double x, void* data)
+{
+    double qfm = *(double*) data;
+    return kRho0GE_N14 * rhoGE_N14(x, NULL) * sin(qfm * x) / (qfm * x);
+}
+
+static double rhoGM_N14(double x, void* data)
+{
+    // double Z = 7, A = 14, a0 = 1.61; 
+    // double alpha0 = (Z-2.)/3.;
+    // double rp     = 0.810;		//proton magnetic radius fm (De Jager 1974)
+    // double ap     = (2/3.)*rp*rp;	
+    // double a      = (A-1)/A*a0*a0+ap*ap;
+    // double alpha  = alpha0*a0*a0/(a*a+3/2.*alpha0*(a*a-a0*a0));
+
+    return 4 * kPi * x * x * (1 + 0.25193 * x * x / 6.751) * exp(-x * x / 6.751);
+}
+
+static double funcGM_N14(double x, void* data)
+{
+    double qfm = *(double*) data;
+    return kRho0GM_N14 * rhoGM_N14(x, NULL) * sin(qfm * x) / (qfm * x);
+}
+
+static double GE_N14(double q2)
+{
+    double q = sqrt(q2);
+    // calculate FF from density function. q in units of GeV
+    double qfm = q / kFm;
+    // printf("θ = %3.1f.  Q2 = %3.1f\n", deg, qfm * qfm);
+    double params[1] = {qfm};
+    return fabs(gauss_legendre(QUADRATURE_ORDER, funcGE_N14, params, kIntegralMin, kIntegralMax));
+}
+
+static double GM_N14(double q2)
+{
+    double q = sqrt(q2);
+    // calculate FF from density function. q in units of GeV
+    double qfm = q / kFm;
+    // printf("θ = %3.1f.  Q2 = %3.1f\n", deg, qfm * qfm);
+    double params[1] = {qfm};
+    return fabs(gauss_legendre(QUADRATURE_ORDER, funcGM_N14, params, kIntegralMin, kIntegralMax));
+}
+
+static double FF_All(double Q2, double Z)
+{
     // input: Q2 in GeV2, Z is atomic number
 
     double XA = 1.64; // unit in Fm
@@ -94,28 +175,25 @@ static double FF_All(double Q2, double Z) {
     return FF;
 }
 
-static double Carbon(double Ei, double theta) {
-    double e = Ei * 1000;
-    double t = theta / kDEG;
-    double XS;
-    carbon_(&e, &t, &XS);
-
-    XS *= 1.0e4; // fm^2 (1e-30m^2) to microbarn (1e-34m^2)
-    return XS;
-}
-
-G2PPhysEl::G2PPhysEl() : iSetting(1) {
+G2PPhysEl::G2PPhysEl() : iSetting(1)
+{
     // Constructor
 
-    double temp = gauss_legendre(QUADRATURE_ORDER, rho_He4, NULL, kIntegralMin, kIntegralMax);
-    kRho0 = 1. / temp;
+    double temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_He4, NULL, kIntegralMin, kIntegralMax);
+    kRho0GE_He4 = 1. / temp;
+    temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_N14, NULL, kIntegralMin, kIntegralMax);
+    kRho0GE_N14 = 1. / temp;
+    temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_N14, NULL, kIntegralMin, kIntegralMax);
+    kRho0GM_N14 = 1. / temp;
 }
 
-G2PPhysEl::~G2PPhysEl() {
+G2PPhysEl::~G2PPhysEl()
+{
     // Nothing to do
 }
 
-void G2PPhysEl::SetPars(double* array, int n) {
+void G2PPhysEl::SetPars(double* array, int n)
+{
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
@@ -140,21 +218,21 @@ void G2PPhysEl::SetPars(double* array, int n) {
     }
 }
 
-double G2PPhysEl::GetXS(double Ei, double Ef, double theta) {
+double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
+{
     if ((iZ == 2)&&(iA == 4)) {
         if (iSetting == 1) return GetXS_He4(Ei, theta);
         else return GetXS_All(Ei, theta);
-    }
-    else if ((iZ == 6)&&(iA == 12)) {
+    } else if ((iZ == 6)&&(iA == 12)) {
         if (iSetting == 1) return Carbon(Ei, theta);
         else return GetXS_C12(Ei, theta);
-    }
-    else return GetXS_All(Ei, theta);
+    } else return GetXS_All(Ei, theta);
 
     return 0.0;
 }
 
-double G2PPhysEl::GetXS_He4(double Ei, double theta) {
+double G2PPhysEl::GetXS_He4(double Ei, double theta)
+{
     // reference: xiaohui thesis, eq. 1.39
     int Z = 2;
     double M = 3.7284; // GeV
@@ -162,14 +240,15 @@ double G2PPhysEl::GetXS_He4(double Ei, double theta) {
     double Q2 = 4 * Ei * eP * sin(theta / 2) * sin(theta / 2); // units GeV2
     // printf("θ = %3.1f.  Q2 = %3.1f\n", theta / deg, Q2 / GeVfm / GeVfm);
     double tau = Q2 / 4.0 / M / M;
-    double GE = FF_He4(Q2);
+    double GE = GE_He4(Q2);
     double GM = 0.0;
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
 
     return sigma;
 }
 
-double G2PPhysEl::GetXS_C12(double Ei, double theta) {
+double G2PPhysEl::GetXS_C12(double Ei, double theta)
+{
     double Recoil, Ef, Q2;
     double Mtg = 11.188;
 
@@ -202,7 +281,24 @@ double G2PPhysEl::GetXS_C12(double Ei, double theta) {
     return Recoil * Mott * FF*FF; // microbarn
 }
 
-double G2PPhysEl::GetXS_All(double Ei, double theta) {
+double G2PPhysEl::GetXS_N14(double Ei, double theta)
+{
+    // reference: xiaohui thesis, eq. 1.39
+    int Z = 7;
+    double M = 13.04378; // GeV
+    double eP = Ei / (1 + Ei / M * (1 - cos(theta))); // scattered electron energy
+    double Q2 = 4 * Ei * eP * sin(theta / 2) * sin(theta / 2); // units GeV2
+    // printf("θ = %3.1f.  Q2 = %3.1f\n", theta / deg, Q2 / GeVfm / GeVfm);
+    double tau = Q2 / 4.0 / M / M;
+    double GE = GE_N14(Q2);
+    double GM = GM_N14(Q2);
+    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
+
+    return sigma;
+}
+
+double G2PPhysEl::GetXS_All(double Ei, double theta)
+{
     double Recoil, Ef, Q2;
     double Mtg = fTargetMass;
 
