@@ -21,6 +21,7 @@ obj.*
 *_Dict.*
 
 plots/
+scripts/
 *.bak
 *.root
 *.png
@@ -28,7 +29,7 @@ plots/
 *.map
 
 G2PSim
-Run.C
+/Run.C
 update.sh
 gitrm.sh
-*.cfg
+/*.cfg

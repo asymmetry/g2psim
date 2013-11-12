@@ -436,7 +436,7 @@ static double ltbl[1024] = {0.00000000000000000000,0.00000000000000000000,0.5000
 void gauss_legendre_tbl(int n, double* x, double* w, double eps)
 {
 	double x0,  x1,  dx;	/* Abscissas */
-	double w0,  w1,  dw;	/* Weights */
+	double w0 = 0,  w1,  dw;	/* Weights */
 	double P0, P_1, P_2;	/* Legendre polynomial values */
 	double dpdx;			/* Legendre polynomial derivative */
 	int i, j, k, m;			/* Iterators */

@@ -29,7 +29,7 @@ using namespace std;
 
 static const double kELECTRONMASS = 0.510998918; //MeV
 
-G2PAppList* G2PMaterial::pG2PMaterial = NULL;
+G2PAppList* G2PMaterial::pG2PMaterial = new G2PAppList();
 
 G2PMaterial::G2PMaterial() :
 fName(NULL)

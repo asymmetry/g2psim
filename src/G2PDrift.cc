@@ -137,7 +137,7 @@ double G2PDrift::Drift(const double* x, double p, double z_tr, double angle, dou
 
     double xx[5] = {x[0], x[1], x[2], x[3], x[4]};
 
-    double result;
+    double result = 0;
     if (cylinder_type == 0) {
         result = (this->*pfDriftTCSL)(x, p, z_tr, angle, zlimit, llimit, rlimit, xout);
     }
