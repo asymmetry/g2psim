@@ -20,6 +20,7 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
+#include "G2PDBRec.hh"
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PHRS.hh"
@@ -38,7 +39,8 @@ using namespace std;
 G2PBwdProc* G2PBwdProc::pG2PBwdProc = NULL;
 
 G2PBwdProc::G2PBwdProc() :
-fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDrift(NULL), pHRS(NULL), pSieve(NULL) {
+fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDBRec(NULL), pDrift(NULL), pHRS(NULL), pSieve(NULL)
+{
     if (pG2PBwdProc) {
         Error("G2PBwdProc()", "Only one instance of G2PBwdProc allowed.");
         MakeZombie();
@@ -50,14 +52,18 @@ fBeamEnergy(0.0), fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), pDrift(NU
     Clear();
 }
 
-G2PBwdProc::~G2PBwdProc() {
+G2PBwdProc::~G2PBwdProc()
+{
     if (pG2PBwdProc == this) pG2PBwdProc = NULL;
 }
 
-int G2PBwdProc::Init() {
+int G2PBwdProc::Init()
+{
     //static const char* const here = "Init()";
 
     if (G2PProcBase::Init() != 0) return fStatus;
+
+    pDBRec = static_cast<G2PDBRec*> (gG2PApps->Find("G2PDBRec"));
 
     pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
     if (!pDrift) {
@@ -77,7 +83,8 @@ int G2PBwdProc::Init() {
     return (fStatus = kOK);
 }
 
-int G2PBwdProc::Begin() {
+int G2PBwdProc::Begin()
+{
     //static const char* const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0) return fStatus;
@@ -85,7 +92,8 @@ int G2PBwdProc::Begin() {
     return (fStatus = kOK);
 }
 
-int G2PBwdProc::Process() {
+int G2PBwdProc::Process()
+{
     static const char* const here = "Process()";
 
     if (fDebug > 2) Info(here, " ");
@@ -105,16 +113,28 @@ int G2PBwdProc::Process() {
 
     V5fp_tr[4] = GetEffBPM(V5bpm_lab, V5fp_tr);
 
-    if (!pHRS->Backward(V5fp_tr, fV5tpsnake_tr)) return -1;
+    double* V5tp;
 
-    if (fDebug > 1) {
-        Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpsnake_tr[0], fV5tpsnake_tr[1], fV5tpsnake_tr[2], fV5tpsnake_tr[3], fV5tpsnake_tr[4]);
+    if (pDBRec) {
+        V5tp = fV5tpmat_tr;
+        pDBRec->Backward(V5fp_tr, V5tp);
+        V5tp[0] = V5fp_tr[4];
+        //V5tp[0] = -V5bpm_lab[2];
+        if (fDebug > 1) {
+            Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tp[0], V5tp[1], V5tp[2], V5tp[3], V5tp[4]);
+        }
+    } else {
+        V5tp = fV5tpsnake_tr;
+        if (!pHRS->Backward(V5fp_tr, V5tp)) return -1;
+        if (fDebug > 1) {
+            Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", V5tp[0], V5tp[1], V5tp[2], V5tp[3], V5tp[4]);
+        }
     }
 
-    Project(fV5tpsnake_tr[0], fV5tpsnake_tr[2], 0.0, pSieve->GetZ(), fV5tpsnake_tr[1], fV5tpsnake_tr[3], fV5sieveproj_tr[0], fV5sieveproj_tr[2]);
-    fV5sieveproj_tr[1] = fV5tpsnake_tr[1];
-    fV5sieveproj_tr[3] = fV5tpsnake_tr[3];
-    fV5sieveproj_tr[4] = fV5tpsnake_tr[4];
+    Project(V5tp[0], V5tp[2], 0.0, pSieve->GetZ(), V5tp[1], V5tp[3], fV5sieveproj_tr[0], fV5sieveproj_tr[2]);
+    fV5sieveproj_tr[1] = V5tp[1];
+    fV5sieveproj_tr[3] = V5tp[3];
+    fV5sieveproj_tr[4] = V5tp[4];
 
     if (fDebug > 1) {
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
@@ -128,8 +148,8 @@ int G2PBwdProc::Process() {
 #ifndef USE_DEFAULT_ENDZ
     double x[3] = {fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]};
     double p[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * cos(fV5tprec_lab[3]),
-                   fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * sin(fV5tprec_lab[3]),
-                   fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(fV5tprec_lab[1])};
+        fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * sin(fV5tprec_lab[3]),
+        fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(fV5tprec_lab[1])};
     pDrift->Drift(x, p, -13.6271e-3, 10.0, x, p);
     double tempd;
     fV5tprec_lab[0] = x[0];
@@ -148,16 +168,19 @@ int G2PBwdProc::Process() {
     return 0;
 }
 
-void G2PBwdProc::Clear(Option_t* option) {
+void G2PBwdProc::Clear(Option_t* option)
+{
     memset(fV5tpsnake_tr, 0, sizeof (fV5tpsnake_tr));
+    memset(fV5tpmat_tr, 0, sizeof (fV5tpmat_tr));
     memset(fV5sieveproj_tr, 0, sizeof (fV5sieveproj_tr));
     memset(fV5tprec_tr, 0, sizeof (fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof (fV5tprec_lab));
-    
+
     G2PProcBase::Clear(option);
 }
 
-double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp) {
+double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp)
+{
     static const char* const here = "GetEffBPM()";
 
     // Fit result:
@@ -226,7 +249,8 @@ double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp) {
     return xbpm_tr_eff;
 }
 
-int G2PBwdProc::Configure(EMode mode) {
+int G2PBwdProc::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -243,7 +267,8 @@ int G2PBwdProc::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-int G2PBwdProc::DefineVariables(EMode mode) {
+int G2PBwdProc::DefineVariables(EMode mode)
+{
     if (mode == kDEFINE && fIsSetup) return 0;
     fIsSetup = (mode == kDEFINE);
 
@@ -253,6 +278,11 @@ int G2PBwdProc::DefineVariables(EMode mode) {
         {"tp.snake.y", "SNAKE rec to Target Plane Y", kDOUBLE, &fV5tpsnake_tr[2]},
         {"tp.snake.p", "SNAKE rec to Target Plane P", kDOUBLE, &fV5tpsnake_tr[3]},
         {"tp.snake.d", "SNAKE rec to Target Plane D", kDOUBLE, &fV5tpsnake_tr[4]},
+        {"tp.mat.x", "MATRIX rec to Target Plane X", kDOUBLE, &fV5tpmat_tr[0]},
+        {"tp.mat.t", "MATRIX rec to Target Plane T", kDOUBLE, &fV5tpmat_tr[1]},
+        {"tp.mat.y", "MATRIX rec to Target Plane Y", kDOUBLE, &fV5tpmat_tr[2]},
+        {"tp.mat.p", "MATRIX rec to Target Plane P", kDOUBLE, &fV5tpmat_tr[3]},
+        {"tp.mat.d", "MATRIX rec to Target Plane D", kDOUBLE, &fV5tpmat_tr[4]},
         {"sieve.proj.x", "Project to Sieve X", kDOUBLE, &fV5sieveproj_tr[0]},
         {"sieve.proj.t", "Project to Sieve T", kDOUBLE, &fV5sieveproj_tr[1]},
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
@@ -274,7 +304,8 @@ int G2PBwdProc::DefineVariables(EMode mode) {
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PBwdProc::MakePrefix() {
+void G2PBwdProc::MakePrefix()
+{
     const char* basename = "bwd";
 
     G2PAppBase::MakePrefix(basename);

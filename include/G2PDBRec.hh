@@ -9,6 +9,7 @@
 //   Jun 2010, J. Huang, HRS optics matrix optimization class.
 //   Jan 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
+//   Nov 2013, C. Gu, Change back to a G2PAppBase class.
 //
 
 #ifndef G2P_DBREC_H
@@ -20,14 +21,14 @@
 
 using namespace std;
 
-class G2PDBRec : public G2PProcBase {
+class G2PDBRec : public G2PAppBase {
 public:
     G2PDBRec();
     virtual ~G2PDBRec();
 
     virtual int Begin();
-    virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+
+    int Backward(const double* V5_fp, double* V5_tg);
 
 protected:
 
@@ -62,7 +63,6 @@ protected:
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
 
     virtual int Configure(EMode mode = kTWOWAY);
-    virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
     const char* fDBPrefix;
@@ -80,11 +80,6 @@ protected:
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
     double fHRSAngle;
-
-    double fV5fp_tr[5];
-    double fV5fp_rot[5];
-    double fV5rec_tr[5];
-    double fV5rec_lab[5];
 
 private:
     static G2PDBRec* pG2PDBRec;

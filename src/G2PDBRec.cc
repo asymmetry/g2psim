@@ -9,6 +9,7 @@
 //   Jun 2010, J. Huang, HRS optics matrix optimization class.
 //   Jan 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
+//   Nov 2013, C. Gu, Change back to a G2PAppBase class.
 //
 
 #include <cstdlib>
@@ -43,7 +44,8 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 G2PDBRec* G2PDBRec::pG2PDBRec = NULL;
 
 G2PDBRec::G2PDBRec() :
-fDBPrefix(NULL), fDBFile(NULL), fHRSAngle(5.767 * kDEG) {
+fDBPrefix(NULL), fDBFile(NULL), fHRSAngle(5.767 * kDEG)
+{
     if (pG2PDBRec) {
         Error("G2PDBRec()", "Only one instance of G2PDBRec allowed.");
         MakeZombie();
@@ -51,24 +53,24 @@ fDBPrefix(NULL), fDBFile(NULL), fHRSAngle(5.767 * kDEG) {
     }
     pG2PDBRec = this;
 
-    fPriority = 5;
     Clear();
 }
 
-G2PDBRec::~G2PDBRec() {
+G2PDBRec::~G2PDBRec()
+{
     if (pG2PDBRec == this) pG2PDBRec = NULL;
 }
 
-int G2PDBRec::Begin() {
+int G2PDBRec::Begin()
+{
     static const char* const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PAppBase::Begin() != 0) return fStatus;
 
     if (fHRSAngle > 0) {
         fDBPrefix = "L";
         fDBFile = "db_L.vdc.dat";
-    }
-    else {
+    } else {
         fDBPrefix = "R";
         fDBFile = "db_R.vdc.dat";
     }
@@ -215,26 +217,22 @@ int G2PDBRec::Begin() {
     return (fStatus = kOK);
 }
 
-int G2PDBRec::Process() {
-    static const char* const here = "Process()";
+int G2PDBRec::Backward(const double* V5_fp, double* V5_tg)
+{
+    static const char* const here = "Backward()";
 
-    if (fDebug > 2) Info(here, " ");
+    double V5_fp_rot[5] = {0};
 
-    fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
-    fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
-    fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
-    fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
-
-    TRCS2DCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
+    TRCS2FCS(V5_fp, fHRSAngle, V5_fp_rot);
 
     // Calculate target coordinates from focal plane coordinates
     double x_fp, y_fp, t_fp, p_fp;
     double powers[kNUM_PRECOMP_POW][5];
 
-    x_fp = fV5fp_rot[0];
-    t_fp = tan(fV5fp_rot[1]);
-    y_fp = fV5fp_rot[2];
-    p_fp = tan(fV5fp_rot[3]);
+    x_fp = V5_fp_rot[0];
+    t_fp = tan(V5_fp_rot[1]);
+    y_fp = V5_fp_rot[2];
+    p_fp = tan(V5_fp_rot[3]);
 
     for (int i = 0; i < kNUM_PRECOMP_POW; i++) {
         powers[i][0] = pow(x_fp, i);
@@ -251,30 +249,19 @@ int G2PDBRec::Process() {
     CalcMatrix(x_fp, fPTAMatrixElems);
     CalcMatrix(x_fp, fYTAMatrixElems);
 
-    fV5rec_tr[0] = 0.0;
-    fV5rec_tr[1] = atan(CalcVar(powers, fTMatrixElems));
-    fV5rec_tr[2] = CalcVar(powers, fYMatrixElems);
-    fV5rec_tr[3] = atan(CalcVar(powers, fPMatrixElems));
-    fV5rec_tr[4] = CalcVar(powers, fDMatrixElems);
+    V5_tg[0] = 0.0;
+    V5_tg[1] = atan(CalcVar(powers, fTMatrixElems));
+    V5_tg[2] = CalcVar(powers, fYMatrixElems);
+    V5_tg[3] = atan(CalcVar(powers, fPMatrixElems));
+    V5_tg[4] = CalcVar(powers, fDMatrixElems);
 
-    TCS2HCS(fV5rec_tr[0], fV5rec_tr[2], 0.0, fHRSAngle, fV5rec_lab[0], fV5rec_lab[2], fV5rec_lab[4]);
-    TCS2HCS(fV5rec_tr[1], fV5rec_tr[3], fHRSAngle, fV5rec_lab[1], fV5rec_lab[3]);
-
-    if (fDebug > 1) Info(here, "dbrec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_tg[0], V5_tg[1], V5_tg[2], V5_tg[3], V5_tg[4]);
 
     return 0;
 }
 
-void G2PDBRec::Clear(Option_t* option) {
-    memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
-    memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
-    memset(fV5rec_tr, 0, sizeof (fV5rec_tr));
-    memset(fV5rec_lab, 0, sizeof (fV5rec_lab));
-    
-    G2PProcBase::Clear(option);
-}
-
-void G2PDBRec::PrintDataBase() {
+void G2PDBRec::PrintDataBase()
+{
     static const char* const here = "TransDet2Rot()";
 
     map<int, vector<THaMatrixElement>*> matrix_map;
@@ -312,7 +299,8 @@ void G2PDBRec::PrintDataBase() {
     }
 }
 
-double G2PDBRec::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix) {
+double G2PDBRec::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
+{
     // Calculate the value of a variable at the target
     // Must already have x values for the matrix elements
     double value = 0.0;
@@ -329,7 +317,8 @@ double G2PDBRec::CalcVar(const double powers[][5], vector<THaMatrixElement> &mat
     return value;
 }
 
-void G2PDBRec::CalcMatrix(const double x, vector<THaMatrixElement> &matrix) {
+void G2PDBRec::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
+{
     // Calculate the value of a matrix element for a given x
     double value = 0.0;
 
@@ -344,7 +333,8 @@ void G2PDBRec::CalcMatrix(const double x, vector<THaMatrixElement> &matrix) {
     }
 }
 
-int G2PDBRec::Configure(EMode mode) {
+int G2PDBRec::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -358,28 +348,8 @@ int G2PDBRec::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-int G2PDBRec::DefineVariables(EMode mode) {
-    if (mode == kDEFINE && fIsSetup) return 0;
-    fIsSetup = (mode == kDEFINE);
-
-    VarDef vars[] = {
-        {"rec.x", "Rec TP X", kDOUBLE, &fV5rec_tr[0]},
-        {"rec.t", "Rec TP T", kDOUBLE, &fV5rec_tr[1]},
-        {"rec.y", "Rec TP Y", kDOUBLE, &fV5rec_tr[2]},
-        {"rec.p", "Rec TP P", kDOUBLE, &fV5rec_tr[3]},
-        {"rec.d", "Rec TP D", kDOUBLE, &fV5rec_tr[4]},
-        {"rec.l_x", "Rec TP X (lab)", kDOUBLE, &fV5rec_lab[0]},
-        {"rec.l_t", "Rec TP T (lab)", kDOUBLE, &fV5rec_lab[1]},
-        {"rec.l_y", "Rec TP Y (lab)", kDOUBLE, &fV5rec_lab[2]},
-        {"rec.l_p", "Rec TP P (lab)", kDOUBLE, &fV5rec_lab[3]},
-        {"rec.l_z", "Rec TP Z (lab)", kDOUBLE, &fV5rec_lab[4]},
-        {0}
-    };
-
-    return DefineVarsFromList(vars, mode);
-}
-
-void G2PDBRec::MakePrefix() {
+void G2PDBRec::MakePrefix()
+{
     const char* base = "db";
 
     G2PAppBase::MakePrefix(base);
@@ -387,15 +357,18 @@ void G2PDBRec::MakePrefix() {
 
 G2PDBRec::THaMatrixElement::THaMatrixElement()
 : fIsZero(true), fPower(3), fOrder(0), fPoly(G2PDBRec::kPORDER),
-fValue(0) {
+fValue(0)
+{
     // Nothing to do
 }
 
-G2PDBRec::THaMatrixElement::~THaMatrixElement() {
+G2PDBRec::THaMatrixElement::~THaMatrixElement()
+{
     // Nothing to do
 }
 
-bool G2PDBRec::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const {
+bool G2PDBRec::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
+{
     // Compare coefficients of this matrix element to another
     if (fPower.size() != rhs.fPower.size()) return false;
     for (vector<int>::size_type i = 0; i < fPower.size(); i++) {
@@ -404,7 +377,8 @@ bool G2PDBRec::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const {
     return true;
 }
 
-void G2PDBRec::THaMatrixElement::SkimPoly() {
+void G2PDBRec::THaMatrixElement::SkimPoly()
+{
     if (fIsZero) return;
 
     while ((!fPoly[fOrder - 1])&&(fOrder > 0)) {
@@ -414,7 +388,8 @@ void G2PDBRec::THaMatrixElement::SkimPoly() {
     if (fOrder == 0) fIsZero = true;
 }
 
-void G2PDBRec::THaMatrixElement::Print() {
+void G2PDBRec::THaMatrixElement::Print()
+{
     if (fIsZero) {
         cout << "This element is zero" << endl;
         return;

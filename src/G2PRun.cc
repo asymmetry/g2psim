@@ -42,7 +42,8 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PRun* G2PRun::pG2PRun = NULL;
 
-G2PRun::G2PRun() : fConfigFile(NULL) {
+G2PRun::G2PRun() : fConfigFile(NULL)
+{
     // Constructor
 
     if (pG2PRun) {
@@ -74,7 +75,8 @@ G2PRun::G2PRun() : fConfigFile(NULL) {
     gG2PRun = this;
 }
 
-G2PRun::~G2PRun() {
+G2PRun::~G2PRun()
+{
     // Destructor
 
     Clear();
@@ -83,7 +85,8 @@ G2PRun::~G2PRun() {
     gG2PRun = NULL;
 }
 
-int G2PRun::Init() {
+int G2PRun::Init()
+{
     //static const char* const here = "Init()"
 
     if (static_cast<G2PProcBase*> (gG2PApps->Find("G2PData"))) {
@@ -94,7 +97,8 @@ int G2PRun::Init() {
     return 0;
 }
 
-int G2PRun::Begin() {
+int G2PRun::Begin()
+{
     //static const char* const here = "Begin()";
 
     if (fConfigFile && *fConfigFile) {
@@ -103,12 +107,13 @@ int G2PRun::Begin() {
 
     if (fConfigIsSet.find("run.seed") == fConfigIsSet.end())
         SetSeed(0);
-    if (fConfig["run.debuglevel"] > 0) Print();
+    //if (fConfig["run.debuglevel"] > 0) Print();
 
     return 0;
 }
 
-int G2PRun::End() {
+int G2PRun::End()
+{
     // Default does nothing
 
     if (fConfig["run.debuglevel"] > 1) Print();
@@ -116,14 +121,16 @@ int G2PRun::End() {
     return 0;
 }
 
-void G2PRun::Clear(Option_t* option) {
+void G2PRun::Clear(Option_t* option)
+{
     fConfig.clear();
     fConfigIsSet.clear();
 
     return;
 }
 
-void G2PRun::Print(Option_t* option) const {
+void G2PRun::Print(Option_t* option) const
+{
     static const char* const here = "Print()";
 
     Info(here, "The configuration is :");
@@ -131,14 +138,15 @@ void G2PRun::Print(Option_t* option) const {
     map<string, double>::const_iterator it = fConfig.begin();
 
     while (it != fConfig.end()) {
-        ostringstream ostr;
+        ostringstream ostr; // String stream has a better output format
         ostr << it->first << " = " << it->second;
         Info(here, "%s", ostr.str().c_str());
         it++;
     }
 }
 
-int G2PRun::GetConfig(const ConfDef* item, const char* prefix) {
+int G2PRun::GetConfig(const ConfDef* item, const char* prefix)
+{
     // Get value of item
 
     static const char* const here = "GetConfig()";
@@ -155,11 +163,9 @@ int G2PRun::GetConfig(const ConfDef* item, const char* prefix) {
         string key(item->name);
         if (fConfig.count(key) > 0) {
             dval = fConfig[key];
-        }
-        else if (fConfig.count(keystr) > 0) {
+        } else if (fConfig.count(keystr) > 0) {
             dval = fConfig[keystr];
-        }
-        else {
+        } else {
             return 0;
         }
 
@@ -191,7 +197,8 @@ int G2PRun::GetConfig(const ConfDef* item, const char* prefix) {
     return 1;
 }
 
-int G2PRun::SetConfig(const ConfDef* item, const char* prefix) {
+int G2PRun::SetConfig(const ConfDef* item, const char* prefix)
+{
     // Get value of item
 
     static const char* const here = "SetConfig()";
@@ -231,11 +238,9 @@ int G2PRun::SetConfig(const ConfDef* item, const char* prefix) {
         string key(item->name);
         if (fConfig.count(keystr) > 0) {
             fConfig[keystr] = dval;
-        }
-        else if (fConfig.count(key) > 0) {
+        } else if (fConfig.count(key) > 0) {
             fConfig[key] = dval;
-        }
-        else {
+        } else {
             fConfig[keystr] = dval;
         }
     }
@@ -243,64 +248,75 @@ int G2PRun::SetConfig(const ConfDef* item, const char* prefix) {
     return 1;
 }
 
-int G2PRun::GetDebugLevel() {
+int G2PRun::GetDebugLevel()
+{
     return (int) (fConfig["run.debuglevel"]);
 }
 
-void G2PRun::SetConfigFile(const char* file) {
+void G2PRun::SetConfigFile(const char* file)
+{
     fConfigFile = file;
 }
 
-void G2PRun::SetDebugLevel(int n) {
+void G2PRun::SetDebugLevel(int n)
+{
     fConfig["run.debuglevel"] = (double) n;
 
     fConfigIsSet.insert("run.debuglevel");
 }
 
-void G2PRun::SetSeed(unsigned n) {
+void G2PRun::SetSeed(unsigned n)
+{
     fConfig["run.seed"] = (double) n;
     G2PAppBase::SetSeed(n);
 
     fConfigIsSet.insert("run.seed");
 }
 
-void G2PRun::SetHRSAngle(double angle) {
+void G2PRun::SetHRSAngle(double angle)
+{
     fConfig["run.hrs.angle"] = angle;
 
     fConfigIsSet.insert("run.hrs.angle");
 }
 
-void G2PRun::SetHRSMomentum(double P0) {
+void G2PRun::SetHRSMomentum(double P0)
+{
     fConfig["run.hrs.p0"] = P0;
 
     fConfigIsSet.insert("run.hrs.p0");
 }
 
-void G2PRun::SetParticleID(int pid) {
+void G2PRun::SetParticleID(int pid)
+{
     fConfig["run.particle.id"] = (double) pid;
 
     fConfigIsSet.insert("run.particle.id");
 }
 
-void G2PRun::SetParticleMass(double M0) {
+void G2PRun::SetParticleMass(double M0)
+{
     fConfig["run.particle.mass"] = M0;
 
     fConfigIsSet.insert("run.particle.mass");
 }
 
-void G2PRun::SetParticleCharge(double Q) {
+void G2PRun::SetParticleCharge(double Q)
+{
     fConfig["run.particle.charge"] = Q;
 
     fConfigIsSet.insert("run.particle.charge");
 }
 
-void G2PRun::SetBeamEnergy(double E) {
+void G2PRun::SetBeamEnergy(double E)
+{
     fConfig["run.e0"] = E;
 
     fConfigIsSet.insert("run.e0");
 }
 
-void G2PRun::SetTarget(int Z, int A) {
+void G2PRun::SetTarget(int Z, int A)
+{
     fConfig["run.target.z"] = (double) Z;
     fConfig["run.target.a"] = (double) A;
 
@@ -308,19 +324,22 @@ void G2PRun::SetTarget(int Z, int A) {
     fConfigIsSet.insert("run.target.a");
 }
 
-void G2PRun::SetTargetMass(double M) {
+void G2PRun::SetTargetMass(double M)
+{
     fConfig["run.target.mass"] = M;
 
     fConfigIsSet.insert("run.target.mass");
 }
 
-void G2PRun::SetFieldRatio(double ratio) {
+void G2PRun::SetFieldRatio(double ratio)
+{
     fConfig["field.ratio"] = ratio;
 
     fConfigIsSet.insert("field.ratio");
 }
 
-void G2PRun::SetSieve() {
+void G2PRun::SetSieve()
+{
     fConfig["run.sieveon"] = (double) (true);
 
     fConfigIsSet.insert("run.sieveon");
@@ -330,15 +349,15 @@ void G2PRun::SetSieve() {
 //    fEnergyLoss = E;
 //}
 
-int G2PRun::ParseConfigFile() {
+int G2PRun::ParseConfigFile()
+{
     static const char* const here = "ParseConfigFile()";
 
     config_t cfg;
     config_init(&cfg);
 
     if (!config_read_file(&cfg, fConfigFile)) {
-        Error(here, "Parse error at %s:%d - %s", config_error_file(&cfg),
-                config_error_line(&cfg), config_error_text(&cfg));
+        Error(here, "Parse error at %s:%d - %s", config_error_file(&cfg), config_error_line(&cfg), config_error_text(&cfg));
         config_destroy(&cfg);
         return -1;
     }
@@ -354,7 +373,8 @@ int G2PRun::ParseConfigFile() {
     return 0;
 }
 
-int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting) {
+int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting)
+{
     static const char* const here = "ParseConfigFile()"; // Notice: this is not a typo
 
     int type = config_setting_type(setting);
@@ -366,8 +386,7 @@ int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting) {
             const char* newprefix;
             if (config_setting_name(setting) == NULL) {
                 newprefix = prefix;
-            }
-            else {
+            } else {
                 newprefix = Form("%s%s.", prefix, config_setting_name(setting));
             }
             if (ParseSetting(newprefix, subsetting)) {
@@ -395,7 +414,8 @@ int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting) {
     return (isgood ? 0 : -1);
 }
 
-double G2PRun::GetValue(const config_setting_t* setting) {
+double G2PRun::GetValue(const config_setting_t* setting)
+{
     double value = 0;
 
     int type = config_setting_type(setting);

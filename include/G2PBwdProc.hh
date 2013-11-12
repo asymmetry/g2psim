@@ -15,6 +15,7 @@
 
 #include "G2PProcBase.hh"
 
+class G2PDBRec;
 class G2PDrift;
 class G2PHRS;
 class G2PSieve;
@@ -42,11 +43,13 @@ protected:
     double fFieldRatio;
 
     double fV5tpsnake_tr[5];
+    double fV5tpmat_tr[5];
     double fV5sieveproj_tr[5];
 
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
 
+    G2PDBRec* pDBRec;
     G2PDrift* pDrift;
     G2PHRS* pHRS;
     G2PSieve *pSieve;

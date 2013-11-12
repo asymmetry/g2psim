@@ -15,7 +15,7 @@ EXECFILE    := G2PSim
 LIBFILE     := libG2PSim.so
 LIBNAME     := G2PSim
 USERDICT    := $(LIBNAME)_Dict
-VERSION     := 1.6.0
+VERSION     := 1.7.0
 
 ########################################################################
 SRCDIR      := src
@@ -192,7 +192,7 @@ script:
 
 $(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
 		@echo "Generating dictionary $(USERDICT).cxx ......"
-		$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
+		@$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
 
 $(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
 	@echo Compiling $< ......

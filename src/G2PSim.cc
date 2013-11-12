@@ -37,7 +37,8 @@ G2PVarList* gG2PVars = new G2PVarList();
 G2PSim* G2PSim::pG2PSim = NULL;
 
 G2PSim::G2PSim() :
-fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fApps(NULL), fProcs(NULL), pRun(NULL) {
+fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fApps(NULL), fProcs(NULL), pRun(NULL)
+{
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
         MakeZombie();
@@ -46,7 +47,8 @@ fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pO
     pG2PSim = this;
 }
 
-G2PSim::~G2PSim() {
+G2PSim::~G2PSim()
+{
     if (pG2PSim == this) pG2PSim = NULL;
 
     TIter next(fApps);
@@ -58,7 +60,8 @@ G2PSim::~G2PSim() {
     if (pOutput) delete pOutput;
 }
 
-int G2PSim::Run() {
+int G2PSim::Run()
+{
     static const char* const here = "Run()";
 
     if (Init() != 0) {
@@ -85,15 +88,18 @@ int G2PSim::Run() {
     return 0;
 }
 
-void G2PSim::SetNEvent(int n) {
+void G2PSim::SetNEvent(int n)
+{
     fN = n;
 }
 
-void G2PSim::SetOutFile(const char* name) {
+void G2PSim::SetOutFile(const char* name)
+{
     fOutFile = name;
 }
 
-int G2PSim::Init() {
+int G2PSim::Init()
+{
     static const char* const here = "Init()";
 
     fApps = gG2PApps;
@@ -133,7 +139,8 @@ int G2PSim::Init() {
     return 0;
 }
 
-int G2PSim::Begin() {
+int G2PSim::Begin()
+{
     static const char* const here = "Begin()";
 
     if (fDebug > 0) Info(here, "Starting run ......");
@@ -145,12 +152,15 @@ int G2PSim::Begin() {
         if (aobj->Begin() != 0) return -1;
     }
 
+    if (fDebug > 0) pRun->Print();
+
     if (fDebug > 0) Info(here, "Ready to go!");
 
     return 0;
 }
 
-int G2PSim::End() {
+int G2PSim::End()
+{
     static const char* const here = "End()";
 
     TIter next(fApps);
@@ -170,7 +180,8 @@ int G2PSim::End() {
     return 0;
 }
 
-int G2PSim::Process() {
+int G2PSim::Process()
+{
     TIter next(fProcs);
     while (G2PProcBase * pobj = static_cast<G2PProcBase*> (next())) {
         pobj->Clear();
@@ -187,8 +198,7 @@ int G2PSim::Process() {
                 status = -1;
                 pobj->SetStage(G2PProcBase::kSTOP);
                 break;
-            }
-            else
+            } else
                 pobj->SetStage(G2PProcBase::kDONE);
         }
         step++;
@@ -197,7 +207,8 @@ int G2PSim::Process() {
     return status;
 }
 
-bool G2PSim::IsAllDone(G2PAppList* procs) {
+bool G2PSim::IsAllDone(G2PAppList* procs)
+{
     static const char* const g2pproc = "G2PProcBase";
 
     bool done = true;
@@ -207,8 +218,7 @@ bool G2PSim::IsAllDone(G2PAppList* procs) {
             G2PProcBase* pobj = static_cast<G2PProcBase*> (obj);
             if (pobj->GetStage() == G2PProcBase::kREADY) done = false;
             if (pobj->GetStage() == G2PProcBase::kSTOP) return true;
-        }
-        else {
+        } else {
             Error("Process()", "Processing list contains non G2PProcBase classes.");
             continue;
         }

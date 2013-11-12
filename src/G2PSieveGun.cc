@@ -29,15 +29,18 @@
 using namespace std;
 
 G2PSieveGun::G2PSieveGun() :
-fTargetMass(0.0), pSieve(NULL) {
+fTargetMass(0.0), pSieve(NULL)
+{
     // Nothing to do
 }
 
-G2PSieveGun::~G2PSieveGun() {
+G2PSieveGun::~G2PSieveGun()
+{
     // Nothing to do
 }
 
-int G2PSieveGun::Init() {
+int G2PSieveGun::Init()
+{
     //static const char* const here = "Init()";
 
     if (G2PGun::Init() != 0) return fStatus;
@@ -51,7 +54,8 @@ int G2PSieveGun::Init() {
     return (fStatus = kOK);
 }
 
-int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
+int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
+{
     static const char* const here = "Shoot()";
 
     double X_lab, Y_lab;
@@ -60,8 +64,7 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
             X_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
             Y_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
         } while (X_lab * X_lab + Y_lab * Y_lab > fBeamR_lab * fBeamR_lab);
-    }
-    else {
+    } else {
         X_lab = 0.0;
         Y_lab = 0.0;
     }
@@ -113,28 +116,18 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr) {
     return 0;
 }
 
-int G2PSieveGun::Configure(EMode mode) {
+int G2PSieveGun::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
-        else fIsInit = true;
+        else {
+            G2PGun::Configure(mode);
+            fIsInit = true;
+        }
     }
 
     ConfDef confs[] = {
-        {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
-        {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {"l_x", "Beam X", kDOUBLE, &fBeamX_lab},
-        {"l_y", "Beam Y", kDOUBLE, &fBeamY_lab},
-        {"l_z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
-        {"l_z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
-        {"t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
-        {"t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
-        {"p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},
-        {"p.max", "Phi Max", kDOUBLE, &fTargetPhHigh_tr},
-        {"d.min", "Delta Min", kDOUBLE, &fDeltaLow},
-        {"d.max", "Delta Max", kDOUBLE, &fDeltaLow},
         {0}
     };
 

@@ -8,6 +8,7 @@
 
 // History:
 //   Sep 2013, C. Gu, First public version.
+//   Oct 2013, J. Liu, Definiton of material
 //
 
 #include <cstdlib>
@@ -28,70 +29,73 @@ using namespace std;
 
 static const double kELECTRONMASS = 0.510998918; //MeV
 
+G2PAppList* G2PMaterial::pG2PMaterial = NULL;
+
 G2PMaterial::G2PMaterial() :
-fName(NULL) {
+fName(NULL)
+{
     // Only for ROOT I/O
 }
 
-G2PMaterial::G2PMaterial(const char* name) :
-fName(name), fZ(0), fA(0), fMass(0), fLength(0), fDensity(0), fX0(0), fThickness(0), fThicknessR(0) {
-    // Nothing to do
+G2PMaterial::G2PMaterial(const char* name, double z, double a, double x0, double density) :
+fName(name), fZ(z), fA(a), fMass(0), fDensity(density), fX0(x0)
+{
+    // Constructor
+
+    pG2PMaterial->Add(this);
 }
 
-G2PMaterial::~G2PMaterial() {
-    // Nothing to do
+G2PMaterial::~G2PMaterial()
+{
+    // Destructor
+
+    pG2PMaterial->Remove(this);
 }
 
-int G2PMaterial::Begin() {
-    //static const char* const here = "Begin()";
-
-    if (G2PAppBase::Begin() != 0) return fStatus;
-
-    fThickness = fLength*fDensity;
-    fThicknessR = fThickness / fX0;
-    fBT = b() * fThicknessR;
-
-    return (fStatus = kOK);
-}
-
-double G2PMaterial::EnergyLoss(double E) {
+double G2PMaterial::EnergyLoss(double E, double l)
+{
     double EMeV = E * 1000; // MeV
 
     double result = 0;
-    result += Ionization(EMeV);
-    result += Bremsstrahlung(EMeV);
+    result += Ionization(EMeV, l);
+    result += Bremsstrahlung(EMeV, l);
 
     return result / 1000.0; // GeV
 }
 
-double G2PMaterial::MultiScattering(double E) {
-    //only for electron
+double G2PMaterial::MultiScattering(double E, double l)
+{
+    // only for electron
 
     double EMeV = E * 1000;
 
+    double thicknessr = l * fDensity / fX0;
+
     double lPsq = EMeV * EMeV - kELECTRONMASS*kELECTRONMASS;
     double bcp = lPsq / EMeV;
-    double ltheta0 = 13.6 / bcp * sqrt(fThicknessR)*(1 + 0.038 * log(fThicknessR));
-    if (fThicknessR != 0) {
+    double ltheta0 = 13.6 / bcp * sqrt(thicknessr)*(1 + 0.038 * log(thicknessr));
+    if (thicknessr != 0) {
         //return pRand->Gaus(0, ltheta0 / 2.3548); // rad // sigma=width/(2*sqrt(2))
         return pRand->Gaus(0, ltheta0 / 1.3548); // rad
-    }
-    else
+    } else
         return 0;
 }
 
-double G2PMaterial::Ionization(double E) {
-    // Particle Booklet Equ (27.9)
+double G2PMaterial::Ionization(double E, double l)
+{
+    // Particle Data Group Booklet Equ (27.9)
+
+    double thickness = l*fDensity;
 
     double lK = 0.307075; // cm^2/g for A=1 g/mol
     double lbetasq = 1 - kELECTRONMASS * kELECTRONMASS / (E * E);
-    double lxi = lK / 2 * fZ / fA * fThickness / lbetasq; // fThickness: g/cm^2
+    double lxi = lK / 2 * fZ / fA * thickness / lbetasq; // fThickness: g/cm^2
     double lhbarwsq = 28.816 * 28.816 * fDensity * fZ / fA * 1e-12; // MeV // fDensity is density of absorber
     double j = 0.200;
     double Delta_p = lxi * (log(2 * kELECTRONMASS * lxi / lhbarwsq) + j);
     double lw = 4 * lxi;
     double result = 0;
-    if (fZ != 0 && fA != 0 && fThickness != 0 && fDensity != 0)
+    if (fZ != 0 && fA != 0 && thickness != 0 && fDensity != 0)
         result = pRand->Landau(Delta_p, lw);
     if (result > (E - kELECTRONMASS))
         result = E - kELECTRONMASS;
@@ -101,15 +105,18 @@ double G2PMaterial::Ionization(double E) {
     return result; // GeV!
 }
 
-double G2PMaterial::Bremsstrahlung(double E) {
+double G2PMaterial::Bremsstrahlung(double E, double l)
+{
     // Bremsstrahlung Energy Loss for external and internal(equivalent radiator)
     // Xiaodong Jiang, PhD.thesis Equ (5.15)
     // http://filburt.mit.edu/oops/Html/Pub/theses/xjiang.ps
     // *0.999 to avoid lose all energy
 
+    double bt = l * fDensity / fX0 * b();
+
     double result = 0;
-    if (fBT != 0)
-        result = E * pow(pRand->Uniform()*0.999, 1. / fBT);
+    if (bt != 0)
+        result = E * pow(pRand->Uniform()*0.999, 1. / bt);
     if (result > (E - kELECTRONMASS)) // GeV!
         result = E - kELECTRONMASS;
     if (result < 0)
@@ -118,7 +125,8 @@ double G2PMaterial::Bremsstrahlung(double E) {
     return result; // GeV!
 }
 
-double G2PMaterial::b() {
+double G2PMaterial::b()
+{
     // Phys.Rev.D 12,1884 A45
 
     if (fZ != 0) {
@@ -129,7 +137,8 @@ double G2PMaterial::b() {
     return 0;
 }
 
-int G2PMaterial::Configure(EMode mode) {
+int G2PMaterial::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
 
@@ -140,7 +149,6 @@ int G2PMaterial::Configure(EMode mode) {
         {"z", "Z", kINT, &fZ},
         {"a", "A", kINT, &fA},
         {"mass", "Mass", kDOUBLE, &fMass},
-        {"length", "Length", kDOUBLE, &fLength},
         {"density", "Density", kDOUBLE, &fDensity},
         {"radlen", "Radiation Length", kDOUBLE, &fX0},
         {0}
@@ -149,7 +157,8 @@ int G2PMaterial::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-void G2PMaterial::MakePrefix() {
+void G2PMaterial::MakePrefix()
+{
     const char* base = "material";
 
     G2PAppBase::MakePrefix(Form("%s.%s", base, fName));

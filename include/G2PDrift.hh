@@ -10,6 +10,7 @@
 //   Feb 2013, C. Gu, First public version.
 //   Feb 2013, C. Gu, Change algorithm to Nystrom-Runge-Kutta method.
 //   Mar 2013, C. Gu, Add flexible step length and boundary check.
+//   Oct 2013, J. Liu, Add drift function to stop at a cylinder boundary.
 //
 
 #ifndef G2P_DRIFT_H
@@ -26,6 +27,8 @@ public:
 
     typedef double (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
     typedef double (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
+    typedef double (G2PDrift::*pfDriftTCSL_)(const double*, double, double, double, double, double, double, double*);
+    typedef double (G2PDrift::*pfDriftTCSV_)(const double*, double, double, double, double, double, double, double*);
 
     virtual int Init();
     virtual int Begin();
@@ -33,7 +36,7 @@ public:
 
     virtual double Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
-
+    virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout, int cylinder_type); // J. Liu
     // Gets
 
     // Sets
@@ -43,6 +46,8 @@ protected:
     double DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     double DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     double DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    double DriftTCSV(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout); // J. Liu
+    double DriftTCSL(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout); // J. Liu
     double DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
 
     void NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err);
@@ -66,6 +71,8 @@ protected:
 
     pfDriftHCS_ pfDriftHCS;
     pfDriftTCS_ pfDriftTCS;
+    pfDriftTCSL_ pfDriftTCSL;
+    pfDriftTCSV_ pfDriftTCSV;
 
 private:
     static G2PDrift* pG2PDrift;

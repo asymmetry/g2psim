@@ -8,6 +8,7 @@
 
 // History:
 //   Sep 2013, C. Gu, First public version.
+//   0ct 2013, J. Liu, Definition of material
 //
 
 #ifndef G2P_MATERIAL_H
@@ -17,19 +18,17 @@
 
 class G2PMaterial : public G2PAppBase {
 public:
-    G2PMaterial(const char* name);
+    G2PMaterial(const char* name, double z, double a, double x0, double density);
     virtual ~G2PMaterial();
 
-    virtual int Begin();
-
-    virtual double EnergyLoss(double E);
-    virtual double MultiScattering(double E);
+    virtual double EnergyLoss(double E, double l);
+    virtual double MultiScattering(double E, double l);
 
 protected:
     G2PMaterial(); // Only for ROOT I/O
 
-    double Ionization(double E);
-    double Bremsstrahlung(double E);
+    double Ionization(double E, double l);
+    double Bremsstrahlung(double E, double l);
     double b();
 
     virtual int Configure(EMode mode = kTWOWAY);
@@ -38,14 +37,12 @@ protected:
     const char* fName;
     int fZ, fA;
     double fMass;
-    double fLength;
     double fDensity; // density in g/cm^3
     double fX0; // radlen in g/cm^2
-    double fThickness; // thickness in g/cm^2
-    double fThicknessR; // thickness in radlen
-    double fBT;
 
 private:
+    static G2PAppList* pG2PMaterial;
+
     ClassDef(G2PMaterial, 1)
 };
 

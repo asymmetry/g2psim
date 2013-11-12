@@ -11,6 +11,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cmath>
 #include <vector>
 
 #include "TROOT.h"
@@ -30,12 +31,14 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PData* G2PData::pG2PData = NULL;
 
-G2PData::G2PData() : fDataFile(NULL) {
+G2PData::G2PData() : fDataFile(NULL)
+{
     // Only for ROOT I/O
 }
 
 G2PData::G2PData(const char* filename) :
-fDataFile(filename), fHRSAngle(5.767 * kDEG) {
+fDataFile(filename), fHRSAngle(5.767 * kDEG)
+{
     if (pG2PData) {
         Error("G2PData()", "Only one instance of G2PData allowed.");
         MakeZombie();
@@ -48,14 +51,16 @@ fDataFile(filename), fHRSAngle(5.767 * kDEG) {
     Clear();
 }
 
-G2PData::~G2PData() {
+G2PData::~G2PData()
+{
     if (pG2PData == this) pG2PData = NULL;
 
     fData.clear();
     Clear();
 }
 
-int G2PData::Begin() {
+int G2PData::Begin()
+{
     static const char* const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0) return fStatus;
@@ -68,7 +73,8 @@ int G2PData::Begin() {
     return (fStatus = kOK);
 }
 
-int G2PData::Process() {
+int G2PData::Process()
+{
     static const char* const here = "Process()";
 
     if (fDebug > 2) Info(here, " ");
@@ -83,12 +89,12 @@ int G2PData::Process() {
     fV5bpm_lab[3] = tempdata.pb;
     fV5bpm_lab[4] = tempdata.zb;
     fV5fp_tr[0] = tempdata.xf;
-    fV5fp_tr[1] = tempdata.tf;
+    fV5fp_tr[1] = atan(tempdata.tf);
     fV5fp_tr[2] = tempdata.yf;
-    fV5fp_tr[3] = tempdata.pf;
+    fV5fp_tr[3] = atan(tempdata.pf);
     fV5fp_tr[4] = 0.0;
 
-    TRCS2DCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
+    TRCS2FCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
 
     if (fDebug > 1) {
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
@@ -100,15 +106,17 @@ int G2PData::Process() {
     return 0;
 }
 
-void G2PData::Clear(Option_t* option) {
+void G2PData::Clear(Option_t* option)
+{
     memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
-    
+
     G2PProcBase::Clear(option);
 }
 
-int G2PData::LoadData() {
+int G2PData::LoadData()
+{
     FILE *fp;
 
     if ((fp = fopen(fDataFile, "r")) == NULL) return -1;
@@ -126,7 +134,8 @@ int G2PData::LoadData() {
     else return -1;
 }
 
-int G2PData::Configure(EMode mode) {
+int G2PData::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -140,7 +149,8 @@ int G2PData::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-int G2PData::DefineVariables(EMode mode) {
+int G2PData::DefineVariables(EMode mode)
+{
     if (mode == kDEFINE && fIsSetup) return 0;
     fIsSetup = (mode == kDEFINE);
 
@@ -164,7 +174,8 @@ int G2PData::DefineVariables(EMode mode) {
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PData::MakePrefix() {
+void G2PData::MakePrefix()
+{
     const char* base = "data";
 
     G2PAppBase::MakePrefix(base);

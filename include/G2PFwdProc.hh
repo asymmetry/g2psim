@@ -8,6 +8,7 @@
 
 // History:
 //   Apr 2013, C. Gu, First public version.
+//   Oct 2013, J. Liu, Add Energy loss and Multiple scattering.
 //
 
 #ifndef G2P_FWDPROC_H
@@ -18,6 +19,7 @@
 class G2PDrift;
 class G2PHRS;
 class G2PSieve;
+class G2PMaterial;
 
 class G2PFwdProc : public G2PProcBase {
 public:
@@ -50,6 +52,7 @@ protected:
     G2PDrift* pDrift;
     G2PHRS* pHRS;
     G2PSieve *pSieve;
+    // G2PMaterial* pNH3,pN14,pH3,pLHe, pTarget,pAl,pPTCFE,pHe4,pKapton,pTitanium;
 
 private:
     static G2PFwdProc* pG2PFwdProc;

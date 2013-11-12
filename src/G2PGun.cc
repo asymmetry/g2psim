@@ -35,7 +35,8 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 G2PGun* G2PGun::pG2PGun = NULL;
 
 G2PGun::G2PGun() :
-fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fFieldRatio(0.0), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fBeamTiltAngle(0.0), pDrift(NULL) {
+fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fFieldRatio(0.0), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fBeamTiltAngle(0.0), pDrift(NULL)
+{
     if (pG2PGun) {
         Error("G2PGun()", "Only one instance of G2PGun allowed.");
         MakeZombie();
@@ -47,11 +48,13 @@ fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fFieldRatio(0.
     Clear();
 }
 
-G2PGun::~G2PGun() {
+G2PGun::~G2PGun()
+{
     if (pG2PGun == this) pG2PGun = NULL;
 }
 
-int G2PGun::Init() {
+int G2PGun::Init()
+{
     //static const char* const here = "Init()";
 
     if (G2PProcBase::Init() != 0) return fStatus;
@@ -65,7 +68,8 @@ int G2PGun::Init() {
     return (fStatus = kOK);
 }
 
-int G2PGun::Begin() {
+int G2PGun::Begin()
+{
     //static const char* const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0) return fStatus;
@@ -75,7 +79,8 @@ int G2PGun::Begin() {
     return (fStatus = kOK);
 }
 
-int G2PGun::Process() {
+int G2PGun::Process()
+{
     static const char* const here = "Process()";
 
     if (fDebug > 2) Info(here, " ");
@@ -100,16 +105,18 @@ int G2PGun::Process() {
     return 0;
 }
 
-void G2PGun::Clear(Option_t* option) {
+void G2PGun::Clear(Option_t* option)
+{
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5tp_tr, 0, sizeof (fV5tp_tr));
-    
+
     G2PProcBase::Clear(option);
 }
 
-void G2PGun::SetBeamPos(double x, double y) {
+void G2PGun::SetBeamPos(double x, double y)
+{
     fBeamX_lab = x;
     fBeamY_lab = y;
 
@@ -117,7 +124,8 @@ void G2PGun::SetBeamPos(double x, double y) {
     fConfigIsSet.insert((unsigned long) &fBeamY_lab);
 }
 
-void G2PGun::SetReactZ(double low, double high) {
+void G2PGun::SetReactZ(double low, double high)
+{
 
     fReactZLow_lab = low;
     fReactZHigh_lab = high;
@@ -126,14 +134,16 @@ void G2PGun::SetReactZ(double low, double high) {
     fConfigIsSet.insert((unsigned long) &fReactZHigh_lab);
 }
 
-void G2PGun::SetRasterSize(double val) {
+void G2PGun::SetRasterSize(double val)
+{
 
     fBeamR_lab = val;
 
     fConfigIsSet.insert((unsigned long) &fBeamR_lab);
 }
 
-void G2PGun::SetTargetTh(double low, double high) {
+void G2PGun::SetTargetTh(double low, double high)
+{
 
     fTargetThLow_tr = low;
     fTargetThHigh_tr = high;
@@ -142,7 +152,8 @@ void G2PGun::SetTargetTh(double low, double high) {
     fConfigIsSet.insert((unsigned long) &fTargetThHigh_tr);
 }
 
-void G2PGun::SetTargetPh(double low, double high) {
+void G2PGun::SetTargetPh(double low, double high)
+{
 
     fTargetPhLow_tr = low;
     fTargetPhHigh_tr = high;
@@ -151,7 +162,8 @@ void G2PGun::SetTargetPh(double low, double high) {
     fConfigIsSet.insert((unsigned long) &fTargetPhHigh_tr);
 }
 
-void G2PGun::SetDelta(double low, double high) {
+void G2PGun::SetDelta(double low, double high)
+{
     fDeltaLow = low;
     fDeltaHigh = high;
 
@@ -159,7 +171,8 @@ void G2PGun::SetDelta(double low, double high) {
     fConfigIsSet.insert((unsigned long) &fDeltaHigh);
 }
 
-void G2PGun::SetTiltAngle() {
+void G2PGun::SetTiltAngle()
+{
     static const char* const here = "SetTiltAngle()";
 
     if (fabs(fFieldRatio - 0.5) < 1e-8) {
@@ -167,34 +180,38 @@ void G2PGun::SetTiltAngle() {
         else if (fabs(fBeamEnergy - 1.706) < 0.2) fBeamTiltAngle = 4.03 * kDEG;
         else if (fabs(fBeamEnergy - 1.159) < 0.2) fBeamTiltAngle = 5.97 * kDEG;
         else fBeamTiltAngle = 0.0;
-    }
-    else if (fabs(fFieldRatio - 1.0) < 1e-8) {
+    } else if (fabs(fFieldRatio - 1.0) < 1e-8) {
         if (fabs(fBeamEnergy - 2.254) < 0.2) fBeamTiltAngle = 0.0;
         else if (fabs(fBeamEnergy - 3.355) < 0.2) fBeamTiltAngle = 0.0;
         else fBeamTiltAngle = 0.0;
-    }
-    else fBeamTiltAngle = 0.0;
+    } else fBeamTiltAngle = 0.0;
 
     if (fDebug > 0) Info(here, "Beam tilt angle is %10.3e deg.", fBeamTiltAngle / kDEG);
 }
 
-void G2PGun::GetReactPoint(double x, double y, double z, double* V5) {
+void G2PGun::GetReactPoint(double x, double y, double z, double* V5)
+{
     static const char* const here = "GetReactPoint()";
 
     double xb[3] = {x, y, 0.0};
     double pb[3] = {0.0, fBeamEnergy * sin(fBeamTiltAngle), fBeamEnergy * cos(fBeamTiltAngle)};
 
+    int save = pDrift->GetDebugLevel();
+    if (fDebug <= 3) pDrift->SetDebugLevel(0);
     pDrift->Drift(xb, pb, z, 10.0, xb, pb);
     V5[0] = xb[0];
-    V5[1] = acos(pb[2] / fBeamEnergy);
+    if (fabs(pb[2] - fBeamEnergy) < 1e-8) V5[1] = acos(1.0); // pb[2] may be a bit larger than fBeam Energy because of round-off error
+    else V5[1] = acos(pb[2] / fBeamEnergy);
     V5[2] = xb[1];
     V5[3] = atan2(pb[1], pb[0]);
     V5[4] = xb[2];
+    pDrift->SetDebugLevel(save);
 
     if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, z, V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
-int G2PGun::Configure(EMode mode) {
+int G2PGun::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -222,7 +239,8 @@ int G2PGun::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-int G2PGun::DefineVariables(EMode mode) {
+int G2PGun::DefineVariables(EMode mode)
+{
     if (mode == kDEFINE && fIsSetup) return 0;
     fIsSetup = (mode == kDEFINE);
 
@@ -253,7 +271,8 @@ int G2PGun::DefineVariables(EMode mode) {
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PGun::MakePrefix() {
+void G2PGun::MakePrefix()
+{
     const char* base = "gun";
 
     G2PAppBase::MakePrefix(base);
