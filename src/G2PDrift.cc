@@ -209,10 +209,12 @@ double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, doubl
     if (l < llimit) {
         while (dt > dtlimit) {
             if ((xf[2] > zlimit)^(sign)) {
+                l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
             }
+            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
         }
@@ -307,10 +309,12 @@ double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, 
     if (l < llimit) {
         while (dt > dtlimit) {
             if ((newz_tr > zlimit)^(sign)) {
+                l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
             }
+            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
             newz_tr = xf[0] * sinang + xf[2] * cosang;
@@ -338,6 +342,7 @@ double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, 
 double G2PDrift::DriftTCSL(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout)
 {
     // J. Liu: added for longitudinal cylinder
+    // zlimit is the limit in lab coordinate
 
     double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -389,10 +394,12 @@ double G2PDrift::DriftTCSL(const double* x, double p, double z_tr, double angle,
     if (l < llimit) {
         while (dt > dtlimit) {
             if ((newz_tr > zlimit) || (newr_tr > rlimit)) {
+                l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
             }
+            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
             newz_tr = xf[0] * sinang + xf[2] * cosang;
@@ -404,10 +411,9 @@ double G2PDrift::DriftTCSL(const double* x, double p, double z_tr, double angle,
     phi = atan2(xf[4], xf[3]);
 
     HCS2TCS(theta, phi, angle, xout[1], xout[3]);
-    double temp;
-    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], temp);
+    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], xout[5]);
     xout[4] = x[4];
-    xout[5] = temp;
+
     return l;
 }
 
@@ -465,10 +471,12 @@ double G2PDrift::DriftTCSV(const double* x, double p, double z_tr, double angle,
     if (l < llimit) {
         while (dt > dtlimit) {
             if ((newz_tr > zlimit) || (newr_tr > rlimit)) {
+                l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
             }
+            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
             newz_tr = xf[0] * sinang + xf[2] * cosang;
@@ -480,10 +488,9 @@ double G2PDrift::DriftTCSV(const double* x, double p, double z_tr, double angle,
     phi = atan2(xf[4], xf[3]);
 
     HCS2TCS(theta, phi, angle, xout[1], xout[3]);
-    double temp;
-    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], temp);
+    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], xout[5]);
     xout[4] = x[4];
-    xout[5] = temp;
+
     return l;
 }
 
@@ -500,7 +507,6 @@ double G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle
     double dz = zlimit - z_tr;
 
     return sqrt(dx * dx + dy * dy + dz * dz);
-
 }
 
 void G2PDrift::NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err)
