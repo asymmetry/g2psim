@@ -8,7 +8,7 @@
 
 // History:
 //   Sep 2013, C. Gu, First public version.
-//   Oct 2013, J. Liu, Definiton of material
+//   Oct 2013, J. Liu, Check formulas.
 //
 
 #include <cstdlib>
@@ -31,8 +31,7 @@ static const double kELECTRONMASS = 0.510998918; //MeV
 
 G2PAppList* G2PMaterial::pG2PMaterial = new G2PAppList();
 
-G2PMaterial::G2PMaterial() :
-fName(NULL)
+G2PMaterial::G2PMaterial() : fName(NULL)
 {
     // Only for ROOT I/O
 }
@@ -74,11 +73,10 @@ double G2PMaterial::MultiScattering(double E, double l)
     double lPsq = EMeV * EMeV - kELECTRONMASS*kELECTRONMASS;
     double bcp = lPsq / EMeV;
     double ltheta0 = 13.6 / bcp * sqrt(thicknessr)*(1 + 0.038 * log(thicknessr));
-    if (thicknessr != 0) {
-        //return pRand->Gaus(0, ltheta0 / 2.3548); // rad // sigma=width/(2*sqrt(2))
-        return pRand->Gaus(0, ltheta0 / 1.3548); // rad
-    } else
-        return 0;
+    if (thicknessr != 0)
+        return pRand->Gaus(0, ltheta0); // rad
+    else
+        return 0.0;
 }
 
 double G2PMaterial::Ionization(double E, double l)
@@ -108,7 +106,7 @@ double G2PMaterial::Ionization(double E, double l)
 double G2PMaterial::Bremsstrahlung(double E, double l)
 {
     // Bremsstrahlung Energy Loss for external and internal(equivalent radiator)
-    // Xiaodong Jiang, PhD.thesis Equ (5.15)
+    // Xiaodong Jiang, PhD. thesis Equ (5.15)
     // http://filburt.mit.edu/oops/Html/Pub/theses/xjiang.ps
     // *0.999 to avoid lose all energy
 
@@ -127,11 +125,26 @@ double G2PMaterial::Bremsstrahlung(double E, double l)
 
 double G2PMaterial::b()
 {
-    // Phys.Rev.D 12,1884 A45
+    // Rev. Mod. Phys. 46(1974)815
+
+    double Lrad, Lradp;
 
     if (fZ != 0) {
-        double eta = log(1440 * pow(fZ, -2 / 3.)) / log(183 * pow(fZ, -1 / 3.));
-        return 4. / 3. * (1 + 1. / 9. * (fZ + 1) / (fZ + eta) / log(183 * pow(fZ, -1 / 3.)));
+        if (fZ <= 2) {
+            Lrad = (4.79 - 5.31) * (fZ - 1) + 5.31;
+            Lradp = (5.621 - 6.144) * (fZ - 1) + 6.144;
+        } else if (fZ <= 3) {
+            Lrad = (4.74 - 4.79) * (fZ - 2) + 4.79;
+            Lradp = (5.805 - 5.621) * (fZ - 2) + 5.621;
+        } else if (fZ <= 4) {
+            Lrad = (4.71 - 4.74) * (fZ - 3) + 4.74;
+            Lradp = (5.924 - 5.805) * (fZ - 3) + 5.805;
+        } else {
+            Lrad = log(184.15 * pow(fZ, -1.0 / 3.0));
+            Lradp = log(1194.0 * pow(fZ, -2.0 / 3.0));
+        }
+
+        return (4.0 / 3.0) * (1.0 + (1.0 / 9.0) * (fZ + 1) / (Lrad * fZ + Lradp));
     }
 
     return 0;

@@ -37,6 +37,7 @@ public:
     virtual double Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
     virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
     virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout, int cylinder_type); // J. Liu
+
     // Gets
 
     // Sets

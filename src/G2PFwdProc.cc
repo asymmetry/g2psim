@@ -112,7 +112,7 @@ int G2PFwdProc::Process()
     V5tp_tr[4] = gG2PVars->FindSuffix("tp.d")->GetValue();
 
     // Define materials
-    double V5tp_pro[6], V5tp_pro_lab[6];
+    double V5tp_pro[7], V5tp_pro_lab[7];
 
     // double packing_fraction = 0.6;
     // double target_fZ = (10 * packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026) / (packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026);
@@ -123,7 +123,7 @@ int G2PFwdProc::Process()
     // G2PMaterial *pNH3 =new G2PMaterial("NH3", 10,17.0305,40.8739,0.817);
     // G2PMaterial *pN14 =new G2PMaterial("N14", 7,14.0067,40.8739,0.817);
     // G2PMaterial *pH3 =new G2PMaterial("H3",1,1,40.8739,0.817);
-    // G2PMaterial *pLHe =new G2PMaterial("LHe",2,4.0026,94.32,0.145);
+    G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
     G2PMaterial *pC12 = new G2PMaterial("C12", 6, 12.0107, 42.7, 2.0);
     // G2PMaterial *pTarget =new G2PMaterial("target",target_fZ,target_fA,target_x0,target_density);
     G2PMaterial *pAl = new G2PMaterial("Al", 13, 26.9815, 24.01, 2.70);
@@ -143,25 +143,33 @@ int G2PFwdProc::Process()
 
     // Drift to target wall or end-cap
     // This is for carbon target
-    driftlength = pDrift->Drift(V5tp_tr, fHRSMomentum, 0.0, fHRSAngle, -1.31191e-2, 10.0, 1.36144e-2, V5tp_pro, 0);
+    driftlength = pDrift->Drift(V5tp_tr, fHRSMomentum, V5react_lab[4], fHRSAngle, -1.31191e-2, 10.0, 1.36144e-2, V5tp_pro, 0);
     TCS2HCS(V5tp_pro[0], V5tp_pro[2], V5tp_pro[5], fHRSAngle, V5tp_pro_lab[0], V5tp_pro_lab[2], V5tp_pro_lab[5]);
     Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
     driftlength = driftlength * 100;
-
-    if (fDebug > 2) {
-        Info("EnergyLoss()", "%10.3e %10.3e", driftlength, V5tp_pro[4]);
-    }
-
     if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pC12->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
     if (IsMultiScatt) {
         Multi_theta = pC12->MultiScattering(Edrift, driftlength);
         Multi_phi = Multi_theta;
         V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
         V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-
     }
 
-    if (fabs(V5tp_pro_lab[5]) > 1.36144e-2) {
+    if (V5tp_pro[6] == 0) {
+        zdrift = V5tp_pro[5];
+        driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 1.41351e-2, 10.0, 1.36144e-2, V5tp_pro, 0);
+        Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
+        driftlength = driftlength * 100;
+        if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pLHe->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
+        if (IsMultiScatt) {
+            Multi_theta = pLHe->MultiScattering(Edrift, driftlength);
+            Multi_phi = Multi_theta;
+            V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
+            V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
+        }
+    }
+
+    if (V5tp_pro[6] == 1) {
         zdrift = V5tp_pro[5];
         driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 1.41351e-2, 10.0, 1.45034e-2, V5tp_pro, 0);
         Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
@@ -175,15 +183,26 @@ int G2PFwdProc::Process()
         }
     }
 
-    // Drift in vacuum
+    // Drift in LHe
     zdrift = V5tp_pro[5];
     driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 2.10058e-2, 10.0, 2.10058e-2, V5tp_pro, 1);
+    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
+    driftlength = driftlength * 100;
+    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pLHe->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
+
+    if (IsMultiScatt) {
+        Multi_theta = pPTCFE->MultiScattering(Edrift, driftlength);
+        Multi_phi = Multi_theta;
+        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
+        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
+    }
 
     // Drift in nose
     zdrift = V5tp_pro[5];
     driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 2.11328e-2, 10.0, 2.11328e-2, V5tp_pro, 1);
     Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
     driftlength = driftlength * 100;
+    // Info("EnergyLoss()", "%10.3e %10.3e", driftlength, V5tp_pro[4]);
     if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pAl->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
     if (IsMultiScatt) {
         Multi_theta = pAl->MultiScattering(Edrift, driftlength);
@@ -209,7 +228,7 @@ int G2PFwdProc::Process()
         V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
     }
 
-    // Drift in Vacuum
+    // Drift in vacuum
     zdrift = V5tp_pro[5];
     driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 41.910e-2, 10.0, 41.910e-2, V5tp_pro, 1);
 
@@ -226,11 +245,11 @@ int G2PFwdProc::Process()
         V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
     }
 
-    // Drift in vaccum
+    // Drift in vacuum
     zdrift = V5tp_pro[5];
     driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 47.9425e-2, 10.0, 47.9425e-2, V5tp_pro, 1);
 
-    // Drift in exit chamber window
+    // Drift in chamber exit window
     zdrift = V5tp_pro[5];
     driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 47.9933e-2, 10.0, 47.9933e-2, V5tp_pro, 1);
     Edrift = fHRSMomentum * (1 + V5tp_pro[4]);

@@ -8,7 +8,7 @@
 
 // History:
 //   Sep 2013, C. Gu, First public version.
-//   0ct 2013, J. Liu, Definition of material
+//   Oct 2013, J. Liu, Check formulas.
 //
 
 #ifndef G2P_MATERIAL_H
@@ -38,7 +38,7 @@ protected:
     int fZ, fA;
     double fMass;
     double fDensity; // density in g/cm^3
-    double fX0; // radlen in g/cm^2
+    double fX0; // radiation length in g/cm^2
 
 private:
     static G2PAppList* pG2PMaterial;
