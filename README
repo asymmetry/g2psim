@@ -1,16 +1,26 @@
 G2PSim
 
-Release version: 1.3.0
 git@asymmetry.zapto.org:g2psim.git
-Author: Chao Gu, Jixie Zhang, Min Huang
+
+Author: Chao Gu, Min Huang, Jie Liu, Jixie Zhang
+
+Release version: 1.7.1
+HRSTrans version: 1.3.2
+G2PPhys version: 1.5.0
 
 Usage:
-
     Run.C could be used to debug and test. This root script use the shared library directly with ROOT support.
-    Once finished debug, the script could be copied into Main.cc and be compiled to an executable to increase the speed.
-    Main.cc is written with supports of a simple set of commandline parameters as well as a fully functional configure file. Use it as a template to generate your own executable.
+    Main.cc is written with supports of a simple set of commandline parameters as well as a fully functional configure file.
 
 History:
+
+v1.7, git snapshot 0235332 @ 11122013
+    Support configuration file
+    Add energy loss and multiple scattering
+
+v1.6, git snapshot 1cc22c5 @ 07252013
+    Add BPM simulation
+    Add more physics model
 
 v1.5, git snapshot 03d82df @ 03262013
     Rewirte the whole package with new structure
@@ -22,7 +32,6 @@ v1.4, git snapshot a9cdc62 @ 02202013
 v1.3, git snapshot 8382c3a @ 01252013
     HRSTransport is a stand alone class now for easier maintaince.
     Add a new gun to sim sieve slit.
-    Add vc project files to support vc2008 IDE
     Reorganize HRSTransport packages.
 
 v1.2, git snapshot 7f95f23 @ 01182013
@@ -30,10 +39,18 @@ v1.2, git snapshot 7f95f23 @ 01182013
     Add ROOT support to use the shared library in a script.
 
 v1.1, git snapshot c836551 @ 01152013
-
     Rewrite the main sim structure.
 
 v1.0, git snapshot 41b06ff @ 12202012
-
     First version developed from Jixie's TestSNAKE package.
     Add the function to reconstruct target variable using analyzer database.
+
+Acknowledge:
+    O. Hansen et al. for Hall A analyzer.
+    J. Huang et al. for HRS Optics Optimize package.
+    X. Zheng et al. for SAMC package.
+    M. Friedman for H1, He4, N14 elastic cross section model.
+    L. Cardman for C12 elastic cross section model.
+    Authors of P. Bosted model, QFS model and WISER model.
+    Authors of Geant4.
+    Of course, authors of ROOT.

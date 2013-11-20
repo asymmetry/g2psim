@@ -3,8 +3,7 @@
 
 #include "G2PPhysBase.hh"
 
-class G2PPhysWISER : public G2PPhysBase
-{
+class G2PPhysWISER : public G2PPhysBase {
 public:
     G2PPhysWISER();
     ~G2PPhysWISER();
@@ -15,6 +14,6 @@ public:
 
 private:
     double fRadLen;
-}; 
+};
 
 #endif

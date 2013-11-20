@@ -3,8 +3,7 @@
 
 #include "G2PPhysBase.hh"
 
-class G2PPhysQFS : public G2PPhysBase
-{
+class G2PPhysQFS : public G2PPhysBase {
 public:
     G2PPhysQFS();
     ~G2PPhysQFS();
@@ -16,6 +15,6 @@ public:
 private:
     double fEPS, fEPSD, fFP;
     double fTb, fTa;
-}; 
+};
 
 #endif

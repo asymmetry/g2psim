@@ -20,7 +20,7 @@ using namespace std;
 static const double kU = 931.49406121;
 
 G2PPhysBase::G2PPhysBase() :
-iZ(1), iA(1), fTargetMass(0.0), iPID(11)
+fZ(1), fA(1), fTargetMass(0.0), fPID(11)
 {
     fPars.clear();
 }
@@ -32,8 +32,8 @@ G2PPhysBase::~G2PPhysBase()
 
 void G2PPhysBase::SetTarget(int Z, int A)
 {
-    iZ = Z;
-    iA = A;
+    fZ = Z;
+    fA = A;
 
     if (fabs(fTargetMass) < 1.0e-8) SetTargetMass();
 }
@@ -49,15 +49,15 @@ void G2PPhysBase::SetTargetMass()
 {
     double atomicmass = 0.0;
 
-    if (iZ == 1) atomicmass = 1.00794;
-    if (iZ == 2) atomicmass = 4.002602;
-    if (iZ == 6) atomicmass = 12.0107;
-    if (iZ == 7) atomicmass = 14.0067;
-    if (iZ == 8) atomicmass = 15.9994;
-    if (iZ == 26) atomicmass = 55.845;
-    if (iZ == 29) atomicmass = 63.546;
-    if (iZ == 74) atomicmass = 183.84;
-    if (fabs(atomicmass) < 1.0e-8) atomicmass = iA; // only an estimation
+    if (fZ == 1) atomicmass = 1.00794;
+    if (fZ == 2) atomicmass = 4.002602;
+    if (fZ == 6) atomicmass = 12.0107;
+    if (fZ == 7) atomicmass = 14.0067;
+    if (fZ == 8) atomicmass = 15.9994;
+    if (fZ == 26) atomicmass = 55.845;
+    if (fZ == 29) atomicmass = 63.546;
+    if (fZ == 74) atomicmass = 183.84;
+    if (fabs(atomicmass) < 1.0e-8) atomicmass = fA; // only an estimation
 
     fTargetMass = atomicmass*kU;
 }

@@ -31,8 +31,8 @@ public:
 private:
     int iSetting;
 
+    double GetXS_H1(double Ei, double theta);
     double GetXS_He4(double Ei, double theta);
-    double GetXS_C12(double Ei, double theta);
     double GetXS_N14(double Ei, double theta);
     double GetXS_All(double Ei, double theta);
 };

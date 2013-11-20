@@ -30,7 +30,7 @@ public:
 
     void SetParticle(int pid)
     {
-        iPID = pid;
+        fPID = pid;
     }
 
     virtual void SetPars(double* array, int n);
@@ -40,10 +40,10 @@ public:
 protected:
     void SetTargetMass();
 
-    int iZ, iA; // Define Target
+    int fZ, fA; // Define Target
     double fTargetMass;
 
-    int iPID; // Define particle
+    int fPID; // Define particle
 
     vector<double> fPars;
 };
