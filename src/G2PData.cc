@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
-#include <vector>
+#include <queue>
 
 #include "TROOT.h"
 #include "TError.h"
@@ -47,7 +47,6 @@ fDataFile(filename), fHRSAngle(5.767 * kDEG)
     pG2PData = this;
 
     fPriority = 1;
-    fData.clear();
     Clear();
 }
 
@@ -55,7 +54,6 @@ G2PData::~G2PData()
 {
     if (pG2PData == this) pG2PData = NULL;
 
-    fData.clear();
     Clear();
 }
 
@@ -82,7 +80,7 @@ int G2PData::Process()
     sData tempdata;
 
     if (fData.empty()) return -1;
-    tempdata = fData.back();
+    tempdata = fData.front();
     fV5bpm_lab[0] = tempdata.xb;
     fV5bpm_lab[1] = tempdata.tb;
     fV5bpm_lab[2] = tempdata.yb;
@@ -101,7 +99,7 @@ int G2PData::Process()
         Info(here, "fp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
     }
 
-    fData.pop_back();
+    fData.pop();
 
     return 0;
 }
@@ -124,7 +122,7 @@ int G2PData::LoadData()
     sData temp;
     fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
     while (!feof(fp)) {
-        fData.push_back(temp);
+        fData.push(temp);
         fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
     }
 

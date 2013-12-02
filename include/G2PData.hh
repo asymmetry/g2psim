@@ -12,7 +12,7 @@
 #ifndef G2P_DATA_H
 #define G2P_DATA_H
 
-#include <vector>
+#include <queue>
 
 #include "G2PProcBase.hh"
 
@@ -43,7 +43,7 @@ protected:
         double xb, tb, yb, pb, zb, xf, tf, yf, pf;
     } sData;
 
-    vector<sData> fData;
+    queue<sData> fData;
 
     double fHRSAngle;
 
