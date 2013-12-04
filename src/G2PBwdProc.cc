@@ -119,6 +119,9 @@ int G2PBwdProc::Process()
         V5tp = fV5tpmat_tr;
         pDBRec->Backward(V5fp_tr, V5tp);
         V5tp[0] = V5fp_tr[4];
+        double x, y, z;
+        HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, x, y, z);
+        V5tp[2] = y;
         //V5tp[0] = -V5bpm_lab[2];
         if (fDebug > 1) {
             Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tp[0], V5tp[1], V5tp[2], V5tp[3], V5tp[4]);

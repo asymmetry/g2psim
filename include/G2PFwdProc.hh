@@ -49,6 +49,7 @@ protected:
     double fHRSMomentum;
 
     bool fSieveOn;
+    int fHoleID;
 
     double fV5sieve_tr[5];
     double fV5tpproj_tr[5];

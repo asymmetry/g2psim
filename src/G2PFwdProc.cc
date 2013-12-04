@@ -41,7 +41,7 @@ static double kPI = 3.14159265358979323846;
 G2PFwdProc* G2PFwdProc::pG2PFwdProc = NULL;
 
 G2PFwdProc::G2PFwdProc() :
-fHRSAngle(0.0), fHRSMomentum(0.0), fSieveOn(false), pDrift(NULL), pHRS(NULL), pSieve(NULL)
+fHRSAngle(0.0), fHRSMomentum(0.0), fSieveOn(false), fHoleID(-1), pDrift(NULL), pHRS(NULL), pSieve(NULL)
 {
     if (pG2PFwdProc) {
         Error("G2PFwdProc()", "Only one instance of G2PFwdProc allowed.");
@@ -275,7 +275,8 @@ int G2PFwdProc::Process()
     }
 
     if (fSieveOn) {
-        if (!pSieve->CanPass(fV5sieve_tr)) return -1;
+        fHoleID = pSieve->CanPass(fV5sieve_tr);
+        if (fHoleID < 0) return -1;
     }
 
     Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
@@ -300,6 +301,8 @@ int G2PFwdProc::Process()
 
 void G2PFwdProc::Clear(Option_t* option)
 {
+    fHoleID = -1;
+
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
@@ -463,6 +466,7 @@ int G2PFwdProc::DefineVariables(EMode mode)
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
+        {"id", "Hole ID", kINT, &fHoleID},
         {"sieve.x", "Sieve X", kDOUBLE, &fV5sieve_tr[0]},
         {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
         {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},
