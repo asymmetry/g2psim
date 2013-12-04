@@ -28,10 +28,6 @@ public:
 protected:
     virtual int Shoot(double* V5beam_lab, double* V5react_tr);
 
-    virtual int Configure(EMode mode = kTWOWAY);
-
-    double fTargetMass;
-
     G2PSieve* pSieve;
 
 private:

@@ -39,6 +39,7 @@ public:
     void SetTargetTh(double low, double high);
     void SetTargetPh(double low, double high);
     void SetDelta(double low, double high);
+    void SetDelta(const char* elastic);
 
 protected:
     virtual int Shoot(double* V51, double* V52) = 0;
@@ -53,7 +54,10 @@ protected:
     double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
+    double fTargetMass;
     double fFieldRatio;
+
+    bool fForceElastic;
 
     double fBeamX_lab, fBeamY_lab;
     double fBeamR_lab;

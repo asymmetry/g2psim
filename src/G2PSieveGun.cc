@@ -28,8 +28,7 @@
 
 using namespace std;
 
-G2PSieveGun::G2PSieveGun() :
-fTargetMass(0.0), pSieve(NULL)
+G2PSieveGun::G2PSieveGun() : pSieve(NULL)
 {
     // Nothing to do
 }
@@ -114,24 +113,6 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
     }
 
     return 0;
-}
-
-int G2PSieveGun::Configure(EMode mode)
-{
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else {
-            G2PGun::Configure(mode);
-            fIsInit = true;
-        }
-    }
-
-    ConfDef confs[] = {
-        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {0}
-    };
-
-    return ConfigureFromList(confs, mode);
 }
 
 ClassImp(G2PSieveGun)

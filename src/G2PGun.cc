@@ -35,7 +35,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 G2PGun* G2PGun::pG2PGun = NULL;
 
 G2PGun::G2PGun() :
-fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fFieldRatio(0.0), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fBeamTiltAngle(0.0), pDrift(NULL)
+fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetMass(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fBeamTiltAngle(0.0), pDrift(NULL)
 {
     if (pG2PGun) {
         Error("G2PGun()", "Only one instance of G2PGun allowed.");
@@ -96,7 +96,7 @@ int G2PGun::Process()
     }
 
     HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, V5[0], V5[2], V5[4]);
-    pDrift->Drift(fV5react_tr, fHRSMomentum, V5[4], fHRSAngle, 0.0, 10.0, fV5tp_tr);
+    pDrift->Drift(fV5react_tr, V5[4], fHRSMomentum, fHRSAngle, 0.0, fV5tp_tr);
 
     if (fDebug > 1) {
         Info(here, "tp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tp_tr[0], fV5tp_tr[1], fV5tp_tr[2], fV5tp_tr[3], fV5tp_tr[4]);
@@ -171,6 +171,13 @@ void G2PGun::SetDelta(double low, double high)
     fConfigIsSet.insert((unsigned long) &fDeltaHigh);
 }
 
+void G2PGun::SetDelta(const char* elastic)
+{
+    fForceElastic = true;
+
+    fConfigIsSet.insert((unsigned long) &fForceElastic);
+}
+
 void G2PGun::SetTiltAngle()
 {
     static const char* const here = "SetTiltAngle()";
@@ -198,7 +205,7 @@ void G2PGun::GetReactPoint(double x, double y, double z, double* V5)
 
     int save = pDrift->GetDebugLevel();
     if (fDebug <= 3) pDrift->SetDebugLevel(0);
-    pDrift->Drift(xb, pb, z, 10.0, xb, pb);
+    pDrift->Drift(xb, pb, z, xb, pb);
     V5[0] = xb[0];
     if (fabs(pb[2] - fBeamEnergy) < 1e-8) V5[1] = acos(1.0); // pb[2] may be a bit larger than fBeam Energy because of round-off error
     else V5[1] = acos(pb[2] / fBeamEnergy);
@@ -219,6 +226,7 @@ int G2PGun::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
+        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
@@ -233,6 +241,7 @@ int G2PGun::Configure(EMode mode)
         {"react.p.max", "Phi Max", kDOUBLE, &fTargetPhHigh_tr},
         {"react.d.min", "Delta Min", kDOUBLE, &fDeltaLow},
         {"react.d.max", "Delta Max", kDOUBLE, &fDeltaHigh},
+        {"react.d.elastic", "Delta Elastic", kBOOL, &fForceElastic},
         {0}
     };
 
