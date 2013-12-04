@@ -28,8 +28,8 @@ protected:
     G2PMaterial(); // Only for ROOT I/O
 
     double Ionization(double E, double l);
+    double FluctIonization(double E, double meanloss);
     double Bremsstrahlung(double E, double l);
-    double b();
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
@@ -39,6 +39,7 @@ protected:
     double fMass;
     double fDensity; // density in g/cm^3
     double fX0; // radiation length in g/cm^2
+    double fB; // value of b_func()
 
 private:
     static G2PAppList* pG2PMaterial;
