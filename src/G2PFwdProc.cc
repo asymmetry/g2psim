@@ -11,8 +11,8 @@
 //   Oct 2013, J. Liu, Add Energy loss and Multiple scattering.
 //
 
-#include <cstdio>
 #include <cstdlib>
+#include <cstdio>
 #include <cmath>
 
 #include "TROOT.h"
@@ -35,6 +35,8 @@
 #include "G2PFwdProc.hh"
 
 using namespace std;
+
+static double kPI = 3.14159265358979323846;
 
 G2PFwdProc* G2PFwdProc::pG2PFwdProc = NULL;
 
@@ -97,7 +99,7 @@ int G2PFwdProc::Process()
 
     if (fDebug > 2) Info(here, " ");
 
-    double V5react_lab[5], V5tp_tr[5];
+    double V5react_lab[5], V5react_tr[5];
 
     V5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
     V5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
@@ -105,202 +107,167 @@ int G2PFwdProc::Process()
     V5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
     V5react_lab[4] = gG2PVars->FindSuffix("react.l_z")->GetValue();
 
-    V5tp_tr[0] = gG2PVars->FindSuffix("tp.x")->GetValue();
-    V5tp_tr[1] = gG2PVars->FindSuffix("tp.t")->GetValue();
-    V5tp_tr[2] = gG2PVars->FindSuffix("tp.y")->GetValue();
-    V5tp_tr[3] = gG2PVars->FindSuffix("tp.p")->GetValue();
-    V5tp_tr[4] = gG2PVars->FindSuffix("tp.d")->GetValue();
+    V5react_tr[0] = gG2PVars->FindSuffix("react.x")->GetValue();
+    V5react_tr[1] = gG2PVars->FindSuffix("react.t")->GetValue();
+    V5react_tr[2] = gG2PVars->FindSuffix("react.y")->GetValue();
+    V5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
+    V5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
+
+    double V5troj[5]; // scatted e- trajectory
 
     // Define materials
-    double V5tp_pro[7], V5tp_pro_lab[7];
+    // static double packing_fraction = 0.6;
+    // static double target_fZ = (10 * packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026) / (packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026);
+    // static double target_fA = (packing_fraction * 0.817 + (1 - packing_fraction)*0.145) / (packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026);
+    // static double target_x0 = (packing_fraction * 0.817 + (1 - packing_fraction)*0.145) / (packing_fraction * 0.817 / 24.603003 + (1 - packing_fraction)*0.145 / 94.32);
+    // static double target_density = packing_fraction * 0.817 + (1 - packing_fraction)*0.145;
 
-    // double packing_fraction = 0.6;
-    // double target_fZ = (10 * packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026) / (packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026);
-    // double target_fA = (packing_fraction * 0.817 + (1 - packing_fraction)*0.145) / (packing_fraction * 0.817 / 17.0305 + 2 * (1 - packing_fraction)*0.145 / 4.0026);
-    // double target_x0 = (packing_fraction * 0.817 + (1 - packing_fraction)*0.145) / (packing_fraction * 0.817 / 24.603003 + (1 - packing_fraction)*0.145 / 94.32);
-    // double target_density = packing_fraction * 0.817 + (1 - packing_fraction)*0.145;
+    static G2PMaterial *pHe = new G2PMaterial("He", 2, 4.0026, 94.32, 0.00016);
+    static G2PMaterial *pAl = new G2PMaterial("Al", 13, 26.9815, 24.01, 2.70);
+    static G2PMaterial *pTi = new G2PMaterial("Ti", 22, 47.867, 16.16, 4.54);
+    static G2PMaterial *pKapton = new G2PMaterial("Kapton", 5.02, 9.80, 40.56, 1.42);
+    // static G2PMaterial *pTarget = new G2PMaterial("target", target_fZ, target_fA, target_x0, target_density);
 
-    // G2PMaterial *pNH3 =new G2PMaterial("NH3", 10,17.0305,40.8739,0.817);
-    // G2PMaterial *pN14 =new G2PMaterial("N14", 7,14.0067,40.8739,0.817);
-    // G2PMaterial *pH3 =new G2PMaterial("H3",1,1,40.8739,0.817);
-    G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
-    G2PMaterial *pC12 = new G2PMaterial("C12", 6, 12.0107, 42.7, 2.0);
-    // G2PMaterial *pTarget =new G2PMaterial("target",target_fZ,target_fA,target_x0,target_density);
-    G2PMaterial *pAl = new G2PMaterial("Al", 13, 26.9815, 24.01, 2.70);
-    G2PMaterial *pPTCFE = new G2PMaterial("TCFE wall", 9.33, 19.411, 28.186, 2.12);
-    G2PMaterial *pHe4 = new G2PMaterial("He4", 2, 4.0026, 94.32, 0.00016);
-    G2PMaterial *pKapton = new G2PMaterial("pKapton", 5.02, 9.80, 40.56, 1.42);
-    G2PMaterial *pTitanium = new G2PMaterial("pTitanium", 22, 47.867, 16.16, 4.54);
+    double driftlength, E, eloss, angle, rot;
+    double dlentot = 0.0, elosstot = 0.0;
+    double z_tr;
 
-    // double x[3] = {V5react_lab[0], V5react_lab[2], V5react_lab[4]};
-    // double pp = fHRSMomentum * (1 + V5tp_tr[4]);
-    // double p[3] = {pp * sin(V5react_lab[1]) * cos(V5react_lab[3]), pp * sin(V5react_lab[1]) * sin(V5react_lab[3]), pp * cos(V5react_lab[1])};
-
-    double driftlength, Edrift, Multi_theta, Multi_phi, zdrift;
-    bool IsEnergyLoss, IsMultiScatt;
-    IsEnergyLoss = true;
-    IsMultiScatt = false;
+    HCS2TCS(V5react_lab[0], V5react_lab[2], V5react_lab[4], fHRSAngle, V5react_tr[0], V5react_tr[2], z_tr);
 
     // Drift to target wall or end-cap
-    // This is for carbon target
-    driftlength = pDrift->Drift(V5tp_tr, fHRSMomentum, V5react_lab[4], fHRSAngle, -1.31191e-2, 10.0, 1.36144e-2, V5tp_pro, 0);
-    TCS2HCS(V5tp_pro[0], V5tp_pro[2], V5tp_pro[5], fHRSAngle, V5tp_pro_lab[0], V5tp_pro_lab[2], V5tp_pro_lab[5]);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pC12->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pC12->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
+    switch (fRunType) {
+    case 10: // production target
+        break;
+    case 20: // 40 mil carbon target, without LHe
+        RunType20(V5react_tr, z_tr, V5troj, dlentot, elosstot);
+        break;
+    case 21: // 125 mil carbon target, without LHe
+        break;
+    case 22: // 40 mil carbon target, with LHe
+        RunType22(V5react_tr, z_tr, V5troj, dlentot, elosstot);
+        break;
+    case 23: // 125 mil carbon target, with LHe
+        break;
+    default:
+        break;
     }
 
-    if (V5tp_pro[6] == 0) {
-        zdrift = V5tp_pro[5];
-        driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 1.41351e-2, 10.0, 1.36144e-2, V5tp_pro, 0);
-        Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-        driftlength = driftlength * 100;
-        if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pLHe->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-        if (IsMultiScatt) {
-            Multi_theta = pLHe->MultiScattering(Edrift, driftlength);
-            Multi_phi = Multi_theta;
-            V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-            V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-        }
-    }
-
-    if (V5tp_pro[6] == 1) {
-        zdrift = V5tp_pro[5];
-        driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 1.41351e-2, 10.0, 1.45034e-2, V5tp_pro, 0);
-        Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-        driftlength = driftlength * 100;
-        if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pPTCFE->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-        if (IsMultiScatt) {
-            Multi_theta = pPTCFE->MultiScattering(Edrift, driftlength);
-            Multi_phi = Multi_theta;
-            V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-            V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-        }
-    }
-
-    // Drift in LHe
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 2.10058e-2, 10.0, 2.10058e-2, V5tp_pro, 1);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pLHe->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-
-    if (IsMultiScatt) {
-        Multi_theta = pPTCFE->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-    }
-
-    // Drift in nose
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 2.11328e-2, 10.0, 2.11328e-2, V5tp_pro, 1);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    // Info("EnergyLoss()", "%10.3e %10.3e", driftlength, V5tp_pro[4]);
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pAl->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pAl->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-    }
+    // Drift in target nose window
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 21.133e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pAl->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pAl->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
 
     // Drift in vacuum
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 3.81e-2, 10.0, 3.81e-2, V5tp_pro, 1);
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 38.1000e-3, V5troj, z_tr); // vertical cylinder
+    dlentot += driftlength;
 
     // Drift in 4k shield
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 3.81127e-2, 10.0, 3.81127e-2, V5tp_pro, 1);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pAl->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pAl->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-    }
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 38.1127e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pAl->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pAl->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
 
     // Drift in vacuum
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 41.910e-2, 10.0, 41.910e-2, V5tp_pro, 1);
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 419.100e-3, V5troj, z_tr); // vertical cylinder
+    dlentot += driftlength;
 
     // Drift in LN2 window
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 41.91381e-2, 10.0, 41.91381e-2, V5tp_pro, 1);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pAl->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pAl->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-    }
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 419.138e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pAl->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pAl->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
 
     // Drift in vacuum
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 47.9425e-2, 10.0, 47.9425e-2, V5tp_pro, 1);
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 479.425e-3, V5troj, z_tr); // vertical cylinder
+    dlentot += driftlength;
 
     // Drift in chamber exit window
-    zdrift = V5tp_pro[5];
-    driftlength = pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 47.9933e-2, 10.0, 47.9933e-2, V5tp_pro, 1);
-    Edrift = fHRSMomentum * (1 + V5tp_pro[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) V5tp_pro[4] = V5tp_pro[4]-(pAl->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pAl->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        V5tp_pro[1] = atan((tan(V5tp_pro[1]) + tan(Multi_theta)) / (1 - tan(V5tp_pro[1]) * tan(Multi_theta)));
-        V5tp_pro[3] = atan((tan(V5tp_pro[3]) + tan(Multi_phi)) / (1 - tan(V5tp_pro[3]) * tan(Multi_phi)));
-    }
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 479.933e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pAl->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pAl->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
 
     // Local dump front face
-    zdrift = V5tp_pro[5];
-    driftlength = 0;
-    driftlength += pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 64.0e-2, 10.0, 2, V5tp_pro, 0);
-    TCS2HCS(V5tp_pro[0], V5tp_pro[2], V5tp_pro[5], fHRSAngle, V5tp_pro_lab[0], V5tp_pro_lab[2], V5tp_pro_lab[5]);
-    if ((fabs(V5tp_pro_lab[0]) < 46.0e-3) || (fabs(V5tp_pro_lab[0]) > 87.0e-3)) return -1;
-    if ((V5tp_pro_lab[1]<-43.0e-3) || (V5tp_pro_lab[1] > 50.0e-3)) return -1;
-    // Local dump back face
-    zdrift = V5tp_pro[5];
-    driftlength += pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, 79.0e-2, 10.0, 2, V5tp_pro, 0);
-    TCS2HCS(V5tp_pro[0], V5tp_pro[2], V5tp_pro[5], fHRSAngle, V5tp_pro_lab[0], V5tp_pro_lab[2], V5tp_pro_lab[5]);
-    if ((fabs(V5tp_pro_lab[0]) < 58.0e-3) || (fabs(V5tp_pro_lab[0]) > 106.0e-3)) return -1;
-    if ((V5tp_pro_lab[1]<-53.0e-3) || (V5tp_pro_lab[1] > 58.0e-3)) return -1;
+    double x[3] = {0};
+    TCS2HCS(V5troj[0], V5troj[2], z_tr, fHRSAngle, x[0], x[1], x[2]);
+    double V5_lab[5];
+    TCS2HCS(V5troj[1], V5troj[3], fHRSAngle, V5_lab[1], V5_lab[3]);
+    double pp = fHRSMomentum * (1 + V5troj[4]);
+    double p[3] = {pp * sin(V5_lab[1]) * cos(V5_lab[3]), pp * sin(V5_lab[1]) * sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
-    // // Local dump front face
-    // pDrift->Drift(x, p, 640.0e-3, 10.0, x, p);
-    // if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3)) return -1;
-    // if ((x[1]<-43.0e-3) || (x[1] > 50.0e-3)) return -1;
-    // // Local dump back face
-    // pDrift->Drift(x, p, 790.0e-3, 10.0, x, p);
-    // if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3)) return -1;
-    // if ((x[1]<-53.0e-3) || (x[1] > 58.0e-3)) return -1;
-    // pDrift->Drift(V5tp_tr, fHRSMomentum, 0.0, fHRSAngle, pSieve->GetZ(), 10.0, fV5sieve_tr);
+    driftlength = 0;
+    driftlength += pDrift->Drift(x, p, 640.0e-3, x, p); // along z direction in lab coordinate
+    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3)) return -1;
+    if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3)) return -1;
+
+    // Local dump back face
+    driftlength += pDrift->Drift(x, p, 790.0e-3, x, p);
+    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3)) return -1;
+    if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3)) return -1;
+
+    HCS2TCS(x[0], x[1], x[2], fHRSAngle, V5troj[0], V5troj[2], z_tr);
+    HCS2TCS(acos(p[2] / pp), atan2(p[1], p[0]), fHRSAngle, V5troj[1], V5troj[3]);
 
     // He4 energy loss
-    zdrift = V5tp_pro[5];
-    driftlength += pDrift->Drift(V5tp_pro, fHRSMomentum, zdrift, fHRSAngle, pSieve->GetZ(), 10.0, fV5sieve_tr);
-    Edrift = fHRSMomentum * (1 + fV5sieve_tr[4]);
-    driftlength = driftlength * 100;
-    if (IsEnergyLoss) fV5sieve_tr[4] = fV5sieve_tr[4]-(pHe4->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-    if (IsMultiScatt) {
-        Multi_theta = pHe4->MultiScattering(Edrift, driftlength);
-        Multi_phi = Multi_theta;
-        fV5sieve_tr[1] = atan((tan(fV5sieve_tr[1]) + tan(Multi_theta)) / (1 - tan(fV5sieve_tr[1]) * tan(Multi_theta)));
-        fV5sieve_tr[3] = atan((tan(fV5sieve_tr[3]) + tan(Multi_phi)) / (1 - tan(fV5sieve_tr[3]) * tan(Multi_phi)));
-    }
+    driftlength += pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, pSieve->GetZ(), fV5sieve_tr);
+    E = fHRSMomentum * (1 + fV5sieve_tr[4]);
+    eloss = pHe->EnergyLoss(E, driftlength);
+    fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
+    angle = pHe->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    fV5sieve_tr[1] += angle * cos(rot);
+    fV5sieve_tr[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
+
+    // He bag
+    E = fHRSMomentum * (1 + fV5sieve_tr[4]);
+    driftlength = (170.9e-2 - pSieve->GetZ()) / cos(fV5sieve_tr[1]);
+    eloss = pHe->EnergyLoss(E, driftlength);
+    fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
+    elosstot += eloss;
+
+    // HRS entrance
+    E = fHRSMomentum * (1 + fV5sieve_tr[4]);
+    driftlength = 0.0254e-2 / cos(fV5sieve_tr[1]);
+    eloss = pKapton->EnergyLoss(E, driftlength);
+    fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
+    elosstot += eloss;
+
+    // HRS exit
+    E = fHRSMomentum * (1 + fV5sieve_tr[4]);
+    driftlength = 0.01016e-2;
+    eloss = pTi->EnergyLoss(E, driftlength);
+    fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
+    elosstot += eloss;
 
     if (fDebug > 2) {
-        Info("EnergyLoss()", "%10.3e %10.3e", driftlength, V5tp_pro[4]);
+        Info("EnergyLoss()", "%10.3e %10.3e", dlentot, elosstot);
     }
 
     if (fDebug > 1) {
@@ -310,21 +277,6 @@ int G2PFwdProc::Process()
     if (fSieveOn) {
         if (!pSieve->CanPass(fV5sieve_tr)) return -1;
     }
-
-    // He bag
-    Edrift = fHRSMomentum * (1 + fV5sieve_tr[4]);
-    driftlength = (170.9 - pSieve->GetZ()) / cos(fV5sieve_tr[1]);
-    if (IsEnergyLoss) fV5sieve_tr[4] = fV5sieve_tr[4]-(pHe4->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-
-    // HRS entrance
-    Edrift = fHRSMomentum * (1 + fV5sieve_tr[4]);
-    driftlength = 0.0254 / cos(fV5sieve_tr[1]);
-    if (IsEnergyLoss) fV5sieve_tr[4] = fV5sieve_tr[4]-(pKapton->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
-
-    // HRS exit
-    Edrift = fHRSMomentum * (1 + fV5sieve_tr[4]);
-    driftlength = 0.01016;
-    if (IsEnergyLoss) fV5sieve_tr[4] = fV5sieve_tr[4]-(pTitanium->EnergyLoss(Edrift, driftlength)) / fHRSMomentum;
 
     Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
     fV5tpproj_tr[1] = fV5sieve_tr[1];
@@ -356,6 +308,122 @@ void G2PFwdProc::Clear(Option_t* option)
     G2PProcBase::Clear(option);
 }
 
+void G2PFwdProc::RunType20(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+{
+    // 40 mil carbon target, without LHe
+
+    double driftlength, E, eloss, angle, rot;
+    int surf;
+
+    // Define materials
+    static G2PMaterial *pC = new G2PMaterial("C", 6, 12.0107, 42.7, 2.0);
+    static G2PMaterial *pPCTFE = new G2PMaterial("PCTFE", 9.33, 19.411, 28.186, 2.12);
+
+    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -13.1191e-3, V5troj, z_tr, surf); // longitudinal cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pC->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pC->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
+
+    if (surf == 0) {
+        driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, 14.1351e-3, V5troj, z_tr, surf); // longitudinal cylinder
+        dlentot += driftlength;
+    }
+
+    if (surf == 1) {
+        driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 14.5034e-3, 14.1351e-3, V5troj, z_tr, surf); // longitudinal cylinder
+        E = fHRSMomentum * (1 + V5troj[4]);
+        eloss = pPCTFE->EnergyLoss(E, driftlength);
+        V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+        angle = pPCTFE->MultiScattering(E, driftlength);
+        rot = pRand->Uniform(0, 2 * kPI);
+        V5troj[1] += angle * cos(rot);
+        V5troj[3] += angle * sin(rot);
+        dlentot += driftlength;
+        elosstot += eloss;
+    }
+
+    // Drift in vacuum
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 21.0058e-3, V5troj, z_tr); // vertical cylinder
+    dlentot += driftlength;
+}
+
+void G2PFwdProc::RunType21(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+{
+    // 125 mil carbon target, without LHe
+}
+
+void G2PFwdProc::RunType22(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+{
+    // 40 mil carbon target, with LHe
+
+    double driftlength, E, eloss, angle, rot;
+    int surf;
+
+    // Define materials
+    static G2PMaterial *pC = new G2PMaterial("C", 6, 12.0107, 42.7, 2.0);
+    static G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
+    static G2PMaterial *pPCTFE = new G2PMaterial("PCTFE", 9.33, 19.411, 28.186, 2.12);
+
+    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -13.1191e-3, V5troj, z_tr, surf); // longitudinal cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pC->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pC->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
+
+    if (surf == 0) {
+        driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, 14.1351e-3, V5troj, z_tr, surf); // longitudinal cylinder
+        E = fHRSMomentum * (1 + V5troj[4]);
+        eloss = pLHe->EnergyLoss(E, driftlength);
+        V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+        angle = pLHe->MultiScattering(E, driftlength);
+        rot = pRand->Uniform(0, 2 * kPI);
+        V5troj[1] += angle * cos(rot);
+        V5troj[3] += angle * sin(rot);
+        dlentot += driftlength;
+        elosstot += eloss;
+    }
+
+    if (surf == 1) {
+        driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 14.5034e-3, 14.1351e-3, V5troj, z_tr, surf); // longitudinal cylinder
+        E = fHRSMomentum * (1 + V5troj[4]);
+        eloss = pPCTFE->EnergyLoss(E, driftlength);
+        V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+        angle = pPCTFE->MultiScattering(E, driftlength);
+        rot = pRand->Uniform(0, 2 * kPI);
+        V5troj[1] += angle * cos(rot);
+        V5troj[3] += angle * sin(rot);
+        dlentot += driftlength;
+        elosstot += eloss;
+    }
+
+    // Drift in LHe
+    driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 21.0058e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pLHe->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pLHe->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
+}
+
+void G2PFwdProc::RunType23(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+{
+}
+
 void G2PFwdProc::ApplyVDCRes(double* V5fp)
 {
     // VDC Res set to 0.1mm (pos) and 0.5mrad (angle), HallA NIM ch3.3
@@ -379,6 +447,7 @@ int G2PFwdProc::Configure(EMode mode)
     }
 
     ConfDef confs[] = {
+        {"run.type", "Run Type", kINT, &fRunType},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"run.sieveon", "Sieve On", kBOOL, &fSieveOn},

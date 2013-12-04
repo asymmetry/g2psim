@@ -55,6 +55,7 @@ G2PRun::G2PRun() : fConfigFile(NULL)
 
     fConfig.clear();
     fConfig["run.debuglevel"] = 0;
+    fConfig["run.type"] = 10;
     fConfig["run.hrs.angle"] = 5.767 * kDEG;
     fConfig["run.hrs.p0"] = 2.251;
     fConfig["run.particle.id"] = 11;
@@ -263,6 +264,21 @@ void G2PRun::SetDebugLevel(int n)
     fConfig["run.debuglevel"] = (double) n;
 
     fConfigIsSet.insert("run.debuglevel");
+}
+
+void G2PRun::SetRunType(const char* type)
+{
+    map<string, int> tempmap;
+    tempmap["production"] = 10;
+    tempmap["optics"] = 20;
+    tempmap["optics21"] = 21;
+    tempmap["optics22"] = 22;
+    tempmap["optics23"] = 23;
+
+    if (tempmap.count(type) > 0) fConfig["run.type"] = (double) tempmap[type];
+    else fConfig["run.type"] = (double) 10;
+
+    fConfigIsSet.insert("run.type");
 }
 
 void G2PRun::SetSeed(unsigned n)

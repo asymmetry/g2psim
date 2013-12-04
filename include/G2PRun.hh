@@ -49,6 +49,7 @@ public:
     //Sets
     void SetConfigFile(const char* file);
     void SetDebugLevel(int n);
+    void SetRunType(const char* type);
     void SetSeed(unsigned n);
     void SetHRSAngle(double angle);
     void SetHRSMomentum(double P0);

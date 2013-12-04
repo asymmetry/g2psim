@@ -32,12 +32,19 @@ public:
     virtual void Clear(Option_t* /*option*/ = "");
 
 protected:
+    void RunType10(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // production target
+    void RunType20(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 40 mil carbon target, without LHe
+    void RunType21(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 125 mil carbon target, without LHe
+    void RunType22(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 40 mil carbon target, with LHe
+    void RunType23(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 125 mil carbon target, with LHe
+
     void ApplyVDCRes(double* V5fp);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
+    int fRunType;
     double fHRSAngle;
     double fHRSMomentum;
 
