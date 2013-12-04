@@ -140,7 +140,7 @@ int G2PBwdProc::Process()
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
     }
 
-    pDrift->Drift(fV5sieveproj_tr, fHRSMomentum, pSieve->GetZ(), fHRSAngle, 0.0, 10.0, fV5tprec_tr);
+    pDrift->Drift(fV5sieveproj_tr, pSieve->GetZ(), fHRSMomentum, fHRSAngle, 0.0, fV5tprec_tr);
     TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fHRSAngle, fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]);
     TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fHRSAngle, fV5tprec_lab[1], fV5tprec_lab[3]);
 
@@ -150,7 +150,7 @@ int G2PBwdProc::Process()
     double p[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * cos(fV5tprec_lab[3]),
         fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * sin(fV5tprec_lab[3]),
         fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(fV5tprec_lab[1])};
-    pDrift->Drift(x, p, -13.6271e-3, 10.0, x, p);
+    pDrift->Drift(x, p, -13.6271e-3, x, p);
     double tempd;
     fV5tprec_lab[0] = x[0];
     fV5tprec_lab[1] = acos(p[2] / (fHRSMomentum * (1 + fV5tprec_tr[4])));
@@ -207,7 +207,7 @@ double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp)
     HCS2TCS(V5bpm_lab[0], V5bpm_lab[2], V5bpm_lab[4], fHRSAngle, V5bpm_tr[0], V5bpm_tr[2], z_tr);
     HCS2TCS(V5bpm_lab[1], V5bpm_lab[3], fHRSAngle, V5bpm_tr[1], V5bpm_tr[3]);
     V5bpm_tr[4] = 0.0;
-    pDrift->Drift(V5bpm_tr, fBeamEnergy, z_tr, fHRSAngle, 0.0, 10.0, V5bpm_tr);
+    pDrift->Drift(V5bpm_tr, z_tr, fBeamEnergy, fHRSAngle, 0.0, V5bpm_tr);
 
     double xbpm_tr = V5bpm_tr[0];
     double xbpm_tr_eff = xbpm_tr;
@@ -224,20 +224,28 @@ double G2PBwdProc::GetEffBPM(const double* V5bpm_lab, const double* V5fp)
         else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
 
         V5_fp[4] = xbpm_tr_eff;
-        pHRS->Backward(V5_fp, V5_tg);
+        if (pDBRec) {
+            pDBRec->Backward(V5_fp, V5_tg);
+            p = (1 + V5_tg[4]) * fHRSMomentum;
+            xbpm_tr_eff = xbpm_tr;
+            if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+            else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+        } else {
+            pHRS->Backward(V5_fp, V5_tg);
 
-        p = (1 + V5_tg[4]) * fHRSMomentum;
-        xbpm_tr_eff = xbpm_tr;
-        if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
-        else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+            p = (1 + V5_tg[4]) * fHRSMomentum;
+            xbpm_tr_eff = xbpm_tr;
+            if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+            else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
 
-        V5_fp[4] = xbpm_tr_eff;
-        pHRS->Backward(V5_fp, V5_tg);
+            V5_fp[4] = xbpm_tr_eff;
+            pHRS->Backward(V5_fp, V5_tg);
 
-        p = (1 + V5_tg[4]) * fHRSMomentum;
-        xbpm_tr_eff = xbpm_tr;
-        if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
-        else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+            p = (1 + V5_tg[4]) * fHRSMomentum;
+            xbpm_tr_eff = xbpm_tr;
+            if (ratio < 0.75) xbpm_tr_eff -= (3.14345 / p + 0.0183611) / 1000 * ratio / 0.5;
+            else xbpm_tr_eff -= (6.11766 / p + 0.14139) / 1000 * ratio / 1.0;
+        }
     }
 
     pDrift->SetDebugLevel(save);
@@ -312,64 +320,3 @@ void G2PBwdProc::MakePrefix()
 }
 
 ClassImp(G2PBwdProc)
-
-//double G2PRun::DriftPath() {
-//    if (bUseField) {
-//        double x[3] = {fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4]};
-//        double p[3] = {fBeamEnergy * sin(fV5bpm_lab[1]) * cos(fV5bpm_lab[3]), fBeamEnergy * sin(fV5bpm_lab[1]) * sin(fV5bpm_lab[3]), fBeamEnergy * cos(fV5bpm_lab[1])};
-//
-//        double xrec[3];
-//        HRSTransTCSNHCS::X_TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fHRSAngle, xrec[0], xrec[1], xrec[2]);
-//        double theta, phi;
-//        HRSTransTCSNHCS::P_TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fHRSAngle, theta, phi);
-//        double prec[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(theta) * cos(phi), fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(theta) * sin(phi), fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(theta)};
-//        pDrift->Drift(xrec, prec, 0, 10.0, xrec, prec);
-//
-//        double z = 0.0;
-//        double zmin = 0.0;
-//        double distmin = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
-//        for (int i = 1; i < 150; i++) {
-//            z = 0.1e-3 * i;
-//            pDrift->Drift(x, p, z, 10.0, x, p);
-//            pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
-//            double distance = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
-//            if (distance < distmin) {
-//                zmin = z;
-//                distmin = distance;
-//            }
-//        }
-//
-//        // for (int i = 20; i<200; i++) {
-//        //     z = 1e-3*i;
-//        //     pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//        //     printf("%e\t%e\t%e\t%e\t%e\n", z, 1000.0, 1000.0, xrec[0], xrec[1]);
-//        // }
-//
-//        for (int i = 1; i < 150; i++) {
-//            z = -0.1e-3 * i;
-//            pDrift->Drift(x, p, z, 10.0, x, p);
-//            pDrift->Drift(xrec, prec, z, 10.0, xrec, prec);
-//            //printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], xrec[0], xrec[1]);
-//            double distance = sqrt((x[0] - xrec[0])*(x[0] - xrec[0])+(x[1] - xrec[1])*(x[1] - xrec[1]));
-//            if (distance < distmin) {
-//                zmin = z;
-//                distmin = distance;
-//            }
-//        }
-//
-//        // for (int i = -20; i>-200; i--) {
-//        //     z = 1e-3*i;
-//        //     pDrift->Drift(x, p, z, 10.0, x, p);
-//        //     printf("%e\t%e\t%e\t%e\t%e\n", z, x[0], x[1], 1000.0, 1000.0);
-//        // }
-//
-//        pDrift->Drift(x, p, zmin, 10.0, x, p);
-//        pDrift->Drift(xrec, prec, zmin, 10.0, xrec, prec);
-//
-//        double x_tr, y_tr, z_tr;
-//        HRSTransTCSNHCS::X_HCS2TCS(xrec[0], xrec[1], xrec[2], fHRSAngle, x_tr, y_tr, z_tr);
-//        return (z_tr);
-//    }
-//    else return 0;
-//}

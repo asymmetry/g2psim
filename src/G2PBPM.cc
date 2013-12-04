@@ -166,10 +166,10 @@ void G2PBPM::GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
     double x[3] = {V5beam_lab[0], V5beam_lab[2], V5beam_lab[4]};
     double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) * cos(V5beam_lab[3]), fBeamEnergy * sin(V5beam_lab[1]) * sin(V5beam_lab[3]), fBeamEnergy * cos(V5beam_lab[1])};
 
-    pDrift->Drift(x, p, fBPMBZ, 10.0, x, p);
+    pDrift->Drift(x, p, fBPMBZ, x, p);
     V4[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes)*1e3;
     V4[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes)*1e3;
-    pDrift->Drift(x, p, fBPMAZ, 10.0, x, p);
+    pDrift->Drift(x, p, fBPMAZ, x, p);
     V4[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes)*1e3;
     V4[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes)*1e3;
 
@@ -187,7 +187,7 @@ void G2PBPM::GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
     p[2] *= normF;
     x[0] = pRand->Gaus(x[0], fBPMARes);
     x[1] = pRand->Gaus(x[1], fBPMARes);
-    pDrift->Drift(x, p, 0.0, 10.0, x, p);
+    pDrift->Drift(x, p, 0.0, x, p);
     V5bpm_bpm[0] = x[0];
     V5bpm_bpm[1] = atan2(p[1], p[2]);
     V5bpm_bpm[2] = x[1];
@@ -313,10 +313,10 @@ void G2PBPM::GetBPMAB(const double* V5beam_lab, float* xout)
 
     int save = pDrift->GetDebugLevel();
     if (fDebug <= 3) pDrift->SetDebugLevel(0);
-    pDrift->Drift(x, p, fBPMBZ, 10.0, x, p);
+    pDrift->Drift(x, p, fBPMBZ, x, p);
     xout[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes)*1e3;
     xout[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes)*1e3;
-    pDrift->Drift(x, p, fBPMAZ, 10.0, x, p);
+    pDrift->Drift(x, p, fBPMAZ, x, p);
     xout[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes)*1e3;
     xout[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes)*1e3;
     pDrift->SetDebugLevel(save);

@@ -25,31 +25,38 @@ public:
     G2PDrift();
     virtual ~G2PDrift();
 
-    typedef double (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double, double*, double*);
-    typedef double (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double, double*);
-    typedef double (G2PDrift::*pfDriftTCSL_)(const double*, double, double, double, double, double, double, double*);
-    typedef double (G2PDrift::*pfDriftTCSV_)(const double*, double, double, double, double, double, double, double*);
+    typedef double (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double*, double*);
+    typedef double (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double*);
+    typedef double (G2PDrift::*pfDriftCV_)(const double*, double, double, double, double, double*, double&);
+    typedef double (G2PDrift::*pfDriftCL_)(const double*, double, double, double, double, double, double*, double&, int&);
 
     virtual int Init();
     virtual int Begin();
     virtual void Clear(Option_t* /*option*/ = "");
 
-    virtual double Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
-    virtual double Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout, int cylinder_type); // J. Liu
+    virtual double Drift(const double* x, const double* p, double zf, double *xout, double *pout); // HCS
+    virtual double Drift(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout); // TCS
+    virtual double Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // CV // J. Liu
+    virtual double Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // CL // J. Liu
 
     // Gets
 
     // Sets
-    void SetLimit(double lo, double hi);
+    void SetStep(double init, double limit);
+    void SetErrLimit(double lo, double hi);
 
 protected:
-    double DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    double DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout);
-    double DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
-    double DriftTCSV(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout); // J. Liu
-    double DriftTCSL(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout); // J. Liu
-    double DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout);
+    double DriftHCS(const double* x, const double* p, double zf, double *xout, double *pout);
+    double DriftHCSNF(const double* x, const double* p, double zf, double *xout, double *pout);
+
+    double DriftTCS(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout);
+    double DriftTCSNF(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout);
+
+    double DriftCV(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // J. Liu
+    double DriftCVNF(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout);
+
+    double DriftCL(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
+    double DriftCLNF(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
 
     void NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err);
     double DistChord();
@@ -72,8 +79,8 @@ protected:
 
     pfDriftHCS_ pfDriftHCS;
     pfDriftTCS_ pfDriftTCS;
-    pfDriftTCSL_ pfDriftTCSL;
-    pfDriftTCSV_ pfDriftTCSV;
+    pfDriftCV_ pfDriftCV;
+    pfDriftCL_ pfDriftCL;
 
 private:
     static G2PDrift* pG2PDrift;

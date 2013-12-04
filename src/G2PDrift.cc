@@ -30,6 +30,8 @@
 
 using namespace std;
 
+static const double kLLimit = 2.0;
+
 static const double c = 2.99792458e8;
 static const double e = 1.60217656535e-19;
 static const double kDEG = 3.14159265358979323846 / 180.0;
@@ -39,7 +41,7 @@ static const double kOneSixth = 1.0 / 6.0;
 G2PDrift* G2PDrift::pG2PDrift = NULL;
 
 G2PDrift::G2PDrift() :
-fM0(0.51099892811e-3), fQ(-1 * e), fQSave(-1 * e), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6), fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL)
+fM0(0.51099892811e-3), fQ(-1 * e), fQSave(-1 * e), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6), fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL), pfDriftCV(NULL), pfDriftCL(NULL)
 {
     if (pG2PDrift) {
         Error("G2PDrift()", "Only one instance of G2PDrift allowed.");
@@ -76,11 +78,13 @@ int G2PDrift::Begin()
     if (pField) {
         pfDriftHCS = &G2PDrift::DriftHCS;
         pfDriftTCS = &G2PDrift::DriftTCS;
-        pfDriftTCSL = &G2PDrift::DriftTCSL;
-        pfDriftTCSV = &G2PDrift::DriftTCSV;
+        pfDriftCV = &G2PDrift::DriftCV;
+        pfDriftCL = &G2PDrift::DriftCL;
     } else {
         pfDriftHCS = &G2PDrift::DriftHCSNF;
         pfDriftTCS = &G2PDrift::DriftTCSNF;
+        pfDriftCV = &G2PDrift::DriftCVNF;
+        pfDriftCL = &G2PDrift::DriftCLNF;
     }
 
     return (fStatus = kOK);
@@ -96,16 +100,16 @@ void G2PDrift::Clear(Option_t* option)
     G2PAppBase::Clear(option);
 }
 
-double G2PDrift::Drift(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
+double G2PDrift::Drift(const double* x, const double* p, double zf, double *xout, double *pout)
 {
     // Drift in lab coordinate
 
-    static const char* const here = "Drift()";
+    static const char* const here = "DriftHCS()";
 
     double xx[3] = {x[0], x[1], x[2]};
     double pp[3] = {p[0], p[1], p[2]};
 
-    double result = (this->*pfDriftHCS)(x, p, zlimit, llimit, xout, pout);
+    double result = (this->*pfDriftHCS)(x, p, zf, xout, pout);
 
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], pp[0], pp[1], pp[2], xout[0], xout[1], xout[2], pout[0], pout[1], pout[2]);
@@ -114,49 +118,67 @@ double G2PDrift::Drift(const double* x, const double* p, double zlimit, double l
     return result;
 }
 
-double G2PDrift::Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
+double G2PDrift::Drift(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout)
 {
     // Drift in transport coordinate
 
-    static const char* const here = "Drift()";
+    static const char* const here = "DriftTCS()";
 
     double xx[5] = {x[0], x[1], x[2], x[3], x[4]};
 
-    double result = (this->*pfDriftTCS)(x, p, z_tr, angle, zlimit, llimit, xout);
+    double result = (this->*pfDriftTCS)(x, z_tr, p, angle, zf_tr, xout);
 
     if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xout[0], xout[1], xout[2], xout[3]);
     }
 
     return result;
 }
 
-double G2PDrift::Drift(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout, int cylinder_type)
+double G2PDrift::Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout)
 {
-    // J. Liu: added for cylinder boundary, like target
-    // vertical cylinder    : cylinder_type = 1;
-    // longitudinal cylinder: cylinder_type = 0;
+    // J. Liu: added for vertical cylinder, like target chamber
 
-    static const char* const here = "Drift()";
+    static const char* const here = "DriftCV()";
 
     double xx[5] = {x[0], x[1], x[2], x[3], x[4]};
 
-    double result = 0;
-    if (cylinder_type == 0) {
-        result = (this->*pfDriftTCSL)(x, p, z_tr, angle, zlimit, llimit, rlimit, xout);
-    }
-    if (cylinder_type == 1) {
-        result = (this->*pfDriftTCSV)(x, p, z_tr, angle, zlimit, llimit, rlimit, xout);
-    }
+    double result = (this->*pfDriftCV)(x, z_tr, p, angle, rf_lab, xout, zout);
 
     if (fDebug > 2) {
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], xx[4], xout[0], xout[1], xout[2], xout[3], xout[4]);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], z_tr, xout[0], xout[1], xout[2], xout[3], zout);
     }
 
     return result;
 }
 
-void G2PDrift::SetLimit(double lo, double hi)
+double G2PDrift::Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf)
+{
+    // J. Liu: added for longitudinal cylinder boundary, like target
+
+    static const char* const here = "DriftCL()";
+
+    double xx[5] = {x[0], x[1], x[2], x[3], x[4]};
+
+    double result = (this->*pfDriftCL)(x, z_tr, p, angle, rf_lab, zf_lab, xout, zout, surf);
+
+    if (fDebug > 2) {
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xx[0], xx[1], xx[2], xx[3], z_tr, xout[0], xout[1], xout[2], xout[3], zout);
+    }
+
+    return result;
+}
+
+void G2PDrift::SetStep(double init, double limit)
+{
+    fStep = init;
+    fStepLimit = limit;
+
+    fConfigIsSet.insert((unsigned long) &fStep);
+    fConfigIsSet.insert((unsigned long) &fStepLimit);
+}
+
+void G2PDrift::SetErrLimit(double lo, double hi)
 {
     fErrLoLimit = lo;
     fErrHiLimit = hi;
@@ -165,7 +187,7 @@ void G2PDrift::SetLimit(double lo, double hi)
     fConfigIsSet.insert((unsigned long) &fErrHiLimit);
 }
 
-double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
+double G2PDrift::DriftHCS(const double* x, const double* p, double zf, double *xout, double *pout)
 {
     // Drift in lab coordinate
 
@@ -192,7 +214,7 @@ double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, doubl
     // z > zlimit, p < 0: true  ^ true  = false (forward)
     // z < zlimit, p > 0: false ^ false = false (forward)
     // z < zlimit, p < 0: false ^ true  = true  (backward)
-    bool sign = (x[2] > zlimit) ? true : false;
+    bool sign = (x[2] > zf) ? true : false;
     if ((p[2] < 0)^(sign)) {
         xi[3] *= -1.0;
         xi[4] *= -1.0;
@@ -205,36 +227,35 @@ double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, doubl
     double dtlimit = fStepLimit / fVelocity;
     double error = (fErrHiLimit + fErrLoLimit) / 2.0;
     double l = 0.0;
-    bool flag = true;
 
     for (int i = 0; i < 6; i++) xf[i] = xi[i];
-    while ((l < llimit)&&((xf[2] < zlimit)^(sign))) {
-        if ((error > fErrHiLimit)&&(dt > dtlimit)) {
-            dt /= 2.0;
-            flag = false;
-        } else {
-            for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            if (error < fErrLoLimit) dt *= 2.0;
-            l += fVelocity*dt;
-            flag = true;
-        }
-        ComputeRHS(xi, dxdt);
-        NystromRK4(xi, dxdt, dt, xf, err);
-        error = DistChord();
-    }
-
-    if (!flag) l += fVelocity * dt;
-    if (l < llimit) {
-        while (dt > dtlimit) {
-            if ((xf[2] > zlimit)^(sign)) {
+    if ((xf[2] < zf)^(sign)) {
+        while ((l < kLLimit)&&((xf[2] < zf)^(sign))) {
+            if ((error > fErrHiLimit)&&(dt > dtlimit)) {
                 l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                if (error < fErrLoLimit) dt *= 2.0;
             }
-            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
+            l += fVelocity*dt;
+            error = DistChord();
+        }
+
+        if (l < kLLimit) {
+            while (dt > dtlimit) {
+                if ((xf[2] > zf)^(sign)) {
+                    l = l - fVelocity*dt;
+                    dt /= 2.0;
+                } else {
+                    for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                }
+                l += fVelocity*dt;
+                ComputeRHS(xi, dxdt);
+                NystromRK4(xi, dxdt, dt, xf, err);
+            }
         }
     }
 
@@ -255,11 +276,11 @@ double G2PDrift::DriftHCS(const double* x, const double* p, double zlimit, doubl
     return l;
 }
 
-double G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, double llimit, double *xout, double *pout)
+double G2PDrift::DriftHCSNF(const double* x, const double* p, double zf, double *xout, double *pout)
 {
-    xout[0] = x[0]+(zlimit - x[2]) * p[0] / p[2];
-    xout[1] = x[1]+(zlimit - x[2]) * p[1] / p[2];
-    xout[2] = zlimit;
+    xout[0] = x[0]+(zf - x[2]) * p[0] / p[2];
+    xout[1] = x[1]+(zf - x[2]) * p[1] / p[2];
+    xout[2] = zf;
 
     pout[0] = p[0];
     pout[1] = p[1];
@@ -272,7 +293,7 @@ double G2PDrift::DriftHCSNF(const double* x, const double* p, double zlimit, dou
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
+double G2PDrift::DriftTCS(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout)
 {
     // Drift in transport coordinate
 
@@ -298,7 +319,7 @@ double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, 
     fVelocity = sqrt(fVelocity2);
     fGamma = 1 / sqrt(1 - (fVelocity2 / c / c));
 
-    bool sign = (z_tr > zlimit) ? true : false;
+    bool sign = (z_tr > zf_tr) ? true : false;
     if (sign) {
         xi[3] *= -1.0;
         xi[4] *= -1.0;
@@ -311,39 +332,38 @@ double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, 
     double dt = fStep / fVelocity;
     double dtlimit = fStepLimit / fVelocity;
     double l = 0.0;
-    bool flag = true;
 
     for (int i = 0; i < 6; i++) xf[i] = xi[i];
-    double newz_tr = z_tr;
-    while ((l < llimit)&&((newz_tr < zlimit)^(sign))) {
-        if ((error > fErrHiLimit)&&(dt > dtlimit)) {
-            dt /= 2.0;
-            flag = false;
-        } else {
-            for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            if (error < fErrLoLimit) dt *= 2.0;
-            l += fVelocity*dt;
-            flag = true;
-        }
-        ComputeRHS(xi, dxdt);
-        NystromRK4(xi, dxdt, dt, xf, err);
-        error = DistChord();
-        newz_tr = xf[0] * sinang + xf[2] * cosang;
-    }
-
-    if (!flag) l += fVelocity * dt;
-    if (l < llimit) {
-        while (dt > dtlimit) {
-            if ((newz_tr > zlimit)^(sign)) {
+    double znew_tr = z_tr;
+    if ((znew_tr < zf_tr)^(sign)) {
+        while ((l < kLLimit)&&((znew_tr < zf_tr)^(sign))) {
+            if ((error > fErrHiLimit)&&(dt > dtlimit)) {
                 l = l - fVelocity*dt;
                 dt /= 2.0;
             } else {
                 for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                if (error < fErrLoLimit) dt *= 2.0;
             }
-            l += fVelocity*dt;
             ComputeRHS(xi, dxdt);
             NystromRK4(xi, dxdt, dt, xf, err);
-            newz_tr = xf[0] * sinang + xf[2] * cosang;
+            l += fVelocity*dt;
+            error = DistChord();
+            znew_tr = xf[0] * sinang + xf[2] * cosang; // HCS2TCS()
+        }
+
+        if (l < kLLimit) {
+            while (dt > dtlimit) {
+                if ((znew_tr > zf_tr)^(sign)) {
+                    l = l - fVelocity*dt;
+                    dt /= 2.0;
+                } else {
+                    for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                }
+                l += fVelocity*dt;
+                ComputeRHS(xi, dxdt);
+                NystromRK4(xi, dxdt, dt, xf, err);
+                znew_tr = xf[0] * sinang + xf[2] * cosang;
+            }
         }
     }
 
@@ -365,181 +385,208 @@ double G2PDrift::DriftTCS(const double* x, double p, double z_tr, double angle, 
     return l;
 }
 
-double G2PDrift::DriftTCSL(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout)
+double G2PDrift::DriftTCSNF(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout)
 {
-    // J. Liu: added for longitudinal cylinder
-    // zlimit is the limit in lab coordinate
-
-    double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
-    TCS2HCS(x[0], x[2], z_tr, angle, xi[0], xi[1], xi[2]);
-    double theta, phi;
-    TCS2HCS(x[1], x[3], angle, theta, phi);
-
-    double pp = (1 + x[4]) * p;
-    xi[3] = pp * sin(theta) * cos(phi);
-    xi[4] = pp * sin(theta) * sin(phi);
-    xi[5] = pp * cos(theta);
-    double M = sqrt(fM0 * fM0 + pp * pp);
-    xi[3] *= c / M;
-    xi[4] *= c / M;
-    xi[5] *= c / M;
-    fVelocity2 = xi[3] * xi[3] + xi[4] * xi[4] + xi[5] * xi[5];
-    fVelocity = sqrt(fVelocity2);
-    fGamma = 1 / sqrt(1 - (fVelocity2 / c / c));
-
-    double dxdt[6], err[6];
-    double error = (fErrHiLimit + fErrLoLimit) / 2.0;
-    double dt = fStep / fVelocity;
-    double dtlimit = fStepLimit / fVelocity;
-    double l = 0.0;
-    bool flag = true;
-
-    double r_lab = sqrt(xi[0] * xi[0] + xi[1] * xi[1]);
-    for (int i = 0; i < 6; i++) xf[i] = xi[i];
-    double newz_lab = xi[2];
-    double newr_lab = r_lab;
-    while ((l < llimit)&&((newz_lab < zlimit))&&(newr_lab < rlimit)) {
-        if ((error > fErrHiLimit)&&(dt > dtlimit)) {
-            dt /= 2.0;
-            flag = false;
-        } else {
-            for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            if (error < fErrLoLimit) dt *= 2.0;
-            l += fVelocity*dt;
-            flag = true;
-        }
-        ComputeRHS(xi, dxdt);
-        NystromRK4(xi, dxdt, dt, xf, err);
-        error = DistChord();
-        newz_lab = xf[2];
-        newr_lab = sqrt(xf[0] * xf[0] + xf[1] * xf[1]);
-    }
-
-    // updated before subtraction;
-    if (newz_lab > zlimit) xout[6] = 0;
-    if (newr_lab > rlimit) xout[6] = 1;
-    if (!flag) l += fVelocity * dt;
-    if (l < llimit) {
-        while (dt > dtlimit) {
-            if ((newz_lab > zlimit) || (newr_lab > rlimit)) {
-                l = l - fVelocity*dt;
-                dt /= 2.0;
-            } else {
-                for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            }
-            l += fVelocity*dt;
-            ComputeRHS(xi, dxdt);
-            NystromRK4(xi, dxdt, dt, xf, err);
-            newz_lab = xf[2];
-            newr_lab = sqrt(xf[0] * xf[0] + xf[1] * xf[1]);
-        }
-    }
-
-    theta = acos(xf[5] / fVelocity);
-    phi = atan2(xf[4], xf[3]);
-
-    HCS2TCS(theta, phi, angle, xout[1], xout[3]);
-    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], xout[5]);
-    xout[4] = x[4];
-
-    return l;
-}
-
-double G2PDrift::DriftTCSV(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double rlimit, double* xout)
-{
-    // J. Liu: added for vertical cylinder
-    // zlimit is the limit in lab coordinate
-
-    double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-
-    double sinang = sin(angle);
-    double cosang = cos(angle);
-
-    TCS2HCS(x[0], x[2], z_tr, angle, xi[0], xi[1], xi[2]);
-    double theta, phi;
-    TCS2HCS(x[1], x[3], angle, theta, phi);
-
-    double pp = (1 + x[4]) * p;
-    xi[3] = pp * sin(theta) * cos(phi);
-    xi[4] = pp * sin(theta) * sin(phi);
-    xi[5] = pp * cos(theta);
-    double M = sqrt(fM0 * fM0 + pp * pp);
-    xi[3] *= c / M;
-    xi[4] *= c / M;
-    xi[5] *= c / M;
-    fVelocity2 = xi[3] * xi[3] + xi[4] * xi[4] + xi[5] * xi[5];
-    fVelocity = sqrt(fVelocity2);
-    fGamma = 1 / sqrt(1 - (fVelocity2 / c / c));
-
-    double dxdt[6], err[6];
-    double error = (fErrHiLimit + fErrLoLimit) / 2.0;
-    double dt = fStep / fVelocity;
-    double dtlimit = fStepLimit / fVelocity;
-    double l = 0.0;
-    bool flag = true;
-
-    double r_tr = sqrt(xi[0] * xi[0] + xi[2] * xi[2]);
-    for (int i = 0; i < 6; i++) xf[i] = xi[i];
-    double newz_tr = z_tr;
-    double newr_tr = r_tr;
-    while ((l < llimit)&&((newz_tr < zlimit))&&(newr_tr < rlimit)) {
-        if ((error > fErrHiLimit)&&(dt > dtlimit)) {
-            dt /= 2.0;
-            flag = false;
-        } else {
-            for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            if (error < fErrLoLimit) dt *= 2.0;
-            l += fVelocity*dt;
-            flag = true;
-        }
-        ComputeRHS(xi, dxdt);
-        NystromRK4(xi, dxdt, dt, xf, err);
-        error = DistChord();
-        newz_tr = xf[0] * sinang + xf[2] * cosang;
-        newr_tr = sqrt(xf[0] * xf[0] + xf[2] * xf[2]);
-    }
-
-    if (!flag) l += fVelocity * dt;
-    if (l < llimit) {
-        while (dt > dtlimit) {
-            if ((newz_tr > zlimit) || (newr_tr > rlimit)) {
-                l = l - fVelocity*dt;
-                dt /= 2.0;
-            } else {
-                for (int i = 0; i < 6; i++) xi[i] = xf[i];
-            }
-            l += fVelocity*dt;
-            ComputeRHS(xi, dxdt);
-            NystromRK4(xi, dxdt, dt, xf, err);
-            newz_tr = xf[0] * sinang + xf[2] * cosang;
-            newr_tr = sqrt(xf[0] * xf[0] + xf[2] * xf[2]);
-        }
-    }
-
-    theta = acos(xf[5] / fVelocity);
-    phi = atan2(xf[4], xf[3]);
-
-    HCS2TCS(theta, phi, angle, xout[1], xout[3]);
-    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], xout[5]);
-    xout[4] = x[4];
-
-    return l;
-}
-
-double G2PDrift::DriftTCSNF(const double* x, double p, double z_tr, double angle, double zlimit, double llimit, double* xout)
-{
-    xout[0] = x[0]+(zlimit - z_tr) * tan(x[1]);
+    xout[0] = x[0]+(zf_tr - z_tr) * tan(x[1]);
     xout[1] = x[1];
-    xout[2] = x[2]+(zlimit - z_tr) * tan(x[3]);
+    xout[2] = x[2]+(zf_tr - z_tr) * tan(x[3]);
     xout[3] = x[3];
     xout[4] = x[4];
 
     double dx = xout[0] - x[0];
     double dy = xout[2] - x[2];
-    double dz = zlimit - z_tr;
+    double dz = zf_tr - z_tr;
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+double G2PDrift::DriftCV(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double &zout)
+{
+    // J. Liu: added for vertical cylinder
+
+    double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    TCS2HCS(x[0], x[2], z_tr, angle, xi[0], xi[1], xi[2]);
+    double theta, phi;
+    TCS2HCS(x[1], x[3], angle, theta, phi);
+
+    double pp = (1 + x[4]) * p;
+    xi[3] = pp * sin(theta) * cos(phi);
+    xi[4] = pp * sin(theta) * sin(phi);
+    xi[5] = pp * cos(theta);
+    double M = sqrt(fM0 * fM0 + pp * pp);
+    xi[3] *= c / M;
+    xi[4] *= c / M;
+    xi[5] *= c / M;
+    fVelocity2 = xi[3] * xi[3] + xi[4] * xi[4] + xi[5] * xi[5];
+    fVelocity = sqrt(fVelocity2);
+    fGamma = 1 / sqrt(1 - (fVelocity2 / c / c));
+
+    double dxdt[6], err[6];
+    double error = (fErrHiLimit + fErrLoLimit) / 2.0;
+    double dt = fStep / fVelocity;
+    double dtlimit = fStepLimit / fVelocity;
+    double l = 0.0;
+
+    for (int i = 0; i < 6; i++) xf[i] = xi[i];
+    double rnew_lab = sqrt(xi[0] * xi[0] + xi[2] * xi[2]);
+    if (rnew_lab < rf_lab) {
+        while ((l < kLLimit)&&(rnew_lab < rf_lab)) {
+            if ((error > fErrHiLimit)&&(dt > dtlimit)) {
+                l = l - fVelocity*dt;
+                dt /= 2.0;
+            } else {
+                for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                if (error < fErrLoLimit) dt *= 2.0;
+            }
+            ComputeRHS(xi, dxdt);
+            NystromRK4(xi, dxdt, dt, xf, err);
+            l += fVelocity*dt;
+            error = DistChord();
+            rnew_lab = sqrt(xf[0] * xf[0] + xf[2] * xf[2]);
+        }
+
+        if (l < kLLimit) {
+            while (dt > dtlimit) {
+                if (rnew_lab > rf_lab) {
+                    l = l - fVelocity*dt;
+                    dt /= 2.0;
+                } else {
+                    for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                }
+                l += fVelocity*dt;
+                ComputeRHS(xi, dxdt);
+                NystromRK4(xi, dxdt, dt, xf, err);
+                rnew_lab = sqrt(xf[0] * xf[0] + xf[2] * xf[2]);
+            }
+        }
+    }
+
+    theta = acos(xf[5] / fVelocity);
+    phi = atan2(xf[4], xf[3]);
+
+    HCS2TCS(theta, phi, angle, xout[1], xout[3]);
+    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], zout);
+    xout[4] = x[4];
+
+    return l;
+}
+
+double G2PDrift::DriftCVNF(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout)
+{
+    // FIXME:
+
+    xout[0] = x[0]+(rf_lab - z_tr) * tan(x[1]);
+    xout[1] = x[1];
+    xout[2] = x[2]+(rf_lab - z_tr) * tan(x[3]);
+    xout[3] = x[3];
+    xout[4] = x[4];
+
+    double dx = xout[0] - x[0];
+    double dy = xout[2] - x[2];
+    double dz = rf_lab - z_tr;
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+double G2PDrift::DriftCL(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf)
+{
+    // J. Liu: added for longitudinal cylinder
+
+    double xi[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double xf[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    TCS2HCS(x[0], x[2], z_tr, angle, xi[0], xi[1], xi[2]);
+    double theta, phi;
+    TCS2HCS(x[1], x[3], angle, theta, phi);
+
+    double pp = (1 + x[4]) * p;
+    xi[3] = pp * sin(theta) * cos(phi);
+    xi[4] = pp * sin(theta) * sin(phi);
+    xi[5] = pp * cos(theta);
+    double M = sqrt(fM0 * fM0 + pp * pp);
+    xi[3] *= c / M;
+    xi[4] *= c / M;
+    xi[5] *= c / M;
+    fVelocity2 = xi[3] * xi[3] + xi[4] * xi[4] + xi[5] * xi[5];
+    fVelocity = sqrt(fVelocity2);
+    fGamma = 1 / sqrt(1 - (fVelocity2 / c / c));
+
+    double dxdt[6], err[6];
+    double error = (fErrHiLimit + fErrLoLimit) / 2.0;
+    double dt = fStep / fVelocity;
+    double dtlimit = fStepLimit / fVelocity;
+    double l = 0.0;
+
+    for (int i = 0; i < 6; i++) xf[i] = xi[i];
+    double znew_lab = xi[2];
+    double rnew_lab = sqrt(xi[0] * xi[0] + xi[1] * xi[1]);
+    if ((znew_lab < zf_lab)&&(rnew_lab < rf_lab)) {
+        while ((l < kLLimit)&&((znew_lab < zf_lab))&&(rnew_lab < rf_lab)) {
+            if ((error > fErrHiLimit)&&(dt > dtlimit)) {
+                l = l - fVelocity*dt;
+                dt /= 2.0;
+            } else {
+                for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                if (error < fErrLoLimit) dt *= 2.0;
+            }
+            ComputeRHS(xi, dxdt);
+            NystromRK4(xi, dxdt, dt, xf, err);
+            l += fVelocity*dt;
+            error = DistChord();
+            znew_lab = xf[2];
+            rnew_lab = sqrt(xf[0] * xf[0] + xf[1] * xf[1]);
+        }
+
+        // decide the out surf
+        if (znew_lab > zf_lab) surf = 0;
+        if (rnew_lab > rf_lab) surf = 1;
+
+        if (l < kLLimit) {
+            while (dt > dtlimit) {
+                if ((znew_lab > zf_lab) || (rnew_lab > rf_lab)) {
+                    l = l - fVelocity*dt;
+                    dt /= 2.0;
+                } else {
+                    for (int i = 0; i < 6; i++) xi[i] = xf[i];
+                }
+                l += fVelocity*dt;
+                ComputeRHS(xi, dxdt);
+                NystromRK4(xi, dxdt, dt, xf, err);
+                znew_lab = xf[2];
+                rnew_lab = sqrt(xf[0] * xf[0] + xf[1] * xf[1]);
+            }
+        }
+    } else {
+        // decide the out surf
+        if (znew_lab > zf_lab) surf = 0;
+        if (rnew_lab > rf_lab) surf = 1;
+    }
+
+    theta = acos(xf[5] / fVelocity);
+    phi = atan2(xf[4], xf[3]);
+
+    HCS2TCS(theta, phi, angle, xout[1], xout[3]);
+    HCS2TCS(xf[0], xf[1], xf[2], angle, xout[0], xout[2], zout);
+    xout[4] = x[4];
+
+    return l;
+}
+
+double G2PDrift::DriftCLNF(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf)
+{
+    // FIXME:
+
+    xout[0] = x[0]+(rf_lab - z_tr) * tan(x[1]);
+    xout[1] = x[1];
+    xout[2] = x[2]+(rf_lab - z_tr) * tan(x[3]);
+    xout[3] = x[3];
+    xout[4] = x[4];
+
+    double dx = xout[0] - x[0];
+    double dy = xout[2] - x[2];
+    double dz = rf_lab - z_tr;
 
     return sqrt(dx * dx + dy * dy + dz * dz);
 }
