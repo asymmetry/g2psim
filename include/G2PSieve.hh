@@ -27,11 +27,13 @@ public:
     virtual int Begin();
 
     virtual int GetPos(double* V3);
+    virtual void GetPos(int index, double* V3);
     virtual int CanPass(double* V5);
 
     // Gets
     double GetZ();
     int GetNRow();
+    int GetNCol();
 
     // Sets
 

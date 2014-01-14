@@ -59,8 +59,7 @@ protected:
 
     G2PDrift* pDrift;
     G2PHRS* pHRS;
-    G2PSieve *pSieve;
-    // G2PMaterial* pNH3,pN14,pH3,pLHe, pTarget,pAl,pPTCFE,pHe4,pKapton,pTitanium;
+    G2PSieve* pSieve;
 
 private:
     static G2PFwdProc* pG2PFwdProc;

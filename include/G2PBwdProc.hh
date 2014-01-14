@@ -52,7 +52,7 @@ protected:
     G2PDBRec* pDBRec;
     G2PDrift* pDrift;
     G2PHRS* pHRS;
-    G2PSieve *pSieve;
+    G2PSieve* pSieve;
 
 private:
     static G2PBwdProc* pG2PBwdProc;

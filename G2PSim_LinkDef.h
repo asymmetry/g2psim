@@ -25,6 +25,7 @@
 #pragma link C++ class G2PFlatGun+;
 #pragma link C++ class G2PSieveGun+;
 #pragma link C++ class G2PHRS+;
+#pragma link C++ class G2POptics+;
 #pragma link C++ class G2PPhys+;
 #pragma link C++ class G2PBwdProc+;
 #pragma link C++ class G2PFwdProc+;

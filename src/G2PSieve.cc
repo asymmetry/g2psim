@@ -158,6 +158,16 @@ int G2PSieve::GetPos(double* V3)
     return selector;
 }
 
+void G2PSieve::GetPos(int index, double* V3)
+{
+    int col = index / fNRow;
+    int row = index % fNRow;
+
+    V3[0] = fXOffset + fX[row];
+    V3[1] = fYOffset + fY[col];
+    V3[2] = fZ;
+}
+
 int G2PSieve::CanPass(double* V5)
 {
     int id = -1;
@@ -189,6 +199,11 @@ double G2PSieve::GetZ()
 int G2PSieve::GetNRow()
 {
     return fNRow;
+}
+
+int G2PSieve::GetNCol()
+{
+    return fNCol;
 }
 
 int G2PSieve::Configure(EMode mode)
