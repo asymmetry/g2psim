@@ -216,13 +216,13 @@ double G2PPhysEl::GetXS_H1(double Ei, double theta)
     double x3 = x2*Q2;
     double x4 = x3*Q2;
     double x5 = x4*Q2;
-    double x6 = x4*Q2;
+    double x6 = x5*Q2;
     double GE = 1.0 / (1.0 + 2.94 * x1 + 3.04 * x2 - 2.255 * x3 + 2.002 * x4 - 0.5338 * x5 + 0.04875 * x6);
     double GM = 2.793 / (1 + 3.0 * x1 + 1.39 * x2 + 0.122 * x3 - 0.00834 * x4 + 4.25e-4 * x5 - 7.79e-6 * x6);
 
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
 
-    return sigma;
+    return sigma * kFm * kFm * 1e4; // microbarn
 }
 
 double G2PPhysEl::GetXS_He4(double Ei, double theta)
@@ -238,7 +238,7 @@ double G2PPhysEl::GetXS_He4(double Ei, double theta)
     double GM = 0.0;
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
 
-    return sigma;
+    return sigma * kFm * kFm * 1e4; // microbarn
 }
 
 double G2PPhysEl::GetXS_N14(double Ei, double theta)
@@ -254,7 +254,7 @@ double G2PPhysEl::GetXS_N14(double Ei, double theta)
     double GM = GM_N14(Q2);
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
 
-    return sigma;
+    return sigma * kFm * kFm * 1e4; // microbarn
 }
 
 double G2PPhysEl::GetXS_All(double Ei, double theta)
