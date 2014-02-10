@@ -139,14 +139,16 @@ int G2PFwdProc::Process()
     case 10: // production target
         break;
     case 20: // 40 mil carbon target, without LHe
-        RunType20(V5react_tr, z_tr, V5troj, dlentot, elosstot);
+        RunType20(1.016e-3, V5react_tr, z_tr, V5troj, dlentot, elosstot);
         break;
     case 21: // 125 mil carbon target, without LHe
+        RunType20(3.175e-3, V5react_tr, z_tr, V5troj, dlentot, elosstot);
         break;
     case 22: // 40 mil carbon target, with LHe
-        RunType22(V5react_tr, z_tr, V5troj, dlentot, elosstot);
+        RunType21(1.016e-3, V5react_tr, z_tr, V5troj, dlentot, elosstot);
         break;
     case 23: // 125 mil carbon target, with LHe
+        RunType21(3.175e-3, V5react_tr, z_tr, V5troj, dlentot, elosstot);
         break;
     default:
         break;
@@ -311,9 +313,9 @@ void G2PFwdProc::Clear(Option_t* option)
     G2PProcBase::Clear(option);
 }
 
-void G2PFwdProc::RunType20(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+void G2PFwdProc::RunType20(double thickness, double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
 {
-    // 40 mil carbon target, without LHe
+    // carbon target, without LHe
 
     double driftlength, E, eloss, angle, rot;
     int surf;
@@ -322,7 +324,7 @@ void G2PFwdProc::RunType20(double* V5react_tr, double& z_tr, double* V5troj, dou
     static G2PMaterial *pC = new G2PMaterial("C", 6, 12.0107, 42.7, 2.0);
     static G2PMaterial *pPCTFE = new G2PMaterial("PCTFE", 9.33, 19.411, 28.186, 2.12);
 
-    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -13.1191e-3, V5troj, z_tr, surf); // longitudinal cylinder
+    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -14.1351e-3 + thickness, V5troj, z_tr, surf); // longitudinal cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pC->EnergyLoss(E, driftlength);
     V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
@@ -356,14 +358,9 @@ void G2PFwdProc::RunType20(double* V5react_tr, double& z_tr, double* V5troj, dou
     dlentot += driftlength;
 }
 
-void G2PFwdProc::RunType21(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+void G2PFwdProc::RunType21(double thickness, double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
 {
-    // 125 mil carbon target, without LHe
-}
-
-void G2PFwdProc::RunType22(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
-{
-    // 40 mil carbon target, with LHe
+    // carbon target, with LHe
 
     double driftlength, E, eloss, angle, rot;
     int surf;
@@ -373,7 +370,7 @@ void G2PFwdProc::RunType22(double* V5react_tr, double& z_tr, double* V5troj, dou
     static G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
     static G2PMaterial *pPCTFE = new G2PMaterial("PCTFE", 9.33, 19.411, 28.186, 2.12);
 
-    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -13.1191e-3, V5troj, z_tr, surf); // longitudinal cylinder
+    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 13.6144e-3, -14.1351e-3 + thickness, V5troj, z_tr, surf); // longitudinal cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pC->EnergyLoss(E, driftlength);
     V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
@@ -421,10 +418,6 @@ void G2PFwdProc::RunType22(double* V5react_tr, double& z_tr, double* V5troj, dou
     V5troj[3] += angle * sin(rot);
     dlentot += driftlength;
     elosstot += eloss;
-}
-
-void G2PFwdProc::RunType23(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
-{
 }
 
 void G2PFwdProc::ApplyVDCRes(double* V5fp)

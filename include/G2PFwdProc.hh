@@ -33,10 +33,8 @@ public:
 
 protected:
     void RunType10(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // production target
-    void RunType20(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 40 mil carbon target, without LHe
-    void RunType21(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 125 mil carbon target, without LHe
-    void RunType22(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 40 mil carbon target, with LHe
-    void RunType23(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // 125 mil carbon target, with LHe
+    void RunType20(double thickness, double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // carbon target, without LHe
+    void RunType21(double thickness, double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot); // carbon target, with LHe
 
     void ApplyVDCRes(double* V5fp);
 
