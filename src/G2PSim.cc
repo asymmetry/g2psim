@@ -117,13 +117,20 @@ int G2PSim::Init()
     gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
 
     TIter next(fApps);
+    int size = fApps->GetSize();
     while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
         if (aobj->IsZombie()) {
             fApps->Remove(aobj);
             continue;
         }
-        aobj->SetDebugLevel(fDebug);
-        if (aobj->Init() != 0) return -1;
+        if (!aobj->IsInit()) {
+            aobj->SetDebugLevel(fDebug);
+            if (aobj->Init() != 0) return -1;
+        }
+        if (size != fApps->GetSize()) {
+            next.Reset();
+            size = fApps->GetSize();
+        }
     }
 
     fProcs = fApps->FindList("G2PProcBase");

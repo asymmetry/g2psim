@@ -31,7 +31,7 @@
 
 using namespace std;
 
-static double kPHI = 0.6180339887;
+static double kPHI = (sqrt(5.0) - 1.0) / 2.0;
 
 G2POptics* G2POptics::pG2POptics = NULL;
 
@@ -51,6 +51,11 @@ fDataFile(filename), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), fTarge
     pG2POptics = this;
 
     fPriority = 1;
+
+    fReactZ_lab.clear();
+    fReactZ_lab.push_back(0.0);
+    fELoss.clear();
+    fELoss.push_back(0.0);
 
     Clear();
 }
@@ -99,25 +104,41 @@ int G2POptics::Process()
 {
     static const char* const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
-
     sData tempdata;
 
     if (fData.empty()) return -1;
     tempdata = fData.front();
+
+    if (fDebug > 2) {
+        Info(here, "%04d %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", tempdata.ind, tempdata.xf, tempdata.tf, tempdata.yf, tempdata.pf, tempdata.eb, tempdata.xb, tempdata.yb);
+    }
+
     fHoleID = tempdata.ind;
-    fBeamEnergy = tempdata.eb;
+    fBeamEnergy = tempdata.eb / 1000.0;
     fV3bpm_lab[0] = tempdata.xb;
     fV3bpm_lab[1] = tempdata.yb;
+    fV5fp_rot[0] = tempdata.xf;
+    fV5fp_rot[1] = tempdata.tf;
+    fV5fp_rot[2] = tempdata.yf;
+    fV5fp_rot[3] = tempdata.pf;
     int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
+    res = res % (pSieve->GetNRow() * pSieve->GetNCol());
     fEnergyLoss = fELoss[foilID];
     fV3bpm_lab[2] = fReactZ_lab[foilID];
+
+    if (fDebug > 1) {
+        Info(here, "bpm_lab   : %10.3e %10.3e %10.3e", fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2]);
+    }
 
     HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, fV3bpm_tr[0], fV3bpm_tr[1], fV3bpm_tr[2]);
 
     double V3siv_tr[3];
-    pSieve->GetPos(fHoleID, V3siv_tr);
+    pSieve->GetPos(res, V3siv_tr);
+
+    if (fDebug > 1) {
+        Info(here, "sieve_real: %10.3e %10.3e %10.3e", V3siv_tr[0], V3siv_tr[1], V3siv_tr[2]);
+    }
 
     double V3pd_tr[3];
     V3pd_tr[0] = V3siv_tr[0] - fV3bpm_tr[0];
@@ -133,7 +154,7 @@ int G2POptics::Process()
     Drift(ang, pos);
     dlast = Distance(pos, V3siv_tr);
 
-    while (dlast > 1e-4) {
+    while (dlast > 1e-5) {
         double step = dlast / pSieve->GetZ();
 
         double left[2], right[2];
@@ -154,7 +175,7 @@ int G2POptics::Process()
         Drift(testr, pos);
         dr = Distance(pos, V3siv_tr);
 
-        while (fabs(right[0] - left[0]) > 1e-4) {
+        while (fabs(right[0] - left[0]) > 0.7e-5) {
             if (dl <= dr) {
                 right[0] = testr[0];
                 testr[0] = testl[0];
@@ -190,7 +211,7 @@ int G2POptics::Process()
         Drift(testr, pos);
         dr = Distance(pos, V3siv_tr);
 
-        while (fabs(right[1] - left[1]) > 1e-4) {
+        while (fabs(right[1] - left[1]) > 0.7e-5) {
             if (dl <= dr) {
                 right[1] = testr[1];
                 testr[1] = testl[1];
@@ -241,6 +262,7 @@ void G2POptics::Clear(Option_t* option)
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
+    memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
 
     G2PProcBase::Clear(option);
 }
@@ -249,6 +271,7 @@ void G2POptics::SetReactZ(int n, double* value)
 {
     fNFoil = n;
 
+    fReactZ_lab.clear();
     for (int i = 0; i < n; i++)
         fReactZ_lab.push_back(value[i]);
 }
@@ -257,6 +280,7 @@ void G2POptics::SetEnergyLoss(int n, double* value)
 {
     fNFoil = n;
 
+    fELoss.clear();
     for (int i = 0; i < n; i++)
         fELoss.push_back(value[i]);
 }
@@ -337,6 +361,7 @@ int G2POptics::DefineVariables(EMode mode)
 
     VarDef vars[] = {
         {"id", "Hole ID", kINT, &fHoleID},
+        {"energy", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {"bpm.l_x", "BPM X (lab)", kDOUBLE, &fV3bpm_lab[0]},
         {"bpm.l_y", "BPM Y (lab)", kDOUBLE, &fV3bpm_lab[1]},
         {"bpm.l_z", "BPM Z (lab)", kDOUBLE, &fV3bpm_lab[2]},
@@ -358,6 +383,10 @@ int G2POptics::DefineVariables(EMode mode)
         {"tp.proj.y", "Project to Target Plane Y", kDOUBLE, &fV5tpproj_tr[2]},
         {"tp.proj.p", "Project to Target Plane P", kDOUBLE, &fV5tpproj_tr[3]},
         {"tp.proj.d", "Project to Target Plane D", kDOUBLE, &fV5tpproj_tr[4]},
+        {"fp.x", "Focus Plane X", kDOUBLE, &fV5fp_rot[0]},
+        {"fp.t", "Focus Plane T", kDOUBLE, &fV5fp_rot[1]},
+        {"fp.y", "Focus Plane Y", kDOUBLE, &fV5fp_rot[2]},
+        {"fp.p", "Focus Plane P", kDOUBLE, &fV5fp_rot[3]},
         {0}
     };
 
