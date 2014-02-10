@@ -44,7 +44,8 @@ extern "C" {
 void sda_ptf_(float*, float*); // routine to calculate the field of HallB coil, which is not symmetric
 }
 
-static void GetHallBField(const double* pos, double* field) {
+static void GetHallBField(const double* pos, double* field)
+{
     float x[3], b[3];
 
     x[0] = pos[0] / kCM;
@@ -63,7 +64,8 @@ static void GetHallBField(const double* pos, double* field) {
 G2PField* G2PField::pG2PField = NULL;
 
 G2PField::G2PField() :
-fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(1.0) {
+fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(1.0)
+{
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");
         MakeZombie();
@@ -79,7 +81,8 @@ fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), 
     fMapFile = "hallbfield.map";
 }
 
-G2PField::~G2PField() {
+G2PField::~G2PField()
+{
     typedef vector<vector<vector<double> > >::size_type size_t;
 
     for (size_t i = 0; i < fBField.size(); i++) {
@@ -92,7 +95,8 @@ G2PField::~G2PField() {
     if (pG2PField == this) pG2PField = NULL;
 }
 
-int G2PField::Init() {
+int G2PField::Init()
+{
     //static const char* const here = "Init()";
 
     if (G2PAppBase::Init() != 0) return fStatus;
@@ -111,7 +115,8 @@ int G2PField::Init() {
     return (fStatus = kOK);
 }
 
-int G2PField::Begin() {
+int G2PField::Begin()
+{
     static const char* const here = "Begin()";
 
     if (G2PAppBase::Begin() != 0) return fStatus;
@@ -126,7 +131,8 @@ int G2PField::Begin() {
     return (fStatus = status);
 }
 
-void G2PField::GetField(const double* x, double* b) {
+void G2PField::GetField(const double* x, double* b)
+{
     static const char* const here = "GetField()";
 
     double pos[3], field[3];
@@ -139,7 +145,8 @@ void G2PField::GetField(const double* x, double* b) {
     if (fDebug > 4) Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
-void G2PField::SetOrigin(double x, double y, double z) {
+void G2PField::SetOrigin(double x, double y, double z)
+{
     fOrigin[0] = x;
     fOrigin[1] = y;
     fOrigin[2] = z;
@@ -149,7 +156,8 @@ void G2PField::SetOrigin(double x, double y, double z) {
     fConfigIsSet.insert((unsigned long) &fOrigin[2]);
 }
 
-void G2PField::SetZRange(double zmin, double zmax) {
+void G2PField::SetZRange(double zmin, double zmax)
+{
     fZMin = zmin;
     fZMax = zmax;
 
@@ -157,7 +165,8 @@ void G2PField::SetZRange(double zmin, double zmax) {
     fConfigIsSet.insert((unsigned long) &fZMax);
 }
 
-void G2PField::SetRRange(double rmin, double rmax) {
+void G2PField::SetRRange(double rmin, double rmax)
+{
     fRMin = rmin;
     fRMax = rmax;
 
@@ -165,19 +174,22 @@ void G2PField::SetRRange(double rmin, double rmax) {
     fConfigIsSet.insert((unsigned long) &fRMax);
 }
 
-void G2PField::SetZStep(double stepz) {
+void G2PField::SetZStep(double stepz)
+{
     fZStep = stepz;
 
     fConfigIsSet.insert((unsigned long) &fZStep);
 }
 
-void G2PField::SetRStep(double stepr) {
+void G2PField::SetRStep(double stepr)
+{
     fRStep = stepr;
 
     fConfigIsSet.insert((unsigned long) &fRStep);
 }
 
-void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
+void G2PField::SetEulerAngle(double alpha, double beta, double gamma)
+{
     // The Euler angle is defined using Z-X'-Z" convention
 
     fEulerAngle[0] = alpha;
@@ -189,7 +201,8 @@ void G2PField::SetEulerAngle(double alpha, double beta, double gamma) {
     fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
 }
 
-void G2PField::SetRotationMatrix() {
+void G2PField::SetRotationMatrix()
+{
     // The Euler angle is defined using Z-X'-Z" convention
 
     if ((fabs(fEulerAngle[0]) < 1e-5)&&(fabs(fEulerAngle[1]) < 1e-5)&&(fabs(fEulerAngle[2]) < 1e-5))
@@ -227,7 +240,8 @@ void G2PField::SetRotationMatrix() {
     }
 }
 
-int G2PField::ReadMap() {
+int G2PField::ReadMap()
+{
     static const char* const here = "ReadMap()";
 
     ifstream ifs;
@@ -285,7 +299,8 @@ int G2PField::ReadMap() {
     return 0;
 }
 
-int G2PField::CreateMap() {
+int G2PField::CreateMap()
+{
     static const char* const here = "CreateMap()";
 
     FILE* fp;
@@ -321,7 +336,8 @@ int G2PField::CreateMap() {
     return 0;
 }
 
-int G2PField::Interpolate(const double* pos, double* b, int order) {
+int G2PField::Interpolate(const double* pos, double* b, int order)
+{
     // Calculate the nth order Lagrange polynomial interpolation
     // 1) Find out (B[R0][Z0],...,B[Rn][Zn]), which is a (n+1)by(n+1) matrix
     // 2) Interpolate by Z first, get (B[R0][Z],...,B[Rn][Z]), which is a 1x(n+1)
@@ -385,13 +401,11 @@ int G2PField::Interpolate(const double* pos, double* b, int order) {
         b[0] = 0.0;
         b[1] = 0.0;
         b[2] = Bz;
-    }
-    else if (z == 0) {
+    } else if (z == 0) {
         b[0] = Br * (pos[0] / r);
         b[1] = Br * (pos[1] / r);
         b[2] = Bz;
-    }
-    else {
+    } else {
         b[0] = Br * (pos[0] / r)*(pos[2] / z);
         b[1] = Br * (pos[1] / r)*(pos[2] / z);
         b[2] = Bz;
@@ -400,22 +414,29 @@ int G2PField::Interpolate(const double* pos, double* b, int order) {
     return 0;
 }
 
-void G2PField::TransLab2Field(const double* x, double* xout) {
+void G2PField::TransLab2Field(const double* x, double* xout)
+{
     double temp[3] = {x[0], x[1], x[2]};
     for (int i = 0; i < 3; i++) temp[i] -= fOrigin[i];
 
     if (fRotation) {
         for (int i = 0; i < 3; i++) xout[i] = fRotationMatrix[0][i][0] * temp[0] + fRotationMatrix[0][i][1] * temp[1] + fRotationMatrix[0][i][2] * temp[2];
+    } else {
+        for (int i = 0; i < 3; i++) xout[i] = temp[i];
     }
 }
 
-void G2PField::TransField2Lab(const double* b, double* bout) {
+void G2PField::TransField2Lab(const double* b, double* bout)
+{
     if (fRotation) {
         for (int i = 0; i < 3; i++) bout[i] = fRotationMatrix[1][i][0] * b[0] + fRotationMatrix[1][i][1] * b[1] + fRotationMatrix[1][i][2] * b[2];
+    } else {
+        for (int i = 0; i < 3; i++) bout[i] = b[i];
     }
 }
 
-void G2PField::SaveRootFile() {
+void G2PField::SaveRootFile()
+{
     TFile* file = new TFile("field.root", "RECREATE");
     TTree* field = new TTree("field", "field map");
 
@@ -452,7 +473,8 @@ void G2PField::SaveRootFile() {
     file->Close();
 }
 
-int G2PField::Configure(EMode mode) {
+int G2PField::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -478,7 +500,8 @@ int G2PField::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-void G2PField::MakePrefix() {
+void G2PField::MakePrefix()
+{
     const char* base = "field";
 
     G2PAppBase::MakePrefix(base);
