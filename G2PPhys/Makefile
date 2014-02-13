@@ -12,7 +12,7 @@ MYHOST      := $(shell hostname -s)
 
 ########################################################################
 LIBFILE     := libG2PPhys.a
-VERSION     := 1.5.0
+VERSION     := 1.6.0
 
 ########################################################################
 SRCDIR      := .
@@ -20,7 +20,7 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELDIR    := G2PPhysQFS G2PPhysPB G2PPhysEl G2PPhysWISER
+MODELDIR    := G2PPhysQFS G2PPhysPB G2PPhysEl G2PPhysWISER G2PPhysEPC
 INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################

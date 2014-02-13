@@ -12,6 +12,7 @@
  * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  * 
  * Inelastic cross section models:
+ * * G2PPhysEPC: J. W. Lightbody et al, Computers in Physics, 2(1988)57
  * * G2PPhysPB: P. E. Bosted et al, Phys. Rev. C, 78(2008)015202 and arXiv:1203.2262
  * * G2PPhysQFS: J. W. Lightbody et al, Computers in Physics, 2(1988)57
  * * G2PPhysWISER: D. E. Wiser, Ph.D. Thesis

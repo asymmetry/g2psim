@@ -40,6 +40,7 @@
 
 #include "G2PPhysBase.hh"
 #include "G2PPhysEl/G2PPhysEl.hh"
+#include "G2PPhysEPC/G2PPhysEPC.hh"
 #include "G2PPhysPB/G2PPhysPB.hh"
 #include "G2PPhysQFS/G2PPhysQFS.hh"
 #include "G2PPhysWISER/G2PPhysWISER.hh"
@@ -60,12 +61,14 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PPhys* G2PPhys::pG2PPhys = NULL;
 
-G2PPhys::G2PPhys() : pModel(NULL) {
+G2PPhys::G2PPhys() : pModel(NULL)
+{
     // Only for ROOT I/O
 }
 
 G2PPhys::G2PPhys(const char *model) :
-fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), pModel(NULL) {
+fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), pModel(NULL)
+{
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
         MakeZombie();
@@ -76,18 +79,21 @@ fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), f
     fPriority = 7;
     map<string, int> model_map;
     model_map["elastic"] = 1;
+    model_map["epc"] = 21;
     model_map["pbosted"] = 11;
     model_map["qfs"] = 12;
-    model_map["wiser"] = 21;
+    model_map["wiser"] = 22;
 
     fSetting = model_map[model];
 }
 
-G2PPhys::~G2PPhys() {
+G2PPhys::~G2PPhys()
+{
     if (pG2PPhys == this) pG2PPhys = NULL;
 }
 
-int G2PPhys::Begin() {
+int G2PPhys::Begin()
+{
     static const char* const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0) return fStatus;
@@ -103,6 +109,9 @@ int G2PPhys::Begin() {
         pModel = new G2PPhysQFS();
         break;
     case 21:
+        pModel = new G2PPhysEPC();
+        break;
+    case 22:
         pModel = new G2PPhysWISER();
         break;
     default:
@@ -118,7 +127,8 @@ int G2PPhys::Begin() {
     return (fStatus = kOK);
 }
 
-int G2PPhys::Process() {
+int G2PPhys::Process()
+{
     static const char* const here = "Process()";
 
     if (fDebug > 2) Info(here, " ");
@@ -142,8 +152,7 @@ int G2PPhys::Process() {
         V52[4] = gG2PVars->FindSuffix("gun.react.d")->GetValue();
 
         fXSreact = CalXS(V51, V52, fTHreact);
-    }
-    else {
+    } else {
         fXSreact = 0;
     }
 
@@ -165,8 +174,7 @@ int G2PPhys::Process() {
         V52[4] = gG2PVars->FindSuffix("tp.rec.d")->GetValue();
 
         fXSrec = CalXS(V51, V52, fTHrec);
-    }
-    else {
+    } else {
         fXSrec = 0;
     }
 
@@ -178,7 +186,8 @@ int G2PPhys::Process() {
     return 0;
 }
 
-void G2PPhys::Clear(Option_t* option) {
+void G2PPhys::Clear(Option_t* option)
+{
     fTHreact = 0.0;
     fXSreact = 0.0;
     fTHrec = 0.0;
@@ -187,12 +196,14 @@ void G2PPhys::Clear(Option_t* option) {
     G2PProcBase::Clear(option);
 }
 
-void G2PPhys::SetPars(double* array, int n) {
+void G2PPhys::SetPars(double* array, int n)
+{
     fPars = array;
     fNPars = n;
 }
 
-double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle) {
+double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle)
+{
     static const char* const here = "CalXS()";
 
     double Eb[3] = {sin(V5lab[1]) * cos(V5lab[3]), sin(V5lab[1]) * sin(V5lab[3]), cos(V5lab[1])};
@@ -214,7 +225,8 @@ double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle
     return pModel->GetXS(Ebval, Efval, scatangle);
 }
 
-int G2PPhys::Configure(EMode mode) {
+int G2PPhys::Configure(EMode mode)
+{
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
         else fIsInit = true;
@@ -234,7 +246,8 @@ int G2PPhys::Configure(EMode mode) {
     return ConfigureFromList(confs, mode);
 }
 
-int G2PPhys::DefineVariables(EMode mode) {
+int G2PPhys::DefineVariables(EMode mode)
+{
     if (mode == kDEFINE && fIsSetup) return 0;
     fIsSetup = (mode == kDEFINE);
 
@@ -249,7 +262,8 @@ int G2PPhys::DefineVariables(EMode mode) {
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PPhys::MakePrefix() {
+void G2PPhys::MakePrefix()
+{
     const char* base = "phys";
 
     G2PAppBase::MakePrefix(base);

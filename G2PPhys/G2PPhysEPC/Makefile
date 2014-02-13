@@ -11,21 +11,9 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-EXECFILE    := G2PSim
-LIBFILE     := libG2PSim.so
-LIBNAME     := G2PSim
-USERDICT    := $(LIBNAME)_Dict
-VERSION     := 1.7.2
-
-########################################################################
-SRCDIR      := src
-INCDIR      := include
+SRCDIR      := .
+INCDIR      := ..
 OBJDIR      := obj.$(ARCH)
-
-########################################################################
-MODELDIR    := HRSTrans:G2PPhys
-MODELLIST   := HRSTrans G2PPhys
-INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
 # Compiler
@@ -42,10 +30,10 @@ else
     MODE    := -m64
 endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-ifeq ($(MYOS),Darwin)
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS) 
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -fno-range-check -funroll-all-loops -fdollar-ok \
@@ -56,7 +44,7 @@ else
                -fdollar-ok -ffixed-line-length-none -fno-range-check
 endif
 GPPFLAGS    := -MM
-LDFLAGS     := -O3 -g $(MODE)
+LDFLAGS     := -O3 $(MODE)
 
 ########################################################################
 # Generate obj file list
@@ -65,8 +53,6 @@ CSOURCES    := $(wildcard $(SRCDIR)/*.[Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][XxPp][XxPp])
 SOURCES     := $(FSOURCES) $(CSOURCES)
-# header files
-HEADERS     := $(foreach n,$(subst :, ,$(INCDIR)),$(wildcard $(n)/*.hh))
 # add .o to all the source files
 OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
 OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
@@ -75,14 +61,6 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ########################################################################
 # Libs
 SYSLIBS     := -lstdc++ -lgfortran
-ifdef LIBCONFIG
-CFLAGS      += -I$(LIBCONFIG)/include
-CXXFLAGS    += -I$(LIBCONFIG)/include
-INCDIRS     += -I$(LIBCONFIG)/include
-#SYSLIBS     += $(LIBCONFIG)/lib/libconfig.a
-SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
-endif
-OTHERLIBS   := -LHRSTrans -lHRSTrans -LG2PPhys -lG2PPhys
 
 ########################################################################
 # ROOT configure
@@ -90,7 +68,7 @@ ROOTCFLAGS  := $(shell root-config --cflags)
 ROOTLIBS    := $(shell root-config --libs)
 ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
 
-CXXFLAGS    += $(ROOTCFLAGS)
+CXXFLAGS    += $(ROOTCFLAGS) 
 LIBS        := $(SYSLIBS) $(ROOTLIBS)
 GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 
@@ -101,18 +79,18 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 VPATH       := $(SRCDIR)
 
 ########################################################################
-all: lib script exe
+all: obj
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
-$(OBJDIR)/%.d: %.c
+$(OBJDIR)/%.d: %.c 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.C
+$(OBJDIR)/%.d: %.C 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -127,13 +105,13 @@ $(OBJDIR)/%.d: %.cc
 	[ -s $@ ] || rm -f $@
 
 $(OBJDIR)/%.d: %.CC
-	@echo Making dependency for file $< ......
-	@set -e; \
+	set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
+	@echo Making dependency for file $< ......
 
-$(OBJDIR)/%.d: %.cpp
+$(OBJDIR)/%.d: %.cpp 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -166,37 +144,7 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-exe: dir $(OBJS) $(OBJDIR)/Main.o $(OBJDIR)/$(USERDICT).o
-	@$(LD) $(LDFLAGS) -o $(EXECFILE) $(OBJDIR)/Main.o $(OBJS)\
-           $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
-	@echo "Linking $(EXECFILE) ...... done!"
-
-$(OBJDIR)/Main.o: Main.cc
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
-
-########################################################################
-lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
-	@make -s -C HRSTrans
-	@make -s -C G2PPhys
-	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
-           $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
-	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@echo "Linking $(LIBFILE) ...... done!"
-
-script:
-	@if [ ! -e "Run.C" ] ; then cp -pr "templates/Run.C" "Run.C" ; \
-	echo "Generate Run.C ...... done!"; fi
-	@if [ ! -e "sim.cfg" ] ; then cp -pr "templates/sim.cfg" "sim.cfg" ; \
-	echo "Generate sim.cfg ...... done!"; fi
-
-$(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
-		@echo "Generating dictionary $(USERDICT).cxx ......"
-		@$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
-
-$(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+obj: dir $(OBJS)
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -237,27 +185,21 @@ dir:
 ########################################################################
 clean: dir
 	@rm -f $(OBJDIR)/*
-	@rm -f $(USERDICT).cxx $(USERDICT).h
-	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).*
 	@rm -f *~ *# */*~ */*#
-
-distclean: clean
-	@make distclean -s -C HRSTrans
-	@make distclean -s -C G2PPhys
 
 test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
-	@echo \\CFLAGS\:$(CFLAGS)
-	@echo \\CXXFLAGS\:$(CXXFLAGS)
+	@echo \\CFLAGS\:$(CFLAGS)	
+	@echo \\CXXFLAGS\:$(CXXFLAGS)        
 	@echo \\FFLAGS\:$(FFLAGS)
 	@echo \\LDFLAGS\:$(LDFLAGS)
 	@echo \\SYSLIBS\:$(SYSLIBS)
-	@echo \\fsources\: $(FSOURCES)
-	@echo \\sources\: $(SOURCES)
-	@echo \\headers\: $(HEADERS)
-	@echo \\objs\: $(OBJS)
+	@echo \\fsources\: $(FSOURCES)	
+	@echo \\sources\: $(SOURCES)	
+	@echo \\objs\: $(OBJS)	
 	@echo \\dependencies: \$(DEPS)
 
 help: test
 
 env: test
+
