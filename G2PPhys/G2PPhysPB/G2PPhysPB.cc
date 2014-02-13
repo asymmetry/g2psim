@@ -1,3 +1,19 @@
+// -*- C++ -*-
+
+/* class G2PPhysPB
+ * Class for P. Bosted model.
+ * Unit is ub/MeV-sr.
+ * Valid for all W<3 GeV and all Q2<10 GeV2.
+ * 
+ * Radiative correction parameters:
+ * Tb: total radiative length before scattering in radiation length;
+ * Ta: total radiative length after scattering in radiation length;
+ */
+
+// History:
+//   Mar 2013, C. Gu, First public version.
+//
+
 #include <cstdio>
 #include <vector>
 

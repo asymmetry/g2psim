@@ -23,7 +23,7 @@ C Modified by C. Gu for a library used by Geant4 similation
       COMMON /PAR/E,TH,W,Z,A,EPS,EPSD,PF,SPENCE
       COMMON /ADDONS/SCALE,Tb,Ta
       
-      SCALE=1.D-26
+      SCALE=1.D-26 ! cm^2/MeV-sr
       PM=939.D0
       DM=1232.D0
       ALPH=1./137.03604D0
@@ -49,7 +49,7 @@ C Modified by C. Gu for a library used by Geant4 similation
       SIGR2A=SIGR2(E,TH,W,A,PF)*SCALE
       SIG2NA=SIG2N(E,TH,W,Z,A,PF)*SCALE
       SIG=SIGQFZA+SIGDA+SIGXA+SIGR1A+SIGR2A+SIG2NA
-      xs=SIG*1.D+30
+      xs=SIG*1.D+30 ! ub/MeV-sr
       if ((TB.gt.0.0D0).and.(Ta.gt.0.0D0)) then
       CALL RADIATE(E,TH,W,SIG,SIGRAD)
       xs=SIGRAD*1.D+30

@@ -1,11 +1,15 @@
 // -*- C++ -*-
 
 /* class G2PPhysEl
+ * Class to calculate elastic cross section.
+ * Unit is ub/sr.
+ * 
  * Elastic cross section models.
- * He4: calculated from charge and magnetization densities, original coded by M. Friedman.
- * C12: 1) calculated from fitted charge densities.
- *      2) calculated from form factor.
- * N14: same as He4.
+ * * All: Form factors from K. C. Stansfield et al., Phys. Rev. C, 3(1971)1448
+ * * 1H : Form factors from J. Arrington, Phys. Rev. C, 69(2004)022201
+ * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203 
+ * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  */
 
 // History:
