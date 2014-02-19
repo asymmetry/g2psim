@@ -20,12 +20,13 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELDIR    := G2PPhysQFS G2PPhysPB G2PPhysEl G2PPhysWISER G2PPhysEPC
+MODELDIR    := G2PPhysEl:G2PPhysEPC:G2PPhysPB:G2PPhysQFS:G2PPhysWISER
 INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
 # Compiler
 AR          := ar
+CC          := gcc
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -39,13 +40,13 @@ else
 endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
 CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS) 
+CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
 FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-ifeq ($(MYOS),Darwin) 
+ifeq ($(MYOS),Darwin)
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
-               -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none -fno-range-check
+               -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
+               -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -85,7 +86,7 @@ ROOTCFLAGS  := $(shell root-config --cflags)
 ROOTLIBS    := $(shell root-config --libs)
 ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
 
-CXXFLAGS    += $(ROOTCFLAGS) 
+CXXFLAGS    += $(ROOTCFLAGS)
 LIBS        := $(SYSLIBS) $(ROOTLIBS)
 GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 
@@ -100,14 +101,14 @@ all: lib
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
-$(OBJDIR)/%.d: %.c 
+$(OBJDIR)/%.d: %.c
 	@echo Making dependency for file $< ......
 	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
+	$(CC) $(GPPFLAGS) $(CFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.C 
+$(OBJDIR)/%.d: %.C
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -128,7 +129,7 @@ $(OBJDIR)/%.d: %.CC
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.cpp 
+$(OBJDIR)/%.d: %.cpp
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -174,7 +175,7 @@ lib: dir $(OBJS)
 ########################################################################
 $(OBJDIR)/%.o: %.c
 	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(CC) -c $< -o $@  $(CFLAGS)
 
 $(OBJDIR)/%.o: %.C
 	@echo Compiling $< ......
@@ -220,17 +221,17 @@ distclean: clean
 		fi; \
 	done;
 
-test:	
+test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
-	@echo \\CFLAGS\:$(CFLAGS)	
-	@echo \\CXXFLAGS\:$(CXXFLAGS)        
+	@echo \\CFLAGS\:$(CFLAGS)
+	@echo \\CXXFLAGS\:$(CXXFLAGS)
 	@echo \\FFLAGS\:$(FFLAGS)
 	@echo \\LDFLAGS\:$(LDFLAGS)
 	@echo \\SYSLIBS\:$(SYSLIBS)
-	@echo \\fsources\: $(FSOURCES)	
-	@echo \\sources\: $(SOURCES)	
+	@echo \\fsources\: $(FSOURCES)
+	@echo \\sources\: $(SOURCES)
 	@echo \\objs\: $(OBJS)
-	@echo \\otherobjs\: $(OTHEROBJS)	
+	@echo \\otherobjs\: $(OTHEROBJS)
 	@echo \\dependencies: \$(DEPS)
 
 help: test

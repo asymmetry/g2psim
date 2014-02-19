@@ -18,6 +18,7 @@ OBJDIR      := obj.$(ARCH)
 ########################################################################
 # Compiler
 AR          := ar
+CC          := gcc
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -32,12 +33,13 @@ endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
 CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS) 
 CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
-FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -Wno-unused-dummy-argument \
+               -O3 $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
-               -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none -fno-range-check
+               -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
+               -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -86,7 +88,7 @@ all: obj
 $(OBJDIR)/%.d: %.c 
 	@echo Making dependency for file $< ......
 	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
+	$(CC) $(GPPFLAGS) $(CFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
@@ -149,7 +151,7 @@ obj: dir $(OBJS)
 ########################################################################
 $(OBJDIR)/%.o: %.c
 	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(CC) -c $< -o $@  $(CFLAGS)
 
 $(OBJDIR)/%.o: %.C
 	@echo Compiling $< ......

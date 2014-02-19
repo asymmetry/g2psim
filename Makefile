@@ -30,6 +30,7 @@ INCDIR      := $(INCDIR):$(MODELDIR)
 ########################################################################
 # Compiler
 AR          := ar
+CC          := gcc
 CXX         := g++
 FF          := gfortran
 LD          := g++
@@ -42,14 +43,14 @@ else
     MODE    := -m64
 endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
+CFLAGS      := -Wall -fPIC -O3 -g $(MODE)
+CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE)
+FFLAGS      := -Wall -fPIC -O3 -g $(MODE)
 ifeq ($(MYOS),Darwin)
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
-               -fno-range-check -funroll-all-loops -fdollar-ok \
-               -ffixed-line-length-none -fno-range-check
+               -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
+               -fno-range-check
 else
     FFLAGS  += -fno-leading-underscore -fno-second-underscore \
                -fno-automatic -fbounds-check -funroll-all-loops \
@@ -75,13 +76,18 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ########################################################################
 # Libs
 SYSLIBS     := -lstdc++ -lgfortran
+
 ifdef LIBCONFIG
-CFLAGS      += -I$(LIBCONFIG)/include
-CXXFLAGS    += -I$(LIBCONFIG)/include
 INCDIRS     += -I$(LIBCONFIG)/include
-#SYSLIBS     += $(LIBCONFIG)/lib/libconfig.a
 SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
+else
+$(error $$LIBCONFIG environment variable not defined)
 endif
+
+CFLAGS      += $(INCDIRS)
+CXXFLAGS    += $(INCDIRS)
+FFLAGS      += $(INCDIRS)
+
 OTHERLIBS   := -LHRSTrans -lHRSTrans -LG2PPhys -lG2PPhys
 
 ########################################################################
@@ -108,7 +114,7 @@ all: lib script exe
 $(OBJDIR)/%.d: %.c
 	@echo Making dependency for file $< ......
 	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
+	$(CC) $(GPPFLAGS) $(CFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
@@ -177,8 +183,11 @@ $(OBJDIR)/Main.o: Main.cc
 
 ########################################################################
 lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
-	@make -s -C HRSTrans
-	@make -s -C G2PPhys
+	@for model in $(MODELLIST); do \
+		if [ -d $$model ]; then \
+			make -s -C $$model; \
+		fi; \
+	done;
 	@$(LD) -shared $(LDFLAGS) -o $(LIBFILE).$(VERSION) \
            $(OBJS) $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS)
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
@@ -201,7 +210,7 @@ $(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
 ########################################################################
 $(OBJDIR)/%.o: %.c
 	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(CC) -c $< -o $@  $(CFLAGS)
 
 $(OBJDIR)/%.o: %.C
 	@echo Compiling $< ......
@@ -238,12 +247,15 @@ dir:
 clean: dir
 	@rm -f $(OBJDIR)/*
 	@rm -f $(USERDICT).cxx $(USERDICT).h
-	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).*
+	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
-	@make distclean -s -C HRSTrans
-	@make distclean -s -C G2PPhys
+	@for model in $(MODELLIST); do \
+		if [[ -d $$model ]]; then \
+			make distclean -s -C $$model; \
+		fi; \
+	done;
 
 test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
