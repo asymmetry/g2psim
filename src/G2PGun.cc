@@ -109,6 +109,7 @@ void G2PGun::Clear(Option_t* option)
 {
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
+    freactZ = 0;
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5tp_tr, 0, sizeof (fV5tp_tr));
 
@@ -263,6 +264,7 @@ int G2PGun::DefineVariables(EMode mode)
         {"react.t", "React Point T", kDOUBLE, &fV5react_tr[1]},
         {"react.y", "React Point Y", kDOUBLE, &fV5react_tr[2]},
         {"react.p", "React Point P", kDOUBLE, &fV5react_tr[3]},
+        {"react.z", "React Point Z", kDOUBLE, &freactZ},
         {"react.d", "React Point D", kDOUBLE, &fV5react_tr[4]},
         {"react.l_x", "React Point X (lab)", kDOUBLE, &fV5react_lab[0]},
         {"react.l_t", "React Point T (lab)", kDOUBLE, &fV5react_lab[1]},

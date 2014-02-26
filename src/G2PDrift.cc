@@ -245,7 +245,7 @@ double G2PDrift::DriftHCS(const double* x, const double* p, double zf, double *x
         }
 
         if (l < kLLimit) {
-            while (dt > dtlimit) {
+            while ((dt > dtlimit)&&(l < kLLimit)) {
                 if ((xf[2] > zf)^(sign)) {
                     l = l - fVelocity*dt;
                     dt /= 2.0;
@@ -352,7 +352,7 @@ double G2PDrift::DriftTCS(const double* x, double z_tr, double p, double angle, 
         }
 
         if (l < kLLimit) {
-            while (dt > dtlimit) {
+            while ((dt > dtlimit)&&(l < kLLimit)) {
                 if ((znew_tr > zf_tr)^(sign)) {
                     l = l - fVelocity*dt;
                     dt /= 2.0;
@@ -448,7 +448,7 @@ double G2PDrift::DriftCV(const double* x, double z_tr, double p, double angle, d
         }
 
         if (l < kLLimit) {
-            while (dt > dtlimit) {
+            while ((dt > dtlimit)&&(l < kLLimit)) {
                 if (rnew_lab > rf_lab) {
                     l = l - fVelocity*dt;
                     dt /= 2.0;
@@ -544,7 +544,7 @@ double G2PDrift::DriftCL(const double* x, double z_tr, double p, double angle, d
         if (rnew_lab > rf_lab) surf = 1;
 
         if (l < kLLimit) {
-            while (dt > dtlimit) {
+            while ((dt > dtlimit)&&(l < kLLimit)) {
                 if ((znew_lab > zf_lab) || (rnew_lab > rf_lab)) {
                     l = l - fVelocity*dt;
                     dt /= 2.0;

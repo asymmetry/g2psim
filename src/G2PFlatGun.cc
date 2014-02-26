@@ -61,6 +61,7 @@ int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr)
     V5react_tr[1] = pRand->Uniform(fTargetThLow_tr, fTargetThHigh_tr);
     V5react_tr[2] = Yreact_tr;
     V5react_tr[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
+    freactZ = Zreact_tr;
 
     if (fForceElastic) {
         double Pi[3] = {sin(V5beam_lab[1]) * cos(V5beam_lab[3]), sin(V5beam_lab[1]) * sin(V5beam_lab[3]), cos(V5beam_lab[1])};

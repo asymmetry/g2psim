@@ -77,6 +77,7 @@ protected:
 
     double fV5beam_lab[5];
     double fV5react_tr[5];
+    double freactZ;
     double fV5react_lab[5];
 
     double fV5tp_tr[5];

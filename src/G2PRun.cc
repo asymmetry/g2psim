@@ -282,6 +282,7 @@ void G2PRun::SetRunType(const char* type)
     tempmap["optics21"] = 21;
     tempmap["optics22"] = 22;
     tempmap["optics23"] = 23;
+    tempmap["empty"] = 31;
 
     if (tempmap.count(type) > 0) fConfig["run.type"] = (double) tempmap[type];
     else fConfig["run.type"] = (double) 10;

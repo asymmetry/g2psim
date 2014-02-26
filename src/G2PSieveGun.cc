@@ -107,6 +107,7 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
     V5react_tr[2] = Yreact_tr;
     V5react_tr[3] = Phireact_tr;
     V5react_tr[4] = Delta;
+    freactZ = Zreact_tr;
 
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);

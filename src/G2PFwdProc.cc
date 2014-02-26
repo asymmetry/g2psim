@@ -150,11 +150,13 @@ int G2PFwdProc::Process()
     case 23: // 125 mil carbon target, with LHe
         RunType21(3.175e-3, V5react_tr, z_tr, V5troj, dlentot, elosstot);
         break;
+    case 31: // pure LHe
+        RunType31(V5react_tr, z_tr, V5troj, dlentot, elosstot);
     default:
         break;
     }
 
-    // Drift in target nose window
+    // Drift to target nose window
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 21.133e-3, V5troj, z_tr); // vertical cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pAl->EnergyLoss(E, driftlength);
@@ -186,7 +188,7 @@ int G2PFwdProc::Process()
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 419.100e-3, V5troj, z_tr); // vertical cylinder
     dlentot += driftlength;
 
-    // Drift in LN2 window
+    // Drift to LN2 window
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 419.138e-3, V5troj, z_tr); // vertical cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pAl->EnergyLoss(E, driftlength);
@@ -202,7 +204,7 @@ int G2PFwdProc::Process()
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 479.425e-3, V5troj, z_tr); // vertical cylinder
     dlentot += driftlength;
 
-    // Drift in chamber exit window
+    // Drift to chamber exit window
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 479.933e-3, V5troj, z_tr); // vertical cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pAl->EnergyLoss(E, driftlength);
@@ -409,6 +411,25 @@ void G2PFwdProc::RunType21(double thickness, double* V5react_tr, double& z_tr, d
 
     // Drift in LHe
     driftlength = pDrift->Drift(V5troj, z_tr, fHRSMomentum, fHRSAngle, 21.0058e-3, V5troj, z_tr); // vertical cylinder
+    E = fHRSMomentum * (1 + V5troj[4]);
+    eloss = pLHe->EnergyLoss(E, driftlength);
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
+    angle = pLHe->MultiScattering(E, driftlength);
+    rot = pRand->Uniform(0, 2 * kPI);
+    V5troj[1] += angle * cos(rot);
+    V5troj[3] += angle * sin(rot);
+    dlentot += driftlength;
+    elosstot += eloss;
+}
+
+void G2PFwdProc::RunType31(double* V5react_tr, double& z_tr, double* V5troj, double& dlentot, double& elosstot)
+{
+    static G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
+
+    double driftlength, E, eloss, angle, rot;
+
+    // Drift in LHe
+    driftlength = pDrift->Drift(V5react_tr, z_tr, fHRSMomentum, fHRSAngle, 21.0058e-3, V5troj, z_tr); // vertical cylinder
     E = fHRSMomentum * (1 + V5troj[4]);
     eloss = pLHe->EnergyLoss(E, driftlength);
     V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
