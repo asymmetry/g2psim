@@ -52,6 +52,8 @@ fDataFile(filename), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), fTarge
 
     fPriority = 1;
 
+    fHRSP0.clear();
+    fHRSP0.push_back(0.0);
     fReactZ_lab.clear();
     fReactZ_lab.push_back(0.0);
     fELoss.clear();
@@ -121,9 +123,11 @@ int G2POptics::Process()
     fV5fp_rot[1] = tempdata.tf;
     fV5fp_rot[2] = tempdata.yf;
     fV5fp_rot[3] = tempdata.pf;
+    int kineID = fHoleID / (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
     res = res % (pSieve->GetNRow() * pSieve->GetNCol());
+    fHRSMomentum = fHRSP0[kineID];
     fEnergyLoss = fELoss[foilID];
     fV3bpm_lab[2] = fReactZ_lab[foilID];
 
@@ -267,6 +271,13 @@ void G2POptics::Clear(Option_t* option)
     G2PProcBase::Clear(option);
 }
 
+void G2POptics::SetHRSMomentum(int n, double* value)
+{
+    fHRSP0.clear();
+    for (int i = 0; i < n; i++)
+        fHRSP0.push_back(value[i]);
+}
+
 void G2POptics::SetReactZ(int n, double* value)
 {
     fNFoil = n;
@@ -347,7 +358,6 @@ int G2POptics::Configure(EMode mode)
     ConfDef confs[] = {
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {0}
     };
 

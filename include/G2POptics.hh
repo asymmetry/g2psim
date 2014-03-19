@@ -31,6 +31,7 @@ public:
     // Gets
 
     // Sets
+    void SetHRSMomentum(int n, double* value);
     void SetReactZ(int n, double* value);
     void SetEnergyLoss(int n, double* value);
 
@@ -62,6 +63,7 @@ protected:
     double fEnergyLoss;
 
     int fNFoil;
+    vector<double> fHRSP0;
     vector<double> fReactZ_lab;
     vector<double> fELoss;
 
