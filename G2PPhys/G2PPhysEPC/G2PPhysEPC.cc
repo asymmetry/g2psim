@@ -27,7 +27,7 @@ void epc_(int* PART, int* Z, int* N, double* Ei, double* Pf, double* ang, double
 static const double kDEG = 3.14159265358979323846 / 180.0;
 static const double kMEV = 1.0e-3;
 
-static double EPC(int Z, int A, int PART, double Ei, double Pf, double theta)
+static double EPC(int PART, int Z, int A, double Ei, double Pf, double theta)
 {
     double XS;
     int N;
