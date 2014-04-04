@@ -10,6 +10,11 @@
  * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203 
  * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * 
+ * How to set parameters:
+ * If set 1 parameters with SetPars(pars,1), then pars[0]=2 means to use Stansfield's model 
+ *   to calculate 12C cross section, default is Cardman's model;
+ * Other uses will be considered as invalid.
  */
 
 // History:
@@ -33,7 +38,7 @@ public:
     double GetXS(double Ei, double Ef, double theta);
 
 private:
-    int iSetting;
+    int fSetting;
 
     double GetXS_H1(double Ei, double theta);
     double GetXS_He4(double Ei, double theta);

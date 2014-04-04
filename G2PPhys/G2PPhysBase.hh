@@ -19,12 +19,21 @@
  * 
  * Radiative correction added for P. Bosted model and QFS.
  * 
+ * Meaning of parameters:
+ * fPID: incident particle ID, following the PDG definition:
+ *       2212 for p        ;   2112 for n     ;   211 for pi+   ;
+ *       -211 for pi-      ;   111  for pi0   ;   11  for e-    ;
+ *       22   for photon   ;
+ * fZ, fA: proton and mass number of the nucleus.
+ * 
+ * Please also read headers of QFS, PBosted, EPC and WISER models. They contains very important usage information!
+ * 
  * Unit of elastic cross section is ub/sr.
  * Unit of inelastic cross section is ub/MeV-sr.
  */
 
 // History:
-//   Mar 2013, C. Gu, First public version.
+//   Mar 2013, C. Gu, First public version.  
 //
 
 #ifndef G2P_PHYSBASE_H

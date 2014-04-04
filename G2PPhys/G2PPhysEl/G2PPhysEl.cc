@@ -10,6 +10,11 @@
  * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203 
  * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * 
+ * How to set parameters:
+ * If set 1 parameters with SetPars(pars,1), then pars[0]=2 means to use Stansfield's model 
+ *   to calculate 12C cross section, default is Cardman's model;
+ * Other uses will be considered as invalid.
  */
 
 // History:
@@ -160,7 +165,7 @@ static double FF_All(int Z, double Q2)
     return FF;
 }
 
-G2PPhysEl::G2PPhysEl() : iSetting(1)
+G2PPhysEl::G2PPhysEl() : fSetting(1)
 {
     // Constructor
 
@@ -185,7 +190,8 @@ void G2PPhysEl::SetPars(double* array, int n)
     case 0:
         break;
     case 1:
-        iSetting = int(fPars[0]);
+        if (fPars[0] > 1.5) fSetting = 2;
+        else fSetting = 1;
         break;
     default:
         printf("Error: G2PPhysEl::SetPars(): Invalid number of pars.\n");
@@ -195,7 +201,7 @@ void G2PPhysEl::SetPars(double* array, int n)
 
 double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
 {
-    if (iSetting == 2) return GetXS_All(Ei, theta);
+    if (fSetting == 2) return GetXS_All(Ei, theta);
 
     if ((fZ == 1)&&(fA == 1)) return GetXS_H1(Ei, theta);
     if ((fZ == 2)&&(fA == 4)) return GetXS_He4(Ei, theta);

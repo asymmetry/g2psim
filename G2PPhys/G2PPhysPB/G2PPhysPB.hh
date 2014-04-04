@@ -8,6 +8,10 @@
  * Radiative correction parameters:
  * Tb: total radiative length before scattering in radiation length;
  * Ta: total radiative length after scattering in radiation length;
+ * 
+ * How to set parameters:
+ * If set 2 parameters with SetPars(pars,2), then pars[0]->Tb, pars[1]->Ta;
+ * Other uses will be considered as invalid.
  */
 
 // History:

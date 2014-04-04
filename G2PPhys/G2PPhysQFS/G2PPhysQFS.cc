@@ -13,6 +13,12 @@
  * EPS: separation energy in MeV;
  * EPSD: delta separation energy in MeV;
  * FP: Fermi momentum in MeV/c;
+ * 
+ * How to set parameters:
+ * If set 2 parameters with SetPars(pars,2), then pars[0]->Tb, pars[1]->Ta;
+ * If set 3 parameters with SetPars(pars,3), then pars[0]->EPS, pars[1]->EPSD, pars[2]->FP;
+ * If set 5 parameters with SetPars(pars,5), then pars[0]->Tb, pars[1]->Ta, pars[2]->EPS, pars[3]->EPSD, pars[4]->FP;
+ * Other uses will be considered as invalid.
  */
 
 // History:
