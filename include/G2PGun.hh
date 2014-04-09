@@ -33,7 +33,8 @@ public:
     // Gets
 
     // Sets
-    void SetBeamPos(double x, double y);
+    void SetBeamPos(double x, double y, double z);
+    void SetTiltAngle(double theta, double phi);
     void SetReactZ(double low, double high);
     void SetRasterSize(double val);
     void SetTargetTh(double low, double high);
@@ -45,7 +46,7 @@ protected:
     virtual int Shoot(double* V51, double* V52) = 0;
 
     void SetTiltAngle();
-    void GetReactPoint(double x, double y, double z, double* V5);
+    void GetReactPoint(double x, double y, double reactz, double* V5);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -54,12 +55,13 @@ protected:
     double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
+    double fParticleMass;
     double fTargetMass;
     double fFieldRatio;
 
     bool fForceElastic;
 
-    double fBeamX_lab, fBeamY_lab;
+    double fBeamX_lab, fBeamY_lab, fBeamZ_lab;
     double fBeamR_lab;
 
     double fReactZLow_lab;
@@ -73,11 +75,12 @@ protected:
     double fDeltaLow; // in the unit of delta
     double fDeltaHigh;
 
-    double fBeamTiltAngle;
+    double fTiltTheta_bpm;
+    double fTiltPhi_bpm;
 
     double fV5beam_lab[5];
     double fV5react_tr[5];
-    double freactZ;
+    double freactz_tr;
     double fV5react_lab[5];
 
     double fV5tp_tr[5];

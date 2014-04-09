@@ -70,8 +70,8 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
 
     X_lab += fBeamX_lab;
     Y_lab += fBeamY_lab;
-    double Z_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
-    GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
+    double ReactZ_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
+    GetReactPoint(X_lab, Y_lab, ReactZ_lab, V5beam_lab);
 
     double Xreact_tr, Yreact_tr, Zreact_tr;
     HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
@@ -96,9 +96,13 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
     double V3pd_lab[3];
     TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], fHRSAngle, V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
 
-    double cosscatangle = V3pd_lab[2] / (sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
+    double cosang = V3pd_lab[2] / (sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
 
-    double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
+    double E = fBeamEnergy;
+    double m = fParticleMass;
+    double P = sqrt(E * E - m * m);
+    double M = fTargetMass;
+    double scatmom = (P * M / (E + M - P * cosang))*(((E + M) * sqrt(1 - (m / M)*(m / M)*(1 - cosang * cosang))+(E + (m / M) * m) * cosang) / (E + M + P * cosang));
 
     double Delta = scatmom / fHRSMomentum - 1;
 
@@ -107,7 +111,7 @@ int G2PSieveGun::Shoot(double* V5beam_lab, double* V5react_tr)
     V5react_tr[2] = Yreact_tr;
     V5react_tr[3] = Phireact_tr;
     V5react_tr[4] = Delta;
-    freactZ = Zreact_tr;
+    freactz_tr = Zreact_tr;
 
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5react_tr[0], V5react_tr[1], V5react_tr[2], V5react_tr[3], V5react_tr[4]);

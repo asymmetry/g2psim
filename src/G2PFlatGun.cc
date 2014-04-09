@@ -51,8 +51,8 @@ int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr)
 
     X_lab += fBeamX_lab;
     Y_lab += fBeamY_lab;
-    double Z_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
-    GetReactPoint(X_lab, Y_lab, Z_lab, V5beam_lab);
+    double ReactZ_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
+    GetReactPoint(X_lab, Y_lab, ReactZ_lab, V5beam_lab);
 
     double Xreact_tr, Yreact_tr, Zreact_tr;
     HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
@@ -61,15 +61,19 @@ int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr)
     V5react_tr[1] = pRand->Uniform(fTargetThLow_tr, fTargetThHigh_tr);
     V5react_tr[2] = Yreact_tr;
     V5react_tr[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
-    freactZ = Zreact_tr;
+    freactz_tr = Zreact_tr;
 
-    if (fForceElastic) {
+    if (fForceElastic) { // calculate elastic scattering momentum
         double Pi[3] = {sin(V5beam_lab[1]) * cos(V5beam_lab[3]), sin(V5beam_lab[1]) * sin(V5beam_lab[3]), cos(V5beam_lab[1])};
         double theta, phi;
         TCS2HCS(V5react_tr[1], V5react_tr[3], fHRSAngle, theta, phi);
         double Pf[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
-        double cosscatangle = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
-        double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
+        double cosang = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
+        double E = fBeamEnergy;
+        double m = fParticleMass;
+        double P = sqrt(E * E - m * m);
+        double M = fTargetMass;
+        double scatmom = (P * M / (E + M - P * cosang))*(((E + M) * sqrt(1 - (m / M)*(m / M)*(1 - cosang * cosang))+(E + (m / M) * m) * cosang) / (E + M + P * cosang));
         V5react_tr[4] = scatmom / fHRSMomentum - 1;
     } else {
         V5react_tr[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);

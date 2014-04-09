@@ -35,7 +35,10 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 G2PGun* G2PGun::pG2PGun = NULL;
 
 G2PGun::G2PGun() :
-fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fTargetMass(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fBeamTiltAngle(0.0), pDrift(NULL)
+fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fParticleMass(0.51099892811e-3), fTargetMass(0.0), fFieldRatio(0.0),
+fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0),
+fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0),
+fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0), pDrift(NULL)
 {
     if (pG2PGun) {
         Error("G2PGun()", "Only one instance of G2PGun allowed.");
@@ -87,7 +90,7 @@ int G2PGun::Process()
 
     double V5[5];
 
-    Shoot(fV5beam_lab, fV5react_tr);
+    Shoot(fV5beam_lab, fV5react_tr); // Shoot a particle
     ArrayCopy(fV5react_lab, fV5beam_lab, 5);
     TCS2HCS(fV5react_tr[1], fV5react_tr[3], fHRSAngle, fV5react_lab[1], fV5react_lab[3]);
 
@@ -96,7 +99,7 @@ int G2PGun::Process()
     }
 
     HCS2TCS(fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4], fHRSAngle, V5[0], V5[2], V5[4]);
-    pDrift->Drift(fV5react_tr, V5[4], fHRSMomentum, fHRSAngle, 0.0, fV5tp_tr);
+    pDrift->Drift(fV5react_tr, V5[4], fHRSMomentum, fHRSAngle, 0.0, fV5tp_tr); // Drift to target plane (z_tr = 0)
 
     if (fDebug > 1) {
         Info(here, "tp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tp_tr[0], fV5tp_tr[1], fV5tp_tr[2], fV5tp_tr[3], fV5tp_tr[4]);
@@ -107,27 +110,38 @@ int G2PGun::Process()
 
 void G2PGun::Clear(Option_t* option)
 {
+    freactz_tr = 0;
+
     memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
-    freactZ = 0;
     memset(fV5react_lab, 0, sizeof (fV5react_lab));
     memset(fV5tp_tr, 0, sizeof (fV5tp_tr));
 
     G2PProcBase::Clear(option);
 }
 
-void G2PGun::SetBeamPos(double x, double y)
+void G2PGun::SetBeamPos(double x, double y, double z)
 {
     fBeamX_lab = x;
     fBeamY_lab = y;
+    fBeamZ_lab = z;
 
     fConfigIsSet.insert((unsigned long) &fBeamX_lab);
     fConfigIsSet.insert((unsigned long) &fBeamY_lab);
+    fConfigIsSet.insert((unsigned long) &fBeamZ_lab);
+}
+
+void G2PGun::SetTiltAngle(double theta, double phi)
+{
+    fTiltTheta_bpm = theta;
+    fTiltPhi_bpm = phi;
+
+    fConfigIsSet.insert((unsigned long) &fTiltTheta_bpm);
+    fConfigIsSet.insert((unsigned long) &fTiltPhi_bpm);
 }
 
 void G2PGun::SetReactZ(double low, double high)
 {
-
     fReactZLow_lab = low;
     fReactZHigh_lab = high;
 
@@ -137,7 +151,6 @@ void G2PGun::SetReactZ(double low, double high)
 
 void G2PGun::SetRasterSize(double val)
 {
-
     fBeamR_lab = val;
 
     fConfigIsSet.insert((unsigned long) &fBeamR_lab);
@@ -145,7 +158,6 @@ void G2PGun::SetRasterSize(double val)
 
 void G2PGun::SetTargetTh(double low, double high)
 {
-
     fTargetThLow_tr = low;
     fTargetThHigh_tr = high;
 
@@ -155,7 +167,6 @@ void G2PGun::SetTargetTh(double low, double high)
 
 void G2PGun::SetTargetPh(double low, double high)
 {
-
     fTargetPhLow_tr = low;
     fTargetPhHigh_tr = high;
 
@@ -183,30 +194,38 @@ void G2PGun::SetTiltAngle()
 {
     static const char* const here = "SetTiltAngle()";
 
-    if (fabs(fFieldRatio - 0.5) < 1e-8) {
-        if (fabs(fBeamEnergy - 2.254) < 0.2) fBeamTiltAngle = 3.31 * kDEG;
-        else if (fabs(fBeamEnergy - 1.706) < 0.2) fBeamTiltAngle = 4.03 * kDEG;
-        else if (fabs(fBeamEnergy - 1.159) < 0.2) fBeamTiltAngle = 5.97 * kDEG;
-        else fBeamTiltAngle = 0.0;
-    } else if (fabs(fFieldRatio - 1.0) < 1e-8) {
-        if (fabs(fBeamEnergy - 2.254) < 0.2) fBeamTiltAngle = 0.0;
-        else if (fabs(fBeamEnergy - 3.355) < 0.2) fBeamTiltAngle = 0.0;
-        else fBeamTiltAngle = 0.0;
-    } else fBeamTiltAngle = 0.0;
-
-    if (fDebug > 0) Info(here, "Beam tilt angle is %10.3e deg.", fBeamTiltAngle / kDEG);
+    if ((fConfigIsSet.find((unsigned long) &fTiltTheta_bpm) == fConfigIsSet.end())
+            &&(fConfigIsSet.find((unsigned long) &fTiltPhi_bpm) == fConfigIsSet.end())) {
+        // Default values
+        if (fabs(fFieldRatio - 0.5) < 1e-8) {
+            if (fabs(fBeamEnergy - 2.254) < 0.2) fTiltTheta_bpm = 3.31 * kDEG;
+            else if (fabs(fBeamEnergy - 1.706) < 0.2)fTiltTheta_bpm = 4.03 * kDEG;
+            else if (fabs(fBeamEnergy - 1.158) < 0.2)fTiltTheta_bpm = 5.97 * kDEG;
+            else fTiltTheta_bpm = 0.0;
+        } else if (fabs(fFieldRatio - 1.0) < 1e-8) {
+            if (fabs(fBeamEnergy - 2.254) < 0.2) fTiltTheta_bpm = 0.0;
+            else if (fabs(fBeamEnergy - 3.355) < 0.2) fTiltTheta_bpm = 0.0;
+            else fTiltTheta_bpm = 0.0;
+        } else fTiltTheta_bpm = 0.0;
+        fTiltPhi_bpm = 0.0;
+        if (fDebug > 0) Info(here, "Default set to %10.3e %10.3e", fTiltTheta_bpm / kDEG, fTiltPhi_bpm / kDEG);
+    } else {
+        if (fDebug > 0) Info(here, "Manually set to %10.3e %10.3e", fTiltTheta_bpm / kDEG, fTiltPhi_bpm / kDEG);
+    }
 }
 
-void G2PGun::GetReactPoint(double x, double y, double z, double* V5)
+void G2PGun::GetReactPoint(double x, double y, double reactz, double* V5)
 {
     static const char* const here = "GetReactPoint()";
 
-    double xb[3] = {x, y, 0.0};
-    double pb[3] = {0.0, fBeamEnergy * sin(fBeamTiltAngle), fBeamEnergy * cos(fBeamTiltAngle)};
+    double xb[3] = {x, y, fBeamZ_lab};
+    double p[3] = {tan(fTiltPhi_bpm), tan(fTiltTheta_bpm), 1.0};
+    double pp = sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+    double pb[3] = {fBeamEnergy * p[0] / pp, fBeamEnergy * p[1] / pp, fBeamEnergy * p[2] / pp}; // convert tilt angle from bpm coordinate system to lab system
 
     int save = pDrift->GetDebugLevel();
     if (fDebug <= 3) pDrift->SetDebugLevel(0);
-    pDrift->Drift(xb, pb, z, xb, pb);
+    pDrift->Drift(xb, pb, reactz, xb, pb);
     V5[0] = xb[0];
     if (fabs(pb[2] - fBeamEnergy) < 1e-8) V5[1] = acos(1.0); // pb[2] may be a bit larger than fBeam Energy because of round-off error
     else V5[1] = acos(pb[2] / fBeamEnergy);
@@ -215,7 +234,7 @@ void G2PGun::GetReactPoint(double x, double y, double z, double* V5)
     V5[4] = xb[2];
     pDrift->SetDebugLevel(save);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, z, V5[0], V5[1], V5[2], V5[3], V5[4]);
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, reactz, V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
 int G2PGun::Configure(EMode mode)
@@ -227,14 +246,16 @@ int G2PGun::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
+        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fParticleMass},
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"beam.l_x", "Beam X", kDOUBLE, &fBeamX_lab},
         {"beam.l_y", "Beam Y", kDOUBLE, &fBeamY_lab},
-        {"beam.l_z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
-        {"beam.l_z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
+        {"beam.l_z", "Beam Z (set by BPM)", kDOUBLE, &fBeamZ_lab},
+        {"beam.tilt.t", "Beam Tilt Angle Theta", kDOUBLE, &fTiltTheta_bpm},
+        {"beam.tilt.p", "Beam Tilt Angle Phi", kDOUBLE, &fTiltPhi_bpm},
         {"raster.size", "Raster Size", kDOUBLE, &fBeamR_lab},
         {"react.t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
         {"react.t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
@@ -243,6 +264,8 @@ int G2PGun::Configure(EMode mode)
         {"react.d.min", "Delta Min", kDOUBLE, &fDeltaLow},
         {"react.d.max", "Delta Max", kDOUBLE, &fDeltaHigh},
         {"react.d.elastic", "Delta Elastic", kBOOL, &fForceElastic},
+        {"react.l_z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
+        {"react.l_z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
         {0}
     };
 
@@ -264,7 +287,7 @@ int G2PGun::DefineVariables(EMode mode)
         {"react.t", "React Point T", kDOUBLE, &fV5react_tr[1]},
         {"react.y", "React Point Y", kDOUBLE, &fV5react_tr[2]},
         {"react.p", "React Point P", kDOUBLE, &fV5react_tr[3]},
-        {"react.z", "React Point Z", kDOUBLE, &freactZ},
+        {"react.z", "React Point Z", kDOUBLE, &freactz_tr},
         {"react.d", "React Point D", kDOUBLE, &fV5react_tr[4]},
         {"react.l_x", "React Point X (lab)", kDOUBLE, &fV5react_lab[0]},
         {"react.l_t", "React Point T (lab)", kDOUBLE, &fV5react_lab[1]},
