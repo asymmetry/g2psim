@@ -106,18 +106,25 @@ c          write(*,*)'Called Delta with ',E1,TP,TH,D2DEL
         endif
       else
         d2del=0.
+c comment added by Jixie, discussed with Oscar Rondon
+c D2SC1 is the cross section for production at the single pion threshold,
+c and D2SC2 is for production at the two pion threshold
+c By charge conservation pi+ are produced on protons at the single pion
+c threshold, but at the two pion threshold on neutrons, and vice versa for
+c pi-. But pi0's are always produced at the single pion threshold.
+c therefore for PI0, D2SC=IA*D2SC1
         IF(ABS(IP).EQ.2.OR.IP.EQ.0)THEN
-          CALL S2PI(2,E1,TP,TH,D2SC1) 
-          CALL S2PI(-2,E1,TP,TH,D2SC2) 
+          CALL S2PI(2,E1,TP,TH,D2SC1)
+          CALL S2PI(-2,E1,TP,TH,D2SC2)
           IF(PART.EQ.211)THEN 
             D2SC=Z*D2SC1+N*D2SC2 
-          ELSEIF(PART.EQ.-211)THEN 
-            D2SC=N*D2SC1+Z*D2SC2 
-          ELSEIF(PART.EQ.111)THEN 
-            D2SC=IA*(D2SC1+D2SC2)/2.
+          ELSEIF(PART.EQ.-211)THEN
+            D2SC=N*D2SC1+Z*D2SC2
+          ELSEIF(PART.EQ.111)THEN
+            D2SC=IA*D2SC1
 c            write(*,*)'PI=-',D2SC1*rad_l/100.*P,D2SC2*rad_l/100.*P
-          ENDIF 
-        ELSEIF(ABS(IP).EQ.1)THEN 
+          ENDIF
+        ELSEIF(ABS(IP).EQ.1)THEN
           CALL S2PI(1,E1,TP,TH,D2SC1) 
           D2SC=IA*D2SC1 
         ENDIF
