@@ -35,6 +35,7 @@ public:
     // Sets
     void SetParsX(const double* pars);
     void SetParsY(const double* pars);
+    void SetRecZ(double z);
 
 protected:
     G2PHRSBwd(); // Only for ROOT I/O

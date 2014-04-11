@@ -352,6 +352,13 @@ void G2PDBBwd::SetParsY(const double* pars)
     fConfigIsSet.insert((unsigned long) &fFitPars[1][2]);
 }
 
+void G2PDBBwd::SetRecZ(double z)
+{
+    frecz_lab = z;
+
+    fConfigIsSet.insert((unsigned long) &frecz_lab);
+}
+
 double G2PDBBwd::GetEffBPM(int axis)
 {
     static const char* const here = "GetEffBPM()";

@@ -7,6 +7,7 @@
 
 // History:
 //   Jan 2013, C. Gu, First public version.
+//   Apr 2014, C. Gu, No more history for this file.
 //
 
 #include <cstdlib>
@@ -16,16 +17,15 @@
 #include "TROOT.h"
 
 #include "G2PBPM.hh"
-#include "G2PBwdProc.hh"
-#include "G2PData.hh"
-#include "G2PDBRec.hh"
+#include "G2PDBBwd.hh"
+#include "G2PFPData.hh"
 #include "G2PField.hh"
 #include "G2PFlatGun.hh"
 #include "G2PGlobals.hh"
 #include "G2PGun.hh"
-#include "G2PHRS.hh"
+#include "G2PHRSFwd.hh"
+#include "G2PHRSBwd.hh"
 #include "G2PPhys.hh"
-#include "G2PProcBase.hh"
 #include "G2PRun.hh"
 #include "G2PSieveGun.hh"
 #include "G2PSim.hh"
@@ -46,22 +46,21 @@ int Run()
     //run->SetRunType("optics22"); // 40 mil carbon, with LHe
     //run->SetRunType("optics23"); // 125 mil carbon, with LHe
     //run->SetRunType("empty");
+    run->SetBeamEnergy(2.25327);
     run->SetHRSAngle(5.767 * kDEG);
     run->SetHRSMomentum(2.24949);
     //run->SetHRSMomentum(2.0); // eloss
-    run->SetBeamEnergy(2.25327);
     run->SetTarget(6, 12);
     run->SetTargetMass(12.0107 * kU);
     //run->SetFieldRatio(0.0);
     run->SetFieldRatio(0.5);
     //run->SetFieldRatio(1.0);
-    //run->SetSieve();
 
     ///////////////////////////////////////////////////////////////////////////
     // field
     ///////////////////////////////////////////////////////////////////////////
     G2PField* field = new G2PField();
-    field->SetEulerAngle(90*kDEG,90*kDEG,-90*kDEG);
+    field->SetEulerAngle(90 * kDEG, 90 * kDEG, -90 * kDEG);
     //field->SetEulerAngle(0,0,0);
     gG2PApps->Add(field);
 
@@ -70,7 +69,7 @@ int Run()
     ///////////////////////////////////////////////////////////////////////////
     G2PFlatGun* gun = new G2PFlatGun();
     //G2PSieveGun* gun = new G2PSieveGun();
-    //G2PData* gun = new G2PData("data.dat");
+    //G2PFPData* gun = new G2PFPData("data.dat");
 
     //gun->SetBeamPos(-3.623e-3, 0.0); // 2.253GeV, 0.0T, 6deg
     //gun->SetBeamPos(0.5009e-3, 0.9205e-3); // 2.254GeV, 0.0T, 90deg
@@ -111,12 +110,18 @@ int Run()
     gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////
-    // HRS
+    // special commands
     ///////////////////////////////////////////////////////////////////////////
-    G2PHRS* hrs = new G2PHRS("484816R15");
-    gG2PApps->Add(hrs);
-    //G2PDBRec* rec = new G2PDBRec();
-    //gG2PApps->Add(rec);
+    G2PHRSFwd* fwd = new G2PHRSFwd("484816R15");
+    //fwd->SetSieve("in");
+    gG2PApps->Add(fwd);
+    double parsx[3] = {0.029138, 3.042666, -4.636526};
+    double parsy[3] = {-0.129347, 0.285027, -14.7605};
+    G2PHRSBwd* bwd = new G2PHRSBwd("484816R15");
+    //G2PDBBwd* bwd = new G2PDBBwd();
+    bwd->SetParsX(parsx);
+    bwd->SetParsY(parsy);
+    //gG2PApps->Add(bwd);
 
     ///////////////////////////////////////////////////////////////////////////
     // cross section
@@ -125,12 +130,6 @@ int Run()
     //double par[1] = {2};
     //model->SetPars(par, 1);
     //gG2PApps->Add(model);
-
-    ///////////////////////////////////////////////////////////////////////////
-    // special commands
-    ///////////////////////////////////////////////////////////////////////////
-    //G2PProcBase* aobj;
-    //if (aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PBwdProc"))) gG2PApps->Remove(aobj);
 
     ///////////////////////////////////////////////////////////////////////////
     // simulation
