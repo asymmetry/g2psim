@@ -4,7 +4,6 @@
  * Run manager for g2p simulation.
  * Parse the configuration file and store all run parameters.
  * It use libconfig, a 3rd party package, to do the parsing.
- * It will allocate G2PFwdProc and G2PBwdProc automatically.
  */
 
 // History:
@@ -50,17 +49,14 @@ public:
     void SetConfigFile(const char* file);
     void SetDebugLevel(int n);
     void SetRunType(const char* type);
-    void SetSeed(unsigned n);
-    void SetHRSAngle(double angle);
-    void SetHRSMomentum(double P0);
-    void SetParticleID(int pid);
-    void SetParticleMass(double M0);
-    void SetParticleCharge(double Q);
     void SetBeamEnergy(double value);
+    void SetParticle(int id);
     void SetTarget(int Z, int A);
     void SetTargetMass(double M);
+    void SetHRSAngle(double angle);
+    void SetHRSMomentum(double P0);
     void SetFieldRatio(double ratio);
-    void SetSieve();
+    void SetSeed(unsigned n);
 
 protected:
     int ParseConfigFile();

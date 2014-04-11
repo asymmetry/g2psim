@@ -24,13 +24,14 @@
 
 #include "G2PAppList.hh"
 #include "G2PBPM.hh"
-#include "G2PData.hh"
-#include "G2PDBRec.hh"
+#include "G2PDBBwd.hh"
+#include "G2PFPData.hh"
 #include "G2PField.hh"
 #include "G2PFlatGun.hh"
 #include "G2PGlobals.hh"
 #include "G2PGun.hh"
-#include "G2PHRS.hh"
+#include "G2PHRSBwd.hh"
+#include "G2PHRSFwd.hh"
 #include "G2PPhys.hh"
 #include "G2PRun.hh"
 #include "G2PSieveGun.hh"
@@ -42,7 +43,8 @@ using namespace std;
 
 void usage(int argc, char** argv);
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     int c;
 
     int fN = 50000; // default 50000
@@ -113,8 +115,7 @@ int main(int argc, char** argv) {
 
     if (optind < argc) {
         fN = atoi(argv[optind++]);
-    }
-    else {
+    } else {
         usage(argc, argv);
         exit(-1);
     }
@@ -132,16 +133,9 @@ int main(int argc, char** argv) {
         gG2PApps->Add(bpm);
     }
 
-    if (fDB) {
-        G2PDBRec* db = new G2PDBRec();
-        gG2PApps->Add(db);
-    }
-
-    if (fField) {
-        G2PField* field = new G2PField();
-        gG2PApps->Add(field);
-    }
-    else {
+    G2PField* field = new G2PField();
+    gG2PApps->Add(field);
+    if (!fField) {
         run->SetFieldRatio(0.0);
     }
 
@@ -160,15 +154,21 @@ int main(int argc, char** argv) {
             break;
         }
         }
-    }
-    else {
-        G2PData* gun = new G2PData(fGun);
+    } else {
+        G2PFPData* gun = new G2PFPData(fGun);
         gG2PApps->Add(gun);
     }
 
     if (strcmp(fHRS, "off") != 0) {
-        G2PHRS* hrs = new G2PHRS(fHRS);
-        gG2PApps->Add(hrs);
+        G2PHRSFwd* fwd = new G2PHRSFwd(fHRS);
+        gG2PApps->Add(fwd);
+        if (fDB) {
+            G2PDBBwd* db = new G2PDBBwd("db_L.vdc.dat");
+            gG2PApps->Add(db);
+        } else {
+            G2PHRSBwd* bwd = new G2PHRSBwd(fHRS);
+            gG2PApps->Add(bwd);
+        }
     }
 
     if (strcmp(fPhys, "off") != 0) {
@@ -184,7 +184,8 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void usage(int argc, char** argv) {
+void usage(int argc, char** argv)
+{
     printf("usage: %s [options] NEvent\n", argv[0]);
     printf("  -c, --config=sim.cfg           Set configuration file\n");
     printf("  -d, --debug=1                  Set debug level\n");

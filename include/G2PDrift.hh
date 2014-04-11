@@ -53,7 +53,7 @@ protected:
     double DriftTCSNF(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout);
 
     double DriftCV(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // J. Liu
-    double DriftCVNF(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout);
+    double DriftCVNF(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // J. Liu
 
     double DriftCL(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
     double DriftCLNF(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
@@ -67,6 +67,7 @@ protected:
 
     double fM0;
     double fQ, fQSave;
+    double fFieldRatio;
     double fStep, fStepLimit, fErrLoLimit, fErrHiLimit;
     double fVelocity, fVelocity2, fGamma;
     double fCof;

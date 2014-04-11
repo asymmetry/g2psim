@@ -4,7 +4,6 @@
  * Run manager for g2p simulation.
  * Parse the configuration file and store all run parameters.
  * It use libconfig, a 3rd party package, to do the parsing.
- * It will allocate G2PFwdProc and G2PBwdProc automatically.
  */
 
 // History:
@@ -28,8 +27,6 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
-#include "G2PFwdProc.hh"
-#include "G2PBwdProc.hh"
 #include "G2PGlobals.hh"
 #include "G2PVarDef.hh"
 
@@ -56,22 +53,18 @@ G2PRun::G2PRun() : fConfigFile(NULL)
     fConfig.clear();
     fConfig["run.debuglevel"] = 0;
     fConfig["run.type"] = 10;
-    fConfig["run.hrs.angle"] = 5.767 * kDEG;
-    fConfig["run.hrs.p0"] = 2.251;
+    fConfig["run.e0"] = 2.25327;
     fConfig["run.particle.id"] = 11;
     fConfig["run.particle.mass"] = 0.51099892811e-3;
     fConfig["run.particle.charge"] = -1 * e;
-    fConfig["run.e0"] = 2.254;
     fConfig["run.target.z"] = 1;
     fConfig["run.target.a"] = 1;
     fConfig["run.target.mass"] = 1.008 * 0.931494028;
+    fConfig["run.hrs.angle"] = 5.767 * kDEG;
+    fConfig["run.hrs.p0"] = 2.24949;
     fConfig["field.ratio"] = 0.0;
-    fConfig["run.sieveon"] = 0;
 
     fConfigIsSet.clear();
-
-    gG2PApps->Add(new G2PFwdProc());
-    gG2PApps->Add(new G2PBwdProc());
 
     gG2PRun = this;
 }
@@ -89,19 +82,6 @@ G2PRun::~G2PRun()
 int G2PRun::Init()
 {
     //static const char* const here = "Init()"
-
-    if (static_cast<G2PProcBase*> (gG2PApps->Find("G2PData"))) {
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PFwdProc"))) gG2PApps->Remove(aobj);
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PBPM"))) gG2PApps->Remove(aobj);
-    }
-
-    if (static_cast<G2PProcBase*> (gG2PApps->Find("G2POptics"))) {
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PFwdProc"))) gG2PApps->Remove(aobj);
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PBwdProc"))) gG2PApps->Remove(aobj);
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PBPM"))) gG2PApps->Remove(aobj);
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PPhys"))) gG2PApps->Remove(aobj);
-        if (G2PProcBase * aobj = static_cast<G2PProcBase*> (gG2PApps->Find("G2PData"))) gG2PApps->Remove(aobj);
-    }
 
     return 0;
 }
@@ -290,46 +270,38 @@ void G2PRun::SetRunType(const char* type)
     fConfigIsSet.insert("run.type");
 }
 
-void G2PRun::SetSeed(unsigned n)
+void G2PRun::SetParticle(int id)
 {
-    fConfig["run.seed"] = (double) n;
-    G2PAppBase::SetSeed(n);
+    static const char* const here = "SetParticle()";
 
-    fConfigIsSet.insert("run.seed");
-}
+    fConfig["run.particle.id"] = (double) id;
 
-void G2PRun::SetHRSAngle(double angle)
-{
-    fConfig["run.hrs.angle"] = angle;
-
-    fConfigIsSet.insert("run.hrs.angle");
-}
-
-void G2PRun::SetHRSMomentum(double P0)
-{
-    fConfig["run.hrs.p0"] = P0;
-
-    fConfigIsSet.insert("run.hrs.p0");
-}
-
-void G2PRun::SetParticleID(int pid)
-{
-    fConfig["run.particle.id"] = (double) pid;
+    switch (id) {
+    case 11: // e-
+        fConfig["run.particle.mass"] = 0.5109989281e-3;
+        fConfig["run.particle.charge"] = -1 * e;
+        break;
+    case -11: // e+
+        fConfig["run.particle.mass"] = 0.5109989281e-3;
+        fConfig["run.particle.charge"] = e;
+        break;
+    case -211: // pi-
+        fConfig["run.particle.mass"] = 139.5701835e-3;
+        fConfig["run.particle.charge"] = -1 * e;
+        break;
+    case 211: // pi+
+        fConfig["run.particle.mass"] = 139.5701835e-3;
+        fConfig["run.particle.charge"] = e;
+        break;
+    default: // e-
+        Warning(here, "Unknown pid, use electrons.");
+        fConfig["run.particle.mass"] = 0.5109989281e-3;
+        fConfig["run.particle.charge"] = -1 * e;
+        break;
+    }
 
     fConfigIsSet.insert("run.particle.id");
-}
-
-void G2PRun::SetParticleMass(double M0)
-{
-    fConfig["run.particle.mass"] = M0;
-
     fConfigIsSet.insert("run.particle.mass");
-}
-
-void G2PRun::SetParticleCharge(double Q)
-{
-    fConfig["run.particle.charge"] = Q;
-
     fConfigIsSet.insert("run.particle.charge");
 }
 
@@ -356,6 +328,20 @@ void G2PRun::SetTargetMass(double M)
     fConfigIsSet.insert("run.target.mass");
 }
 
+void G2PRun::SetHRSAngle(double angle)
+{
+    fConfig["run.hrs.angle"] = angle;
+
+    fConfigIsSet.insert("run.hrs.angle");
+}
+
+void G2PRun::SetHRSMomentum(double P0)
+{
+    fConfig["run.hrs.p0"] = P0;
+
+    fConfigIsSet.insert("run.hrs.p0");
+}
+
 void G2PRun::SetFieldRatio(double ratio)
 {
     fConfig["field.ratio"] = ratio;
@@ -363,16 +349,13 @@ void G2PRun::SetFieldRatio(double ratio)
     fConfigIsSet.insert("field.ratio");
 }
 
-void G2PRun::SetSieve()
+void G2PRun::SetSeed(unsigned n)
 {
-    fConfig["run.sieveon"] = (double) (true);
+    fConfig["run.seed"] = (double) n;
+    G2PAppBase::SetSeed(n);
 
-    fConfigIsSet.insert("run.sieveon");
+    fConfigIsSet.insert("run.seed");
 }
-
-//void G2PRun::SetEnergyLoss(double E) {
-//    fEnergyLoss = E;
-//}
 
 int G2PRun::ParseConfigFile()
 {

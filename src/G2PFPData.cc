@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PData
+/* class G2PFPData
  * It loads real data to the simulation.
  */
 
@@ -23,41 +23,41 @@
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
 
-#include "G2PData.hh"
+#include "G2PFPData.hh"
 
 using namespace std;
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PData* G2PData::pG2PData = NULL;
+G2PFPData* G2PFPData::pG2PFPData = NULL;
 
-G2PData::G2PData() : fDataFile(NULL)
+G2PFPData::G2PFPData()
 {
     // Only for ROOT I/O
 }
 
-G2PData::G2PData(const char* filename) :
+G2PFPData::G2PFPData(const char* filename) :
 fDataFile(filename), fHRSAngle(5.767 * kDEG)
 {
-    if (pG2PData) {
-        Error("G2PData()", "Only one instance of G2PData allowed.");
+    if (pG2PFPData) {
+        Error("G2PFPData()", "Only one instance of G2PFPData allowed.");
         MakeZombie();
         return;
     }
-    pG2PData = this;
+    pG2PFPData = this;
 
     fPriority = 1;
     Clear();
 }
 
-G2PData::~G2PData()
+G2PFPData::~G2PFPData()
 {
-    if (pG2PData == this) pG2PData = NULL;
+    if (pG2PFPData == this) pG2PFPData = NULL;
 
     Clear();
 }
 
-int G2PData::Begin()
+int G2PFPData::Begin()
 {
     static const char* const here = "Begin()";
 
@@ -71,7 +71,7 @@ int G2PData::Begin()
     return (fStatus = kOK);
 }
 
-int G2PData::Process()
+int G2PFPData::Process()
 {
     static const char* const here = "Process()";
 
@@ -104,7 +104,7 @@ int G2PData::Process()
     return 0;
 }
 
-void G2PData::Clear(Option_t* option)
+void G2PFPData::Clear(Option_t* option)
 {
     memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
     memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
@@ -113,7 +113,7 @@ void G2PData::Clear(Option_t* option)
     G2PProcBase::Clear(option);
 }
 
-int G2PData::LoadData()
+int G2PFPData::LoadData()
 {
     FILE *fp;
 
@@ -132,7 +132,7 @@ int G2PData::LoadData()
     else return -1;
 }
 
-int G2PData::Configure(EMode mode)
+int G2PFPData::Configure(EMode mode)
 {
     if (mode == kREAD || mode == kTWOWAY) {
         if (fIsInit) return 0;
@@ -147,7 +147,7 @@ int G2PData::Configure(EMode mode)
     return ConfigureFromList(confs, mode);
 }
 
-int G2PData::DefineVariables(EMode mode)
+int G2PFPData::DefineVariables(EMode mode)
 {
     if (mode == kDEFINE && fIsSetup) return 0;
     fIsSetup = (mode == kDEFINE);
@@ -172,11 +172,11 @@ int G2PData::DefineVariables(EMode mode)
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PData::MakePrefix()
+void G2PFPData::MakePrefix()
 {
     const char* base = "data";
 
     G2PAppBase::MakePrefix(base);
 }
 
-ClassImp(G2PData)
+ClassImp(G2PFPData)

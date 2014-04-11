@@ -3,6 +3,21 @@
 /* class G2PPhys
  * It will calculate cross sections at reaction point.
  *
+ * Elastic cross section models (G2PPhysEl):
+ * * All: Form factors from K. C. Stansfield et al., Phys. Rev. C, 3(1971)1448
+ * * 1H : Form factors from J. Arrington, Phys. Rev. C, 69(2004)022201
+ * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
+ * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ *
+ * Inelastic cross section models:
+ * * G2PPhysEPC: J. W. Lightbody et al, Computers in Physics, 2(1988)57
+ * * G2PPhysPB: P. E. Bosted et al, Phys. Rev. C, 78(2008)015202 and arXiv:1203.2262
+ * * G2PPhysQFS: J. W. Lightbody et al, Computers in Physics, 2(1988)57
+ * * G2PPhysWISER: D. E. Wiser, Ph.D. Thesis
+ *
+ * Radiative correction added for P. Bosted model and QFS.
+ *
  * Meaning of parameters:
  * fPID: incident particle ID, following the PDG definition:
  *       2212 for p        ;   2112 for n     ;   211 for pi+   ;
@@ -10,22 +25,19 @@
  *       22   for photon   ;
  * fZ, fA: proton and mass number of the nucleus.
  *
- * Radiative correction parameters:
- * Tb: total radiative length before scattering in radiation length;
- * Ta: total radiative length after scattering in radiation length;
- * If they are not provided, they will be set to 0, which means not taking target radiative length into account;
+ * Please also read headers of QFS, PBosted, EPC and WISER models. They contains very important usage information!
  *
- * QFS model parameters:
- * EPS: separation energy in MeV;
- * EPSD: delta separation energy in MeV;
- * FP - Fermi momentum in MeV/c;
- * If they are not provided, they will be set to the recommended value (EPS=10, EPSD=-10, FP=220);
+ * Unit of elastic cross section is ub/sr.
+ * Unit of inelastic cross section is ub/MeV-sr.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Apr 2013, C. Gu, Add P. Bosted's model.
+//   Apr 2013, C. Gu, Add WISER model.
 //   May 2013, C. Gu, Add L. Cardman's C12 elastic model.
+//   Oct 2013, C. Gu, Add H, He, N form factors.
+//   Feb 2014, C. Gu, Add EPC model.
 //
 
 #include <cstdlib>
@@ -61,7 +73,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PPhys* G2PPhys::pG2PPhys = NULL;
 
-G2PPhys::G2PPhys() : pModel(NULL)
+G2PPhys::G2PPhys()
 {
     // Only for ROOT I/O
 }
