@@ -1,19 +1,20 @@
 // -*- C++ -*-
 
 /* class G2PTrans484816R15
- * 484816 septum with shims, 5.785 central ray, no target field, 15mm beam xy size
- * By M. Huang 9/30/2013
+ * 484816 septum with shims, 5.77 central ray, no target field, 15mm beam xy size
+ * By M. Huang 4/14/2014
  */
 
 // History:
 //   Inheritated from Sep 2013, C. Gu, First public version.
 //
 //   Sep 30, M. Huang, first add this module
+//   Apr 14, 2014 M. Huang, complete the module with forward transport functions to multiple end-planes along the trajectory
 
 #include <cmath>
 
-#include "Fwd_l5p785_484816R15.h"
-#include "Bwd_l5p785_484816R15.h"
+#include "Fwd_l5p77_484816R15.h"
+#include "Bwd_l5p77_484816R15.h"
 
 #include "G2PTrans484816R15.hh"
 
@@ -22,6 +23,7 @@
 using namespace S484816R15;
 
 const float m2cm = 100.0;
+const float m2mm = 1000.;
 const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PTrans484816R15::G2PTrans484816R15() {
@@ -36,75 +38,79 @@ bool G2PTrans484816R15::TransLeftHRS(double* pV5) {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
-    // float x_test, y_test;
+    float x_test, y_test;
 
-    // //Target to Septum ep5
-    // //y, -480., 0.,none,84.0,388.,97.,97.,-97.,-97.  ;84.388.
-    // x_test = x_r5p65_ep5(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep5(vector_jjl, ii)*m2cm;
-    // if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 )
-    //     return false;
+    //Target to Septum entrance ep5
+    //y, -480., 0.,none,84.0,388.,97.,97.,-97.,-97.  ;84.388.
+    x_test = x_l5p77_sen(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_sen(vector_jjl, ii)*m2cm;
+    if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 )
+        return false;
 
-    // //Target to Septum ep7
-    // //y, 480., 0.,none,84.0,388.,97.,97.,-97.,-97.
-    // x_test = x_r5p65_ep7(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep7(vector_jjl, ii)*m2cm;
-    // if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 )
-    //     return false;
+    //Target to Septum exit ep7
+    //y, 480., 0.,none,84.0,388.,97.,97.,-97.,-97.
+    x_test = x_l5p77_sex(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_sex(vector_jjl, ii)*m2cm;
+    if( fabs(x_test)<8.4 || fabs(x_test)>38.8 || fabs(y_test)>9.7 )
+        return false;
 
-    // //Target to Q1 en ep10
-    // //y,-200., 0.,none,149.2,149.2,0.,0.,0.,0.
-    // x_test = x_r5p65_ep11_q1en(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep11_q1en(vector_jjl, ii)*m2cm;
-    // if( sqrt(x_test*x_test + y_test*y_test) > 17.0 )
-    //     return false;
-    // //Target to Q1 mid plane,
-    // //y,0., 0. ,none,150.,150.,0.,0.,0.,0.
-    // x_test = x_r5p65_ep13_q1(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep13_q1(vector_jjl, ii)*m2cm;
-    // if( sqrt(x_test*x_test + y_test*y_test) > 15.)
-    //     return false;
+    //Target to Q1 entrance ep10
+    //y,-200., 0.,none,149.2,149.2,0.,0.,0.,0.
+    x_test = x_l5p77_q1en(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_q1en(vector_jjl, ii)*m2cm;
+    if( sqrt(x_test*x_test + y_test*y_test) > 14.92 )
+        return false;
 
-    // //Target to Q1 ex,
-    // //y,610.4, 0. ,none,149.2,149.2,0.,0.,0.,0.
-    // x_test = x_r5p65_ep14_q1ex(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep14_q1ex(vector_jjl, ii)*m2cm;
-    // if( sqrt(x_test*x_test + y_test*y_test) > 14.92 )
-    //     return false;
+    //Target to Q1 exit ep13
+    //y,610.4, 0. ,none,149.2,149.2,0.,0.,0.,0.
+    x_test = x_l5p77_q1ex(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_q1ex(vector_jjl, ii)*m2cm;
+    if( sqrt(x_test*x_test + y_test*y_test) > 14.92 )
+        return false;
 
-    // //in TCS,             xmin,xmax,ymax1,ymax2,ymin1,ymin2,
-    // //Target to dipole entrance, trapezoid -616.999cm<x<-596.293cm  |y| < 14.55cm
-    // //y,-26812.93, -75.,none,-6169.99,-5962.93,145.5,145.5,-145.5,-145.5
-    // x_test = x_r5p65_ep23_den(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep23_den(vector_jjl, ii)*m2cm;
-    // if( (x_test<-616.999) || (x_test>-596.293) || fabs(y_test)>145.5 )
-    //     return false;
+    //Target to Q2 exit ep20
+    //y,-3040.40, 30.,none, 259.81, 300., 1316.53, 0.,0.,0.
+    //30 deg wrt y, elliptical collimator
+    x_test = x_l5p77_q2ex(vector_jjl, ii)*m2mm;
+    y_test = y_l5p77_q2ex(vector_jjl, ii)*m2mm;
+    if( ((x_test-1316.53)/259.81/cos(30.* kDEG))*((x_test-1316.53)/259.81/cos(30.* kDEG))+(y_test/300.)*(y_test/300.) > 1)
+      return false;
 
-    // //Target to dipole exit, trapezoid -46.19cm<x<46.19cm  |y| < -0.0161*x+12.5
-    // //y,0., 0.,none,-461.88,461.88,132.44,117.56,-132.44,-117.56
-    // x_test = x_r5p65_ep25_dex(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep25_dex(vector_jjl, ii)*m2cm;
-    // if( (x_test<-46.19) || (x_test>46.19) || fabs(y_test) > fabs(-0.0161*x_test+12.5) )
-    //     return false;
+//     //in TCS,             xmin,xmax,ymax1,ymax2,ymin1,ymin2,
+//     //Target to dipole entrance, ep23, trapezoid -616.999cm<x<-596.293cm  |y| < 14.55cm
+//     //y,15121.67, -105.,none,-5220.08,-4980.99,132.44,117.56,-132.44,-117.56
 
-    // //Target to Q3 entrance, circle of radius 30.0 cm
-    // x_test = x_r5p65_ep27_q3en(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep27_q3en(vector_jjl, ii)*m2cm;
-    // if( sqrt(x_test*x_test + y_test*y_test) > 30.0 )
-    //     return false;
+//     //y,-26812.93, -75.,none,-6169.99,-5962.93,145.5,145.5,-145.5,-145.5
+//     x_test = x_l5p77_den(vector_jjl, ii)*m2cm;
+//     y_test = y_l5p77_den(vector_jjl, ii)*m2cm;
+//     if( (x_test<-616.999) || (x_test>-596.293) || fabs(y_test)>145.5 )
+//         return false;
 
-    // //Target to Q3 exit, circle of radius 30.0 cm
-    // x_test = x_r5p65_ep30_q3ex(vector_jjl, ii)*m2cm;
-    // y_test = y_r5p65_ep30_q3ex(vector_jjl, ii)*m2cm;
-    // if( sqrt(x_test*x_test + y_test*y_test) > 30.0)
-    //     return false;
+    //Target to dipole exit, ep24, trapezoid -46.19cm<x<46.19cm  |y| < -0.0161*x+12.5
+    //y,0., 0.,none,-461.88,461.88,132.44,117.56,-132.44,-117.56
+    x_test = x_l5p77_dex(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_dex(vector_jjl, ii)*m2cm;
+    if( (x_test<-46.19) || (x_test>46.19) || fabs(y_test) > fabs(-0.0161*x_test+12.5) )
+        return false;
+
+    //Target to Q3 entrance, ep26, circle of radius 30.0 cm
+    x_test = x_l5p77_q3en(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_q3en(vector_jjl, ii)*m2cm;
+    if( sqrt(x_test*x_test + y_test*y_test) > 30.0 )
+        return false;
+
+    //Target to Q3 exit, circle of radius 30.0 cm
+    x_test = x_l5p77_q3ex(vector_jjl, ii)*m2cm;
+    y_test = y_l5p77_q3ex(vector_jjl, ii)*m2cm;
+    if( sqrt(x_test*x_test + y_test*y_test) > 30.0)
+        return false;
 
     /////////////////////////////////////////////////////////////
     // succesfully reach focus plane
-    float x_fp = x_l5p785_fp(vector_jjl, ii);
-    float theta_fp = t_l5p785_fp(vector_jjl, ii);
-    float y_fp = y_l5p785_fp(vector_jjl, ii);
-    float phi_fp = p_l5p785_fp(vector_jjl, ii);
+    float x_fp = x_l5p77_fp(vector_jjl, ii);
+    float theta_fp = t_l5p77_fp(vector_jjl, ii);
+    float y_fp = y_l5p77_fp(vector_jjl, ii);
+    float phi_fp = p_l5p77_fp(vector_jjl, ii);
 
     //reset the vector and return it back to the caller
     pV5[0] = (double) x_fp;
@@ -131,13 +137,13 @@ void G2PTrans484816R15::ReconLeftHRS(double* pV5) {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
-    vector_jjl[1] = vector_jjl[1] - txfit_l5p785(vector_jjl, ii);
+    vector_jjl[1] = vector_jjl[1] - txfit_l5p77(vector_jjl, ii);
 
     float x_or = vector_jjl[4];
-    float delta_rec = delta_l5p785(vector_jjl, ii);
-    float theta_rec = theta_l5p785(vector_jjl, ii);
-    float phi_rec = phi_l5p785(vector_jjl, ii);
-    float y_rec = y00_l5p785(vector_jjl, ii);
+    float delta_rec = delta_l5p77(vector_jjl, ii);
+    float theta_rec = theta_l5p77(vector_jjl, ii);
+    float phi_rec = phi_l5p77(vector_jjl, ii);
+    float y_rec = y00_l5p77(vector_jjl, ii);
 
     //reset the vector and return it back to the caller
     pV5[0] = (double) x_or;
