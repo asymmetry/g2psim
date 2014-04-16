@@ -1,0 +1,54 @@
+#include <iostream>
+
+namespace S400016R15 {
+float x_l5p77_den                             (float *x,int m);
+float t_l5p77_den                             (float *x,int m);
+float y_l5p77_den                             (float *x,int m);
+float p_l5p77_den                             (float *x,int m);
+float l_l5p77_den                             (float *x,int m);
+float x_l5p77_dex                             (float *x,int m);
+float t_l5p77_dex                             (float *x,int m);
+float y_l5p77_dex                             (float *x,int m);
+float p_l5p77_dex                             (float *x,int m);
+float l_l5p77_dex                             (float *x,int m);
+float x_l5p77_fp                              (float *x,int m);
+float t_l5p77_fp                              (float *x,int m);
+float y_l5p77_fp                              (float *x,int m);
+float p_l5p77_fp                              (float *x,int m);
+float l_l5p77_fp                              (float *x,int m);
+float x_l5p77_q1en                            (float *x,int m);
+float t_l5p77_q1en                            (float *x,int m);
+float y_l5p77_q1en                            (float *x,int m);
+float p_l5p77_q1en                            (float *x,int m);
+float l_l5p77_q1en                            (float *x,int m);
+float x_l5p77_q1ex                            (float *x,int m);
+float t_l5p77_q1ex                            (float *x,int m);
+float y_l5p77_q1ex                            (float *x,int m);
+float p_l5p77_q1ex                            (float *x,int m);
+float l_l5p77_q1ex                            (float *x,int m);
+float x_l5p77_q2ex                            (float *x,int m);
+float t_l5p77_q2ex                            (float *x,int m);
+float y_l5p77_q2ex                            (float *x,int m);
+float p_l5p77_q2ex                            (float *x,int m);
+float l_l5p77_q2ex                            (float *x,int m);
+float x_l5p77_q3en                            (float *x,int m);
+float t_l5p77_q3en                            (float *x,int m);
+float y_l5p77_q3en                            (float *x,int m);
+float p_l5p77_q3en                            (float *x,int m);
+float l_l5p77_q3en                            (float *x,int m);
+float x_l5p77_q3ex                            (float *x,int m);
+float t_l5p77_q3ex                            (float *x,int m);
+float y_l5p77_q3ex                            (float *x,int m);
+float p_l5p77_q3ex                            (float *x,int m);
+float l_l5p77_q3ex                            (float *x,int m);
+float x_l5p77_sen                             (float *x,int m);
+float t_l5p77_sen                             (float *x,int m);
+float y_l5p77_sen                             (float *x,int m);
+float p_l5p77_sen                             (float *x,int m);
+float l_l5p77_sen                             (float *x,int m);
+float x_l5p77_sex                             (float *x,int m);
+float t_l5p77_sex                             (float *x,int m);
+float y_l5p77_sex                             (float *x,int m);
+float p_l5p77_sex                             (float *x,int m);
+float l_l5p77_sex                             (float *x,int m);
+}

@@ -11,18 +11,9 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-LIBFILE     := libHRSTrans.a
-VERSION     := 1.3.2
-
-########################################################################
 SRCDIR      := .
-INCDIR      := .
+INCDIR      := ..
 OBJDIR      := obj.$(ARCH)
-
-########################################################################
-MODELDIR    := HRSTransSTD:G2PTrans400016:G2PTrans484816:G2PTrans484816R15:\
-G2PTrans484816R00:G2PTrans400016R15:GDHTransSTD:GDHTransLargeX0
-INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
 # Compiler
@@ -40,9 +31,9 @@ else
     MODE    := -m64
 endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
-FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCDIRS)
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin)
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
@@ -54,7 +45,7 @@ else
                -fdollar-ok -ffixed-line-length-none -fno-range-check
 endif
 GPPFLAGS    := -MM
-LDFLAGS     := -O3 -g $(MODE)
+LDFLAGS     := -O3 $(MODE)
 
 ########################################################################
 # Generate obj file list
@@ -71,15 +62,6 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ########################################################################
 # Libs
 SYSLIBS     := -lstdc++ -lgfortran
-MODELLIST   := $(subst :, ,$(MODELDIR))
-OTHEROBJS   := $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
-               $(wildcard $(n)/*.[CcFf])))
-OTHEROBJS   += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
-               $(wildcard $(n)/*.[Cc][Cc])))
-OTHEROBJS   += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
-               $(wildcard $(n)/*.[Cc][XxPp][XxPp])))
-OTHEROBJS   := $(addsuffix .o, $(basename $(OTHEROBJS)))
-OTHERLIBS   := $(addprefix ../../, $(OTHERLIBS))
 
 ########################################################################
 # ROOT configure
@@ -98,7 +80,7 @@ GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 VPATH       := $(SRCDIR)
 
 ########################################################################
-all: lib
+all: obj
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
@@ -124,11 +106,11 @@ $(OBJDIR)/%.d: %.cc
 	[ -s $@ ] || rm -f $@
 
 $(OBJDIR)/%.d: %.CC
-	@echo Making dependency for file $< ......
-	@set -e; \
+	set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
+	@echo Making dependency for file $< ......
 
 $(OBJDIR)/%.d: %.cpp
 	@echo Making dependency for file $< ......
@@ -163,15 +145,7 @@ ifneq ($(DEPS),)
 endif
 
 ########################################################################
-lib: dir $(OBJS)
-	@for model in $(MODELLIST); do \
-		if [ -d $$model ]; then \
-			make -s -C $$model; \
-		fi; \
-	done;
-	@$(AR) -r $(LIBFILE).$(VERSION) $(OBJS) $(OTHEROBJS) &>/dev/null
-	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
-	@echo "Linking $(LIBFILE) ...... done!"
+obj: dir $(OBJS)
 
 ########################################################################
 $(OBJDIR)/%.o: %.c
@@ -212,15 +186,7 @@ dir:
 ########################################################################
 clean: dir
 	@rm -f $(OBJDIR)/*
-	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
-
-distclean: clean
-	@for model in $(MODELLIST); do \
-		if [[ -d $$model ]]; then \
-			make clean -s -C $$model; \
-		fi; \
-	done;
 
 test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
@@ -232,10 +198,8 @@ test:
 	@echo \\fsources\: $(FSOURCES)
 	@echo \\sources\: $(SOURCES)
 	@echo \\objs\: $(OBJS)
-	@echo \\otherobjs\: $(OTHEROBJS)
 	@echo \\dependencies: \$(DEPS)
 
 help: test
 
 env: test
-
