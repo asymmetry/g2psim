@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace S400016 {
+namespace S400016OLD {
 float x_l5p65_ep10_q1en(float *x, int m);
 float t_l5p65_ep10_q1en(float *x, int m);
 float y_l5p65_ep10_q1en(float *x, int m);

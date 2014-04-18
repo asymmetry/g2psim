@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace S400016 {
+namespace S400016OLD {
 float txfit_l5p65(float *x, int m);
 float delta_l5p65(float *x, int m);
 float theta_l5p65(float *x, int m);

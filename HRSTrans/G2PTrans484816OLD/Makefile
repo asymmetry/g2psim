@@ -31,10 +31,10 @@ else
     MODE    := -m64
 endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
-CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS) 
 CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
 FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
-ifeq ($(MYOS),Darwin)
+ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
@@ -69,7 +69,7 @@ ROOTCFLAGS  := $(shell root-config --cflags)
 ROOTLIBS    := $(shell root-config --libs)
 ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
 
-CXXFLAGS    += $(ROOTCFLAGS)
+CXXFLAGS    += $(ROOTCFLAGS) 
 LIBS        := $(SYSLIBS) $(ROOTLIBS)
 GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
 
@@ -84,14 +84,14 @@ all: obj
 
 ########################################################################
 # Make the $(TARGET).d file and include it.
-$(OBJDIR)/%.d: %.c
+$(OBJDIR)/%.d: %.c 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CC) $(GPPFLAGS) $(CFLAGS) $< | \
 	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
 	[ -s $@ ] || rm -f $@
 
-$(OBJDIR)/%.d: %.C
+$(OBJDIR)/%.d: %.C 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -112,7 +112,7 @@ $(OBJDIR)/%.d: %.CC
 	[ -s $@ ] || rm -f $@
 	@echo Making dependency for file $< ......
 
-$(OBJDIR)/%.d: %.cpp
+$(OBJDIR)/%.d: %.cpp 
 	@echo Making dependency for file $< ......
 	@set -e; \
 	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
@@ -190,14 +190,14 @@ clean: dir
 
 test:
 	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
-	@echo \\CFLAGS\:$(CFLAGS)
-	@echo \\CXXFLAGS\:$(CXXFLAGS)
+	@echo \\CFLAGS\:$(CFLAGS)	
+	@echo \\CXXFLAGS\:$(CXXFLAGS)        
 	@echo \\FFLAGS\:$(FFLAGS)
 	@echo \\LDFLAGS\:$(LDFLAGS)
 	@echo \\SYSLIBS\:$(SYSLIBS)
-	@echo \\fsources\: $(FSOURCES)
-	@echo \\sources\: $(SOURCES)
-	@echo \\objs\: $(OBJS)
+	@echo \\fsources\: $(FSOURCES)	
+	@echo \\sources\: $(SOURCES)	
+	@echo \\objs\: $(OBJS)	
 	@echo \\dependencies: \$(DEPS)
 
 help: test

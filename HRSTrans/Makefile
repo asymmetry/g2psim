@@ -12,7 +12,7 @@ MYHOST      := $(shell hostname -s)
 
 ########################################################################
 LIBFILE     := libHRSTrans.a
-VERSION     := 1.3.2
+VERSION     := 1.4.1
 
 ########################################################################
 SRCDIR      := .
@@ -20,8 +20,8 @@ INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
 ########################################################################
-MODELDIR    := HRSTransSTD:G2PTrans400016:G2PTrans484816:G2PTrans484816R15:\
-G2PTrans484816R00:G2PTrans400016R15:GDHTransSTD:GDHTransLargeX0
+MODELDIR    := HRSTransSTD:G2PTrans484816:G2PTrans400016:G2PTrans484816OLD:\
+G2PTrans484816R00:G2PTrans400016OLD:GDHTransSTD:GDHTransLargeX0
 INCDIR      := $(INCDIR):$(MODELDIR)
 
 ########################################################################
@@ -238,4 +238,3 @@ test:
 help: test
 
 env: test
-

@@ -1,23 +1,23 @@
 // -*- C++ -*-
 
-/* class G2PTrans400016
- * 400016 septum with shims, 5.77 central ray, no target field, 15mm beam xy size
- * By M. Huang 4/15/2014
+/* class G2PTrans484816OLD
+ * 484816 septum with shims, 5.65 central ray, no target field, 3cm raster
+ * By J.J. LeRose 10/05/2012
  */
 
 // History:
-//   Apr 2014, M. Huang, add in this module
+//   Sep 2013, C. Gu, First public version.
 //
 
-#ifndef HRSTRANS_G2P_400016_H
-#define HRSTRANS_G2P_400016_H
+#ifndef HRSTRANS_G2P_484816OLD_H
+#define HRSTRANS_G2P_484816OLD_H
 
 #include "HRSTransBase.hh"
 
-class G2PTrans400016 : public HRSTransBase {
+class G2PTrans484816OLD : public HRSTransBase {
 public:
-    G2PTrans400016();
-    ~G2PTrans400016();
+    G2PTrans484816OLD();
+    ~G2PTrans484816OLD();
 
     bool TransLeftHRS(double* vector_jjl);
     bool TransRightHRS(double* vector_jjl);

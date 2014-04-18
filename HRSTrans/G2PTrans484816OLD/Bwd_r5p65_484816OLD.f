@@ -1,4 +1,4 @@
-      function txfit_r5p65_484816       (x,m)
+      function txfit_r5p65_484816old       (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff(  4)
@@ -32,14 +32,14 @@ c          set up monomials   functions
 c
 c                  function
 c
-      txfit_r5p65_484816       =avdat
+      txfit_r5p65_484816old       =avdat
      1  +coeff(  1)    
      2  +coeff(  2)*x11
      3  +coeff(  3)*x12
 c
       return
       end
-      function delta_r5p65_484816       (x,m)
+      function delta_r5p65_484816old       (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 96)
@@ -115,7 +115,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      delta_r5p65_484816       =avdat
+      delta_r5p65_484816old       =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)*x11                
      3  +coeff(  3)*x12                
@@ -124,7 +124,7 @@ c
      6  +coeff(  6)    *x21*x31        
      7  +coeff(  7)    *x22            
      8  +coeff(  8)    *x21    *x41    
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff(  9)    *x21        *x51
      1  +coeff( 10)        *x31    *x51
      2  +coeff( 11)        *x32        
@@ -134,7 +134,7 @@ c
      6  +coeff( 15)*x14*x21            
      7  +coeff( 16)    *x21        *x52
      8  +coeff( 17)    *x21            
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 18)        *x31        
      1  +coeff( 19)            *x42    
      2  +coeff( 20)*x11*x22            
@@ -144,7 +144,7 @@ c
      6  +coeff( 24)    *x24            
      7  +coeff( 25)*x11*x22    *x41    
      8  +coeff( 26)        *x32    *x51
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 27)*x13                
      1  +coeff( 28)    *x23            
      2  +coeff( 29)*x11*x21    *x41    
@@ -154,7 +154,7 @@ c
      6  +coeff( 33)    *x22*x32        
      7  +coeff( 34)    *x21*x33        
      8  +coeff( 35)    *x22*x31*x41    
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 36)    *x22    *x42    
      1  +coeff( 37)    *x22        *x51
      2  +coeff( 38)    *x21*x31    *x51
@@ -164,7 +164,7 @@ c
      6  +coeff( 42)    *x22*x31    *x51
      7  +coeff( 43)*x11*x23*x32        
      8  +coeff( 44)*x13    *x33        
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 45)*x13    *x31    *x51
      1  +coeff( 46)    *x21*x31    *x52
      2  +coeff( 47)            *x41    
@@ -174,7 +174,7 @@ c
      6  +coeff( 51)*x11            *x51
      7  +coeff( 52)*x11*x21*x32        
      8  +coeff( 53)*x11*x21    *x42    
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 54)*x12            *x51
      1  +coeff( 55)*x11    *x31    *x51
      2  +coeff( 56)*x11        *x41*x51
@@ -184,7 +184,7 @@ c
      6  +coeff( 60)    *x24*x31        
      7  +coeff( 61)*x11*x22*x32        
      8  +coeff( 62)    *x23*x32        
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 63)    *x23        *x51
      1  +coeff( 64)*x11    *x32    *x51
      2  +coeff( 65)    *x21*x32    *x51
@@ -194,7 +194,7 @@ c
      6  +coeff( 69)*x11*x23        *x51
      7  +coeff( 70)    *x22*x32    *x51
      8  +coeff( 71)*x11*x22*x32    *x51
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 72)*x12*x21            
      1  +coeff( 73)*x11    *x31*x41    
      2  +coeff( 74)*x11        *x42    
@@ -204,7 +204,7 @@ c
      6  +coeff( 78)    *x21*x32*x41    
      7  +coeff( 79)    *x21*x31*x42    
      8  +coeff( 80)    *x21    *x43    
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 81)*x11*x23*x31        
      1  +coeff( 82)    *x22*x33        
      2  +coeff( 83)    *x21*x34        
@@ -214,7 +214,7 @@ c
      6  +coeff( 87)        *x34*x41    
      7  +coeff( 88)*x11*x22    *x42    
      8  +coeff( 89)        *x33*x42    
-      delta_r5p65_484816       =delta_r5p65_484816       
+      delta_r5p65_484816old       =delta_r5p65_484816old       
      9  +coeff( 90)*x11*x22        *x51
      1  +coeff( 91)    *x22    *x41*x51
      2  +coeff( 92)*x11    *x31*x41*x51
@@ -224,7 +224,7 @@ c
 c
       return
       end
-      function theta_r5p65_484816       (x,m)
+      function theta_r5p65_484816old       (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 96)
@@ -296,7 +296,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      theta_r5p65_484816       =avdat
+      theta_r5p65_484816old       =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)*x11                
      3  +coeff(  3)    *x21            
@@ -305,7 +305,7 @@ c
      6  +coeff(  6)    *x21*x31        
      7  +coeff(  7)    *x21    *x41    
      8  +coeff(  8)    *x23            
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff(  9)*x11*x21*x31        
      1  +coeff( 10)    *x22*x31        
      2  +coeff( 11)                *x51
@@ -315,7 +315,7 @@ c
      6  +coeff( 15)        *x31        
      7  +coeff( 16)    *x21*x32        
      8  +coeff( 17)*x11*x21    *x41    
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 18)    *x21*x31*x41    
      1  +coeff( 19)*x11            *x51
      2  +coeff( 20)    *x22        *x51
@@ -325,7 +325,7 @@ c
      6  +coeff( 24)            *x43    
      7  +coeff( 25)    *x21        *x51
      8  +coeff( 26)    *x21*x31    *x51
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 27)    *x21    *x41*x51
      1  +coeff( 28)    *x22*x31    *x51
      2  +coeff( 29)*x13        *x41*x51
@@ -335,7 +335,7 @@ c
      6  +coeff( 33)            *x42    
      7  +coeff( 34)*x13                
      8  +coeff( 35)*x11*x22            
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 36)*x11    *x32        
      1  +coeff( 37)*x11*x21*x32        
      2  +coeff( 38)    *x22*x32        
@@ -345,7 +345,7 @@ c
      6  +coeff( 42)*x12*x23            
      7  +coeff( 43)*x11*x22*x32        
      8  +coeff( 44)*x11        *x41*x51
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 45)        *x31*x41*x51
      1  +coeff( 46)            *x42*x51
      2  +coeff( 47)    *x21*x33*x42    
@@ -355,7 +355,7 @@ c
      6  +coeff( 51)*x12                
      7  +coeff( 52)        *x32        
      8  +coeff( 53)*x11    *x31*x41    
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 54)*x11*x23            
      1  +coeff( 55)*x12*x21*x31        
      2  +coeff( 56)*x11*x22*x31        
@@ -365,7 +365,7 @@ c
      6  +coeff( 60)    *x22    *x42    
      7  +coeff( 61)*x11    *x31*x42    
      8  +coeff( 62)    *x23*x32        
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 63)*x12*x22    *x41    
      1  +coeff( 64)    *x21*x33*x41    
      2  +coeff( 65)    *x21*x32*x42    
@@ -375,7 +375,7 @@ c
      6  +coeff( 69)*x11*x21    *x41*x51
      7  +coeff( 70)    *x21*x31*x41*x51
      8  +coeff( 71)        *x32*x41*x51
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 72)    *x21    *x42*x51
      1  +coeff( 73)*x12*x22*x33        
      2  +coeff( 74)*x11*x21*x32    *x51
@@ -385,7 +385,7 @@ c
      6  +coeff( 78)*x11        *x41    
      7  +coeff( 79)        *x33        
      8  +coeff( 80)*x12        *x41    
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 81)        *x32*x41    
      1  +coeff( 82)*x11        *x42    
      2  +coeff( 83)        *x31*x42    
@@ -395,7 +395,7 @@ c
      6  +coeff( 87)*x12    *x31*x41    
      7  +coeff( 88)        *x33*x41    
      8  +coeff( 89)*x11*x21    *x42    
-      theta_r5p65_484816       =theta_r5p65_484816       
+      theta_r5p65_484816old       =theta_r5p65_484816old       
      9  +coeff( 90)        *x32*x42    
      1  +coeff( 91)*x11        *x43    
      2  +coeff( 92)*x13*x22            
@@ -405,7 +405,7 @@ c
 c
       return
       end
-      function phi_r5p65_484816         (x,m)
+      function phi_r5p65_484816old         (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 96)
@@ -481,7 +481,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      phi_r5p65_484816         =avdat
+      phi_r5p65_484816old         =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -490,7 +490,7 @@ c
      6  +coeff(  6)        *x32        
      7  +coeff(  7)            *x42    
      8  +coeff(  8)    *x21*x31        
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff(  9)*x11        *x41    
      1  +coeff( 10)    *x21    *x41    
      2  +coeff( 11)    *x22            
@@ -500,7 +500,7 @@ c
      6  +coeff( 15)*x11    *x31*x42    
      7  +coeff( 16)*x11        *x43    
      8  +coeff( 17)*x13    *x31        
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 18)    *x24            
      1  +coeff( 19)*x11    *x35        
      2  +coeff( 20)    *x21        *x51
@@ -510,7 +510,7 @@ c
      6  +coeff( 24)*x12                
      7  +coeff( 25)*x12    *x31        
      8  +coeff( 26)    *x22*x31        
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 27)*x12        *x41    
      1  +coeff( 28)    *x22    *x41    
      2  +coeff( 29)*x11*x22    *x41    
@@ -520,7 +520,7 @@ c
      6  +coeff( 33)    *x21    *x41*x51
      7  +coeff( 34)*x11*x21    *x41*x51
      8  +coeff( 35)    *x23*x31    *x51
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 36)        *x31*x41    
      1  +coeff( 37)*x11    *x32        
      2  +coeff( 38)    *x21*x32        
@@ -530,7 +530,7 @@ c
      6  +coeff( 42)    *x22    *x42    
      7  +coeff( 43)    *x23*x31        
      8  +coeff( 44)    *x21*x32    *x51
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 45)    *x21*x31*x41*x51
      1  +coeff( 46)    *x22*x31    *x51
      2  +coeff( 47)    *x24        *x51
@@ -540,7 +540,7 @@ c
      6  +coeff( 51)            *x43    
      7  +coeff( 52)*x11*x21    *x41    
      8  +coeff( 53)    *x23    *x41    
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 54)*x11*x21*x33        
      1  +coeff( 55)    *x23*x32        
      2  +coeff( 56)        *x31    *x51
@@ -550,7 +550,7 @@ c
      6  +coeff( 60)    *x24*x32        
      7  +coeff( 61)*x11        *x41*x51
      8  +coeff( 62)    *x22        *x51
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 63)*x11    *x31*x41*x51
      1  +coeff( 64)    *x21    *x42*x51
      2  +coeff( 65)*x12    *x32    *x51
@@ -560,7 +560,7 @@ c
      6  +coeff( 69)*x11    *x31*x41    
      7  +coeff( 70)    *x21*x31*x41    
      8  +coeff( 71)*x11*x21*x31        
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 72)    *x21*x33        
      1  +coeff( 73)    *x21*x32*x41    
      2  +coeff( 74)*x12    *x33        
@@ -570,7 +570,7 @@ c
      6  +coeff( 78)*x12    *x31*x42    
      7  +coeff( 79)*x11*x22*x32        
      8  +coeff( 80)*x14    *x31        
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 81)*x11*x23    *x41    
      1  +coeff( 82)    *x24    *x41    
      2  +coeff( 83)*x12    *x34        
@@ -580,7 +580,7 @@ c
      6  +coeff( 87)*x11*x21        *x51
      7  +coeff( 88)    *x23*x32*x42    
      8  +coeff( 89)        *x33    *x51
-      phi_r5p65_484816         =phi_r5p65_484816         
+      phi_r5p65_484816old         =phi_r5p65_484816old         
      9  +coeff( 90)        *x32*x41*x51
      1  +coeff( 91)        *x31*x42*x51
      2  +coeff( 92)*x11*x21*x31    *x51
@@ -590,7 +590,7 @@ c
 c
       return
       end
-      function y00_r5p65_484816         (x,m)
+      function y00_r5p65_484816old         (x,m)
       dimension x(m)
       dimension xmin(10),xmax(10),scale(10),xmean(10)
       dimension coeff( 96)
@@ -660,7 +660,7 @@ c          set up monomials   functions
 c
 c                  function
 c
-      y00_r5p65_484816         =avdat
+      y00_r5p65_484816old         =avdat
      1  +coeff(  1)                    
      2  +coeff(  2)        *x31        
      3  +coeff(  3)            *x41    
@@ -669,7 +669,7 @@ c
      6  +coeff(  6)        *x31*x41    
      7  +coeff(  7)*x11    *x31        
      8  +coeff(  8)    *x21*x31        
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff(  9)*x11        *x41    
      1  +coeff( 10)    *x21    *x41    
      2  +coeff( 11)*x12                
@@ -679,7 +679,7 @@ c
      6  +coeff( 15)*x11    *x32        
      7  +coeff( 16)*x11    *x31*x41    
      8  +coeff( 17)*x12    *x31        
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 18)*x11*x21*x31        
      1  +coeff( 19)    *x22*x31        
      2  +coeff( 20)*x12        *x41    
@@ -689,7 +689,7 @@ c
      6  +coeff( 24)*x11    *x31*x42    
      7  +coeff( 25)    *x21        *x51
      8  +coeff( 26)        *x33*x42    
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 27)*x11*x22*x31        
      1  +coeff( 28)*x11*x22    *x41    
      2  +coeff( 29)    *x21*x31    *x51
@@ -699,7 +699,7 @@ c
      6  +coeff( 33)        *x33        
      7  +coeff( 34)        *x32*x41    
      8  +coeff( 35)        *x31*x42    
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 36)                *x51
      1  +coeff( 37)    *x21*x32        
      2  +coeff( 38)*x11        *x42    
@@ -709,7 +709,7 @@ c
      6  +coeff( 42)        *x31*x41*x51
      7  +coeff( 43)    *x22*x33        
      8  +coeff( 44)*x11*x21        *x51
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 45)    *x21*x32    *x51
      1  +coeff( 46)*x11*x21    *x41*x51
      2  +coeff( 47)    *x22*x32    *x51
@@ -719,7 +719,7 @@ c
      6  +coeff( 51)        *x33*x41    
      7  +coeff( 52)            *x41*x51
      8  +coeff( 53)    *x21*x33        
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 54)    *x21*x32*x41    
      1  +coeff( 55)*x11        *x43    
      2  +coeff( 56)*x11            *x51
@@ -729,7 +729,7 @@ c
      6  +coeff( 60)    *x21*x33*x41    
      7  +coeff( 61)    *x21*x32*x42    
      8  +coeff( 62)*x11    *x31*x43    
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 63)*x11*x21*x33        
      1  +coeff( 64)    *x22*x32*x41    
      2  +coeff( 65)    *x22*x31*x42    
@@ -739,7 +739,7 @@ c
      6  +coeff( 69)*x12    *x31    *x51
      7  +coeff( 70)    *x22*x31    *x51
      8  +coeff( 71)    *x21*x33    *x51
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 72)*x12    *x32    *x51
      1  +coeff( 73)*x11*x21*x32    *x51
      2  +coeff( 74)        *x32*x43*x51
@@ -749,7 +749,7 @@ c
      6  +coeff( 78)    *x21*x31*x42    
      7  +coeff( 79)    *x21    *x43    
      8  +coeff( 80)*x11*x21*x31*x41    
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 81)*x11*x21    *x42    
      1  +coeff( 82)        *x32    *x51
      2  +coeff( 83)*x12*x21    *x41    
@@ -759,7 +759,7 @@ c
      6  +coeff( 87)*x12    *x33        
      7  +coeff( 88)*x12    *x31*x42    
      8  +coeff( 89)*x12        *x43    
-      y00_r5p65_484816         =y00_r5p65_484816         
+      y00_r5p65_484816old         =y00_r5p65_484816old         
      9  +coeff( 90)    *x22        *x51
      1  +coeff( 91)        *x31*x42*x51
      2  +coeff( 92)            *x43*x51

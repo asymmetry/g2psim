@@ -23,9 +23,10 @@
 
 #include "HRSTransBase.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
+#include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816R00/G2PTrans484816R00.hh"
-#include "G2PTrans484816R15/G2PTrans484816R15.hh"
+#include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -64,9 +65,11 @@ fRunType(0), fHRSAngle(0.0), fHRSMomentum(0.0), fSetting(1), fSieveOn(false), fH
 
     map<string, int> model_map;
     model_map["484816"] = 1;
+    model_map["403216"] = 2;
     model_map["400016"] = 3;
-    model_map["484816R00"] = 11;
-    model_map["484816R15"] = 12;
+    model_map["484816OLD"] = 11;
+    model_map["484816R00"] = 12;
+    model_map["400016OLD"] = 21;
 
     fSetting = model_map[name];
     fConfigIsSet.insert((unsigned long) &fSetting);
@@ -112,14 +115,20 @@ int G2PHRSFwd::Begin()
     case 1:
         pModel = new G2PTrans484816();
         break;
+    case 2:
+        //pModel = new G2PTrans403216();
+        //break;
     case 3:
         pModel = new G2PTrans400016();
         break;
     case 11:
-        pModel = new G2PTrans484816R00();
+        pModel = new G2PTrans484816OLD();
         break;
     case 12:
-        pModel = new G2PTrans484816R15();
+        pModel = new G2PTrans484816R00();
+        break;
+    case 21:
+        pModel = new G2PTrans400016OLD();
         break;
     default:
         Error(here, "Cannot initialize, invalid setting.");

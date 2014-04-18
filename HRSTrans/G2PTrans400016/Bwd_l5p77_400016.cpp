@@ -1,6 +1,6 @@
-#include "Bwd_l5p77_400016R15.h"
+#include "Bwd_l5p77_400016.h"
 
-namespace S400016R15
+namespace S400016
 {
 float txfit_l5p77                             (float *x,int m){
     int ncoeff=  2;

@@ -1,6 +1,6 @@
-#include "Fwd_l5p77_400016R15.h"
+#include "Fwd_l5p77_400016.h"
 
-namespace S400016R15
+namespace S400016
 {
 float x_l5p77_den                             (float *x,int m){
     int ncoeff= 60;

@@ -1,13 +1,13 @@
 // -*- C++ -*-
 
 /* class G2PTrans484816
- * 484816 septum with shims, 5.65 central ray, no target field, 3cm raster
- * By J.J. LeRose 10/05/2012
+ * 484816 septum with shims, 5.77 central ray, no target field, 15mm beam xy size
+ * By M. Huang 4/14/2014
  */
 
 // History:
-//   Sep 2013, C. Gu, First public version.
-//
+//   Sep 2013, M. Huang, first add this module
+//   Apr 2014, M. Huang, complete the module with forward transport functions to multiple end-planes along the trajectory
 
 #ifndef HRSTRANS_G2P_484816_H
 #define HRSTRANS_G2P_484816_H
