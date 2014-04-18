@@ -20,15 +20,18 @@
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
 
-G2PAppList::G2PAppList() {
+G2PAppList::G2PAppList()
+{
     // Nothing to do
 }
 
-G2PAppList::~G2PAppList() {
+G2PAppList::~G2PAppList()
+{
     Clear();
 }
 
-G2PAppBase* G2PAppList::Find(const char* name) const {
+G2PAppBase* G2PAppList::Find(const char* name) const
+{
     static const char* const g2papp = "G2PAppBase";
     TIter next(this);
     while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
@@ -42,7 +45,8 @@ G2PAppBase* G2PAppList::Find(const char* name) const {
     return NULL;
 }
 
-G2PAppList* G2PAppList::FindList(const char* name) const {
+G2PAppList* G2PAppList::FindList(const char* name) const
+{
     static const char* const g2papp = "G2PAppBase";
     G2PAppList* list = new G2PAppList();
     TIter next(this);
@@ -59,7 +63,8 @@ G2PAppList* G2PAppList::FindList(const char* name) const {
     return list;
 }
 
-G2PAppList* G2PAppList::FindList(int priority) const {
+G2PAppList* G2PAppList::FindList(int priority) const
+{
     static const char* const g2papp = "G2PAppBase";
     G2PAppList* list = new G2PAppList();
     TIter next(this);

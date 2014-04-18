@@ -23,61 +23,75 @@ public:
 
     // Define() with reference to variable
 
-    G2PVar* Define(const char* name, const char* descript, const bool& var) {
+    G2PVar* Define(const char* name, const char* descript, const bool& var)
+    {
         return DefineByType(name, descript, &var, kBOOL);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const char& var) {
+    G2PVar* Define(const char* name, const char* descript, const char& var)
+    {
         return DefineByType(name, descript, &var, kCHAR);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const int& var) {
+    G2PVar* Define(const char* name, const char* descript, const int& var)
+    {
         return DefineByType(name, descript, &var, kINT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const long& var) {
+    G2PVar* Define(const char* name, const char* descript, const long& var)
+    {
         return DefineByType(name, descript, &var, kLONG);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const short& var) {
+    G2PVar* Define(const char* name, const char* descript, const short& var)
+    {
         return DefineByType(name, descript, &var, kSHORT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const float& var) {
+    G2PVar* Define(const char* name, const char* descript, const float& var)
+    {
         return DefineByType(name, descript, &var, kFLOAT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const double& var) {
+    G2PVar* Define(const char* name, const char* descript, const double& var)
+    {
         return DefineByType(name, descript, &var, kDOUBLE);
     }
 
     // Define() with pointer to variable
 
-    G2PVar* Define(const char* name, const char* descript, const bool* var) {
+    G2PVar* Define(const char* name, const char* descript, const bool* var)
+    {
         return DefineByType(name, descript, var, kBOOL);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const char* var) {
+    G2PVar* Define(const char* name, const char* descript, const char* var)
+    {
         return DefineByType(name, descript, var, kCHAR);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const int* var) {
+    G2PVar* Define(const char* name, const char* descript, const int* var)
+    {
         return DefineByType(name, descript, var, kINT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const long* var) {
+    G2PVar* Define(const char* name, const char* descript, const long* var)
+    {
         return DefineByType(name, descript, var, kLONG);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const short* var) {
+    G2PVar* Define(const char* name, const char* descript, const short* var)
+    {
         return DefineByType(name, descript, var, kSHORT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const float* var) {
+    G2PVar* Define(const char* name, const char* descript, const float* var)
+    {
         return DefineByType(name, descript, var, kFLOAT);
     }
 
-    G2PVar* Define(const char* name, const char* descript, const double* var) {
+    G2PVar* Define(const char* name, const char* descript, const double* var)
+    {
         return DefineByType(name, descript, var, kDOUBLE);
     }
 

@@ -26,15 +26,18 @@
 
 using namespace std;
 
-G2PVarList::G2PVarList() {
+G2PVarList::G2PVarList()
+{
     // Nothing to do
 }
 
-G2PVarList::~G2PVarList() {
+G2PVarList::~G2PVarList()
+{
     Clear();
 }
 
-G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const void* var, VarType type) {
+G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const void* var, VarType type)
+{
     // Define a variable in the list with given type
 
     static const char* const here = "DefineByType()";
@@ -78,7 +81,8 @@ G2PVar* G2PVarList::DefineByType(const char* name, const char* descript, const v
     return ptr;
 }
 
-int G2PVarList::DefineVariables(const VarDef* list, const char* prefix) {
+int G2PVarList::DefineVariables(const VarDef* list, const char* prefix)
+{
     // Add variables in "list" to the list
 
     static const char* const here = "DefineVariables()";
@@ -101,11 +105,13 @@ int G2PVarList::DefineVariables(const VarDef* list, const char* prefix) {
     return ndef;
 }
 
-G2PVar* G2PVarList::Find(const char* name) const {
+G2PVar* G2PVarList::Find(const char* name) const
+{
     return static_cast<G2PVar*> (FindObject(name));
 }
 
-G2PVar* G2PVarList::FindSuffix(const char* suf) const {
+G2PVar* G2PVarList::FindSuffix(const char* suf) const
+{
     static const char* const here = "FindSuffix()";
 
     G2PVar* p = NULL;
@@ -127,7 +133,8 @@ G2PVar* G2PVarList::FindSuffix(const char* suf) const {
     return p;
 }
 
-G2PVar* G2PVarList::FindRegexp(const char* expr) const {
+G2PVar* G2PVarList::FindRegexp(const char* expr) const
+{
     static const char* const here = "FindRegexp()";
 
     G2PVar* p = NULL;
@@ -152,17 +159,18 @@ G2PVar* G2PVarList::FindRegexp(const char* expr) const {
     return p;
 }
 
-int G2PVarList::RemoveName(const char* name) {
+int G2PVarList::RemoveName(const char* name)
+{
     G2PVar* ptr = Find(name);
     if (ptr) {
         G2PVar* p = static_cast<G2PVar*> (TList::Remove(ptr));
         delete p;
         return 1;
-    }
-    else return 0;
+    } else return 0;
 }
 
-int G2PVarList::RemoveRegexp(const char* expr) {
+int G2PVarList::RemoveRegexp(const char* expr)
+{
     TRegexp re(expr, kTRUE);
     if (re.Status()) return -1;
 

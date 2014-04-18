@@ -23,15 +23,18 @@ using namespace S484816R00;
 const float m2cm = 100.0;
 const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PTrans484816R00::G2PTrans484816R00() {
+G2PTrans484816R00::G2PTrans484816R00()
+{
     fModelAngle = 5.77 * kDEG;
 }
 
-G2PTrans484816R00::~G2PTrans484816R00() {
+G2PTrans484816R00::~G2PTrans484816R00()
+{
     // Nothing to do
 }
 
-bool G2PTrans484816R00::TransLeftHRS(double* pV5) {
+bool G2PTrans484816R00::TransLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
@@ -115,7 +118,8 @@ bool G2PTrans484816R00::TransLeftHRS(double* pV5) {
     return true;
 }
 
-bool G2PTrans484816R00::TransRightHRS(double* pV5) {
+bool G2PTrans484816R00::TransRightHRS(double* pV5)
+{
     //use right arm routines for left arm before left arm is ready
     //return TransportLeftHRS(pV5);
     pV5[2] *= -1.;
@@ -126,7 +130,8 @@ bool G2PTrans484816R00::TransRightHRS(double* pV5) {
     return bGoodParticle;
 }
 
-void G2PTrans484816R00::ReconLeftHRS(double* pV5) {
+void G2PTrans484816R00::ReconLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
@@ -146,7 +151,8 @@ void G2PTrans484816R00::ReconLeftHRS(double* pV5) {
     pV5[4] = (double) delta_rec;
 }
 
-void G2PTrans484816R00::ReconRightHRS(double* pV5) {
+void G2PTrans484816R00::ReconRightHRS(double* pV5)
+{
     //in order to call right arm routines, need to flip y, phi
     pV5[2] *= -1;
     pV5[3] *= -1;
@@ -155,7 +161,8 @@ void G2PTrans484816R00::ReconRightHRS(double* pV5) {
     pV5[3] *= -1;
 }
 
-void G2PTrans484816R00::FPCorrLeft(const double* V5tg, double* V5fp) {
+void G2PTrans484816R00::FPCorrLeft(const double* V5tg, double* V5fp)
+{
 #if CORRECTION_ORDER == 0
     V5fp[0] += (-5.91123e-03);
     V5fp[1] += (-6.76146e-05);
@@ -180,7 +187,8 @@ void G2PTrans484816R00::FPCorrLeft(const double* V5tg, double* V5fp) {
 #endif
 }
 
-void G2PTrans484816R00::FPCorrRight(const double* V5tg, double* V5fp) {
+void G2PTrans484816R00::FPCorrRight(const double* V5tg, double* V5fp)
+{
 #if CORRECTION_ORDER == 0
     V5fp[0] += (-5.91123e-03);
     V5fp[1] += (-6.76146e-05);

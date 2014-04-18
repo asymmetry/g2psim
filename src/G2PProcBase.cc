@@ -30,15 +30,18 @@
 
 using namespace std;
 
-G2PProcBase::G2PProcBase() : fStage(kREADY) {
+G2PProcBase::G2PProcBase() : fStage(kREADY)
+{
     // Nothing to do
 }
 
-G2PProcBase::~G2PProcBase() {
+G2PProcBase::~G2PProcBase()
+{
     // Nothing to do
 }
 
-int G2PProcBase::Init() {
+int G2PProcBase::Init()
+{
     //static const char* const here = "Init()";
 
     if (G2PAppBase::Init() != 0) return fStatus;
@@ -49,33 +52,39 @@ int G2PProcBase::Init() {
     return (fStatus = status);
 }
 
-int G2PProcBase::Begin() {
+int G2PProcBase::Begin()
+{
     // Default does nothing
 
     return (G2PAppBase::Begin());
 }
 
-int G2PProcBase::End() {
+int G2PProcBase::End()
+{
     // Default does nothing
 
     return (G2PAppBase::End());
 }
 
-void G2PProcBase::Clear(Option_t* option) {
+void G2PProcBase::Clear(Option_t* option)
+{
     // Default does nothing
 
     G2PAppBase::Clear(option);
 }
 
-G2PProcBase::EStage G2PProcBase::GetStage() {
+G2PProcBase::EStage G2PProcBase::GetStage()
+{
     return fStage;
 }
 
-void G2PProcBase::SetStage(EStage stage) {
+void G2PProcBase::SetStage(EStage stage)
+{
     fStage = stage;
 }
 
-int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
+int G2PProcBase::ArrayCopy(double* out, const double* in, int length)
+{
     if (!(out && in)) return -1;
 
     for (int i = 0; i < length; i++) out[i] = in[i];
@@ -83,7 +92,8 @@ int G2PProcBase::ArrayCopy(double* out, const double* in, int length) {
     return 0;
 }
 
-int G2PProcBase::DefineVarsFromList(const VarDef* list, EMode mode) const {
+int G2PProcBase::DefineVarsFromList(const VarDef* list, EMode mode) const
+{
     // Add or delete global variables in "list" to the global list
 
     static const char* const here = "DefineVarsFromList()";
@@ -95,19 +105,18 @@ int G2PProcBase::DefineVarsFromList(const VarDef* list, EMode mode) const {
 
     if (mode == kDEFINE) {
         gG2PVars->DefineVariables(list, fPrefix);
-    }
-    else if (mode == kDELETE) {
+    } else if (mode == kDELETE) {
         const VarDef* item;
         while ((item = list++) && item->name) {
             gG2PVars->RemoveName(Form("%s%s", fPrefix, item->name));
         }
-    }
-    else return kINITERROR;
+    } else return kINITERROR;
 
     return kOK;
 }
 
-int G2PProcBase::RemoveVariables() {
+int G2PProcBase::RemoveVariables()
+{
     // Default method for removing global variables
 
     return DefineVariables(kDELETE);

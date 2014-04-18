@@ -26,25 +26,39 @@ public:
     // Constructors by type
 
     G2PVar(const char* name, const char* descript, const bool* var) :
-    TNamed(name, descript), fValueB(var), fType(kBOOL) { }
+    TNamed(name, descript), fValueB(var), fType(kBOOL)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const char* var) :
-    TNamed(name, descript), fValueC(var), fType(kCHAR) { }
+    TNamed(name, descript), fValueC(var), fType(kCHAR)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const int* var) :
-    TNamed(name, descript), fValueI(var), fType(kINT) { }
+    TNamed(name, descript), fValueI(var), fType(kINT)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const short* var) :
-    TNamed(name, descript), fValueS(var), fType(kSHORT) { }
+    TNamed(name, descript), fValueS(var), fType(kSHORT)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const long* var) :
-    TNamed(name, descript), fValueL(var), fType(kLONG) { }
+    TNamed(name, descript), fValueL(var), fType(kLONG)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const float* var) :
-    TNamed(name, descript), fValueF(var), fType(kFLOAT) { }
+    TNamed(name, descript), fValueF(var), fType(kFLOAT)
+    {
+    }
 
     G2PVar(const char* name, const char* descript, const double* var) :
-    TNamed(name, descript), fValueD(var), fType(kDOUBLE) { }
+    TNamed(name, descript), fValueD(var), fType(kDOUBLE)
+    {
+    }
 
     // Gets
     VarType GetType() const;

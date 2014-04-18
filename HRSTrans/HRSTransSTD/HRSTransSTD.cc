@@ -23,15 +23,18 @@
 const float m2cm = 100.0;
 const double kDEG = 3.14159265358979323846 / 180.0;
 
-HRSTransSTD::HRSTransSTD() {
+HRSTransSTD::HRSTransSTD()
+{
     fModelAngle = 12.5 * kDEG;
 }
 
-HRSTransSTD::~HRSTransSTD() {
+HRSTransSTD::~HRSTransSTD()
+{
     // Nothing to do
 }
 
-bool HRSTransSTD::TransLeftHRS(double* pV5) {
+bool HRSTransSTD::TransLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
     int *ii = &iii;
@@ -88,7 +91,8 @@ bool HRSTransSTD::TransLeftHRS(double* pV5) {
     return true;
 }
 
-bool HRSTransSTD::TransRightHRS(double* pV5) {
+bool HRSTransSTD::TransRightHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
     int *ii = &iii;
@@ -145,7 +149,8 @@ bool HRSTransSTD::TransRightHRS(double* pV5) {
     return true;
 }
 
-void HRSTransSTD::ReconLeftHRS(double* pV5) {
+void HRSTransSTD::ReconLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
     int *ii = &iii;
@@ -167,7 +172,8 @@ void HRSTransSTD::ReconLeftHRS(double* pV5) {
     pV5[4] = (double) delta_rec;
 }
 
-void HRSTransSTD::ReconRightHRS(double* pV5) {
+void HRSTransSTD::ReconRightHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
     int *ii = &iii;

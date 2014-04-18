@@ -3,14 +3,14 @@
 /* class G2PPhysEl
  * Class to calculate elastic cross section.
  * Unit is ub/sr.
- * 
+ *
  * Elastic cross section models.
  * * All: Form factors from K. C. Stansfield et al., Phys. Rev. C, 3(1971)1448
  * * 1H : Form factors from J. Arrington, Phys. Rev. C, 69(2004)022201
  * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
- * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203 
+ * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
  * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
- * 
+ *
  * How to set parameters:
  * If set 1 parameters with SetPars(pars,1), then pars[0]=2 means to use Stansfield's model 
  *   to calculate 12C cross section, default is Cardman's model;

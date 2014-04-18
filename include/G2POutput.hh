@@ -33,11 +33,13 @@ public:
     int Process();
     int End();
 
-    bool TreeDefined() const {
+    bool TreeDefined() const
+    {
         return fTree != 0;
     }
 
-    TTree* GetTree() const {
+    TTree* GetTree() const
+    {
         return fTree;
     }
 

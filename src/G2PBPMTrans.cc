@@ -27,7 +27,8 @@
 ////////////////////////////////////////////////////////////////////////
 namespace Orbit1 {
 
-float target_x(float *x, int m) {
+float target_x(float *x, int m)
+{
     //int ncoeff= 11;
     float avdat = 0.1774270E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18025E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -64,7 +65,8 @@ float target_x(float *x, int m) {
     return v_target_x;
 }
 
-float target_y(float *x, int m) {
+float target_y(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = -0.7529873E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18025E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -107,7 +109,8 @@ float target_y(float *x, int m) {
     return v_target_y;
 }
 
-float target_theta(float *x, int m) {
+float target_theta(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.1120523E+00;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18025E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -150,7 +153,8 @@ float target_theta(float *x, int m) {
     return v_target_theta;
 }
 
-float target_phi(float *x, int m) {
+float target_phi(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.7490737E-03;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18025E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -205,7 +209,8 @@ float target_phi(float *x, int m) {
 ////////////////////////////////////////////////////////////////////////
 namespace Orbit4 {
 
-float target_x(float *x, int m) {
+float target_x(float *x, int m)
+{
     //int ncoeff= 11;
     float avdat = 0.7018812E+00;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18018E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -242,7 +247,8 @@ float target_x(float *x, int m) {
     return v_target_x;
 }
 
-float target_y(float *x, int m) {
+float target_y(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.2109603E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18018E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -286,7 +292,8 @@ float target_y(float *x, int m) {
     return v_target_y;
 }
 
-float target_theta(float *x, int m) {
+float target_theta(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.8201031E-01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18018E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -329,7 +336,8 @@ float target_theta(float *x, int m) {
     return v_target_theta;
 }
 
-float target_phi(float *x, int m) {
+float target_phi(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.3971374E-03;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18018E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -383,7 +391,8 @@ float target_phi(float *x, int m) {
 ////////////////////////////////////////////////////////////////////////
 namespace Orbit5 {
 
-float target_x(float *x, int m) {
+float target_x(float *x, int m)
+{
     //int ncoeff=  9;
     float avdat = 0.1820886E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18014E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -419,7 +428,8 @@ float target_x(float *x, int m) {
     return v_target_x;
 }
 
-float target_y(float *x, int m) {
+float target_y(float *x, int m)
+{
     //int ncoeff= 16;
     float avdat = 0.1612694E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18014E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -464,7 +474,8 @@ float target_y(float *x, int m) {
     return v_target_y;
 }
 
-float target_theta(float *x, int m) {
+float target_theta(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.6180951E-01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18014E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -505,7 +516,8 @@ float target_theta(float *x, int m) {
     return v_target_theta;
 }
 
-float target_phi(float *x, int m) {
+float target_phi(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.1156772E-02;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18014E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -560,7 +572,8 @@ float target_phi(float *x, int m) {
 ////////////////////////////////////////////////////////////////////////
 namespace Orbit7 {
 
-float target_x(float *x, int m) {
+float target_x(float *x, int m)
+{
     //int ncoeff= 11;
     float avdat = 0.1225998E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18029E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -597,7 +610,8 @@ float target_x(float *x, int m) {
     return v_target_x;
 }
 
-float target_y(float *x, int m) {
+float target_y(float *x, int m)
+{
     //int ncoeff= 19;
     float avdat = 0.3077399E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18029E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -642,7 +656,8 @@ float target_y(float *x, int m) {
     return v_target_y;
 }
 
-float target_theta(float *x, int m) {
+float target_theta(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.8200859E-03;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18029E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -684,7 +699,8 @@ float target_theta(float *x, int m) {
     return v_target_theta;
 }
 
-float target_phi(float *x, int m) {
+float target_phi(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.1190358E-02;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18029E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -735,7 +751,8 @@ float target_phi(float *x, int m) {
 ////////////////////////////////////////////////////////////////////////
 namespace Orbit9 {
 
-float target_x(float *x, int m) {
+float target_x(float *x, int m)
+{
     //int ncoeff=  9;
     float avdat = 0.2198843E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18020E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -771,7 +788,8 @@ float target_x(float *x, int m) {
     return v_target_x;
 }
 
-float target_y(float *x, int m) {
+float target_y(float *x, int m)
+{
     //int ncoeff= 14;
     float avdat = 0.2720693E+01;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18020E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -813,7 +831,8 @@ float target_y(float *x, int m) {
     return v_target_y;
 }
 
-float target_theta(float *x, int m) {
+float target_theta(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.1141953E-02;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18020E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
@@ -858,7 +877,8 @@ float target_theta(float *x, int m) {
     return v_target_theta;
 }
 
-float target_phi(float *x, int m) {
+float target_phi(float *x, int m)
+{
     //int ncoeff= 20;
     float avdat = 0.2305556E-02;
     float xmin[10] = {-0.15000E+02, -0.15000E+02, -0.18000E+02, -0.18020E+02, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};

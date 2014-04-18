@@ -28,11 +28,13 @@ const float m2cm = 100.0;
 
 const double kDEG = 3.14159265358979323846 / 180.0;
 
-GDHTransLargeX0::GDHTransLargeX0() {
+GDHTransLargeX0::GDHTransLargeX0()
+{
     fModelAngle = 6.0 * kDEG;
 }
 
-GDHTransLargeX0::~GDHTransLargeX0() {
+GDHTransLargeX0::~GDHTransLargeX0()
+{
     // Nothing to do
 }
 
@@ -79,7 +81,8 @@ GDHTransLargeX0::~GDHTransLargeX0() {
 //2nd version of 6 degree seting, with larger X0, for E97110
 /////////////////////////////////////////////////////////////////////////////
 
-bool GDHTransLargeX0::TransRightHRS(double* pV5) {
+bool GDHTransLargeX0::TransRightHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     float x_test, y_test;
     int ii = 5;
@@ -171,7 +174,8 @@ bool GDHTransLargeX0::TransRightHRS(double* pV5) {
     return true;
 }
 
-bool GDHTransLargeX0::TransLeftHRS(double* pV5) {
+bool GDHTransLargeX0::TransLeftHRS(double* pV5)
+{
     //in order to call right arm routines, need to flip y, phi
     float vector_jjl[] = {pV5[0], pV5[1], -pV5[2], -pV5[3], pV5[4]};
     bool bGoodParticle = TransRightHRS(pV5);
@@ -205,7 +209,8 @@ bool GDHTransLargeX0::TransLeftHRS(double* pV5) {
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-void GDHTransLargeX0::ReconRightHRS(double *pV5) {
+void GDHTransLargeX0::ReconRightHRS(double *pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5, jj = 1;
 
@@ -225,7 +230,8 @@ void GDHTransLargeX0::ReconRightHRS(double *pV5) {
     pV5[4] = (double) delta_rec;
 }
 
-void GDHTransLargeX0::ReconLeftHRS(double *pV5) {
+void GDHTransLargeX0::ReconLeftHRS(double *pV5)
+{
     //I am using the right arm routines to do the reconstruction, JJL did not provide
     //routines for the 2nd version of GDH experiment
 

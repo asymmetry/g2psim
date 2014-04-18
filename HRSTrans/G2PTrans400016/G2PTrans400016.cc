@@ -21,15 +21,18 @@ using namespace S400016;
 const float m2cm = 100.0;
 const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PTrans400016::G2PTrans400016() {
+G2PTrans400016::G2PTrans400016()
+{
     fModelAngle = 5.65 * kDEG;
 }
 
-G2PTrans400016::~G2PTrans400016() {
+G2PTrans400016::~G2PTrans400016()
+{
     // Nothing to do
 }
 
-bool G2PTrans400016::TransLeftHRS(double* pV5) {
+bool G2PTrans400016::TransLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
@@ -100,7 +103,8 @@ bool G2PTrans400016::TransLeftHRS(double* pV5) {
     return true;
 }
 
-bool G2PTrans400016::TransRightHRS(double* pV5) {
+bool G2PTrans400016::TransRightHRS(double* pV5)
+{
     //use right arm routines for left arm before left arm is ready
     //return TransportLeftHRS(pV5);
     pV5[2] *= -1.;
@@ -111,7 +115,8 @@ bool G2PTrans400016::TransRightHRS(double* pV5) {
     return bGoodParticle;
 }
 
-void G2PTrans400016::ReconLeftHRS(double* pV5) {
+void G2PTrans400016::ReconLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
 
@@ -131,7 +136,8 @@ void G2PTrans400016::ReconLeftHRS(double* pV5) {
     pV5[4] = (double) delta_rec;
 }
 
-void G2PTrans400016::ReconRightHRS(double* pV5) {
+void G2PTrans400016::ReconRightHRS(double* pV5)
+{
     //in order to call right arm routines, need to flip y, phi
     pV5[2] *= -1;
     pV5[3] *= -1;

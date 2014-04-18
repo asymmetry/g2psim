@@ -24,15 +24,18 @@ using namespace std;
 
 G2PRand* G2PRand::pG2PRand = NULL;
 
-G2PRand::G2PRand() {
+G2PRand::G2PRand()
+{
     // Nothing to do
 }
 
-G2PRand::~G2PRand() {
+G2PRand::~G2PRand()
+{
     // Nothing to do
 }
 
-G2PRand* G2PRand::GetInstance() {
+G2PRand* G2PRand::GetInstance()
+{
     if (!pG2PRand) {
         static G2PRand instance;
         pG2PRand = &instance;

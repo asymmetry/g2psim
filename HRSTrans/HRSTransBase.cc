@@ -15,23 +15,28 @@
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-HRSTransBase::HRSTransBase() : fModelAngle(12.5 * kDEG) {
+HRSTransBase::HRSTransBase() : fModelAngle(12.5 * kDEG)
+{
     // Nothing to do
 }
 
-HRSTransBase::~HRSTransBase() {
+HRSTransBase::~HRSTransBase()
+{
     // Nothing to do
 }
 
-void HRSTransBase::FPCorrLeft(const double* V5tg, double* V5fp) {
+void HRSTransBase::FPCorrLeft(const double* V5tg, double* V5fp)
+{
     // Nothing to do
 }
 
-void HRSTransBase::FPCorrRight(const double* V5tg, double* V5fp) {
+void HRSTransBase::FPCorrRight(const double* V5tg, double* V5fp)
+{
     // Nothing to do
 }
 
-void HRSTransBase::CoordsCorrection(double angle, double* v) {
+void HRSTransBase::CoordsCorrection(double angle, double* v)
+{
     double cosangle = cos(angle);
     double sinangle = sin(angle);
 
@@ -56,6 +61,7 @@ void HRSTransBase::CoordsCorrection(double angle, double* v) {
     v[3] = p_p;
 }
 
-double HRSTransBase::GetAngle() {
+double HRSTransBase::GetAngle()
+{
     return fModelAngle;
 }

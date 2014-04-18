@@ -30,17 +30,20 @@
 using namespace std;
 
 G2POutput::G2POutput() :
-fNVar(0), fVar(NULL), fTree(NULL) {
+fNVar(0), fVar(NULL), fTree(NULL)
+{
     fVName.clear();
     fVariables.clear();
 }
 
-G2POutput::~G2POutput() {
+G2POutput::~G2POutput()
+{
     if (fTree) delete fTree;
     if (fVar) delete [] fVar;
 }
 
-int G2POutput::Init() {
+int G2POutput::Init()
+{
     static const char* const here = "Init()";
 
     if (!gG2PVars) {
@@ -67,7 +70,8 @@ int G2POutput::Init() {
     return 0;
 }
 
-int G2POutput::Process() {
+int G2POutput::Process()
+{
     G2PVar *pvar;
     for (int i = 0; i < fNVar; i++) {
         pvar = fVariables[i];
@@ -79,13 +83,15 @@ int G2POutput::Process() {
     return 0;
 }
 
-int G2POutput::End() {
+int G2POutput::End()
+{
     if (fTree != 0) fTree->Write();
 
     return 0;
 }
 
-int G2POutput::Attach() {
+int G2POutput::Attach()
+{
     static const char* const here = "Attach()";
 
     if (!gG2PVars) return -1;
@@ -97,8 +103,7 @@ int G2POutput::Attach() {
         pvar = gG2PVars->Find(fVName[i]);
         if (pvar) {
             fVariables[i] = pvar;
-        }
-        else {
+        } else {
             Error(here, "Global variable %s does not exist.", fVName[i]);
         }
     }

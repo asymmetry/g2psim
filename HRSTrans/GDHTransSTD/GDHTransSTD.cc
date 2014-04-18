@@ -29,11 +29,13 @@ using namespace std;
 const float m2cm = 100.0;
 const double kDEG = 3.14159265358979323846 / 180.0;
 
-GDHTransSTD::GDHTransSTD() {
+GDHTransSTD::GDHTransSTD()
+{
     fModelAngle = 6.0 * kDEG;
 }
 
-GDHTransSTD::~GDHTransSTD() {
+GDHTransSTD::~GDHTransSTD()
+{
     // Nothing to do
 }
 
@@ -80,7 +82,8 @@ GDHTransSTD::~GDHTransSTD() {
 //6 degree seting, for E94110 and E97110
 /////////////////////////////////////////////////////////////////////////////
 
-bool GDHTransSTD::TransRightHRS(double* pV5) {
+bool GDHTransSTD::TransRightHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     float x_test, y_test;
     int ii = 5;
@@ -172,7 +175,8 @@ bool GDHTransSTD::TransRightHRS(double* pV5) {
     return true;
 }
 
-bool GDHTransSTD::TransLeftHRS(double* pV5) {
+bool GDHTransSTD::TransLeftHRS(double* pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     float x_test, y_test;
     int ii = 5;
@@ -325,7 +329,8 @@ bool GDHTransSTD::TransLeftHRS(double* pV5) {
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-void GDHTransSTD::ReconRightHRS(double *pV5) {
+void GDHTransSTD::ReconRightHRS(double *pV5)
+{
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5, jj = 1;
     /* Orthogonalize theta as JJL asks*/
@@ -344,7 +349,8 @@ void GDHTransSTD::ReconRightHRS(double *pV5) {
     pV5[4] = (double) delta_rec;
 }
 
-void GDHTransSTD::ReconLeftHRS(double *pV5) {
+void GDHTransSTD::ReconLeftHRS(double *pV5)
+{
     //in order to call right arm routines, need to flip y, phi
     float vector_jjl[] = {pV5[0], pV5[1], -pV5[2], -pV5[3], pV5[4]};
     int ii = 5, jj = 1;
