@@ -6,21 +6,28 @@
  *
  * Elastic cross section models.
  * * All: Form factors from K. C. Stansfield et al., Phys. Rev. C, 3(1971)1448
- * * 1H : Form factors from J. Arrington, Phys. Rev. C, 69(2004)022201
- * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
- * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
- * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * H1 : Form factors from S. Venkat et al., Phys. Rev. C, 83(2011)015203 (global fit, with TPE correction)
+ *                          J. Arrington et al., Phys. Rev. C 76(2007)035201 (low Q2, with/without TPE correction)
+ * * He4: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * C12: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
+ * * N14: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  *
  * How to set parameters:
- * If set 1 parameters with SetPars(pars,1), then pars[0]=2 means to use Stansfield's model 
- *   to calculate 12C cross section, default is Cardman's model;
+ * H1:
+ * If set 1 parameters with SetPars(pars,1), pars[0]=2 means to use 2007 low Q2 fit without TPE correction,
+ *   pars[0]=3 means to use 2007 low Q2 fit with TPE correction,
+ *   default is to use 2011 global fit with TPE correction;
+ * C12:
+ * If set 1 parameters with SetPars(pars,1), pars[0]=2 means to use Stansfield's form factors,
+ *   default is to use Cardman's fit;
  * Other uses will be considered as invalid.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version, with C12 models.
 //   Apr 2013, C. Gu, Add L. Cardman's C12 charge densities.
-//   Nov 2013, C. Gu, Add He charge and magnetization densities from D. Jager, original coded by M. Friedman.
+//   Nov 2013, C. Gu, Add He4 and N14 charge and magnetization densities from D. Jager, original coded by M. Friedman.
+//   Apr 2014, C. Gu, Add H1 form factors from J. Arrington.(Thanks to M. Cummings)
 //
 
 #ifndef G2P_PHYSEL_H
