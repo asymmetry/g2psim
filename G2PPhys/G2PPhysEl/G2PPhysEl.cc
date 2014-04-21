@@ -229,7 +229,7 @@ double G2PPhysEl::GetXS_H1(double Ei, double theta)
     // reference: Xiaohui thesis, eq. 1.39 for sigma
 
     int Z = 1;
-    double M = 0.93889; // GeV
+    double M = 0.938783; // GeV
     double eP = Ei / (1 + Ei / M * (1 - cos(theta))); // scattered electron energy
     double Q2 = 4 * Ei * eP * sin(theta / 2) * sin(theta / 2); // units GeV2
     double tau = Q2 / 4.0 / M / M;
@@ -277,8 +277,8 @@ double G2PPhysEl::GetXS_H1(double Ei, double theta)
         double x3 = x2*tau;
         double x4 = x3*tau;
         double x5 = x4*tau;
-        double GE = (1.0 + 2.90966 * x1 - 1.11542229 * x2 + 3866171e-2 * x3) / (1 + 14.5187212 * x1 + 40.88333 * x2 + 99.999998 * x3 + 4.579e-5 * x4 + 10.3580447 * x5);
-        double GM = 2.792782 * (1.0 - 1.43573 * x1 + 1.19052066 * x2 + 2.5455841e-1 * x3) / (1 + 9.70703681 * x1 + 3.7357e-4 * x2 + 6.0e-8 * x3 + 9.9527277 * x4 + 12.7977739 * x5);
+        GE = (1.0 + 2.90966 * x1 - 1.11542229 * x2 + 3.866171e-2 * x3) / (1 + 14.5187212 * x1 + 40.88333 * x2 + 99.999998 * x3 + 4.579e-5 * x4 + 10.3580447 * x5);
+        GM = 2.792782 * (1.0 - 1.43573 * x1 + 1.19052066 * x2 + 2.5455841e-1 * x3) / (1 + 9.70703681 * x1 + 3.7357e-4 * x2 + 6.0e-8 * x3 + 9.9527277 * x4 + 12.7977739 * x5);
     }
 
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
