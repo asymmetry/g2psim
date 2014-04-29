@@ -234,7 +234,7 @@ void G2PGun::GetReactPoint(double x, double y, double reactz, double* V5)
     V5[4] = xb[2];
     pDrift->SetDebugLevel(save);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, reactz, V5[0], V5[1], V5[2], V5[3], V5[4]);
+    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, fBeamZ_lab, V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
 int G2PGun::Configure(EMode mode)

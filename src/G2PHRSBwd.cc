@@ -160,11 +160,13 @@ int G2PHRSBwd::Process()
 
     if (!Backward(fV5fp_tr, fV5tpsnake_tr)) return -1;
 
-    double delta_old = 0;
+    double delta_old = 1e38;
     while (fabs(fV5tpsnake_tr[4] - delta_old) > 1.e-3) {
+        delta_old = fV5tpsnake_tr[4];
         fV5fp_tr[4] = GetEffBPM(0); // Get effective bpm x
         if (!Backward(fV5fp_tr, fV5tpsnake_tr)) return -1;
     }
+    fV5tpsnake_tr[2] = GetEffBPM(1); // Get effective bpm y
 
     if (fDebug > 1) {
         Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpsnake_tr[0], fV5tpsnake_tr[1], fV5tpsnake_tr[2], fV5tpsnake_tr[3], fV5tpsnake_tr[4]);
@@ -196,7 +198,7 @@ int G2PHRSBwd::Process()
         fV5tprec_lab[3] = atan2(p[1], p[0]);
         fV5tprec_lab[4] = x[2];
         HCS2TCS(x[0], x[1], x[2], fHRSAngle, fV5tprec_tr[0], fV5tprec_tr[2], z_tr);
-        HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[2], fHRSAngle, fV5tprec_tr[1], fV5tprec_tr[3]);
+        HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[3], fHRSAngle, fV5tprec_tr[1], fV5tprec_tr[3]);
     }
 
     if (fDebug > 1) {
@@ -270,7 +272,7 @@ double G2PHRSBwd::GetEffBPM(int axis)
         if (axis == 0)
             effbpm_tr = xbpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * ybpm_tr) / p) / 1000;
         else if (axis == 1)
-            effbpm_tr = ybpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * xbpm_tr) / p) / 1000;
+            effbpm_tr = ybpm_tr - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * xbpm_tr) / p) / 1000;
     }
 
     if (fDebug > 2) {
