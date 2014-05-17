@@ -29,12 +29,10 @@
 
 using namespace std;
 
-static const double kDEG = 3.14159265358979323846 / 180.0;
-
 G2PSieve* G2PSieve::pG2PSieve = NULL;
 
 G2PSieve::G2PSieve() :
-fHRSAngle(5.767 * kDEG), fNRow(7), fNCol(7), fZ(799.6e-3), fXOffset(0), fYOffset(0), fNLargerHole(0), fDHole(0), fDLargerHole(0)
+fHRSAngle(0.0), fNRow(7), fNCol(7), fZ(799.6e-3), fXOffset(0), fYOffset(0), fNLargerHole(0), fDHole(0), fDLargerHole(0)
 {
     // Constructor
     if (pG2PSieve) {

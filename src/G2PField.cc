@@ -38,7 +38,6 @@ using namespace std;
 static const double kCM = 1.0e-2;
 static const double kKG = 1.0e-1;
 static const double kSCALE = 4.9788476 / 5.0938709;
-static const double kDEG = 3.14159265358979323846 / 180.0;
 
 extern "C" {
 void sda_ptf_(float*, float*); // routine to calculate the field of HallB coil, which is not symmetric
@@ -64,7 +63,7 @@ static void GetHallBField(const double* pos, double* field)
 G2PField* G2PField::pG2PField = NULL;
 
 G2PField::G2PField() :
-fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(1.0)
+fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(0.0)
 {
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");

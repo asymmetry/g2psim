@@ -27,8 +27,6 @@
 
 using namespace std;
 
-static const double kDEG = 3.14159265358979323846 / 180.0;
-
 G2PFPData* G2PFPData::pG2PFPData = NULL;
 
 G2PFPData::G2PFPData()
@@ -37,7 +35,7 @@ G2PFPData::G2PFPData()
 }
 
 G2PFPData::G2PFPData(const char* filename) :
-fDataFile(filename), fHRSAngle(5.767 * kDEG)
+fDataFile(filename), fHRSAngle(0.0)
 {
     if (pG2PFPData) {
         Error("G2PFPData()", "Only one instance of G2PFPData allowed.");

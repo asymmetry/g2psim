@@ -34,15 +34,13 @@ static const double kLLimit = 2.0;
 
 static const double c = 2.99792458e8;
 static const double e = 1.60217656535e-19;
-static const double kDEG = 3.14159265358979323846 / 180.0;
 static const double kGEV = 1.0e9 * e / c / c;
 static const double kOneSixth = 1.0 / 6.0;
 
 G2PDrift* G2PDrift::pG2PDrift = NULL;
 
 G2PDrift::G2PDrift() :
-fM0(0.51099892811e-3), fQ(-1 * e), fQSave(-1 * e), fFieldRatio(0.0), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6),
-fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL), pfDriftCV(NULL), pfDriftCL(NULL)
+fM0(0.51099892811e-3), fQ(-1 * e), fQSave(-1 * e), fFieldRatio(0.0), fStep(1.0e-3), fStepLimit(1.0e-6), fErrLoLimit(1.0e-7), fErrHiLimit(1.0e-6), fVelocity(0.0), fVelocity2(0.0), fGamma(0.0), fCof(0.0), pField(NULL), pfDriftHCS(NULL), pfDriftTCS(NULL), pfDriftCV(NULL), pfDriftCL(NULL)
 {
     if (pG2PDrift) {
         Error("G2PDrift()", "Only one instance of G2PDrift allowed.");

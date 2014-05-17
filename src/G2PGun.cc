@@ -35,10 +35,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 G2PGun* G2PGun::pG2PGun = NULL;
 
 G2PGun::G2PGun() :
-fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), fParticleMass(0.51099892811e-3), fTargetMass(0.0), fFieldRatio(0.0),
-fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0),
-fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0),
-fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0), pDrift(NULL)
+fHRSAngle(0.0), fHRSMomentum(2.251), fBeamEnergy(2.254), fParticleMass(0.51099892811e-3), fTargetMass(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0), pDrift(NULL)
 {
     if (pG2PGun) {
         Error("G2PGun()", "Only one instance of G2PGun allowed.");

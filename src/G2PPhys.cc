@@ -81,7 +81,7 @@ G2PPhys::G2PPhys()
 }
 
 G2PPhys::G2PPhys(const char *model) :
-fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSAngle(5.767 * kDEG), fHRSMomentum(2.251), fBeamEnergy(2.254), pModel(NULL)
+fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");

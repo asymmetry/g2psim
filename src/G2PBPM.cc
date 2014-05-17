@@ -43,7 +43,7 @@
 G2PBPM* G2PBPM::pG2PBPM = NULL;
 
 G2PBPM::G2PBPM() :
-fBeamEnergy(2.254), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(-957.6e-3), fBPMBZ(-692.0e-3), fBPMARes(0.3e-3), fBPMBRes(0.3e-3), pDrift(NULL), pfGetBPM(NULL)
+fBeamEnergy(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(-957.6e-3), fBPMBZ(-692.0e-3), fBPMARes(0.0), fBPMBRes(0.0), pDrift(NULL), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");

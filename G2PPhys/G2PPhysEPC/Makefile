@@ -33,8 +33,7 @@ endif
 INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
 CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS) 
 CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
-FFLAGS      := -Wall -fPIC -Wno-unused-variable -Wno-unused-dummy-argument \
-               -O3 $(MODE) $(INCDIRS)
+FFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
 ifeq ($(MYOS),Darwin) 
 #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \

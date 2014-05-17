@@ -9,7 +9,7 @@
 //
 
 #ifndef G2P_OPTICS_H
-#define G2P_OPTiCS_H
+#define G2P_OPTICS_H
 
 #include <queue>
 

@@ -42,8 +42,6 @@
 
 using namespace std;
 
-static const double kDEG = 3.14159265358979323846 / 180.0;
-
 G2PDBBwd* G2PDBBwd::pG2PDBBwd = NULL;
 
 G2PDBBwd::G2PDBBwd()
