@@ -116,7 +116,7 @@ int G2POptics::Process()
     }
 
     fHoleID = tempdata.ind;
-    fBeamEnergy = tempdata.eb / 1000.0;
+    fBeamEnergy = tempdata.eb;
     fV3bpm_lab[0] = tempdata.xb;
     fV3bpm_lab[1] = tempdata.yb;
     fV5fp_rot[0] = tempdata.xf;
