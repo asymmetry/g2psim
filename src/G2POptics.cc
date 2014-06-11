@@ -56,6 +56,8 @@ fDataFile(filename), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), fTarge
     fHRSP0.push_back(0.0);
     fReactZ_lab.clear();
     fReactZ_lab.push_back(0.0);
+    fTiltAngleV.clear();
+    fTiltAngleV.push_back(0.0);
     fELoss.clear();
     fELoss.push_back(0.0);
 
@@ -128,6 +130,7 @@ int G2POptics::Process()
     int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
     res = res % (pSieve->GetNRow() * pSieve->GetNCol());
     fHRSMomentum = fHRSP0[kineID];
+    fTiltAngle = fTiltAngleV[kineID * fNFoil + foilID];
     fEnergyLoss = fELoss[foilID];
     fV3bpm_lab[2] = fReactZ_lab[foilID];
 
@@ -278,6 +281,13 @@ void G2POptics::SetHRSMomentum(int n, double* value)
         fHRSP0.push_back(value[i]);
 }
 
+void G2POptics::SetTiltAngle(int n, double* value)
+{
+    fTiltAngleV.clear();
+    for (int i = 0; i < n; i++)
+        fTiltAngleV.push_back(value[i]);
+}
+
 void G2POptics::SetReactZ(int n, double* value)
 {
     fNFoil = n;
@@ -298,16 +308,15 @@ void G2POptics::SetEnergyLoss(int n, double* value)
 
 void G2POptics::Drift(double* ang, double* pos)
 {
-    double V3pd_tr[3];
-    V3pd_tr[2] = 1.0;
-    V3pd_tr[0] = tan(ang[0]);
-    V3pd_tr[1] = tan(ang[1]);
+    double V3pd_tr[3] = {tan(ang[0]), tan(ang[1]), 1.0};
 
     // Calculate delta based on angle
     double V3pd_lab[3];
     TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], fHRSAngle, V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
 
-    double cosscatangle = V3pd_lab[2] / (sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
+    double V3ed_lab[3] = {0, tan(fTiltAngle), 1.0};
+
+    double cosscatangle = (V3ed_lab[0] * V3pd_lab[0] + V3ed_lab[1] * V3pd_lab[1] + V3ed_lab[2] * V3pd_lab[2]) / (sqrt(V3ed_lab[0] * V3ed_lab[0] + V3ed_lab[1] * V3ed_lab[1] + V3ed_lab[2] * V3ed_lab[2]) * sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
     double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
     double delta = (scatmom - fHRSMomentum - fEnergyLoss) / fHRSMomentum;
 

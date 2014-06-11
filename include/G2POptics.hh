@@ -32,6 +32,7 @@ public:
 
     // Sets
     void SetHRSMomentum(int n, double* value);
+    void SetTiltAngle(int n, double* value);
     void SetReactZ(int n, double* value);
     void SetEnergyLoss(int n, double* value);
 
@@ -59,12 +60,14 @@ protected:
     double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
+    double fTiltAngle;
     double fTargetMass;
     double fEnergyLoss;
 
     int fNFoil;
     vector<double> fHRSP0;
     vector<double> fReactZ_lab;
+    vector<double> fTiltAngleV;
     vector<double> fELoss;
 
     int fHoleID;
