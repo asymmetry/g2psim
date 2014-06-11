@@ -6,6 +6,7 @@
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Jun 2014, J. Liu, Generate flat distribution in lab coordinates.
 //
 
 #ifndef G2P_FLATGUN_H

@@ -6,6 +6,7 @@
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Jun 2014, J. Liu, Generate flat distribution in lab coordinates.
 //
 
 #include <cstdlib>
@@ -58,15 +59,19 @@ int G2PFlatGun::Shoot(double* V5beam_lab, double* V5react_tr)
     HCS2TCS(V5beam_lab[0], V5beam_lab[2], V5beam_lab[4], fHRSAngle, Xreact_tr, Yreact_tr, Zreact_tr);
 
     V5react_tr[0] = Xreact_tr;
-    V5react_tr[1] = pRand->Uniform(fTargetThLow_tr, fTargetThHigh_tr);
     V5react_tr[2] = Yreact_tr;
-    V5react_tr[3] = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
     freactz_tr = Zreact_tr;
+
+    double theta, phi;
+    double cos_theta_high = cos(fTargetThLow_tr);
+    double cos_theta_low = cos(fTargetThHigh_tr); // In lab coordinates, the scattering angle is always larger than 0
+    double cos_theta = pRand->Uniform(cos_theta_low, cos_theta_high);
+    theta = acos(cos_theta);
+    phi = pRand->Uniform(fTargetPhLow_tr, fTargetPhHigh_tr);
+    HCS2TCS(theta, phi, fHRSAngle, V5react_tr[1], V5react_tr[3]);
 
     if (fForceElastic) { // calculate elastic scattering momentum
         double Pi[3] = {sin(V5beam_lab[1]) * cos(V5beam_lab[3]), sin(V5beam_lab[1]) * sin(V5beam_lab[3]), cos(V5beam_lab[1])};
-        double theta, phi;
-        TCS2HCS(V5react_tr[1], V5react_tr[3], fHRSAngle, theta, phi);
         double Pf[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
         double cosang = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
         double E = fBeamEnergy;
