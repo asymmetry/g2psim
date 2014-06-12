@@ -34,7 +34,7 @@ G2PTrans400016::~G2PTrans400016()
     // Nothing to do
 }
 
-bool G2PTrans400016::TransLeftHRS(double* pV5)
+int G2PTrans400016::TransLeftHRS(double* pV5)
 {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;
@@ -46,28 +46,28 @@ bool G2PTrans400016::TransLeftHRS(double* pV5)
     x_test = x_l5p77_sen(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_sen(vector_jjl, ii) * m2cm;
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
-        return false;
+        return 5;
 
     //Target to Septum exit ep7
     //y, 480., 0.,none,84.0,388.,97.,97.,-97.,-97.
     x_test = x_l5p77_sex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_sex(vector_jjl, ii) * m2cm;
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
-        return false;
+        return 7;
 
     //Target to Q1 entrance ep10
     //y,-200., 0.,none,149.2,149.2,0.,0.,0.,0.
     x_test = x_l5p77_q1en(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_q1en(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
-        return false;
+        return 10;
 
     //Target to Q1 exit ep13
     //y,610.4, 0. ,none,149.2,149.2,0.,0.,0.,0.
     x_test = x_l5p77_q1ex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_q1ex(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
-        return false;
+        return 13;
 
     //Target to Q2 exit ep20
     //y,-3040.40, 30.,none, 259.81, 300., 1316.53, 0.,0.,0.
@@ -75,7 +75,7 @@ bool G2PTrans400016::TransLeftHRS(double* pV5)
     x_test = x_l5p77_q2ex(vector_jjl, ii) * m2mm;
     y_test = y_l5p77_q2ex(vector_jjl, ii) * m2mm;
     if (((x_test - 1316.53) / 259.81 / cos(30. * kDEG))*((x_test - 1316.53) / 259.81 / cos(30. * kDEG))+(y_test / 300.)*(y_test / 300.) > 1)
-        return false;
+        return 20;
 
     //     //in TCS,             xmin,xmax,ymax1,ymax2,ymin1,ymin2,
     //     //Target to dipole entrance, ep23, trapezoid -616.999cm<x<-596.293cm  |y| < 14.55cm
@@ -92,19 +92,19 @@ bool G2PTrans400016::TransLeftHRS(double* pV5)
     x_test = x_l5p77_dex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_dex(vector_jjl, ii) * m2cm;
     if ((x_test<-46.19) || (x_test > 46.19) || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
-        return false;
+        return 24;
 
     //Target to Q3 entrance, ep26, circle of radius 30.0 cm
     x_test = x_l5p77_q3en(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_q3en(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
-        return false;
+        return 26;
 
-    //Target to Q3 exit, circle of radius 30.0 cm
+    //Target to Q3 exit, ep29, circle of radius 30.0 cm
     x_test = x_l5p77_q3ex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_q3ex(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
-        return false;
+        return 29;
 
     /////////////////////////////////////////////////////////////
     // succesfully reach focus plane
@@ -120,7 +120,7 @@ bool G2PTrans400016::TransLeftHRS(double* pV5)
     pV5[3] = (double) phi_fp;
     //pV5[4] = (double)delta_fp;  // delta is not change
 
-    return true;
+    return 0;
 }
 
 bool G2PTrans400016::TransRightHRS(double* pV5)

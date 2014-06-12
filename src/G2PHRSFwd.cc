@@ -521,7 +521,8 @@ bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
 
     if (fHRSAngle > 0) {
         //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
-        isgood = pModel->TransLeftHRS(V5);
+        epflag = pModel->TransLeftHRS(V5);
+	if (!epflag) isgood = true;
         //pModel->FPCorrLeft(V5tp_tr, V5);
     } else {
         //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
@@ -538,6 +539,7 @@ bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
     if (fDebug > 2) {
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5tp_tr[0], V5tp_tr[1], V5tp_tr[2], V5tp_tr[3], V5tp_tr[4], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
     }
+
 
     return isgood;
 }
@@ -581,6 +583,7 @@ int G2PHRSFwd::DefineVariables(EMode mode)
 
     VarDef vars[] = {
         {"id", "Hole ID", kINT, &fHoleID},
+	{"epflag", "End-plane pass ID", kINT, &epflag},
         {"sieve.x", "Sieve X", kDOUBLE, &fV5sieve_tr[0]},
         {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
         {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},

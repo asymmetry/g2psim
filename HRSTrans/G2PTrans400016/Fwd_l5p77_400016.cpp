@@ -63,78 +63,78 @@ float x_l5p77_den                             (float *x,int m){
 //                 function
 
     float v_x_l5p77_den                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]            *x41    
         +coeff[  4]    *x21        *x51
-        +coeff[  5]    *x21    *x41
-        +coeff[  6]*x13        *x41
-        +coeff[  7]*x12*x21*x31
+        +coeff[  5]    *x21    *x41    
+        +coeff[  6]*x13        *x41    
+        +coeff[  7]*x12*x21*x31        
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
+    v_x_l5p77_den                             =v_x_l5p77_den                             
         +coeff[  8]    *x21*x31    *x52
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]        *x31
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]        *x31        
         +coeff[ 11]*x11            *x51
-        +coeff[ 12]*x11    *x31
-        +coeff[ 13]*x11        *x41
-        +coeff[ 14]    *x21*x31
-        +coeff[ 15]    *x23
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 12]*x11    *x31        
+        +coeff[ 13]*x11        *x41    
+        +coeff[ 14]    *x21*x31        
+        +coeff[ 15]    *x23            
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
-        +coeff[ 17]*x13*x22
-        +coeff[ 18]    *x23*x31*x41
+    v_x_l5p77_den                             =v_x_l5p77_den                             
+        +coeff[ 17]*x13*x22            
+        +coeff[ 18]    *x23*x31*x41    
         +coeff[ 19]                *x51
-        +coeff[ 20]*x11*x21
-        +coeff[ 21]*x13
-        +coeff[ 22]*x12*x21
-        +coeff[ 23]*x11*x22
-        +coeff[ 24]    *x21*x31*x41
-        +coeff[ 25]    *x23    *x41
+        +coeff[ 20]*x11*x21            
+        +coeff[ 21]*x13                
+        +coeff[ 22]*x12*x21            
+        +coeff[ 23]*x11*x22            
+        +coeff[ 24]    *x21*x31*x41    
+        +coeff[ 25]    *x23    *x41    
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
-        +coeff[ 26]*x13*x22    *x41
-        +coeff[ 27]    *x22
-        +coeff[ 28]*x11        *x42
-        +coeff[ 29]    *x21*x32
-        +coeff[ 30]*x11*x22    *x41
-        +coeff[ 31]*x13    *x31*x41
-        +coeff[ 32]*x11*x22*x33
+    v_x_l5p77_den                             =v_x_l5p77_den                             
+        +coeff[ 26]*x13*x22    *x41    
+        +coeff[ 27]    *x22            
+        +coeff[ 28]*x11        *x42    
+        +coeff[ 29]    *x21*x32        
+        +coeff[ 30]*x11*x22    *x41    
+        +coeff[ 31]*x13    *x31*x41    
+        +coeff[ 32]*x11*x22*x33        
         +coeff[ 33]    *x21        *x52
-        +coeff[ 34]*x11    *x31*x41
+        +coeff[ 34]*x11    *x31*x41    
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
-        +coeff[ 35]    *x22    *x41
-        +coeff[ 36]*x12*x21    *x41
-        +coeff[ 37]*x11*x22*x31
-        +coeff[ 38]    *x21    *x43
-        +coeff[ 39]    *x21*x33*x42
+    v_x_l5p77_den                             =v_x_l5p77_den                             
+        +coeff[ 35]    *x22    *x41    
+        +coeff[ 36]*x12*x21    *x41    
+        +coeff[ 37]*x11*x22*x31        
+        +coeff[ 38]    *x21    *x43    
+        +coeff[ 39]    *x21*x33*x42    
         +coeff[ 40]            *x41*x51
-        +coeff[ 41]        *x31*x41
-        +coeff[ 42]            *x42
-        +coeff[ 43]*x11    *x32
+        +coeff[ 41]        *x31*x41    
+        +coeff[ 42]            *x42    
+        +coeff[ 43]*x11    *x32        
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
+    v_x_l5p77_den                             =v_x_l5p77_den                             
         +coeff[ 44]    *x22        *x51
         +coeff[ 45]    *x21    *x41*x51
-        +coeff[ 46]    *x22*x31
-        +coeff[ 47]    *x21*x33
-        +coeff[ 48]    *x21*x32*x41
-        +coeff[ 49]    *x21*x31*x42
+        +coeff[ 46]    *x22*x31        
+        +coeff[ 47]    *x21*x33        
+        +coeff[ 48]    *x21*x32*x41    
+        +coeff[ 49]    *x21*x31*x42    
         +coeff[ 50]*x12*x21*x31    *x51
         +coeff[ 51]        *x31    *x51
-        +coeff[ 52]        *x32
+        +coeff[ 52]        *x32        
     ;
-    v_x_l5p77_den                             =v_x_l5p77_den
+    v_x_l5p77_den                             =v_x_l5p77_den                             
         +coeff[ 53]*x11            *x52
         +coeff[ 54]*x11        *x41*x51
         +coeff[ 55]    *x21*x31    *x51
-        +coeff[ 56]*x11        *x43
+        +coeff[ 56]*x11        *x43    
         +coeff[ 57]    *x21    *x42*x51
         +coeff[ 58]    *x23    *x41*x51
-        +coeff[ 59]*x13    *x31*x42
+        +coeff[ 59]*x13    *x31*x42    
         ;
 
     return v_x_l5p77_den                             ;
@@ -198,65 +198,65 @@ float t_l5p77_den                             (float *x,int m){
 //                 function
 
     float v_t_l5p77_den                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]*x11*x21
-        +coeff[  6]    *x22
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]*x11*x21            
+        +coeff[  6]    *x22            
+        +coeff[  7]    *x21    *x41    
     ;
-    v_t_l5p77_den                             =v_t_l5p77_den
+    v_t_l5p77_den                             =v_t_l5p77_den                             
         +coeff[  8]    *x21        *x51
-        +coeff[  9]    *x23
-        +coeff[ 10]        *x33
-        +coeff[ 11]    *x22    *x41
-        +coeff[ 12]*x12*x21*x31
-        +coeff[ 13]    *x23*x31
-        +coeff[ 14]*x13        *x41
-        +coeff[ 15]*x13*x22*x31
-        +coeff[ 16]        *x31
+        +coeff[  9]    *x23            
+        +coeff[ 10]        *x33        
+        +coeff[ 11]    *x22    *x41    
+        +coeff[ 12]*x12*x21*x31        
+        +coeff[ 13]    *x23*x31        
+        +coeff[ 14]*x13        *x41    
+        +coeff[ 15]*x13*x22*x31        
+        +coeff[ 16]        *x31        
     ;
-    v_t_l5p77_den                             =v_t_l5p77_den
-        +coeff[ 17]    *x21*x31
-        +coeff[ 18]*x11        *x41
-        +coeff[ 19]        *x31*x41
-        +coeff[ 20]*x11*x22
-        +coeff[ 21]    *x22*x31
-        +coeff[ 22]    *x21    *x42
-        +coeff[ 23]*x12*x21*x31*x41
-        +coeff[ 24]    *x23*x31*x41
-        +coeff[ 25]*x12
+    v_t_l5p77_den                             =v_t_l5p77_den                             
+        +coeff[ 17]    *x21*x31        
+        +coeff[ 18]*x11        *x41    
+        +coeff[ 19]        *x31*x41    
+        +coeff[ 20]*x11*x22            
+        +coeff[ 21]    *x22*x31        
+        +coeff[ 22]    *x21    *x42    
+        +coeff[ 23]*x12*x21*x31*x41    
+        +coeff[ 24]    *x23*x31*x41    
+        +coeff[ 25]*x12                
     ;
-    v_t_l5p77_den                             =v_t_l5p77_den
-        +coeff[ 26]*x11    *x31
-        +coeff[ 27]            *x42
+    v_t_l5p77_den                             =v_t_l5p77_den                             
+        +coeff[ 26]*x11    *x31        
+        +coeff[ 27]            *x42    
         +coeff[ 28]*x11            *x51
         +coeff[ 29]            *x41*x51
-        +coeff[ 30]    *x21*x31*x41
-        +coeff[ 31]    *x23    *x41
-        +coeff[ 32]*x13*x22    *x41
-        +coeff[ 33]*x12*x21
-        +coeff[ 34]    *x21*x32
+        +coeff[ 30]    *x21*x31*x41    
+        +coeff[ 31]    *x23    *x41    
+        +coeff[ 32]*x13*x22    *x41    
+        +coeff[ 33]*x12*x21            
+        +coeff[ 34]    *x21*x32        
     ;
-    v_t_l5p77_den                             =v_t_l5p77_den
-        +coeff[ 35]*x11        *x42
+    v_t_l5p77_den                             =v_t_l5p77_den                             
+        +coeff[ 35]*x11        *x42    
         +coeff[ 36]    *x22        *x51
-        +coeff[ 37]*x12*x21    *x41
-        +coeff[ 38]*x11*x22    *x41
-        +coeff[ 39]    *x22    *x42
-        +coeff[ 40]*x13    *x31*x41
-        +coeff[ 41]*x12        *x41
-        +coeff[ 42]*x11*x21    *x41
-        +coeff[ 43]*x11    *x31*x41
+        +coeff[ 37]*x12*x21    *x41    
+        +coeff[ 38]*x11*x22    *x41    
+        +coeff[ 39]    *x22    *x42    
+        +coeff[ 40]*x13    *x31*x41    
+        +coeff[ 41]*x12        *x41    
+        +coeff[ 42]*x11*x21    *x41    
+        +coeff[ 43]*x11    *x31*x41    
     ;
-    v_t_l5p77_den                             =v_t_l5p77_den
+    v_t_l5p77_den                             =v_t_l5p77_den                             
         +coeff[ 44]            *x42*x51
-        +coeff[ 45]*x13    *x31
-        +coeff[ 46]*x11*x22*x31
-        +coeff[ 47]    *x22*x31*x41
-        +coeff[ 48]    *x21    *x43
+        +coeff[ 45]*x13    *x31        
+        +coeff[ 46]*x11*x22*x31        
+        +coeff[ 47]    *x22*x31*x41    
+        +coeff[ 48]    *x21    *x43    
         +coeff[ 49]*x12*x21        *x52
         ;
 
@@ -338,123 +338,123 @@ float y_l5p77_den                             (float *x,int m){
 //                 function
 
     float v_y_l5p77_den                             =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
+        +coeff[  5]    *x22            
         +coeff[  6]            *x41*x51
-        +coeff[  7]*x11*x21
+        +coeff[  7]*x11*x21            
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[  8]    *x22    *x41
-        +coeff[  9]*x11
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x41
-        +coeff[ 12]        *x31*x41
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[  8]    *x22    *x41    
+        +coeff[  9]*x11                
+        +coeff[ 10]            *x42    
+        +coeff[ 11]    *x21    *x41    
+        +coeff[ 12]        *x31*x41    
         +coeff[ 13]        *x31    *x51
-        +coeff[ 14]    *x22*x31
-        +coeff[ 15]*x11*x21    *x41
-        +coeff[ 16]        *x32
+        +coeff[ 14]    *x22*x31        
+        +coeff[ 15]*x11*x21    *x41    
+        +coeff[ 16]        *x32        
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 17]*x12
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 17]*x12                
         +coeff[ 18]                *x52
-        +coeff[ 19]*x11*x21*x31
+        +coeff[ 19]*x11*x21*x31        
         +coeff[ 20]    *x22        *x51
-        +coeff[ 21]    *x21*x31
-        +coeff[ 22]*x11        *x41
-        +coeff[ 23]            *x43
+        +coeff[ 21]    *x21*x31        
+        +coeff[ 22]*x11        *x41    
+        +coeff[ 23]            *x43    
         +coeff[ 24]            *x41*x52
-        +coeff[ 25]    *x22    *x42
+        +coeff[ 25]    *x22    *x42    
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 26]    *x22*x31*x41
-        +coeff[ 27]*x11*x21    *x42
-        +coeff[ 28]    *x24
-        +coeff[ 29]*x11*x21*x31*x41
-        +coeff[ 30]*x11*x23
-        +coeff[ 31]*x11    *x31
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 26]    *x22*x31*x41    
+        +coeff[ 27]*x11*x21    *x42    
+        +coeff[ 28]    *x24            
+        +coeff[ 29]*x11*x21*x31*x41    
+        +coeff[ 30]*x11*x23            
+        +coeff[ 31]*x11    *x31        
         +coeff[ 32]            *x42*x51
         +coeff[ 33]    *x21    *x41*x51
-        +coeff[ 34]*x12        *x41
+        +coeff[ 34]*x12        *x41    
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
+    v_y_l5p77_den                             =v_y_l5p77_den                             
         +coeff[ 35]*x11*x21        *x51
-        +coeff[ 36]*x12*x22
+        +coeff[ 36]*x12*x22            
         +coeff[ 37]    *x21        *x51
-        +coeff[ 38]    *x23
-        +coeff[ 39]*x12    *x31
-        +coeff[ 40]    *x22*x32
+        +coeff[ 38]    *x23            
+        +coeff[ 39]*x12    *x31        
+        +coeff[ 40]    *x22*x32        
         +coeff[ 41]                *x53
         +coeff[ 42]    *x22    *x41*x51
-        +coeff[ 43]*x11*x21*x32
+        +coeff[ 43]*x11*x21*x32        
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 44]    *x21    *x42
-        +coeff[ 45]        *x31*x42
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 44]    *x21    *x42    
+        +coeff[ 45]        *x31*x42    
         +coeff[ 46]*x11            *x51
-        +coeff[ 47]    *x21*x31*x41
-        +coeff[ 48]        *x32*x41
-        +coeff[ 49]*x11*x22
+        +coeff[ 47]    *x21*x31*x41    
+        +coeff[ 48]        *x32*x41    
+        +coeff[ 49]*x11*x22            
         +coeff[ 50]    *x21*x31    *x51
         +coeff[ 51]*x11        *x41*x51
         +coeff[ 52]        *x31    *x52
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
+    v_y_l5p77_den                             =v_y_l5p77_den                             
         +coeff[ 53]*x12            *x51
         +coeff[ 54]    *x22*x31    *x51
-        +coeff[ 55]    *x22    *x43
+        +coeff[ 55]    *x22    *x43    
         +coeff[ 56]*x11*x21    *x41*x51
-        +coeff[ 57]*x11        *x44
-        +coeff[ 58]    *x22*x31*x42
+        +coeff[ 57]*x11        *x44    
+        +coeff[ 58]    *x22*x31*x42    
         +coeff[ 59]    *x22        *x52
-        +coeff[ 60]    *x22*x32*x41
+        +coeff[ 60]    *x22*x32*x41    
         +coeff[ 61]    *x22    *x42*x51
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 62]*x11*x23    *x41
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 62]*x11*x23    *x41    
         +coeff[ 63]*x13*x21        *x52
-        +coeff[ 64]        *x33
-        +coeff[ 65]*x11    *x31*x41
+        +coeff[ 64]        *x33        
+        +coeff[ 65]*x11    *x31*x41    
         +coeff[ 66]        *x31*x41*x51
         +coeff[ 67]    *x21        *x52
         +coeff[ 68]            *x43*x51
-        +coeff[ 69]    *x23    *x41
-        +coeff[ 70]            *x45
+        +coeff[ 69]    *x23    *x41    
+        +coeff[ 70]            *x45    
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 71]*x12        *x42
-        +coeff[ 72]*x12    *x31*x41
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 71]*x12        *x42    
+        +coeff[ 72]*x12    *x31*x41    
         +coeff[ 73]*x11*x21*x31    *x51
-        +coeff[ 74]*x11*x21*x31*x42
-        +coeff[ 75]*x13*x21
+        +coeff[ 74]*x11*x21*x31*x42    
+        +coeff[ 75]*x13*x21            
         +coeff[ 76]    *x22*x31*x41*x51
-        +coeff[ 77]*x11*x23*x31
+        +coeff[ 77]*x11*x23*x31        
         +coeff[ 78]    *x21    *x44*x51
-        +coeff[ 79]    *x24    *x42
+        +coeff[ 79]    *x24    *x42    
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
-        +coeff[ 80]    *x24*x31*x41
-        +coeff[ 81]*x12*x24    *x41
-        +coeff[ 82]*x12*x24*x31
-        +coeff[ 83]*x11        *x42
-        +coeff[ 84]*x12*x21
-        +coeff[ 85]*x11        *x43
+    v_y_l5p77_den                             =v_y_l5p77_den                             
+        +coeff[ 80]    *x24*x31*x41    
+        +coeff[ 81]*x12*x24    *x41    
+        +coeff[ 82]*x12*x24*x31        
+        +coeff[ 83]*x11        *x42    
+        +coeff[ 84]*x12*x21            
+        +coeff[ 85]*x11        *x43    
         +coeff[ 86]        *x31*x42*x51
-        +coeff[ 87]    *x23*x31
+        +coeff[ 87]    *x23*x31        
         +coeff[ 88]*x11            *x52
     ;
-    v_y_l5p77_den                             =v_y_l5p77_den
+    v_y_l5p77_den                             =v_y_l5p77_den                             
         +coeff[ 89]    *x23        *x51
-        +coeff[ 90]*x12    *x32
-        +coeff[ 91]    *x24*x31
-        +coeff[ 92]    *x22*x33
-        +coeff[ 93]*x11*x21*x32*x41
-        +coeff[ 94]    *x22    *x44
+        +coeff[ 90]*x12    *x32        
+        +coeff[ 91]    *x24*x31        
+        +coeff[ 92]    *x22*x33        
+        +coeff[ 93]*x11*x21*x32*x41    
+        +coeff[ 94]    *x22    *x44    
         +coeff[ 95]        *x34    *x51
-        +coeff[ 96]    *x22*x32*x42
+        +coeff[ 96]    *x22*x32*x42    
         ;
 
     return v_y_l5p77_den                             ;
@@ -528,91 +528,91 @@ float p_l5p77_den                             (float *x,int m){
 //                 function
 
     float v_p_l5p77_den                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21*x31        
+        +coeff[  7]    *x21    *x41    
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
-        +coeff[  8]            *x42
+    v_p_l5p77_den                             =v_p_l5p77_den                             
+        +coeff[  8]            *x42    
         +coeff[  9]    *x21        *x51
         +coeff[ 10]        *x31    *x51
         +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
-        +coeff[ 13]*x11        *x41
-        +coeff[ 14]    *x22    *x41
+        +coeff[ 12]*x11*x21            
+        +coeff[ 13]*x11        *x41    
+        +coeff[ 14]    *x22    *x41    
         +coeff[ 15]                *x54
-        +coeff[ 16]*x11
+        +coeff[ 16]*x11                
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
-        +coeff[ 17]    *x21    *x42
+    v_p_l5p77_den                             =v_p_l5p77_den                             
+        +coeff[ 17]    *x21    *x42    
         +coeff[ 18]    *x22        *x51
-        +coeff[ 19]*x11*x21    *x41
-        +coeff[ 20]    *x25
+        +coeff[ 19]*x11*x21    *x41    
+        +coeff[ 20]    *x25            
         +coeff[ 21]                *x52
-        +coeff[ 22]*x11    *x31
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]*x11*x21*x31
+        +coeff[ 22]*x11    *x31        
+        +coeff[ 23]    *x21*x31*x41    
+        +coeff[ 24]*x11*x21*x31        
         +coeff[ 25]            *x41*x52
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
-        +coeff[ 26]    *x22    *x42
-        +coeff[ 27]            *x45
-        +coeff[ 28]    *x23
+    v_p_l5p77_den                             =v_p_l5p77_den                             
+        +coeff[ 26]    *x22    *x42    
+        +coeff[ 27]            *x45    
+        +coeff[ 28]    *x23            
         +coeff[ 29]*x11            *x51
         +coeff[ 30]    *x21    *x41*x51
-        +coeff[ 31]*x12
-        +coeff[ 32]*x11*x22
-        +coeff[ 33]    *x22*x31*x41
-        +coeff[ 34]*x11        *x42
+        +coeff[ 31]*x12                
+        +coeff[ 32]*x11*x22            
+        +coeff[ 33]    *x22*x31*x41    
+        +coeff[ 34]*x11        *x42    
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
+    v_p_l5p77_den                             =v_p_l5p77_den                             
         +coeff[ 35]*x11*x21        *x51
-        +coeff[ 36]        *x33*x41
-        +coeff[ 37]*x11*x22*x31*x41
-        +coeff[ 38]        *x32
-        +coeff[ 39]        *x31*x41
-        +coeff[ 40]        *x32*x41
-        +coeff[ 41]        *x31*x42
-        +coeff[ 42]            *x43
+        +coeff[ 36]        *x33*x41    
+        +coeff[ 37]*x11*x22*x31*x41    
+        +coeff[ 38]        *x32        
+        +coeff[ 39]        *x31*x41    
+        +coeff[ 40]        *x32*x41    
+        +coeff[ 41]        *x31*x42    
+        +coeff[ 42]            *x43    
         +coeff[ 43]    *x21*x31    *x51
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
+    v_p_l5p77_den                             =v_p_l5p77_den                             
         +coeff[ 44]        *x31*x41*x51
-        +coeff[ 45]    *x24
-        +coeff[ 46]    *x23    *x41
+        +coeff[ 45]    *x24            
+        +coeff[ 46]    *x23    *x41    
         +coeff[ 47]        *x31    *x52
-        +coeff[ 48]*x11    *x31*x41
-        +coeff[ 49]    *x21    *x43
+        +coeff[ 48]*x11    *x31*x41    
+        +coeff[ 49]    *x21    *x43    
         +coeff[ 50]*x11        *x41*x51
         +coeff[ 51]    *x22    *x41*x51
-        +coeff[ 52]*x11*x22    *x41
+        +coeff[ 52]*x11*x22    *x41    
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
-        +coeff[ 53]*x11*x21    *x42
+    v_p_l5p77_den                             =v_p_l5p77_den                             
+        +coeff[ 53]*x11*x21    *x42    
         +coeff[ 54]*x11*x21    *x41*x51
-        +coeff[ 55]*x11*x23*x31*x41
-        +coeff[ 56]*x12*x21*x32*x41
+        +coeff[ 55]*x11*x23*x31*x41    
+        +coeff[ 56]*x12*x21*x32*x41    
         +coeff[ 57]    *x22    *x42*x53
         +coeff[ 58]        *x32    *x51
         +coeff[ 59]    *x21        *x52
-        +coeff[ 60]    *x22*x32
+        +coeff[ 60]    *x22*x32        
         +coeff[ 61]    *x23        *x51
     ;
-    v_p_l5p77_den                             =v_p_l5p77_den
-        +coeff[ 62]    *x21*x31*x42
+    v_p_l5p77_den                             =v_p_l5p77_den                             
+        +coeff[ 62]    *x21*x31*x42    
         +coeff[ 63]    *x22        *x52
-        +coeff[ 64]    *x24*x31
-        +coeff[ 65]    *x23*x32
-        +coeff[ 66]*x11*x21*x31*x41
-        +coeff[ 67]    *x23    *x42
+        +coeff[ 64]    *x24*x31        
+        +coeff[ 65]    *x23*x32        
+        +coeff[ 66]*x11*x21*x31*x41    
+        +coeff[ 67]    *x23    *x42    
         +coeff[ 68]*x12            *x51
-        +coeff[ 69]*x12*x21    *x41
-        +coeff[ 70]*x11*x23    *x41
+        +coeff[ 69]*x12*x21    *x41    
+        +coeff[ 70]*x11*x23    *x41    
         ;
 
     return v_p_l5p77_den                             ;
@@ -682,84 +682,84 @@ float l_l5p77_den                             (float *x,int m){
 //                 function
 
     float v_l_l5p77_den                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
-        +coeff[  3]*x11
-        +coeff[  4]    *x22
-        +coeff[  5]    *x21    *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
+        +coeff[  3]*x11                
+        +coeff[  4]    *x22            
+        +coeff[  5]    *x21    *x41    
         +coeff[  6]    *x21        *x51
-        +coeff[  7]*x11        *x41
+        +coeff[  7]*x11        *x41    
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[  8]    *x23*x31
-        +coeff[  9]        *x31
-        +coeff[ 10]    *x21*x31
-        +coeff[ 11]            *x42
-        +coeff[ 12]*x11*x21
-        +coeff[ 13]*x11    *x31
-        +coeff[ 14]    *x23
-        +coeff[ 15]    *x21    *x42
-        +coeff[ 16]*x11*x22
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[  8]    *x23*x31        
+        +coeff[  9]        *x31        
+        +coeff[ 10]    *x21*x31        
+        +coeff[ 11]            *x42    
+        +coeff[ 12]*x11*x21            
+        +coeff[ 13]*x11    *x31        
+        +coeff[ 14]    *x23            
+        +coeff[ 15]    *x21    *x42    
+        +coeff[ 16]*x11*x22            
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[ 17]    *x23*x31*x41
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[ 17]    *x23*x31*x41    
         +coeff[ 18]                *x51
         +coeff[ 19]*x11            *x51
-        +coeff[ 20]    *x22    *x41
-        +coeff[ 21]    *x21*x31*x41
-        +coeff[ 22]    *x23    *x41
-        +coeff[ 23]*x11*x22    *x41
-        +coeff[ 24]        *x31*x41
+        +coeff[ 20]    *x22    *x41    
+        +coeff[ 21]    *x21*x31*x41    
+        +coeff[ 22]    *x23    *x41    
+        +coeff[ 23]*x11*x22    *x41    
+        +coeff[ 24]        *x31*x41    
         +coeff[ 25]            *x41*x51
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[ 26]    *x21*x32
-        +coeff[ 27]*x11        *x42
-        +coeff[ 28]*x12*x21
-        +coeff[ 29]*x11*x22*x31
-        +coeff[ 30]    *x24*x31
-        +coeff[ 31]*x11    *x33*x41
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[ 26]    *x21*x32        
+        +coeff[ 27]*x11        *x42    
+        +coeff[ 28]*x12*x21            
+        +coeff[ 29]*x11*x22*x31        
+        +coeff[ 30]    *x24*x31        
+        +coeff[ 31]*x11    *x33*x41    
         +coeff[ 32]    *x21        *x52
-        +coeff[ 33]*x11    *x31*x41
-        +coeff[ 34]    *x21    *x43
+        +coeff[ 33]*x11    *x31*x41    
+        +coeff[ 34]    *x21    *x43    
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[ 35]*x12*x21    *x41
-        +coeff[ 36]    *x23*x31*x42
-        +coeff[ 37]        *x32
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[ 35]*x12*x21    *x41    
+        +coeff[ 36]    *x23*x31*x42    
+        +coeff[ 37]        *x32        
         +coeff[ 38]        *x31    *x51
         +coeff[ 39]                *x52
-        +coeff[ 40]*x12
+        +coeff[ 40]*x12                
         +coeff[ 41]    *x22        *x51
         +coeff[ 42]    *x21    *x41*x51
         +coeff[ 43]            *x42*x51
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[ 44]*x11    *x32
-        +coeff[ 45]*x11*x21    *x41
-        +coeff[ 46]    *x24
-        +coeff[ 47]    *x22    *x42
-        +coeff[ 48]    *x21*x31*x42
-        +coeff[ 49]*x11*x23
-        +coeff[ 50]*x12*x21*x31
-        +coeff[ 51]    *x21    *x44
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[ 44]*x11    *x32        
+        +coeff[ 45]*x11*x21    *x41    
+        +coeff[ 46]    *x24            
+        +coeff[ 47]    *x22    *x42    
+        +coeff[ 48]    *x21*x31*x42    
+        +coeff[ 49]*x11*x23            
+        +coeff[ 50]*x12*x21*x31        
+        +coeff[ 51]    *x21    *x44    
         +coeff[ 52]    *x23*x31    *x51
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
-        +coeff[ 53]    *x23*x32*x41
-        +coeff[ 54]    *x22*x31
+    v_l_l5p77_den                             =v_l_l5p77_den                             
+        +coeff[ 53]    *x23*x32*x41    
+        +coeff[ 54]    *x22*x31        
         +coeff[ 55]    *x21*x31    *x51
         +coeff[ 56]*x11        *x41*x51
-        +coeff[ 57]*x13
-        +coeff[ 58]    *x22*x31*x41
-        +coeff[ 59]    *x21*x32*x41
+        +coeff[ 57]*x13                
+        +coeff[ 58]    *x22*x31*x41    
+        +coeff[ 59]    *x21*x32*x41    
         +coeff[ 60]    *x21    *x42*x51
-        +coeff[ 61]    *x24    *x41
+        +coeff[ 61]    *x24    *x41    
     ;
-    v_l_l5p77_den                             =v_l_l5p77_den
+    v_l_l5p77_den                             =v_l_l5p77_den                             
         +coeff[ 62]    *x23    *x41*x51
-        +coeff[ 63]    *x23*x33
+        +coeff[ 63]    *x23*x33        
         +coeff[ 64]    *x23*x31*x41*x51
         ;
 
@@ -826,76 +826,76 @@ float x_l5p77_dex                             (float *x,int m){
 //                 function
 
     float v_x_l5p77_dex                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
+        +coeff[  0]                    
+        +coeff[  1]*x11                
         +coeff[  2]                *x51
-        +coeff[  3]    *x21
-        +coeff[  4]            *x41
+        +coeff[  3]    *x21            
+        +coeff[  4]            *x41    
         +coeff[  5]    *x21        *x51
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]*x13        *x41
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]*x13        *x41    
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
-        +coeff[  8]*x12*x21*x31
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
+        +coeff[  8]*x12*x21*x31        
         +coeff[  9]    *x21*x31    *x52
-        +coeff[ 10]    *x23*x31
-        +coeff[ 11]*x11    *x31
-        +coeff[ 12]*x11        *x41
-        +coeff[ 13]    *x22
-        +coeff[ 14]    *x21*x31
-        +coeff[ 15]    *x23
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 10]    *x23*x31        
+        +coeff[ 11]*x11    *x31        
+        +coeff[ 12]*x11        *x41    
+        +coeff[ 13]    *x22            
+        +coeff[ 14]    *x21*x31        
+        +coeff[ 15]    *x23            
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
-        +coeff[ 17]*x13*x22
-        +coeff[ 18]    *x23*x31*x41
-        +coeff[ 19]        *x31
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
+        +coeff[ 17]*x13*x22            
+        +coeff[ 18]    *x23*x31*x41    
+        +coeff[ 19]        *x31        
         +coeff[ 20]                *x52
-        +coeff[ 21]            *x42
-        +coeff[ 22]*x13
-        +coeff[ 23]*x12*x21
-        +coeff[ 24]*x11*x22
-        +coeff[ 25]    *x21*x31*x41
+        +coeff[ 21]            *x42    
+        +coeff[ 22]*x13                
+        +coeff[ 23]*x12*x21            
+        +coeff[ 24]*x11*x22            
+        +coeff[ 25]    *x21*x31*x41    
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
-        +coeff[ 26]    *x23    *x41
-        +coeff[ 27]*x13*x22    *x41
-        +coeff[ 28]        *x31*x41
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
+        +coeff[ 26]    *x23    *x41    
+        +coeff[ 27]*x13*x22    *x41    
+        +coeff[ 28]        *x31*x41    
         +coeff[ 29]    *x21    *x41*x51
-        +coeff[ 30]    *x21*x32
-        +coeff[ 31]*x11*x22    *x41
+        +coeff[ 30]    *x21*x32        
+        +coeff[ 31]*x11*x22    *x41    
         +coeff[ 32]*x11            *x51
         +coeff[ 33]            *x41*x51
-        +coeff[ 34]*x11        *x42
+        +coeff[ 34]*x11        *x42    
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
         +coeff[ 35]    *x21*x31    *x51
-        +coeff[ 36]    *x22    *x41
-        +coeff[ 37]*x12*x21    *x41
-        +coeff[ 38]*x11*x22*x31
-        +coeff[ 39]*x11    *x31*x42
-        +coeff[ 40]*x13    *x31*x41
-        +coeff[ 41]    *x22*x33
-        +coeff[ 42]        *x32
+        +coeff[ 36]    *x22    *x41    
+        +coeff[ 37]*x12*x21    *x41    
+        +coeff[ 38]*x11*x22*x31        
+        +coeff[ 39]*x11    *x31*x42    
+        +coeff[ 40]*x13    *x31*x41    
+        +coeff[ 41]    *x22*x33        
+        +coeff[ 42]        *x32        
         +coeff[ 43]    *x21        *x52
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
-        +coeff[ 44]*x11    *x32
-        +coeff[ 45]*x11    *x31*x41
-        +coeff[ 46]    *x22*x31
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
+        +coeff[ 44]*x11    *x32        
+        +coeff[ 45]*x11    *x31*x41    
+        +coeff[ 46]    *x22*x31        
         +coeff[ 47]    *x23        *x51
-        +coeff[ 48]    *x21    *x43
-        +coeff[ 49]    *x23    *x42
-        +coeff[ 50]    *x21*x31*x43
-        +coeff[ 51]*x12*x21*x31*x42
-        +coeff[ 52]*x12*x21    *x43
+        +coeff[ 48]    *x21    *x43    
+        +coeff[ 49]    *x23    *x42    
+        +coeff[ 50]    *x21*x31*x43    
+        +coeff[ 51]*x12*x21*x31*x42    
+        +coeff[ 52]*x12*x21    *x43    
     ;
-    v_x_l5p77_dex                             =v_x_l5p77_dex
-        +coeff[ 53]    *x23*x31*x42
-        +coeff[ 54]*x12
+    v_x_l5p77_dex                             =v_x_l5p77_dex                             
+        +coeff[ 53]    *x23*x31*x42    
+        +coeff[ 54]*x12                
         +coeff[ 55]*x11*x21        *x51
         +coeff[ 56]*x11        *x41*x51
-        +coeff[ 57]*x11*x21*x31
+        +coeff[ 57]*x11*x21*x31        
         +coeff[ 58]    *x22        *x51
         +coeff[ 59]        *x31*x41*x51
         ;
@@ -960,66 +960,66 @@ float t_l5p77_dex                             (float *x,int m){
 //                 function
 
     float v_t_l5p77_dex                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
         +coeff[  3]                *x51
-        +coeff[  4]    *x21    *x41
+        +coeff[  4]    *x21    *x41    
         +coeff[  5]    *x21        *x51
-        +coeff[  6]        *x32*x41
-        +coeff[  7]*x12*x21*x31
+        +coeff[  6]        *x32*x41    
+        +coeff[  7]*x12*x21*x31        
     ;
-    v_t_l5p77_dex                             =v_t_l5p77_dex
-        +coeff[  8]    *x23*x31
-        +coeff[  9]*x13        *x41
-        +coeff[ 10]            *x41
-        +coeff[ 11]*x11    *x31
-        +coeff[ 12]    *x21*x31
-        +coeff[ 13]*x11        *x41
+    v_t_l5p77_dex                             =v_t_l5p77_dex                             
+        +coeff[  8]    *x23*x31        
+        +coeff[  9]*x13        *x41    
+        +coeff[ 10]            *x41    
+        +coeff[ 11]*x11    *x31        
+        +coeff[ 12]    *x21*x31        
+        +coeff[ 13]*x11        *x41    
         +coeff[ 14]                *x52
-        +coeff[ 15]    *x23
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 15]    *x23            
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_t_l5p77_dex                             =v_t_l5p77_dex
-        +coeff[ 17]    *x23*x31*x41
-        +coeff[ 18]        *x31
-        +coeff[ 19]    *x22
-        +coeff[ 20]        *x31*x41
+    v_t_l5p77_dex                             =v_t_l5p77_dex                             
+        +coeff[ 17]    *x23*x31*x41    
+        +coeff[ 18]        *x31        
+        +coeff[ 19]    *x22            
+        +coeff[ 20]        *x31*x41    
         +coeff[ 21]*x11            *x51
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]    *x23    *x41
-        +coeff[ 25]*x13*x22    *x41
+        +coeff[ 22]*x11*x22            
+        +coeff[ 23]    *x21*x31*x41    
+        +coeff[ 24]    *x23    *x41    
+        +coeff[ 25]*x13*x22    *x41    
     ;
-    v_t_l5p77_dex                             =v_t_l5p77_dex
-        +coeff[ 26]*x12*x21
-        +coeff[ 27]    *x21*x32
+    v_t_l5p77_dex                             =v_t_l5p77_dex                             
+        +coeff[ 26]*x12*x21            
+        +coeff[ 27]    *x21*x32        
         +coeff[ 28]            *x42*x51
-        +coeff[ 29]*x11*x22    *x41
-        +coeff[ 30]            *x42
+        +coeff[ 29]*x11*x22    *x41    
+        +coeff[ 30]            *x42    
         +coeff[ 31]        *x31    *x51
         +coeff[ 32]            *x41*x51
-        +coeff[ 33]    *x22    *x41
-        +coeff[ 34]*x11        *x42
+        +coeff[ 33]    *x22    *x41    
+        +coeff[ 34]*x11        *x42    
     ;
-    v_t_l5p77_dex                             =v_t_l5p77_dex
+    v_t_l5p77_dex                             =v_t_l5p77_dex                             
         +coeff[ 35]    *x22        *x51
         +coeff[ 36]    *x21    *x41*x51
         +coeff[ 37]    *x21        *x52
         +coeff[ 38]            *x41*x52
-        +coeff[ 39]*x11*x22*x31
-        +coeff[ 40]*x12*x21    *x41
-        +coeff[ 41]*x11    *x32*x41
-        +coeff[ 42]*x11    *x31*x42
-        +coeff[ 43]*x11        *x43
+        +coeff[ 39]*x11*x22*x31        
+        +coeff[ 40]*x12*x21    *x41    
+        +coeff[ 41]*x11    *x32*x41    
+        +coeff[ 42]*x11    *x31*x42    
+        +coeff[ 43]*x11        *x43    
     ;
-    v_t_l5p77_dex                             =v_t_l5p77_dex
-        +coeff[ 44]*x13    *x31*x41
-        +coeff[ 45]*x11*x21
-        +coeff[ 46]*x11*x21    *x41
-        +coeff[ 47]*x11    *x31*x41
-        +coeff[ 48]    *x22    *x42
-        +coeff[ 49]    *x21*x31*x42
+    v_t_l5p77_dex                             =v_t_l5p77_dex                             
+        +coeff[ 44]*x13    *x31*x41    
+        +coeff[ 45]*x11*x21            
+        +coeff[ 46]*x11*x21    *x41    
+        +coeff[ 47]*x11    *x31*x41    
+        +coeff[ 48]    *x22    *x42    
+        +coeff[ 49]    *x21*x31*x42    
         ;
 
     return v_t_l5p77_dex                             ;
@@ -1098,123 +1098,123 @@ float y_l5p77_dex                             (float *x,int m){
 //                 function
 
     float v_y_l5p77_dex                             =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]            *x42
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]    *x22
+        +coeff[  5]            *x42    
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]    *x22            
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[  8]    *x21*x31
-        +coeff[  9]*x11        *x41
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[  8]    *x21*x31        
+        +coeff[  9]*x11        *x41    
         +coeff[ 10]            *x41*x51
-        +coeff[ 11]*x11*x21
+        +coeff[ 11]*x11*x21            
         +coeff[ 12]    *x21        *x51
         +coeff[ 13]        *x31    *x51
         +coeff[ 14]                *x52
-        +coeff[ 15]    *x22    *x41
-        +coeff[ 16]    *x23
+        +coeff[ 15]    *x22    *x41    
+        +coeff[ 16]    *x23            
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 17]    *x22*x31
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 17]    *x22*x31        
         +coeff[ 18]    *x22        *x51
-        +coeff[ 19]        *x31*x43
-        +coeff[ 20]    *x21    *x44
-        +coeff[ 21]        *x31*x45
-        +coeff[ 22]        *x31*x41
-        +coeff[ 23]        *x32
-        +coeff[ 24]            *x43
-        +coeff[ 25]*x12
+        +coeff[ 19]        *x31*x43    
+        +coeff[ 20]    *x21    *x44    
+        +coeff[ 21]        *x31*x45    
+        +coeff[ 22]        *x31*x41    
+        +coeff[ 23]        *x32        
+        +coeff[ 24]            *x43    
+        +coeff[ 25]*x12                
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 26]    *x21*x31*x41
-        +coeff[ 27]*x11*x21    *x41
-        +coeff[ 28]*x11*x21*x31
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 26]    *x21*x31*x41    
+        +coeff[ 27]*x11*x21    *x41    
+        +coeff[ 28]*x11*x21*x31        
         +coeff[ 29]            *x41*x52
         +coeff[ 30]*x11*x21        *x51
-        +coeff[ 31]    *x24
-        +coeff[ 32]*x11
-        +coeff[ 33]    *x21    *x42
+        +coeff[ 31]    *x24            
+        +coeff[ 32]*x11                
+        +coeff[ 33]    *x21    *x42    
         +coeff[ 34]*x11            *x51
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 35]*x11        *x42
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 35]*x11        *x42    
         +coeff[ 36]            *x42*x51
         +coeff[ 37]    *x21    *x41*x51
-        +coeff[ 38]*x11*x22
-        +coeff[ 39]*x12        *x41
-        +coeff[ 40]    *x22    *x42
-        +coeff[ 41]*x11*x23
-        +coeff[ 42]*x11    *x31
-        +coeff[ 43]        *x31*x42
+        +coeff[ 38]*x11*x22            
+        +coeff[ 39]*x12        *x41    
+        +coeff[ 40]    *x22    *x42    
+        +coeff[ 41]*x11*x23            
+        +coeff[ 42]*x11    *x31        
+        +coeff[ 43]        *x31*x42    
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 44]*x11    *x31*x41
-        +coeff[ 45]    *x21    *x43
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 44]*x11    *x31*x41    
+        +coeff[ 45]    *x21    *x43    
         +coeff[ 46]        *x31    *x52
-        +coeff[ 47]    *x22*x31*x41
+        +coeff[ 47]    *x22*x31*x41    
         +coeff[ 48]                *x53
-        +coeff[ 49]*x11*x22    *x41
+        +coeff[ 49]*x11*x22    *x41    
         +coeff[ 50]    *x22    *x41*x51
         +coeff[ 51]*x11*x21    *x41*x51
-        +coeff[ 52]    *x23*x31*x42
+        +coeff[ 52]    *x23*x31*x42    
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
         +coeff[ 53]        *x31*x41*x51
-        +coeff[ 54]*x12    *x31
-        +coeff[ 55]*x11*x21    *x42
-        +coeff[ 56]    *x22*x32
+        +coeff[ 54]*x12    *x31        
+        +coeff[ 55]*x11*x21    *x42    
+        +coeff[ 56]    *x22*x32        
         +coeff[ 57]*x12            *x51
-        +coeff[ 58]*x11*x21*x31*x41
-        +coeff[ 59]*x11*x21*x32
+        +coeff[ 58]*x11*x21*x31*x41    
+        +coeff[ 59]*x11*x21*x32        
         +coeff[ 60]    *x22*x31    *x51
-        +coeff[ 61]*x12*x21    *x41
+        +coeff[ 61]*x12*x21    *x41    
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 62]    *x23    *x42
-        +coeff[ 63]*x12*x22
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 62]    *x23    *x42    
+        +coeff[ 63]*x12*x22            
         +coeff[ 64]*x11*x21*x31    *x51
         +coeff[ 65]    *x22        *x52
-        +coeff[ 66]*x11*x22    *x42
+        +coeff[ 66]*x11*x22    *x42    
         +coeff[ 67]    *x22    *x42*x51
         +coeff[ 68]    *x22*x31*x41*x51
         +coeff[ 69]    *x21    *x44*x51
-        +coeff[ 70]    *x24    *x43
+        +coeff[ 70]    *x24    *x43    
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 71]        *x32*x41
-        +coeff[ 72]    *x21*x32
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 71]        *x32*x41    
+        +coeff[ 72]    *x21*x32        
         +coeff[ 73]        *x32    *x51
-        +coeff[ 74]    *x21*x31*x42
-        +coeff[ 75]*x12*x21
+        +coeff[ 74]    *x21*x31*x42    
+        +coeff[ 75]*x12*x21            
         +coeff[ 76]    *x21        *x52
         +coeff[ 77]            *x43*x51
-        +coeff[ 78]    *x21*x32*x41
+        +coeff[ 78]    *x21*x32*x41    
         +coeff[ 79]    *x21    *x42*x51
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
         +coeff[ 80]        *x31*x42*x51
-        +coeff[ 81]    *x23*x31
+        +coeff[ 81]    *x23*x31        
         +coeff[ 82]    *x21*x31*x41*x51
         +coeff[ 83]    *x21    *x41*x52
-        +coeff[ 84]    *x24    *x41
-        +coeff[ 85]    *x23*x31*x41
+        +coeff[ 84]    *x24    *x41    
+        +coeff[ 85]    *x23*x31*x41    
         +coeff[ 86]*x11*x21        *x52
-        +coeff[ 87]*x11*x22*x31*x41
-        +coeff[ 88]        *x33
+        +coeff[ 87]*x11*x22*x31*x41    
+        +coeff[ 88]        *x33        
     ;
-    v_y_l5p77_dex                             =v_y_l5p77_dex
-        +coeff[ 89]*x11    *x32
+    v_y_l5p77_dex                             =v_y_l5p77_dex                             
+        +coeff[ 89]*x11    *x32        
         +coeff[ 90]*x11    *x31    *x51
-        +coeff[ 91]*x11        *x43
-        +coeff[ 92]    *x23    *x41
-        +coeff[ 93]*x11    *x31*x42
+        +coeff[ 91]*x11        *x43    
+        +coeff[ 92]    *x23    *x41    
+        +coeff[ 93]*x11    *x31*x42    
         +coeff[ 94]*x11            *x52
-        +coeff[ 95]*x11    *x32*x41
-        +coeff[ 96]        *x31*x44
+        +coeff[ 95]*x11    *x32*x41    
+        +coeff[ 96]        *x31*x44    
         ;
 
     return v_y_l5p77_dex                             ;
@@ -1292,115 +1292,115 @@ float p_l5p77_dex                             (float *x,int m){
 //                 function
 
     float v_p_l5p77_dex                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21*x31        
+        +coeff[  7]    *x21    *x41    
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[  8]        *x31*x41
-        +coeff[  9]            *x42
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[  8]        *x31*x41    
+        +coeff[  9]            *x42    
         +coeff[ 10]    *x21        *x51
         +coeff[ 11]        *x31    *x51
         +coeff[ 12]            *x41*x51
-        +coeff[ 13]*x11*x21
-        +coeff[ 14]    *x23
+        +coeff[ 13]*x11*x21            
+        +coeff[ 14]    *x23            
         +coeff[ 15]                *x52
-        +coeff[ 16]    *x22*x31
+        +coeff[ 16]    *x22*x31        
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 17]*x11        *x41
-        +coeff[ 18]    *x22    *x41
-        +coeff[ 19]    *x21    *x42
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 17]*x11        *x41    
+        +coeff[ 18]    *x22    *x41    
+        +coeff[ 19]    *x21    *x42    
         +coeff[ 20]    *x22        *x51
         +coeff[ 21]    *x21    *x41*x51
         +coeff[ 22]*x11*x21        *x51
-        +coeff[ 23]*x11
-        +coeff[ 24]    *x21*x31*x41
+        +coeff[ 23]*x11                
+        +coeff[ 24]    *x21*x31*x41    
         +coeff[ 25]*x11            *x51
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 26]            *x43
-        +coeff[ 27]*x12
-        +coeff[ 28]*x11*x22
-        +coeff[ 29]    *x24
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 26]            *x43    
+        +coeff[ 27]*x12                
+        +coeff[ 28]*x11*x22            
+        +coeff[ 29]    *x24            
         +coeff[ 30]            *x41*x52
-        +coeff[ 31]    *x22    *x42
+        +coeff[ 31]    *x22    *x42    
         +coeff[ 32]    *x22    *x41*x51
-        +coeff[ 33]*x13*x21*x31
-        +coeff[ 34]        *x32
+        +coeff[ 33]*x13*x21*x31        
+        +coeff[ 34]        *x32        
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 35]        *x31*x42
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 35]        *x31*x42    
         +coeff[ 36]        *x31*x41*x51
         +coeff[ 37]    *x21        *x52
-        +coeff[ 38]*x11*x21*x31
-        +coeff[ 39]    *x23    *x41
-        +coeff[ 40]*x11        *x42
-        +coeff[ 41]*x11*x23
-        +coeff[ 42]*x11*x22*x31
-        +coeff[ 43]*x12        *x41
+        +coeff[ 38]*x11*x21*x31        
+        +coeff[ 39]    *x23    *x41    
+        +coeff[ 40]*x11        *x42    
+        +coeff[ 41]*x11*x23            
+        +coeff[ 42]*x11*x22*x31        
+        +coeff[ 43]*x12        *x41    
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 44]*x11*x22    *x41
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 44]*x11*x22    *x41    
         +coeff[ 45]*x11*x21    *x41*x51
-        +coeff[ 46]*x13    *x31*x41
-        +coeff[ 47]*x11    *x31
+        +coeff[ 46]*x13    *x31*x41    
+        +coeff[ 47]*x11    *x31        
         +coeff[ 48]        *x32    *x51
-        +coeff[ 49]    *x23*x31
-        +coeff[ 50]*x11*x21    *x41
-        +coeff[ 51]*x11    *x31*x41
+        +coeff[ 49]    *x23*x31        
+        +coeff[ 50]*x11*x21    *x41    
+        +coeff[ 51]*x11    *x31*x41    
         +coeff[ 52]    *x23        *x51
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
         +coeff[ 53]                *x53
-        +coeff[ 54]    *x21    *x43
+        +coeff[ 54]    *x21    *x43    
         +coeff[ 55]    *x22*x31    *x51
         +coeff[ 56]*x11        *x41*x51
         +coeff[ 57]    *x21    *x42*x51
         +coeff[ 58]    *x21    *x41*x52
-        +coeff[ 59]*x11*x21*x31*x41
-        +coeff[ 60]    *x23    *x42
+        +coeff[ 59]*x11*x21*x31*x41    
+        +coeff[ 60]    *x23    *x42    
         +coeff[ 61]*x12            *x51
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
         +coeff[ 62]*x11*x21*x31    *x51
         +coeff[ 63]    *x23    *x41*x51
         +coeff[ 64]    *x21*x33    *x51
-        +coeff[ 65]*x12*x21    *x41
-        +coeff[ 66]    *x23*x32*x41
-        +coeff[ 67]    *x23*x31*x42
-        +coeff[ 68]    *x21*x33*x42
+        +coeff[ 65]*x12*x21    *x41    
+        +coeff[ 66]    *x23*x32*x41    
+        +coeff[ 67]    *x23*x31*x42    
+        +coeff[ 68]    *x21*x33*x42    
         +coeff[ 69]            *x42*x51
         +coeff[ 70]        *x31    *x52
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 71]    *x22*x32
-        +coeff[ 72]    *x21*x31*x42
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 71]    *x22*x32        
+        +coeff[ 72]    *x21*x31*x42    
         +coeff[ 73]    *x21*x31*x41*x51
         +coeff[ 74]            *x43*x51
-        +coeff[ 75]*x12    *x31
-        +coeff[ 76]    *x23*x31*x41
-        +coeff[ 77]*x11*x21    *x42
+        +coeff[ 75]*x12    *x31        
+        +coeff[ 76]    *x23*x31*x41    
+        +coeff[ 77]*x11*x21    *x42    
         +coeff[ 78]    *x24        *x51
         +coeff[ 79]    *x22    *x42*x51
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
-        +coeff[ 80]*x12*x22
-        +coeff[ 81]*x11*x24
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
+        +coeff[ 80]*x12*x22            
+        +coeff[ 81]*x11*x24            
         +coeff[ 82]*x11*x21        *x52
-        +coeff[ 83]*x11*x23    *x41
+        +coeff[ 83]*x11*x23    *x41    
         +coeff[ 84]    *x22    *x41*x52
-        +coeff[ 85]*x11*x22    *x42
-        +coeff[ 86]    *x24    *x42
-        +coeff[ 87]    *x26    *x41
-        +coeff[ 88]    *x24    *x43
+        +coeff[ 85]*x11*x22    *x42    
+        +coeff[ 86]    *x24    *x42    
+        +coeff[ 87]    *x26    *x41    
+        +coeff[ 88]    *x24    *x43    
     ;
-    v_p_l5p77_dex                             =v_p_l5p77_dex
+    v_p_l5p77_dex                             =v_p_l5p77_dex                             
         +coeff[ 89]    *x24*x31*x41*x51
         ;
 
@@ -1473,86 +1473,86 @@ float l_l5p77_dex                             (float *x,int m){
 //                 function
 
     float v_l_l5p77_dex                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]*x11
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
+        +coeff[  4]*x11                
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21    *x41    
         +coeff[  7]    *x21        *x51
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]    *x21*x31
-        +coeff[ 11]*x11    *x31
-        +coeff[ 12]    *x23
-        +coeff[ 13]    *x21    *x42
-        +coeff[ 14]*x11*x22
-        +coeff[ 15]    *x23*x31*x41
-        +coeff[ 16]        *x31
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[  8]*x11        *x41    
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]    *x21*x31        
+        +coeff[ 11]*x11    *x31        
+        +coeff[ 12]    *x23            
+        +coeff[ 13]    *x21    *x42    
+        +coeff[ 14]*x11*x22            
+        +coeff[ 15]    *x23*x31*x41    
+        +coeff[ 16]        *x31        
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
         +coeff[ 17]*x11            *x51
-        +coeff[ 18]    *x22    *x41
-        +coeff[ 19]    *x21*x31*x41
-        +coeff[ 20]*x12*x21
-        +coeff[ 21]    *x23    *x41
-        +coeff[ 22]*x11*x22    *x41
+        +coeff[ 18]    *x22    *x41    
+        +coeff[ 19]    *x21*x31*x41    
+        +coeff[ 20]*x12*x21            
+        +coeff[ 21]    *x23    *x41    
+        +coeff[ 22]*x11*x22    *x41    
         +coeff[ 23]                *x52
-        +coeff[ 24]*x11*x21
-        +coeff[ 25]    *x22*x31
+        +coeff[ 24]*x11*x21            
+        +coeff[ 25]    *x22*x31        
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[ 26]    *x21*x32
-        +coeff[ 27]*x11        *x42
-        +coeff[ 28]*x11*x22*x31
-        +coeff[ 29]*x11    *x33*x41
-        +coeff[ 30]        *x31*x41
-        +coeff[ 31]            *x42
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[ 26]    *x21*x32        
+        +coeff[ 27]*x11        *x42    
+        +coeff[ 28]*x11*x22*x31        
+        +coeff[ 29]*x11    *x33*x41    
+        +coeff[ 30]        *x31*x41    
+        +coeff[ 31]            *x42    
         +coeff[ 32]            *x41*x51
         +coeff[ 33]    *x21    *x41*x51
-        +coeff[ 34]*x11    *x32
+        +coeff[ 34]*x11    *x32        
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[ 35]*x11    *x31*x41
-        +coeff[ 36]*x12*x21    *x41
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[ 35]*x11    *x31*x41    
+        +coeff[ 36]*x12*x21    *x41    
         +coeff[ 37]        *x31    *x51
-        +coeff[ 38]*x12
+        +coeff[ 38]*x12                
         +coeff[ 39]    *x22        *x51
         +coeff[ 40]    *x21        *x52
-        +coeff[ 41]*x11*x21    *x41
-        +coeff[ 42]    *x21    *x43
-        +coeff[ 43]*x12*x21*x31
+        +coeff[ 41]*x11*x21    *x41    
+        +coeff[ 42]    *x21    *x43    
+        +coeff[ 43]*x12*x21*x31        
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[ 44]    *x21*x31*x43
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[ 44]    *x21*x31*x43    
         +coeff[ 45]            *x42*x53
-        +coeff[ 46]    *x23*x31*x42
-        +coeff[ 47]    *x21*x33*x42
-        +coeff[ 48]    *x21*x32*x43
-        +coeff[ 49]    *x21*x31*x44
-        +coeff[ 50]    *x23*x34*x41
-        +coeff[ 51]        *x32
+        +coeff[ 46]    *x23*x31*x42    
+        +coeff[ 47]    *x21*x33*x42    
+        +coeff[ 48]    *x21*x32*x43    
+        +coeff[ 49]    *x21*x31*x44    
+        +coeff[ 50]    *x23*x34*x41    
+        +coeff[ 51]        *x32        
         +coeff[ 52]            *x42*x51
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[ 53]*x11*x21*x31
-        +coeff[ 54]*x13
-        +coeff[ 55]    *x24
-        +coeff[ 56]    *x22    *x42
-        +coeff[ 57]    *x21*x31*x42
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[ 53]*x11*x21*x31        
+        +coeff[ 54]*x13                
+        +coeff[ 55]    *x24            
+        +coeff[ 56]    *x22    *x42    
+        +coeff[ 57]    *x21*x31*x42    
         +coeff[ 58]    *x23        *x51
         +coeff[ 59]    *x22    *x41*x51
-        +coeff[ 60]*x11*x23
-        +coeff[ 61]    *x22*x32*x41
+        +coeff[ 60]*x11*x23            
+        +coeff[ 61]    *x22*x32*x41    
     ;
-    v_l_l5p77_dex                             =v_l_l5p77_dex
-        +coeff[ 62]    *x21    *x44
+    v_l_l5p77_dex                             =v_l_l5p77_dex                             
+        +coeff[ 62]    *x21    *x44    
         +coeff[ 63]*x11*x23        *x51
-        +coeff[ 64]    *x24*x31*x41
-        +coeff[ 65]    *x21*x34*x41
+        +coeff[ 64]    *x24*x31*x41    
+        +coeff[ 65]    *x21*x34*x41    
         +coeff[ 66]    *x23    *x43*x51
         ;
 
@@ -1616,60 +1616,60 @@ float x_l5p77_fp                              (float *x,int m){
 //                 function
 
     float v_x_l5p77_fp                              =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
+        +coeff[  0]                    
+        +coeff[  1]*x11                
         +coeff[  2]                *x51
         +coeff[  3]                *x52
         +coeff[  4]    *x21        *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]    *x21
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]    *x21            
     ;
-    v_x_l5p77_fp                              =v_x_l5p77_fp
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x21*x31
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x42
-        +coeff[ 12]            *x41
+    v_x_l5p77_fp                              =v_x_l5p77_fp                              
+        +coeff[  8]*x11        *x41    
+        +coeff[  9]    *x21*x31        
+        +coeff[ 10]            *x42    
+        +coeff[ 11]    *x21    *x42    
+        +coeff[ 12]            *x41    
         +coeff[ 13]                *x53
         +coeff[ 14]    *x21    *x41*x51
-        +coeff[ 15]    *x23
+        +coeff[ 15]    *x23            
         +coeff[ 16]*x11            *x51
     ;
-    v_x_l5p77_fp                              =v_x_l5p77_fp
-        +coeff[ 17]*x11    *x31
+    v_x_l5p77_fp                              =v_x_l5p77_fp                              
+        +coeff[ 17]*x11    *x31        
         +coeff[ 18]            *x41*x51
-        +coeff[ 19]        *x31*x41
-        +coeff[ 20]*x12    *x31
+        +coeff[ 19]        *x31*x41    
+        +coeff[ 20]*x12    *x31        
         +coeff[ 21]    *x21        *x52
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]*x11*x23
-        +coeff[ 25]    *x23    *x41
+        +coeff[ 22]*x11*x22            
+        +coeff[ 23]    *x21*x31*x41    
+        +coeff[ 24]*x11*x23            
+        +coeff[ 25]    *x23    *x41    
     ;
-    v_x_l5p77_fp                              =v_x_l5p77_fp
+    v_x_l5p77_fp                              =v_x_l5p77_fp                              
         +coeff[ 26]    *x23*x31    *x51
-        +coeff[ 27]*x13*x22    *x41
-        +coeff[ 28]        *x31
+        +coeff[ 27]*x13*x22    *x41    
+        +coeff[ 28]        *x31        
         +coeff[ 29]        *x31    *x51
-        +coeff[ 30]*x12*x21
+        +coeff[ 30]*x12*x21            
         +coeff[ 31]    *x22        *x51
-        +coeff[ 32]    *x21*x32
-        +coeff[ 33]*x11*x22    *x41
+        +coeff[ 32]    *x21*x32        
+        +coeff[ 33]*x11*x22    *x41    
         +coeff[ 34]    *x21    *x42*x51
     ;
-    v_x_l5p77_fp                              =v_x_l5p77_fp
-        +coeff[ 35]    *x23*x31
-        +coeff[ 36]    *x22    *x42
+    v_x_l5p77_fp                              =v_x_l5p77_fp                              
+        +coeff[ 35]    *x23*x31        
+        +coeff[ 36]    *x22    *x42    
         +coeff[ 37]*x11            *x52
-        +coeff[ 38]*x11    *x31*x41
+        +coeff[ 38]*x11    *x31*x41    
         +coeff[ 39]    *x21*x31    *x51
         +coeff[ 40]*x11*x22        *x51
         +coeff[ 41]    *x22        *x52
-        +coeff[ 42]*x11*x22*x31
+        +coeff[ 42]*x11*x22*x31        
         +coeff[ 43]    *x23        *x51
     ;
-    v_x_l5p77_fp                              =v_x_l5p77_fp
+    v_x_l5p77_fp                              =v_x_l5p77_fp                              
         +coeff[ 44]    *x21*x31*x41*x51
         +coeff[ 45]*x13        *x41*x51
         +coeff[ 46]    *x23    *x41*x51
@@ -1737,65 +1737,65 @@ float t_l5p77_fp                              (float *x,int m){
 //                 function
 
     float v_t_l5p77_fp                              =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
-        +coeff[  4]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
+        +coeff[  4]            *x41    
         +coeff[  5]                *x51
         +coeff[  6]    *x21        *x51
         +coeff[  7]                *x52
     ;
-    v_t_l5p77_fp                              =v_t_l5p77_fp
-        +coeff[  8]    *x22
-        +coeff[  9]    *x21    *x41
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x42
+    v_t_l5p77_fp                              =v_t_l5p77_fp                              
+        +coeff[  8]    *x22            
+        +coeff[  9]    *x21    *x41    
+        +coeff[ 10]            *x42    
+        +coeff[ 11]    *x21    *x42    
         +coeff[ 12]    *x21    *x41*x51
         +coeff[ 13]    *x21        *x52
-        +coeff[ 14]*x11*x23
-        +coeff[ 15]        *x31*x41
+        +coeff[ 14]*x11*x23            
+        +coeff[ 15]        *x31*x41    
         +coeff[ 16]*x11            *x51
     ;
-    v_t_l5p77_fp                              =v_t_l5p77_fp
+    v_t_l5p77_fp                              =v_t_l5p77_fp                              
         +coeff[ 17]            *x41*x51
         +coeff[ 18]                *x53
         +coeff[ 19]        *x31    *x53
-        +coeff[ 20]    *x21*x31
-        +coeff[ 21]*x11        *x41
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x22    *x41
-        +coeff[ 24]*x11        *x42
+        +coeff[ 20]    *x21*x31        
+        +coeff[ 21]*x11        *x41    
+        +coeff[ 22]*x11*x22            
+        +coeff[ 23]    *x22    *x41    
+        +coeff[ 24]*x11        *x42    
         +coeff[ 25]    *x21*x31    *x51
     ;
-    v_t_l5p77_fp                              =v_t_l5p77_fp
-        +coeff[ 26]    *x23    *x41
-        +coeff[ 27]    *x22    *x42
-        +coeff[ 28]*x11    *x31
+    v_t_l5p77_fp                              =v_t_l5p77_fp                              
+        +coeff[ 26]    *x23    *x41    
+        +coeff[ 27]    *x22    *x42    
+        +coeff[ 28]*x11    *x31        
         +coeff[ 29]        *x31    *x51
-        +coeff[ 30]    *x22*x31
+        +coeff[ 30]    *x22*x31        
         +coeff[ 31]    *x22        *x51
         +coeff[ 32]            *x42*x51
         +coeff[ 33]*x11            *x52
         +coeff[ 34]    *x23        *x51
     ;
-    v_t_l5p77_fp                              =v_t_l5p77_fp
+    v_t_l5p77_fp                              =v_t_l5p77_fp                              
         +coeff[ 35]    *x21    *x42*x51
-        +coeff[ 36]    *x22    *x43
+        +coeff[ 36]    *x22    *x43    
         +coeff[ 37]*x13*x22        *x51
         +coeff[ 38]    *x23*x31*x41*x51
-        +coeff[ 39]*x12
-        +coeff[ 40]*x11*x21
-        +coeff[ 41]*x12*x21
-        +coeff[ 42]        *x31*x42
+        +coeff[ 39]*x12                
+        +coeff[ 40]*x11*x21            
+        +coeff[ 41]*x12*x21            
+        +coeff[ 42]        *x31*x42    
         +coeff[ 43]*x11    *x31    *x51
     ;
-    v_t_l5p77_fp                              =v_t_l5p77_fp
+    v_t_l5p77_fp                              =v_t_l5p77_fp                              
         +coeff[ 44]*x11        *x41*x51
         +coeff[ 45]            *x41*x52
-        +coeff[ 46]*x12*x21    *x41
-        +coeff[ 47]*x11*x21*x31*x41
-        +coeff[ 48]    *x21    *x43
+        +coeff[ 46]*x12*x21    *x41    
+        +coeff[ 47]*x11*x21*x31*x41    
+        +coeff[ 48]    *x21    *x43    
         +coeff[ 49]*x13            *x51
         ;
 
@@ -1875,123 +1875,123 @@ float y_l5p77_fp                              (float *x,int m){
 //                 function
 
     float v_y_l5p77_fp                              =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
         +coeff[  2]                *x51
-        +coeff[  3]    *x21    *x41
-        +coeff[  4]    *x22
-        +coeff[  5]*x11        *x41
+        +coeff[  3]    *x21    *x41    
+        +coeff[  4]    *x22            
+        +coeff[  5]*x11        *x41    
         +coeff[  6]            *x41*x51
-        +coeff[  7]*x11*x21
+        +coeff[  7]*x11*x21            
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[  8]    *x21        *x51
         +coeff[  9]        *x31    *x51
         +coeff[ 10]                *x52
-        +coeff[ 11]    *x22    *x41
+        +coeff[ 11]    *x22    *x41    
         +coeff[ 12]    *x21    *x41*x51
-        +coeff[ 13]            *x44
-        +coeff[ 14]        *x31*x43
+        +coeff[ 13]            *x44    
+        +coeff[ 14]        *x31*x43    
         +coeff[ 15]            *x41*x52
-        +coeff[ 16]*x11
+        +coeff[ 16]*x11                
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
-        +coeff[ 17]*x11*x21    *x41
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
+        +coeff[ 17]*x11*x21    *x41    
         +coeff[ 18]    *x22*x31    *x52
         +coeff[ 19]    *x22    *x41*x53
-        +coeff[ 20]        *x31
-        +coeff[ 21]            *x42
-        +coeff[ 22]        *x31*x41
-        +coeff[ 23]        *x32
-        +coeff[ 24]    *x21    *x42
-        +coeff[ 25]*x12
+        +coeff[ 20]        *x31        
+        +coeff[ 21]            *x42    
+        +coeff[ 22]        *x31*x41    
+        +coeff[ 23]        *x32        
+        +coeff[ 24]    *x21    *x42    
+        +coeff[ 25]*x12                
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[ 26]*x11            *x51
         +coeff[ 27]            *x42*x51
-        +coeff[ 28]    *x22*x31
-        +coeff[ 29]*x11*x21*x31
+        +coeff[ 28]    *x22*x31        
+        +coeff[ 29]*x11*x21*x31        
         +coeff[ 30]    *x22        *x51
         +coeff[ 31]*x11        *x41*x51
-        +coeff[ 32]    *x22    *x42
+        +coeff[ 32]    *x22    *x42    
         +coeff[ 33]*x11*x21        *x51
         +coeff[ 34]        *x31    *x52
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
-        +coeff[ 35]    *x22*x31*x41
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
+        +coeff[ 35]    *x22*x31*x41    
         +coeff[ 36]    *x23        *x51
-        +coeff[ 37]    *x23    *x42
+        +coeff[ 37]    *x23    *x42    
         +coeff[ 38]    *x21*x31    *x52
         +coeff[ 39]            *x41*x53
         +coeff[ 40]    *x23        *x52
-        +coeff[ 41]    *x21
-        +coeff[ 42]            *x43
-        +coeff[ 43]*x11        *x42
+        +coeff[ 41]    *x21            
+        +coeff[ 42]            *x43    
+        +coeff[ 43]*x11        *x42    
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
-        +coeff[ 44]    *x23
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
+        +coeff[ 44]    *x23            
         +coeff[ 45]        *x31*x41*x51
-        +coeff[ 46]*x11*x22
-        +coeff[ 47]*x11*x21    *x42
+        +coeff[ 46]*x11*x22            
+        +coeff[ 47]*x11*x21    *x42    
         +coeff[ 48]    *x21    *x42*x51
-        +coeff[ 49]    *x24
-        +coeff[ 50]*x11*x21*x31*x41
+        +coeff[ 49]    *x24            
+        +coeff[ 50]*x11*x21*x31*x41    
         +coeff[ 51]    *x22    *x41*x51
-        +coeff[ 52]*x11*x23
+        +coeff[ 52]*x11*x23            
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[ 53]    *x21    *x41*x52
-        +coeff[ 54]    *x21*x31
-        +coeff[ 55]*x11    *x31
-        +coeff[ 56]    *x21*x31*x41
-        +coeff[ 57]    *x21    *x43
-        +coeff[ 58]*x12        *x41
-        +coeff[ 59]    *x21*x31*x42
+        +coeff[ 54]    *x21*x31        
+        +coeff[ 55]*x11    *x31        
+        +coeff[ 56]    *x21*x31*x41    
+        +coeff[ 57]    *x21    *x43    
+        +coeff[ 58]*x12        *x41    
+        +coeff[ 59]    *x21*x31*x42    
         +coeff[ 60]*x11    *x31    *x51
         +coeff[ 61]            *x43*x51
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[ 62]*x11            *x52
         +coeff[ 63]                *x53
         +coeff[ 64]    *x22*x31    *x51
-        +coeff[ 65]*x12*x22
+        +coeff[ 65]*x12*x22            
         +coeff[ 66]    *x21    *x43*x51
         +coeff[ 67]    *x22    *x42*x51
         +coeff[ 68]    *x21        *x53
         +coeff[ 69]        *x31    *x53
         +coeff[ 70]    *x22    *x41*x52
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[ 71]*x11    *x31*x41*x52
         +coeff[ 72]            *x44*x52
-        +coeff[ 73]        *x31*x42
-        +coeff[ 74]        *x32*x41
+        +coeff[ 73]        *x31*x42    
+        +coeff[ 74]        *x32*x41    
         +coeff[ 75]    *x21*x31    *x51
         +coeff[ 76]        *x32    *x51
-        +coeff[ 77]*x12*x21
-        +coeff[ 78]*x12    *x31
+        +coeff[ 77]*x12*x21            
+        +coeff[ 78]*x12    *x31        
         +coeff[ 79]    *x21        *x52
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
-        +coeff[ 80]    *x23*x31
-        +coeff[ 81]    *x22*x32
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
+        +coeff[ 80]    *x23*x31        
+        +coeff[ 81]    *x22*x32        
         +coeff[ 82]*x12            *x51
-        +coeff[ 83]*x11*x22    *x41
+        +coeff[ 83]*x11*x22    *x41    
         +coeff[ 84]*x11        *x42*x51
-        +coeff[ 85]*x11*x21*x32
-        +coeff[ 86]    *x22    *x43
-        +coeff[ 87]*x12*x21    *x41
+        +coeff[ 85]*x11*x21*x32        
+        +coeff[ 86]    *x22    *x43    
+        +coeff[ 87]*x12*x21    *x41    
         +coeff[ 88]*x11*x21    *x41*x51
     ;
-    v_y_l5p77_fp                              =v_y_l5p77_fp
+    v_y_l5p77_fp                              =v_y_l5p77_fp                              
         +coeff[ 89]*x11*x21*x31    *x51
         +coeff[ 90]    *x22        *x52
-        +coeff[ 91]*x11    *x31*x43
+        +coeff[ 91]*x11    *x31*x43    
         +coeff[ 92]*x12        *x41*x51
         +coeff[ 93]*x11        *x41*x52
         +coeff[ 94]    *x21*x31*x42*x51
-        +coeff[ 95]    *x21*x34
-        +coeff[ 96]*x11*x23    *x41
+        +coeff[ 95]    *x21*x34        
+        +coeff[ 96]*x11*x23    *x41    
         ;
 
     return v_y_l5p77_fp                              ;
@@ -2072,112 +2072,112 @@ float p_l5p77_fp                              (float *x,int m){
 //                 function
 
     float v_p_l5p77_fp                              =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21*x31        
+        +coeff[  7]    *x21    *x41    
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
-        +coeff[  8]            *x42
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
+        +coeff[  8]            *x42    
         +coeff[  9]    *x21        *x51
         +coeff[ 10]        *x31    *x51
         +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
+        +coeff[ 12]*x11*x21            
         +coeff[ 13]                *x52
-        +coeff[ 14]*x11        *x41
-        +coeff[ 15]    *x22    *x41
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 14]*x11        *x41    
+        +coeff[ 15]    *x22    *x41    
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
         +coeff[ 17]    *x22        *x51
-        +coeff[ 18]    *x22*x31*x41
-        +coeff[ 19]        *x33*x41
-        +coeff[ 20]    *x25
-        +coeff[ 21]    *x24*x31
+        +coeff[ 18]    *x22*x31*x41    
+        +coeff[ 19]        *x33*x41    
+        +coeff[ 20]    *x25            
+        +coeff[ 21]    *x24*x31        
         +coeff[ 22]            *x43*x52
-        +coeff[ 23]        *x35*x41
-        +coeff[ 24]        *x32
-        +coeff[ 25]        *x31*x41
+        +coeff[ 23]        *x35*x41    
+        +coeff[ 24]        *x32        
+        +coeff[ 25]        *x31*x41    
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
-        +coeff[ 26]    *x22*x31
-        +coeff[ 27]*x12
-        +coeff[ 28]    *x24
-        +coeff[ 29]*x11*x21    *x41
-        +coeff[ 30]*x11*x23*x31
-        +coeff[ 31]*x11
-        +coeff[ 32]    *x23
-        +coeff[ 33]    *x21*x31*x41
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
+        +coeff[ 26]    *x22*x31        
+        +coeff[ 27]*x12                
+        +coeff[ 28]    *x24            
+        +coeff[ 29]*x11*x21    *x41    
+        +coeff[ 30]*x11*x23*x31        
+        +coeff[ 31]*x11                
+        +coeff[ 32]    *x23            
+        +coeff[ 33]    *x21*x31*x41    
         +coeff[ 34]*x11            *x51
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
         +coeff[ 35]            *x42*x51
-        +coeff[ 36]*x11*x22
-        +coeff[ 37]*x11*x21*x31
+        +coeff[ 36]*x11*x22            
+        +coeff[ 37]*x11*x21*x31        
         +coeff[ 38]        *x31    *x52
         +coeff[ 39]            *x41*x52
-        +coeff[ 40]*x11        *x42
+        +coeff[ 40]*x11        *x42    
         +coeff[ 41]*x11*x21        *x51
-        +coeff[ 42]*x11*x23
-        +coeff[ 43]    *x22    *x43
+        +coeff[ 42]*x11*x23            
+        +coeff[ 43]    *x22    *x43    
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
         +coeff[ 44]            *x41*x53
-        +coeff[ 45]            *x45
-        +coeff[ 46]*x11*x22    *x43
-        +coeff[ 47]*x11    *x31*x41
-        +coeff[ 48]    *x21    *x43
-        +coeff[ 49]*x11*x22*x31
-        +coeff[ 50]*x12        *x41
-        +coeff[ 51]*x11*x22    *x41
-        +coeff[ 52]*x12*x22
+        +coeff[ 45]            *x45    
+        +coeff[ 46]*x11*x22    *x43    
+        +coeff[ 47]*x11    *x31*x41    
+        +coeff[ 48]    *x21    *x43    
+        +coeff[ 49]*x11*x22*x31        
+        +coeff[ 50]*x12        *x41    
+        +coeff[ 51]*x11*x22    *x41    
+        +coeff[ 52]*x12*x22            
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
-        +coeff[ 53]*x12*x21    *x41
-        +coeff[ 54]    *x23*x31*x42
-        +coeff[ 55]*x13    *x31
-        +coeff[ 56]*x11    *x31
-        +coeff[ 57]        *x32*x41
-        +coeff[ 58]            *x43
-        +coeff[ 59]    *x22*x32
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
+        +coeff[ 53]*x12*x21    *x41    
+        +coeff[ 54]    *x23*x31*x42    
+        +coeff[ 55]*x13    *x31        
+        +coeff[ 56]*x11    *x31        
+        +coeff[ 57]        *x32*x41    
+        +coeff[ 58]            *x43    
+        +coeff[ 59]    *x22*x32        
         +coeff[ 60]*x11    *x31    *x51
-        +coeff[ 61]*x12    *x31
+        +coeff[ 61]*x12    *x31        
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
-        +coeff[ 62]*x11*x21*x31*x41
-        +coeff[ 63]*x11*x21    *x42
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
+        +coeff[ 62]*x11*x21*x31*x41    
+        +coeff[ 63]*x11*x21    *x42    
         +coeff[ 64]*x12            *x51
         +coeff[ 65]*x11*x21    *x41*x51
         +coeff[ 66]        *x31    *x53
         +coeff[ 67]    *x22    *x42*x51
         +coeff[ 68]    *x25        *x51
         +coeff[ 69]*x11*x22        *x52
-        +coeff[ 70]    *x26    *x41
+        +coeff[ 70]    *x26    *x41    
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
         +coeff[ 71]        *x31*x44*x51
-        +coeff[ 72]    *x25*x32*x41
+        +coeff[ 72]    *x25*x32*x41    
         +coeff[ 73]    *x21*x31    *x51
         +coeff[ 74]    *x21    *x41*x51
         +coeff[ 75]        *x32    *x51
-        +coeff[ 76]*x11    *x32
-        +coeff[ 77]    *x21*x31*x42
+        +coeff[ 76]*x11    *x32        
+        +coeff[ 77]    *x21*x31*x42    
         +coeff[ 78]*x11        *x41*x51
-        +coeff[ 79]*x12*x21
+        +coeff[ 79]*x12*x21            
     ;
-    v_p_l5p77_fp                              =v_p_l5p77_fp
+    v_p_l5p77_fp                              =v_p_l5p77_fp                              
         +coeff[ 80]    *x22        *x52
         +coeff[ 81]            *x43*x51
-        +coeff[ 82]*x11*x21*x32
-        +coeff[ 83]    *x23    *x42
-        +coeff[ 84]*x11        *x43
-        +coeff[ 85]    *x21    *x44
+        +coeff[ 82]*x11*x21*x32        
+        +coeff[ 83]    *x23    *x42    
+        +coeff[ 84]*x11        *x43    
+        +coeff[ 85]    *x21    *x44    
         +coeff[ 86]    *x23        *x52
-        +coeff[ 87]    *x25*x31
+        +coeff[ 87]    *x25*x31        
         ;
 
     return v_p_l5p77_fp                              ;
@@ -2253,105 +2253,105 @@ float l_l5p77_fp                              (float *x,int m){
 //                 function
 
     float v_l_l5p77_fp                              =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]*x11
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
+        +coeff[  4]*x11                
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21    *x41    
         +coeff[  7]                *x52
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]    *x21*x31
-        +coeff[ 11]*x11*x21
-        +coeff[ 12]*x11    *x31
-        +coeff[ 13]    *x23
-        +coeff[ 14]    *x22    *x41
-        +coeff[ 15]    *x21    *x42
-        +coeff[ 16]*x11*x22
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
+        +coeff[  8]*x11        *x41    
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]    *x21*x31        
+        +coeff[ 11]*x11*x21            
+        +coeff[ 12]*x11    *x31        
+        +coeff[ 13]    *x23            
+        +coeff[ 14]    *x22    *x41    
+        +coeff[ 15]    *x21    *x42    
+        +coeff[ 16]*x11*x22            
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
-        +coeff[ 17]            *x44
-        +coeff[ 18]    *x22*x33
-        +coeff[ 19]    *x23*x31*x41
-        +coeff[ 20]            *x42
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
+        +coeff[ 17]            *x44    
+        +coeff[ 18]    *x22*x33        
+        +coeff[ 19]    *x23*x31*x41    
+        +coeff[ 20]            *x42    
         +coeff[ 21]    *x21        *x51
         +coeff[ 22]            *x41*x51
         +coeff[ 23]*x11            *x51
-        +coeff[ 24]    *x21*x31*x41
+        +coeff[ 24]    *x21*x31*x41    
         +coeff[ 25]    *x21        *x52
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
         +coeff[ 26]                *x53
-        +coeff[ 27]*x12*x21
-        +coeff[ 28]    *x23    *x41
-        +coeff[ 29]*x11*x22    *x41
-        +coeff[ 30]        *x31
-        +coeff[ 31]    *x22*x31
-        +coeff[ 32]    *x21*x32
-        +coeff[ 33]*x11        *x42
-        +coeff[ 34]*x11*x22*x31
+        +coeff[ 27]*x12*x21            
+        +coeff[ 28]    *x23    *x41    
+        +coeff[ 29]*x11*x22    *x41    
+        +coeff[ 30]        *x31        
+        +coeff[ 31]    *x22*x31        
+        +coeff[ 32]    *x21*x32        
+        +coeff[ 33]*x11        *x42    
+        +coeff[ 34]*x11*x22*x31        
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
-        +coeff[ 35]*x11*x22*x31*x41
-        +coeff[ 36]*x11    *x33*x41
-        +coeff[ 37]*x12
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
+        +coeff[ 35]*x11*x22*x31*x41    
+        +coeff[ 36]*x11    *x33*x41    
+        +coeff[ 37]*x12                
         +coeff[ 38]        *x31*x41*x51
-        +coeff[ 39]*x11*x21    *x41
-        +coeff[ 40]*x11    *x31*x41
-        +coeff[ 41]    *x24
-        +coeff[ 42]*x12*x21    *x41
-        +coeff[ 43]        *x31*x41
+        +coeff[ 39]*x11*x21    *x41    
+        +coeff[ 40]*x11    *x31*x41    
+        +coeff[ 41]    *x24            
+        +coeff[ 42]*x12*x21    *x41    
+        +coeff[ 43]        *x31*x41    
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
         +coeff[ 44]    *x21*x31    *x51
         +coeff[ 45]    *x21    *x41*x51
-        +coeff[ 46]*x11    *x32
+        +coeff[ 46]*x11    *x32        
         +coeff[ 47]*x11        *x41*x51
-        +coeff[ 48]    *x22    *x42
-        +coeff[ 49]    *x21*x31*x42
-        +coeff[ 50]    *x21    *x43
+        +coeff[ 48]    *x22    *x42    
+        +coeff[ 49]    *x21*x31*x42    
+        +coeff[ 50]    *x21    *x43    
         +coeff[ 51]    *x21*x31*x41*x51
-        +coeff[ 52]*x11*x23
+        +coeff[ 52]*x11*x23            
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
-        +coeff[ 53]*x12*x21*x31
-        +coeff[ 54]    *x24    *x41
-        +coeff[ 55]    *x21    *x44
-        +coeff[ 56]    *x24*x31*x41
-        +coeff[ 57]    *x23*x32*x41
-        +coeff[ 58]            *x43
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
+        +coeff[ 53]*x12*x21*x31        
+        +coeff[ 54]    *x24    *x41    
+        +coeff[ 55]    *x21    *x44    
+        +coeff[ 56]    *x24*x31*x41    
+        +coeff[ 57]    *x23*x32*x41    
+        +coeff[ 58]            *x43    
         +coeff[ 59]    *x22        *x51
         +coeff[ 60]            *x41*x52
         +coeff[ 61]*x11    *x31    *x51
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
         +coeff[ 62]*x11            *x52
-        +coeff[ 63]*x12    *x31
-        +coeff[ 64]*x13
-        +coeff[ 65]    *x22*x32
-        +coeff[ 66]    *x22*x31*x41
-        +coeff[ 67]    *x21*x32*x41
+        +coeff[ 63]*x12    *x31        
+        +coeff[ 64]*x13                
+        +coeff[ 65]    *x22*x32        
+        +coeff[ 66]    *x22*x31*x41    
+        +coeff[ 67]    *x21*x32*x41    
         +coeff[ 68]    *x23        *x51
         +coeff[ 69]    *x21    *x42*x51
         +coeff[ 70]    *x21    *x41*x52
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
         +coeff[ 71]            *x42*x52
         +coeff[ 72]    *x21        *x53
         +coeff[ 73]                *x54
         +coeff[ 74]*x11*x21    *x41*x51
         +coeff[ 75]*x11        *x42*x51
-        +coeff[ 76]    *x24*x31
-        +coeff[ 77]        *x33*x42
-        +coeff[ 78]*x11*x23    *x41
-        +coeff[ 79]*x13*x21    *x42
+        +coeff[ 76]    *x24*x31        
+        +coeff[ 77]        *x33*x42    
+        +coeff[ 78]*x11*x23    *x41    
+        +coeff[ 79]*x13*x21    *x42    
     ;
-    v_l_l5p77_fp                              =v_l_l5p77_fp
-        +coeff[ 80]    *x23*x31*x43
+    v_l_l5p77_fp                              =v_l_l5p77_fp                              
+        +coeff[ 80]    *x23*x31*x43    
         ;
 
     return v_l_l5p77_fp                              ;
@@ -2412,56 +2412,56 @@ float x_l5p77_q1en                            (float *x,int m){
 //                 function
 
     float v_x_l5p77_q1en                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
+        +coeff[  0]                    
+        +coeff[  1]*x11                
         +coeff[  2]                *x51
-        +coeff[  3]    *x21
-        +coeff[  4]    *x21    *x41
-        +coeff[  5]    *x21*x31
-        +coeff[  6]            *x41
-        +coeff[  7]*x11        *x41
+        +coeff[  3]    *x21            
+        +coeff[  4]    *x21    *x41    
+        +coeff[  5]    *x21*x31        
+        +coeff[  6]            *x41    
+        +coeff[  7]*x11        *x41    
     ;
-    v_x_l5p77_q1en                            =v_x_l5p77_q1en
-        +coeff[  8]        *x31
-        +coeff[  9]*x11    *x31
-        +coeff[ 10]    *x23
-        +coeff[ 11]    *x21    *x42
-        +coeff[ 12]*x13*x22
-        +coeff[ 13]*x12*x21*x31*x41
-        +coeff[ 14]    *x23*x31*x41
+    v_x_l5p77_q1en                            =v_x_l5p77_q1en                            
+        +coeff[  8]        *x31        
+        +coeff[  9]*x11    *x31        
+        +coeff[ 10]    *x23            
+        +coeff[ 11]    *x21    *x42    
+        +coeff[ 12]*x13*x22            
+        +coeff[ 13]*x12*x21*x31*x41    
+        +coeff[ 14]    *x23*x31*x41    
         +coeff[ 15]    *x21        *x51
-        +coeff[ 16]*x13
+        +coeff[ 16]*x13                
     ;
-    v_x_l5p77_q1en                            =v_x_l5p77_q1en
-        +coeff[ 17]*x11*x22
-        +coeff[ 18]    *x23    *x41
-        +coeff[ 19]*x11*x22*x31*x41
-        +coeff[ 20]*x11*x22    *x42
-        +coeff[ 21]*x11*x22    *x43
-        +coeff[ 22]    *x22
-        +coeff[ 23]*x12*x21
-        +coeff[ 24]*x11        *x42
+    v_x_l5p77_q1en                            =v_x_l5p77_q1en                            
+        +coeff[ 17]*x11*x22            
+        +coeff[ 18]    *x23    *x41    
+        +coeff[ 19]*x11*x22*x31*x41    
+        +coeff[ 20]*x11*x22    *x42    
+        +coeff[ 21]*x11*x22    *x43    
+        +coeff[ 22]    *x22            
+        +coeff[ 23]*x12*x21            
+        +coeff[ 24]*x11        *x42    
         +coeff[ 25]    *x21    *x41*x51
     ;
-    v_x_l5p77_q1en                            =v_x_l5p77_q1en
-        +coeff[ 26]    *x21*x32
-        +coeff[ 27]    *x21*x31*x41
-        +coeff[ 28]*x11*x22    *x41
-        +coeff[ 29]    *x23*x31
-        +coeff[ 30]    *x21    *x43
-        +coeff[ 31]    *x23*x31*x42
+    v_x_l5p77_q1en                            =v_x_l5p77_q1en                            
+        +coeff[ 26]    *x21*x32        
+        +coeff[ 27]    *x21*x31*x41    
+        +coeff[ 28]*x11*x22    *x41    
+        +coeff[ 29]    *x23*x31        
+        +coeff[ 30]    *x21    *x43    
+        +coeff[ 31]    *x23*x31*x42    
         +coeff[ 32]*x11            *x51
-        +coeff[ 33]*x11*x21
-        +coeff[ 34]            *x42
+        +coeff[ 33]*x11*x21            
+        +coeff[ 34]            *x42    
     ;
-    v_x_l5p77_q1en                            =v_x_l5p77_q1en
-        +coeff[ 35]*x11    *x31*x41
+    v_x_l5p77_q1en                            =v_x_l5p77_q1en                            
+        +coeff[ 35]*x11    *x31*x41    
         +coeff[ 36]    *x21*x31    *x51
-        +coeff[ 37]*x12*x21    *x41
-        +coeff[ 38]*x11*x22*x31
-        +coeff[ 39]        *x33*x41
-        +coeff[ 40]    *x21*x31*x42
-        +coeff[ 41]    *x23*x32*x41
+        +coeff[ 37]*x12*x21    *x41    
+        +coeff[ 38]*x11*x22*x31        
+        +coeff[ 39]        *x33*x41    
+        +coeff[ 40]    *x21*x31*x42    
+        +coeff[ 41]    *x23*x32*x41    
         ;
 
     return v_x_l5p77_q1en                            ;
@@ -2524,66 +2524,66 @@ float t_l5p77_q1en                            (float *x,int m){
 //                 function
 
     float v_t_l5p77_q1en                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]    *x21    *x41
-        +coeff[  4]*x12*x21*x31
-        +coeff[  5]    *x23*x31
-        +coeff[  6]*x13        *x41
-        +coeff[  7]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]    *x21    *x41    
+        +coeff[  4]*x12*x21*x31        
+        +coeff[  5]    *x23*x31        
+        +coeff[  6]*x13        *x41    
+        +coeff[  7]            *x41    
     ;
-    v_t_l5p77_q1en                            =v_t_l5p77_q1en
-        +coeff[  8]*x11    *x31
-        +coeff[  9]    *x21*x31
-        +coeff[ 10]*x11        *x41
-        +coeff[ 11]    *x23
-        +coeff[ 12]    *x21    *x42
-        +coeff[ 13]    *x23*x31*x41
-        +coeff[ 14]        *x31
+    v_t_l5p77_q1en                            =v_t_l5p77_q1en                            
+        +coeff[  8]*x11    *x31        
+        +coeff[  9]    *x21*x31        
+        +coeff[ 10]*x11        *x41    
+        +coeff[ 11]    *x23            
+        +coeff[ 12]    *x21    *x42    
+        +coeff[ 13]    *x23*x31*x41    
+        +coeff[ 14]        *x31        
         +coeff[ 15]    *x21        *x51
-        +coeff[ 16]*x11*x22
+        +coeff[ 16]*x11*x22            
     ;
-    v_t_l5p77_q1en                            =v_t_l5p77_q1en
-        +coeff[ 17]    *x23    *x41
-        +coeff[ 18]*x13*x22    *x41
+    v_t_l5p77_q1en                            =v_t_l5p77_q1en                            
+        +coeff[ 17]    *x23    *x41    
+        +coeff[ 18]*x13*x22    *x41    
         +coeff[ 19]                *x51
-        +coeff[ 20]    *x22
-        +coeff[ 21]*x12*x21
-        +coeff[ 22]    *x21*x31*x41
-        +coeff[ 23]*x11        *x42
+        +coeff[ 20]    *x22            
+        +coeff[ 21]*x12*x21            
+        +coeff[ 22]    *x21*x31*x41    
+        +coeff[ 23]*x11        *x42    
         +coeff[ 24]    *x21    *x41*x51
-        +coeff[ 25]*x11*x22    *x41
+        +coeff[ 25]*x11*x22    *x41    
     ;
-    v_t_l5p77_q1en                            =v_t_l5p77_q1en
-        +coeff[ 26]    *x21    *x43
-        +coeff[ 27]*x11*x21
-        +coeff[ 28]            *x42
+    v_t_l5p77_q1en                            =v_t_l5p77_q1en                            
+        +coeff[ 26]    *x21    *x43    
+        +coeff[ 27]*x11*x21            
+        +coeff[ 28]            *x42    
         +coeff[ 29]*x11            *x51
-        +coeff[ 30]    *x21*x32
-        +coeff[ 31]*x11    *x31*x41
-        +coeff[ 32]*x11*x22*x31
-        +coeff[ 33]*x12*x21    *x41
-        +coeff[ 34]        *x33*x41
+        +coeff[ 30]    *x21*x32        
+        +coeff[ 31]*x11    *x31*x41    
+        +coeff[ 32]*x11*x22*x31        
+        +coeff[ 33]*x12*x21    *x41    
+        +coeff[ 34]        *x33*x41    
     ;
-    v_t_l5p77_q1en                            =v_t_l5p77_q1en
-        +coeff[ 35]    *x21*x31*x42
-        +coeff[ 36]        *x31*x41
-        +coeff[ 37]    *x22    *x41
+    v_t_l5p77_q1en                            =v_t_l5p77_q1en                            
+        +coeff[ 35]    *x21*x31*x42    
+        +coeff[ 36]        *x31*x41    
+        +coeff[ 37]    *x22    *x41    
         +coeff[ 38]    *x21*x31    *x51
-        +coeff[ 39]    *x21*x32*x41
-        +coeff[ 40]        *x32
+        +coeff[ 39]    *x21*x32*x41    
+        +coeff[ 40]        *x32        
         +coeff[ 41]            *x41*x51
-        +coeff[ 42]    *x22*x31
-        +coeff[ 43]*x11    *x32
+        +coeff[ 42]    *x22*x31        
+        +coeff[ 43]*x11    *x32        
     ;
-    v_t_l5p77_q1en                            =v_t_l5p77_q1en
-        +coeff[ 44]*x11*x21    *x41
+    v_t_l5p77_q1en                            =v_t_l5p77_q1en                            
+        +coeff[ 44]*x11*x21    *x41    
         +coeff[ 45]*x11        *x41*x51
-        +coeff[ 46]*x11        *x43
-        +coeff[ 47]    *x23    *x42
-        +coeff[ 48]*x11    *x31*x43
-        +coeff[ 49]*x13    *x31*x42
+        +coeff[ 46]*x11        *x43    
+        +coeff[ 47]    *x23    *x42    
+        +coeff[ 48]*x11    *x31*x43    
+        +coeff[ 49]*x13    *x31*x42    
         ;
 
     return v_t_l5p77_q1en                            ;
@@ -2663,123 +2663,123 @@ float y_l5p77_q1en                            (float *x,int m){
 //                 function
 
     float v_y_l5p77_q1en                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]        *x31        
         +coeff[  3]                *x51
-        +coeff[  4]    *x22
-        +coeff[  5]*x11*x21
-        +coeff[  6]    *x21
-        +coeff[  7]            *x42
+        +coeff[  4]    *x22            
+        +coeff[  5]*x11*x21            
+        +coeff[  6]    *x21            
+        +coeff[  7]            *x42    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[  8]    *x22    *x41
-        +coeff[  9]        *x31*x41
-        +coeff[ 10]*x11*x21    *x41
-        +coeff[ 11]*x11
-        +coeff[ 12]*x12
-        +coeff[ 13]    *x22*x31
-        +coeff[ 14]*x11*x21*x31
-        +coeff[ 15]    *x22    *x42
-        +coeff[ 16]    *x21    *x41
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[  8]    *x22    *x41    
+        +coeff[  9]        *x31*x41    
+        +coeff[ 10]*x11*x21    *x41    
+        +coeff[ 11]*x11                
+        +coeff[ 12]*x12                
+        +coeff[ 13]    *x22*x31        
+        +coeff[ 14]*x11*x21*x31        
+        +coeff[ 15]    *x22    *x42    
+        +coeff[ 16]    *x21    *x41    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 17]        *x32
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 17]        *x32        
         +coeff[ 18]                *x52
-        +coeff[ 19]    *x22*x31*x41
-        +coeff[ 20]*x11*x21    *x42
-        +coeff[ 21]*x11*x21*x31*x41
-        +coeff[ 22]    *x21*x31
+        +coeff[ 19]    *x22*x31*x41    
+        +coeff[ 20]*x11*x21    *x42    
+        +coeff[ 21]*x11*x21*x31*x41    
+        +coeff[ 22]    *x21*x31        
         +coeff[ 23]            *x41*x51
-        +coeff[ 24]            *x43
-        +coeff[ 25]        *x31*x42
+        +coeff[ 24]            *x43    
+        +coeff[ 25]        *x31*x42    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
         +coeff[ 26]    *x22        *x51
-        +coeff[ 27]*x12        *x41
+        +coeff[ 27]*x12        *x41    
         +coeff[ 28]*x11*x21        *x51
-        +coeff[ 29]    *x24
-        +coeff[ 30]*x11*x23
-        +coeff[ 31]*x11        *x41
+        +coeff[ 29]    *x24            
+        +coeff[ 30]*x11*x23            
+        +coeff[ 31]*x11        *x41    
         +coeff[ 32]    *x21        *x51
         +coeff[ 33]        *x31    *x51
-        +coeff[ 34]        *x32*x41
+        +coeff[ 34]        *x32*x41    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 35]*x12    *x31
-        +coeff[ 36]    *x22*x32
-        +coeff[ 37]*x12*x22
-        +coeff[ 38]*x11    *x31
-        +coeff[ 39]    *x21    *x42
-        +coeff[ 40]    *x21*x31*x41
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 35]*x12    *x31        
+        +coeff[ 36]    *x22*x32        
+        +coeff[ 37]*x12*x22            
+        +coeff[ 38]*x11    *x31        
+        +coeff[ 39]    *x21    *x42    
+        +coeff[ 40]    *x21*x31*x41    
         +coeff[ 41]            *x42*x51
-        +coeff[ 42]    *x23
+        +coeff[ 42]    *x23            
         +coeff[ 43]        *x31*x41*x51
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 44]*x11*x22
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 44]*x11*x22            
         +coeff[ 45]    *x22    *x41*x51
-        +coeff[ 46]*x12        *x42
-        +coeff[ 47]*x11*x21*x32
-        +coeff[ 48]    *x22    *x43
-        +coeff[ 49]*x12    *x31*x41
-        +coeff[ 50]    *x22*x31*x42
-        +coeff[ 51]    *x24    *x41
-        +coeff[ 52]    *x22*x32*x41
+        +coeff[ 46]*x12        *x42    
+        +coeff[ 47]*x11*x21*x32        
+        +coeff[ 48]    *x22    *x43    
+        +coeff[ 49]*x12    *x31*x41    
+        +coeff[ 50]    *x22*x31*x42    
+        +coeff[ 51]    *x24    *x41    
+        +coeff[ 52]    *x22*x32*x41    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 53]*x11*x23    *x41
-        +coeff[ 54]*x12*x22    *x41
-        +coeff[ 55]        *x33
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 53]*x11*x23    *x41    
+        +coeff[ 54]*x12*x22    *x41    
+        +coeff[ 55]        *x33        
         +coeff[ 56]*x12            *x51
         +coeff[ 57]*x11*x21    *x41*x51
-        +coeff[ 58]*x11*x21    *x43
-        +coeff[ 59]*x11*x21*x31*x42
-        +coeff[ 60]*x13*x21
-        +coeff[ 61]    *x24*x31
+        +coeff[ 58]*x11*x21    *x43    
+        +coeff[ 59]*x11*x21*x31*x42    
+        +coeff[ 60]*x13*x21            
+        +coeff[ 61]    *x24*x31        
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 62]*x11*x21*x32*x41
-        +coeff[ 63]*x11*x23*x31
-        +coeff[ 64]*x12*x22*x31
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 62]*x11*x21*x32*x41    
+        +coeff[ 63]*x11*x23*x31        
+        +coeff[ 64]*x12*x22*x31        
         +coeff[ 65]*x11            *x51
-        +coeff[ 66]    *x21*x32
+        +coeff[ 66]    *x21*x32        
         +coeff[ 67]        *x32    *x51
-        +coeff[ 68]*x12*x21
-        +coeff[ 69]*x11        *x43
-        +coeff[ 70]    *x23    *x41
+        +coeff[ 68]*x12*x21            
+        +coeff[ 69]*x11        *x43    
+        +coeff[ 70]    *x23    *x41    
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 71]*x11    *x31*x42
-        +coeff[ 72]    *x23*x31
-        +coeff[ 73]            *x45
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 71]*x11    *x31*x42    
+        +coeff[ 72]    *x23*x31        
+        +coeff[ 73]            *x45    
         +coeff[ 74]                *x53
-        +coeff[ 75]*x11*x22    *x41
-        +coeff[ 76]*x11*x22*x31
+        +coeff[ 75]*x11*x22    *x41    
+        +coeff[ 76]*x11*x22*x31        
         +coeff[ 77]    *x22*x31    *x51
-        +coeff[ 78]*x12    *x32
+        +coeff[ 78]*x12    *x32        
         +coeff[ 79]*x11*x21*x31    *x51
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 80]    *x22*x33
-        +coeff[ 81]    *x24    *x42
-        +coeff[ 82]    *x24*x31*x41
-        +coeff[ 83]*x11*x23    *x42
-        +coeff[ 84]*x11*x23*x31*x41
-        +coeff[ 85]    *x22*x31*x44
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 80]    *x22*x33        
+        +coeff[ 81]    *x24    *x42    
+        +coeff[ 82]    *x24*x31*x41    
+        +coeff[ 83]*x11*x23    *x42    
+        +coeff[ 84]*x11*x23*x31*x41    
+        +coeff[ 85]    *x22*x31*x44    
         +coeff[ 86]    *x22    *x44*x51
         +coeff[ 87]*x11*x23*x31    *x51
         +coeff[ 88]    *x22*x31*x43*x51
     ;
-    v_y_l5p77_q1en                            =v_y_l5p77_q1en
-        +coeff[ 89]*x11    *x31*x41
+    v_y_l5p77_q1en                            =v_y_l5p77_q1en                            
+        +coeff[ 89]*x11    *x31*x41    
         +coeff[ 90]    *x21    *x41*x51
         +coeff[ 91]    *x21*x31    *x51
-        +coeff[ 92]    *x21    *x43
-        +coeff[ 93]        *x31*x43
-        +coeff[ 94]    *x21*x31*x42
-        +coeff[ 95]        *x32*x42
-        +coeff[ 96]    *x21*x32*x41
+        +coeff[ 92]    *x21    *x43    
+        +coeff[ 93]        *x31*x43    
+        +coeff[ 94]    *x21*x31*x42    
+        +coeff[ 95]        *x32*x42    
+        +coeff[ 96]    *x21*x32*x41    
         ;
 
     return v_y_l5p77_q1en                            ;
@@ -2844,63 +2844,63 @@ float p_l5p77_q1en                            (float *x,int m){
 //                 function
 
     float v_p_l5p77_q1en                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]            *x42
-        +coeff[  7]*x11*x21
+        +coeff[  5]    *x22            
+        +coeff[  6]            *x42    
+        +coeff[  7]*x11*x21            
     ;
-    v_p_l5p77_q1en                            =v_p_l5p77_q1en
-        +coeff[  8]    *x22    *x41
-        +coeff[  9]        *x31*x41
-        +coeff[ 10]*x11*x21    *x41
-        +coeff[ 11]*x11
-        +coeff[ 12]    *x21    *x41
+    v_p_l5p77_q1en                            =v_p_l5p77_q1en                            
+        +coeff[  8]    *x22    *x41    
+        +coeff[  9]        *x31*x41    
+        +coeff[ 10]*x11*x21    *x41    
+        +coeff[ 11]*x11                
+        +coeff[ 12]    *x21    *x41    
         +coeff[ 13]                *x52
-        +coeff[ 14]    *x22*x31
-        +coeff[ 15]*x12
-        +coeff[ 16]*x11*x21*x31
+        +coeff[ 14]    *x22*x31        
+        +coeff[ 15]*x12                
+        +coeff[ 16]*x11*x21*x31        
     ;
-    v_p_l5p77_q1en                            =v_p_l5p77_q1en
-        +coeff[ 17]    *x22    *x42
-        +coeff[ 18]    *x24*x31*x41
-        +coeff[ 19]        *x32
+    v_p_l5p77_q1en                            =v_p_l5p77_q1en                            
+        +coeff[ 17]    *x22    *x42    
+        +coeff[ 18]    *x24*x31*x41    
+        +coeff[ 19]        *x32        
         +coeff[ 20]    *x22        *x51
-        +coeff[ 21]*x11*x21    *x42
-        +coeff[ 22]*x11*x23*x31*x41
-        +coeff[ 23]    *x21*x31
+        +coeff[ 21]*x11*x21    *x42    
+        +coeff[ 22]*x11*x23*x31*x41    
+        +coeff[ 23]    *x21*x31        
         +coeff[ 24]            *x41*x51
-        +coeff[ 25]*x11        *x41
+        +coeff[ 25]*x11        *x41    
     ;
-    v_p_l5p77_q1en                            =v_p_l5p77_q1en
-        +coeff[ 26]            *x43
-        +coeff[ 27]    *x24
-        +coeff[ 28]    *x22*x31*x41
+    v_p_l5p77_q1en                            =v_p_l5p77_q1en                            
+        +coeff[ 26]            *x43    
+        +coeff[ 27]    *x24            
+        +coeff[ 28]    *x22*x31*x41    
         +coeff[ 29]*x11*x21        *x51
-        +coeff[ 30]        *x31*x43
-        +coeff[ 31]*x11*x23
-        +coeff[ 32]*x12        *x41
-        +coeff[ 33]*x11*x21*x31*x41
-        +coeff[ 34]*x12*x22
+        +coeff[ 30]        *x31*x43    
+        +coeff[ 31]*x11*x23            
+        +coeff[ 32]*x12        *x41    
+        +coeff[ 33]*x11*x21*x31*x41    
+        +coeff[ 34]*x12*x22            
     ;
-    v_p_l5p77_q1en                            =v_p_l5p77_q1en
-        +coeff[ 35]        *x31*x44
-        +coeff[ 36]    *x22*x32*x42
+    v_p_l5p77_q1en                            =v_p_l5p77_q1en                            
+        +coeff[ 35]        *x31*x44    
+        +coeff[ 36]    *x22*x32*x42    
         +coeff[ 37]    *x21        *x51
         +coeff[ 38]        *x31    *x51
-        +coeff[ 39]    *x23
-        +coeff[ 40]    *x21    *x42
-        +coeff[ 41]        *x31*x42
+        +coeff[ 39]    *x23            
+        +coeff[ 40]    *x21    *x42    
+        +coeff[ 41]        *x31*x42    
         +coeff[ 42]            *x42*x51
-        +coeff[ 43]    *x22*x32
+        +coeff[ 43]    *x22*x32        
     ;
-    v_p_l5p77_q1en                            =v_p_l5p77_q1en
-        +coeff[ 44]*x12    *x31
-        +coeff[ 45]*x11*x21*x32
-        +coeff[ 46]        *x34*x41
+    v_p_l5p77_q1en                            =v_p_l5p77_q1en                            
+        +coeff[ 44]*x12    *x31        
+        +coeff[ 45]*x11*x21*x32        
+        +coeff[ 46]        *x34*x41    
         ;
 
     return v_p_l5p77_q1en                            ;
@@ -2967,76 +2967,76 @@ float l_l5p77_q1en                            (float *x,int m){
 //                 function
 
     float v_l_l5p77_q1en                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x22
-        +coeff[  3]        *x32
-        +coeff[  4]        *x31*x41
-        +coeff[  5]            *x42
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x22            
+        +coeff[  3]        *x32        
+        +coeff[  4]        *x31*x41    
+        +coeff[  5]            *x42    
         +coeff[  6]*x11            *x51
-        +coeff[  7]    *x22*x31
+        +coeff[  7]    *x22*x31        
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[  8]        *x33
-        +coeff[  9]        *x31*x42
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[  8]        *x33        
+        +coeff[  9]        *x31*x42    
         +coeff[ 10]        *x32    *x51
         +coeff[ 11]        *x31    *x52
-        +coeff[ 12]*x12    *x31
+        +coeff[ 12]*x12    *x31        
         +coeff[ 13]            *x43*x51
-        +coeff[ 14]    *x24*x31
-        +coeff[ 15]    *x22*x33
-        +coeff[ 16]        *x34*x41
+        +coeff[ 14]    *x24*x31        
+        +coeff[ 15]    *x22*x33        
+        +coeff[ 16]        *x34*x41    
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[ 17]        *x33*x42
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[ 17]        *x33*x42    
         +coeff[ 18]        *x33    *x52
-        +coeff[ 19]*x12    *x33
-        +coeff[ 20]    *x24*x33
-        +coeff[ 21]    *x22*x34*x41
-        +coeff[ 22]    *x21
-        +coeff[ 23]        *x31
+        +coeff[ 19]*x12    *x33        
+        +coeff[ 20]    *x24*x33        
+        +coeff[ 21]    *x22*x34*x41    
+        +coeff[ 22]    *x21            
+        +coeff[ 23]        *x31        
         +coeff[ 24]                *x51
-        +coeff[ 25]*x11*x21
+        +coeff[ 25]*x11*x21            
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[ 26]    *x22    *x41
-        +coeff[ 27]*x11*x21    *x41
-        +coeff[ 28]    *x21    *x41
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[ 26]    *x22    *x41    
+        +coeff[ 27]*x11*x21    *x41    
+        +coeff[ 28]    *x21    *x41    
         +coeff[ 29]            *x41*x51
-        +coeff[ 30]            *x43
-        +coeff[ 31]    *x22    *x42
-        +coeff[ 32]    *x24*x31*x41
-        +coeff[ 33]*x11*x21*x31
-        +coeff[ 34]    *x24
+        +coeff[ 30]            *x43    
+        +coeff[ 31]    *x22    *x42    
+        +coeff[ 32]    *x24*x31*x41    
+        +coeff[ 33]*x11*x21*x31        
+        +coeff[ 34]    *x24            
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[ 35]*x11*x23
-        +coeff[ 36]*x11*x21    *x42
-        +coeff[ 37]*x11*x23*x31*x41
-        +coeff[ 38]*x11
-        +coeff[ 39]    *x21*x31
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[ 35]*x11*x23            
+        +coeff[ 36]*x11*x21    *x42    
+        +coeff[ 37]*x11*x23*x31*x41    
+        +coeff[ 38]*x11                
+        +coeff[ 39]    *x21*x31        
         +coeff[ 40]                *x52
-        +coeff[ 41]*x11        *x41
-        +coeff[ 42]    *x24    *x41
-        +coeff[ 43]    *x22    *x43
+        +coeff[ 41]*x11        *x41    
+        +coeff[ 42]    *x24    *x41    
+        +coeff[ 43]    *x22    *x43    
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[ 44]*x11*x23    *x41
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[ 44]*x11*x23    *x41    
         +coeff[ 45]        *x31    *x51
-        +coeff[ 46]*x12
-        +coeff[ 47]    *x23
+        +coeff[ 46]*x12                
+        +coeff[ 47]    *x23            
         +coeff[ 48]    *x22        *x51
         +coeff[ 49]*x11*x21        *x51
-        +coeff[ 50]*x12        *x41
-        +coeff[ 51]    *x22*x31*x41
-        +coeff[ 52]*x11*x21*x31*x41
+        +coeff[ 50]*x12        *x41    
+        +coeff[ 51]    *x22*x31*x41    
+        +coeff[ 52]*x11*x21*x31*x41    
     ;
-    v_l_l5p77_q1en                            =v_l_l5p77_q1en
-        +coeff[ 53]*x12*x22
-        +coeff[ 54]    *x22*x31*x42
+    v_l_l5p77_q1en                            =v_l_l5p77_q1en                            
+        +coeff[ 53]*x12*x22            
+        +coeff[ 54]    *x22*x31*x42    
         +coeff[ 55]            *x43*x52
-        +coeff[ 56]*x12*x22    *x41
-        +coeff[ 57]    *x24*x32
+        +coeff[ 56]*x12*x22    *x41    
+        +coeff[ 57]    *x24*x32        
         ;
 
     return v_l_l5p77_q1en                            ;
@@ -3099,64 +3099,64 @@ float x_l5p77_q1ex                            (float *x,int m){
 //                 function
 
     float v_x_l5p77_q1ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
         +coeff[  3]    *x21        *x51
-        +coeff[  4]    *x21    *x41
-        +coeff[  5]*x12*x21*x31
-        +coeff[  6]            *x41
-        +coeff[  7]*x11        *x41
+        +coeff[  4]    *x21    *x41    
+        +coeff[  5]*x12*x21*x31        
+        +coeff[  6]            *x41    
+        +coeff[  7]*x11        *x41    
     ;
-    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex
-        +coeff[  8]    *x21*x31
-        +coeff[  9]        *x31
-        +coeff[ 10]*x11    *x31
-        +coeff[ 11]    *x23
-        +coeff[ 12]    *x21    *x42
-        +coeff[ 13]*x13*x22
-        +coeff[ 14]    *x23*x31*x41
-        +coeff[ 15]    *x22
-        +coeff[ 16]*x13
+    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex                            
+        +coeff[  8]    *x21*x31        
+        +coeff[  9]        *x31        
+        +coeff[ 10]*x11    *x31        
+        +coeff[ 11]    *x23            
+        +coeff[ 12]    *x21    *x42    
+        +coeff[ 13]*x13*x22            
+        +coeff[ 14]    *x23*x31*x41    
+        +coeff[ 15]    *x22            
+        +coeff[ 16]*x13                
     ;
-    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex
-        +coeff[ 17]*x12*x21
-        +coeff[ 18]*x11*x22
-        +coeff[ 19]    *x21*x31*x41
-        +coeff[ 20]    *x23    *x41
+    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex                            
+        +coeff[ 17]*x12*x21            
+        +coeff[ 18]*x11*x22            
+        +coeff[ 19]    *x21*x31*x41    
+        +coeff[ 20]    *x23    *x41    
         +coeff[ 21]                *x51
         +coeff[ 22]*x11            *x51
-        +coeff[ 23]    *x21*x32
-        +coeff[ 24]*x11*x22    *x41
-        +coeff[ 25]    *x23*x31
+        +coeff[ 23]    *x21*x32        
+        +coeff[ 24]*x11*x22    *x41    
+        +coeff[ 25]    *x23*x31        
     ;
-    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex
-        +coeff[ 26]*x13        *x42
-        +coeff[ 27]*x11    *x33*x41
-        +coeff[ 28]*x11*x22*x33
-        +coeff[ 29]*x11*x21
-        +coeff[ 30]            *x42
-        +coeff[ 31]*x11    *x31*x41
-        +coeff[ 32]*x11        *x42
+    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex                            
+        +coeff[ 26]*x13        *x42    
+        +coeff[ 27]*x11    *x33*x41    
+        +coeff[ 28]*x11*x22*x33        
+        +coeff[ 29]*x11*x21            
+        +coeff[ 30]            *x42    
+        +coeff[ 31]*x11    *x31*x41    
+        +coeff[ 32]*x11        *x42    
         +coeff[ 33]    *x21    *x41*x51
-        +coeff[ 34]    *x22    *x41
+        +coeff[ 34]    *x22    *x41    
     ;
-    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex
-        +coeff[ 35]*x12*x21    *x41
-        +coeff[ 36]*x11*x22*x31
-        +coeff[ 37]        *x33*x41
-        +coeff[ 38]    *x21    *x43
-        +coeff[ 39]    *x23*x31*x42
-        +coeff[ 40]        *x32
-        +coeff[ 41]        *x31*x41
+    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex                            
+        +coeff[ 35]*x12*x21    *x41    
+        +coeff[ 36]*x11*x22*x31        
+        +coeff[ 37]        *x33*x41    
+        +coeff[ 38]    *x21    *x43    
+        +coeff[ 39]    *x23*x31*x42    
+        +coeff[ 40]        *x32        
+        +coeff[ 41]        *x31*x41    
         +coeff[ 42]    *x21        *x52
-        +coeff[ 43]*x11    *x32
+        +coeff[ 43]*x11    *x32        
     ;
-    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex
+    v_x_l5p77_q1ex                            =v_x_l5p77_q1ex                            
         +coeff[ 44]    *x21*x31    *x51
-        +coeff[ 45]    *x21*x31*x42
-        +coeff[ 46]*x12*x21*x32*x41
-        +coeff[ 47]    *x23*x32*x41
+        +coeff[ 45]    *x21*x31*x42    
+        +coeff[ 46]*x12*x21*x32*x41    
+        +coeff[ 47]    *x23*x32*x41    
         ;
 
     return v_x_l5p77_q1ex                            ;
@@ -3220,66 +3220,66 @@ float t_l5p77_q1ex                            (float *x,int m){
 //                 function
 
     float v_t_l5p77_q1ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]            *x41
-        +coeff[  4]*x11        *x41
-        +coeff[  5]    *x21    *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]            *x41    
+        +coeff[  4]*x11        *x41    
+        +coeff[  5]    *x21    *x41    
         +coeff[  6]    *x21        *x51
-        +coeff[  7]    *x23
+        +coeff[  7]    *x23            
     ;
-    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex
-        +coeff[  8]*x12*x21*x31
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]*x11    *x33
-        +coeff[ 11]    *x21*x33
+    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex                            
+        +coeff[  8]*x12*x21*x31        
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]*x11    *x33        
+        +coeff[ 11]    *x21*x33        
         +coeff[ 12]*x13            *x51
-        +coeff[ 13]    *x23    *x42
-        +coeff[ 14]    *x23*x33
-        +coeff[ 15]        *x31
-        +coeff[ 16]    *x22
+        +coeff[ 13]    *x23    *x42    
+        +coeff[ 14]    *x23*x33        
+        +coeff[ 15]        *x31        
+        +coeff[ 16]    *x22            
     ;
-    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex
-        +coeff[ 17]*x11    *x31
-        +coeff[ 18]    *x21*x31
-        +coeff[ 19]*x11*x22
-        +coeff[ 20]    *x21*x31*x41
-        +coeff[ 21]    *x21    *x42
-        +coeff[ 22]    *x23    *x41
+    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex                            
+        +coeff[ 17]*x11    *x31        
+        +coeff[ 18]    *x21*x31        
+        +coeff[ 19]*x11*x22            
+        +coeff[ 20]    *x21*x31*x41    
+        +coeff[ 21]    *x21    *x42    
+        +coeff[ 22]    *x23    *x41    
         +coeff[ 23]                *x51
         +coeff[ 24]*x11            *x51
-        +coeff[ 25]*x12*x21
+        +coeff[ 25]*x12*x21            
     ;
-    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex
-        +coeff[ 26]    *x21*x32
-        +coeff[ 27]*x11*x22    *x41
-        +coeff[ 28]*x11*x21
-        +coeff[ 29]            *x42
-        +coeff[ 30]*x11        *x42
+    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex                            
+        +coeff[ 26]    *x21*x32        
+        +coeff[ 27]*x11*x22    *x41    
+        +coeff[ 28]*x11*x21            
+        +coeff[ 29]            *x42    
+        +coeff[ 30]*x11        *x42    
         +coeff[ 31]    *x21    *x41*x51
         +coeff[ 32]    *x21        *x52
-        +coeff[ 33]*x11*x22*x31
-        +coeff[ 34]*x12*x21    *x41
+        +coeff[ 33]*x11*x22*x31        
+        +coeff[ 34]*x12*x21    *x41    
     ;
-    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex
-        +coeff[ 35]        *x33*x41
-        +coeff[ 36]*x13    *x31*x41
-        +coeff[ 37]        *x31*x41
-        +coeff[ 38]*x11    *x31*x41
+    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex                            
+        +coeff[ 35]        *x33*x41    
+        +coeff[ 36]*x13    *x31*x41    
+        +coeff[ 37]        *x31*x41    
+        +coeff[ 38]*x11    *x31*x41    
         +coeff[ 39]    *x21*x31    *x51
-        +coeff[ 40]    *x21    *x43
-        +coeff[ 41]*x13    *x32
-        +coeff[ 42]    *x21*x31*x43
-        +coeff[ 43]*x12*x21*x31*x42
+        +coeff[ 40]    *x21    *x43    
+        +coeff[ 41]*x13    *x32        
+        +coeff[ 42]    *x21*x31*x43    
+        +coeff[ 43]*x12*x21*x31*x42    
     ;
-    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex
-        +coeff[ 44]    *x23*x31*x42
-        +coeff[ 45]        *x32
-        +coeff[ 46]*x13
-        +coeff[ 47]    *x22    *x41
+    v_t_l5p77_q1ex                            =v_t_l5p77_q1ex                            
+        +coeff[ 44]    *x23*x31*x42    
+        +coeff[ 45]        *x32        
+        +coeff[ 46]*x13                
+        +coeff[ 47]    *x22    *x41    
         +coeff[ 48]*x11        *x41*x51
-        +coeff[ 49]    *x21*x32*x41
+        +coeff[ 49]    *x21*x32*x41    
         ;
 
     return v_t_l5p77_q1ex                            ;
@@ -3360,122 +3360,122 @@ float y_l5p77_q1ex                            (float *x,int m){
 //                 function
 
     float v_y_l5p77_q1ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]            *x42
-        +coeff[  6]    *x22
-        +coeff[  7]*x11*x21
+        +coeff[  5]            *x42    
+        +coeff[  6]    *x22            
+        +coeff[  7]*x11*x21            
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[  8]        *x31*x41
-        +coeff[  9]    *x22    *x41
-        +coeff[ 10]*x11*x21    *x41
-        +coeff[ 11]*x11
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[  8]        *x31*x41    
+        +coeff[  9]    *x22    *x41    
+        +coeff[ 10]*x11*x21    *x41    
+        +coeff[ 11]*x11                
         +coeff[ 12]            *x41*x51
-        +coeff[ 13]*x12
-        +coeff[ 14]    *x22*x31
-        +coeff[ 15]*x11*x21*x31
-        +coeff[ 16]    *x21    *x41
+        +coeff[ 13]*x12                
+        +coeff[ 14]    *x22*x31        
+        +coeff[ 15]*x11*x21*x31        
+        +coeff[ 16]    *x21    *x41    
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 17]        *x32
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 17]        *x32        
         +coeff[ 18]                *x52
-        +coeff[ 19]    *x22    *x42
-        +coeff[ 20]    *x22*x31*x41
+        +coeff[ 19]    *x22    *x42    
+        +coeff[ 20]    *x22*x31*x41    
         +coeff[ 21]    *x24        *x51
-        +coeff[ 22]    *x21*x31
+        +coeff[ 22]    *x21*x31        
         +coeff[ 23]        *x31    *x51
-        +coeff[ 24]*x12        *x41
+        +coeff[ 24]*x12        *x41    
         +coeff[ 25]*x11*x21        *x51
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 26]*x11*x21    *x42
-        +coeff[ 27]    *x24
-        +coeff[ 28]            *x45
-        +coeff[ 29]*x11*x21*x31*x41
-        +coeff[ 30]        *x31*x44
-        +coeff[ 31]*x11*x23
-        +coeff[ 32]*x11        *x41
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 26]*x11*x21    *x42    
+        +coeff[ 27]    *x24            
+        +coeff[ 28]            *x45    
+        +coeff[ 29]*x11*x21*x31*x41    
+        +coeff[ 30]        *x31*x44    
+        +coeff[ 31]*x11*x23            
+        +coeff[ 32]*x11        *x41    
         +coeff[ 33]    *x21        *x51
         +coeff[ 34]    *x22        *x51
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 35]*x12    *x31
-        +coeff[ 36]    *x22*x32
-        +coeff[ 37]        *x32*x43
-        +coeff[ 38]*x12*x22
-        +coeff[ 39]*x11    *x31
-        +coeff[ 40]    *x21    *x42
-        +coeff[ 41]        *x31*x42
-        +coeff[ 42]    *x21*x31*x41
-        +coeff[ 43]    *x23
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 35]*x12    *x31        
+        +coeff[ 36]    *x22*x32        
+        +coeff[ 37]        *x32*x43    
+        +coeff[ 38]*x12*x22            
+        +coeff[ 39]*x11    *x31        
+        +coeff[ 40]    *x21    *x42    
+        +coeff[ 41]        *x31*x42    
+        +coeff[ 42]    *x21*x31*x41    
+        +coeff[ 43]    *x23            
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 44]*x11*x22
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 44]*x11*x22            
         +coeff[ 45]            *x41*x52
-        +coeff[ 46]*x11*x21*x32
-        +coeff[ 47]        *x33*x42
-        +coeff[ 48]        *x32*x45
-        +coeff[ 49]            *x43
+        +coeff[ 46]*x11*x21*x32        
+        +coeff[ 47]        *x33*x42    
+        +coeff[ 48]        *x32*x45    
+        +coeff[ 49]            *x43    
         +coeff[ 50]*x11            *x51
-        +coeff[ 51]        *x32*x41
+        +coeff[ 51]        *x32*x41    
         +coeff[ 52]        *x31*x41*x51
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 53]*x12*x21
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 53]*x12*x21            
         +coeff[ 54]*x12            *x51
         +coeff[ 55]    *x22    *x41*x51
-        +coeff[ 56]*x12        *x42
-        +coeff[ 57]*x12    *x31*x41
+        +coeff[ 56]*x12        *x42    
+        +coeff[ 57]*x12    *x31*x41    
         +coeff[ 58]*x11*x21    *x41*x51
         +coeff[ 59]            *x44*x51
-        +coeff[ 60]    *x24    *x41
-        +coeff[ 61]*x13*x21
+        +coeff[ 60]    *x24    *x41    
+        +coeff[ 61]*x13*x21            
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 62]    *x24*x31
-        +coeff[ 63]*x11*x23    *x41
-        +coeff[ 64]*x11*x23*x31
-        +coeff[ 65]*x12*x22    *x41
-        +coeff[ 66]*x12*x22*x31
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 62]    *x24*x31        
+        +coeff[ 63]*x11*x23    *x41    
+        +coeff[ 64]*x11*x23*x31        
+        +coeff[ 65]*x12*x22    *x41    
+        +coeff[ 66]*x12*x22*x31        
         +coeff[ 67]            *x42*x51
-        +coeff[ 68]        *x33
+        +coeff[ 68]        *x33        
         +coeff[ 69]        *x32    *x51
-        +coeff[ 70]    *x21    *x43
+        +coeff[ 70]    *x21    *x43    
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 71]    *x21*x31*x42
-        +coeff[ 72]    *x23    *x41
-        +coeff[ 73]    *x23*x31
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 71]    *x21*x31*x42    
+        +coeff[ 72]    *x23    *x41    
+        +coeff[ 73]    *x23*x31        
         +coeff[ 74]                *x53
         +coeff[ 75]    *x22*x31    *x51
-        +coeff[ 76]    *x22    *x43
-        +coeff[ 77]    *x22*x31*x42
-        +coeff[ 78]*x12    *x32
+        +coeff[ 76]    *x22    *x43    
+        +coeff[ 77]    *x22*x31*x42    
+        +coeff[ 78]*x12    *x32        
         +coeff[ 79]*x11*x21*x31    *x51
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
-        +coeff[ 80]*x11*x21    *x43
-        +coeff[ 81]    *x22*x32*x41
-        +coeff[ 82]*x11*x21*x31*x42
-        +coeff[ 83]    *x22*x33
-        +coeff[ 84]    *x21*x34
-        +coeff[ 85]*x11*x21*x32*x41
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
+        +coeff[ 80]*x11*x21    *x43    
+        +coeff[ 81]    *x22*x32*x41    
+        +coeff[ 82]*x11*x21*x31*x42    
+        +coeff[ 83]    *x22*x33        
+        +coeff[ 84]    *x21*x34        
+        +coeff[ 85]*x11*x21*x32*x41    
         +coeff[ 86]    *x23*x31*x41*x51
         +coeff[ 87]    *x21    *x41*x51
-        +coeff[ 88]            *x44
+        +coeff[ 88]            *x44    
     ;
-    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex
+    v_y_l5p77_q1ex                            =v_y_l5p77_q1ex                            
         +coeff[ 89]    *x21*x31    *x51
-        +coeff[ 90]        *x31*x43
-        +coeff[ 91]        *x32*x42
+        +coeff[ 90]        *x31*x43    
+        +coeff[ 91]        *x32*x42    
         +coeff[ 92]*x11    *x31    *x51
         +coeff[ 93]        *x31    *x52
-        +coeff[ 94]    *x21*x32*x41
-        +coeff[ 95]        *x33*x41
+        +coeff[ 94]    *x21*x32*x41    
+        +coeff[ 95]        *x33*x41    
         +coeff[ 96]    *x21    *x42*x51
         ;
 
@@ -3539,58 +3539,58 @@ float p_l5p77_q1ex                            (float *x,int m){
 //                 function
 
     float v_p_l5p77_q1ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]        *x31
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]        *x31        
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]    *x22
+        +coeff[  4]    *x22            
         +coeff[  5]            *x41*x51
-        +coeff[  6]*x11*x21
-        +coeff[  7]    *x23
+        +coeff[  6]*x11*x21            
+        +coeff[  7]    *x23            
     ;
-    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex
-        +coeff[  8]    *x21
-        +coeff[  9]            *x42
-        +coeff[ 10]    *x22    *x41
-        +coeff[ 11]*x11*x21    *x41
-        +coeff[ 12]    *x22*x31*x41
-        +coeff[ 13]        *x33*x41
-        +coeff[ 14]*x11
-        +coeff[ 15]        *x32
-        +coeff[ 16]        *x31*x41
+    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex                            
+        +coeff[  8]    *x21            
+        +coeff[  9]            *x42    
+        +coeff[ 10]    *x22    *x41    
+        +coeff[ 11]*x11*x21    *x41    
+        +coeff[ 12]    *x22*x31*x41    
+        +coeff[ 13]        *x33*x41    
+        +coeff[ 14]*x11                
+        +coeff[ 15]        *x32        
+        +coeff[ 16]        *x31*x41    
     ;
-    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex
+    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex                            
         +coeff[ 17]                *x52
-        +coeff[ 18]    *x22*x31
-        +coeff[ 19]*x12
-        +coeff[ 20]*x11*x21*x31
-        +coeff[ 21]    *x22    *x42
-        +coeff[ 22]    *x21    *x41
+        +coeff[ 18]    *x22*x31        
+        +coeff[ 19]*x12                
+        +coeff[ 20]*x11*x21*x31        
+        +coeff[ 21]    *x22    *x42    
+        +coeff[ 22]    *x21    *x41    
         +coeff[ 23]        *x31    *x51
         +coeff[ 24]    *x22        *x51
-        +coeff[ 25]*x11*x21    *x42
+        +coeff[ 25]*x11*x21    *x42    
     ;
-    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex
-        +coeff[ 26]    *x21*x31
-        +coeff[ 27]*x11        *x41
-        +coeff[ 28]            *x43
-        +coeff[ 29]    *x24
+    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex                            
+        +coeff[ 26]    *x21*x31        
+        +coeff[ 27]*x11        *x41    
+        +coeff[ 28]            *x43    
+        +coeff[ 29]    *x24            
         +coeff[ 30]*x11*x21        *x51
-        +coeff[ 31]*x11*x23
-        +coeff[ 32]*x12        *x41
-        +coeff[ 33]*x11*x21*x31*x41
-        +coeff[ 34]*x12*x22
+        +coeff[ 31]*x11*x23            
+        +coeff[ 32]*x12        *x41    
+        +coeff[ 33]*x11*x21*x31*x41    
+        +coeff[ 34]*x12*x22            
     ;
-    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex
-        +coeff[ 35]        *x33*x42
+    v_p_l5p77_q1ex                            =v_p_l5p77_q1ex                            
+        +coeff[ 35]        *x33*x42    
         +coeff[ 36]    *x21        *x51
-        +coeff[ 37]        *x33
-        +coeff[ 38]        *x31*x42
+        +coeff[ 37]        *x33        
+        +coeff[ 38]        *x31*x42    
         +coeff[ 39]            *x41*x52
-        +coeff[ 40]    *x22*x32
-        +coeff[ 41]*x12    *x31
-        +coeff[ 42]*x11*x21*x32
-        +coeff[ 43]        *x34*x41
+        +coeff[ 40]    *x22*x32        
+        +coeff[ 41]*x12    *x31        
+        +coeff[ 42]*x11*x21*x32        
+        +coeff[ 43]        *x34*x41    
         ;
 
     return v_p_l5p77_q1ex                            ;
@@ -3666,110 +3666,110 @@ float l_l5p77_q1ex                            (float *x,int m){
 //                 function
 
     float v_l_l5p77_q1ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
-        +coeff[  3]    *x22
-        +coeff[  4]    *x21*x31
-        +coeff[  5]        *x31*x41
-        +coeff[  6]            *x42
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
+        +coeff[  3]    *x22            
+        +coeff[  4]    *x21*x31        
+        +coeff[  5]        *x31*x41    
+        +coeff[  6]            *x42    
         +coeff[  7]            *x41*x51
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[  8]*x11*x21
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[  8]*x11*x21            
         +coeff[  9]*x11            *x51
-        +coeff[ 10]    *x22*x31
-        +coeff[ 11]        *x33
-        +coeff[ 12]    *x22    *x41
-        +coeff[ 13]        *x32*x41
-        +coeff[ 14]        *x31*x42
-        +coeff[ 15]            *x43
+        +coeff[ 10]    *x22*x31        
+        +coeff[ 11]        *x33        
+        +coeff[ 12]    *x22    *x41    
+        +coeff[ 13]        *x32*x41    
+        +coeff[ 14]        *x31*x42    
+        +coeff[ 15]            *x43    
         +coeff[ 16]        *x31    *x52
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[ 17]*x11*x21    *x41
-        +coeff[ 18]*x12    *x31
-        +coeff[ 19]    *x22*x32
-        +coeff[ 20]        *x34
-        +coeff[ 21]        *x32*x42
-        +coeff[ 22]        *x31*x43
-        +coeff[ 23]    *x24*x31
-        +coeff[ 24]    *x22*x33
-        +coeff[ 25]        *x33*x42
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[ 17]*x11*x21    *x41    
+        +coeff[ 18]*x12    *x31        
+        +coeff[ 19]    *x22*x32        
+        +coeff[ 20]        *x34        
+        +coeff[ 21]        *x32*x42    
+        +coeff[ 22]        *x31*x43    
+        +coeff[ 23]    *x24*x31        
+        +coeff[ 24]    *x22*x33        
+        +coeff[ 25]        *x33*x42    
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
         +coeff[ 26]        *x33    *x52
-        +coeff[ 27]*x12    *x33
-        +coeff[ 28]    *x24*x33
-        +coeff[ 29]        *x31
-        +coeff[ 30]    *x21    *x41
+        +coeff[ 27]*x12    *x33        
+        +coeff[ 28]    *x24*x33        
+        +coeff[ 29]        *x31        
+        +coeff[ 30]    *x21    *x41    
         +coeff[ 31]        *x31    *x51
         +coeff[ 32]                *x52
-        +coeff[ 33]    *x22    *x42
+        +coeff[ 33]    *x22    *x42    
         +coeff[ 34]    *x22        *x51
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
         +coeff[ 35]                *x53
         +coeff[ 36]*x11*x21        *x51
-        +coeff[ 37]    *x24
-        +coeff[ 38]    *x22*x31*x41
-        +coeff[ 39]*x11*x23
-        +coeff[ 40]*x11*x21    *x42
+        +coeff[ 37]    *x24            
+        +coeff[ 38]    *x22*x31*x41    
+        +coeff[ 39]*x11*x23            
+        +coeff[ 40]*x11*x21    *x42    
         +coeff[ 41]                *x51
         +coeff[ 42]    *x21        *x51
-        +coeff[ 43]*x11        *x41
+        +coeff[ 43]*x11        *x41    
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[ 44]*x12
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[ 44]*x12                
         +coeff[ 45]        *x31*x41*x51
         +coeff[ 46]            *x42*x51
         +coeff[ 47]            *x41*x52
-        +coeff[ 48]*x11*x21*x31
-        +coeff[ 49]*x12        *x41
-        +coeff[ 50]*x11*x21*x31*x41
-        +coeff[ 51]    *x24    *x41
-        +coeff[ 52]*x11*x23    *x41
+        +coeff[ 48]*x11*x21*x31        
+        +coeff[ 49]*x12        *x41    
+        +coeff[ 50]*x11*x21*x31*x41    
+        +coeff[ 51]    *x24    *x41    
+        +coeff[ 52]*x11*x23    *x41    
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[ 53]*x11
-        +coeff[ 54]        *x32
-        +coeff[ 55]    *x23
-        +coeff[ 56]    *x21    *x42
-        +coeff[ 57]*x11*x22
-        +coeff[ 58]*x12*x22
-        +coeff[ 59]    *x22    *x43
-        +coeff[ 60]    *x24*x31*x42
-        +coeff[ 61]    *x21*x31*x41
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[ 53]*x11                
+        +coeff[ 54]        *x32        
+        +coeff[ 55]    *x23            
+        +coeff[ 56]    *x21    *x42    
+        +coeff[ 57]*x11*x22            
+        +coeff[ 58]*x12*x22            
+        +coeff[ 59]    *x22    *x43    
+        +coeff[ 60]    *x24*x31*x42    
+        +coeff[ 61]    *x21*x31*x41    
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
         +coeff[ 62]*x12            *x51
-        +coeff[ 63]            *x44
+        +coeff[ 63]            *x44    
         +coeff[ 64]    *x22*x31    *x51
         +coeff[ 65]*x11*x21*x31    *x51
-        +coeff[ 66]*x12        *x42
-        +coeff[ 67]    *x22*x31*x42
-        +coeff[ 68]*x11*x23*x31
-        +coeff[ 69]*x11*x21    *x43
-        +coeff[ 70]*x12*x22    *x41
+        +coeff[ 66]*x12        *x42    
+        +coeff[ 67]    *x22*x31*x42    
+        +coeff[ 68]*x11*x23*x31        
+        +coeff[ 69]*x11*x21    *x43    
+        +coeff[ 70]*x12*x22    *x41    
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[ 71]    *x24*x32*x41
-        +coeff[ 72]*x11*x23*x31*x42
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[ 71]    *x24*x32*x41    
+        +coeff[ 72]*x11*x23*x31*x42    
         +coeff[ 73]        *x32    *x51
-        +coeff[ 74]*x11        *x42
-        +coeff[ 75]    *x21    *x43
+        +coeff[ 74]*x11        *x42    
+        +coeff[ 75]    *x21    *x43    
         +coeff[ 76]    *x22        *x52
-        +coeff[ 77]*x11*x21*x32
+        +coeff[ 77]*x11*x21*x32        
         +coeff[ 78]*x11*x21    *x41*x51
         +coeff[ 79]*x11*x21        *x52
     ;
-    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex
-        +coeff[ 80]*x12    *x31*x41
-        +coeff[ 81]*x11*x21*x31*x42
-        +coeff[ 82]    *x24    *x42
-        +coeff[ 83]*x11*x23    *x42
-        +coeff[ 84]*x11*x23*x32*x41
-        +coeff[ 85]*x12*x24*x31
+    v_l_l5p77_q1ex                            =v_l_l5p77_q1ex                            
+        +coeff[ 80]*x12    *x31*x41    
+        +coeff[ 81]*x11*x21*x31*x42    
+        +coeff[ 82]    *x24    *x42    
+        +coeff[ 83]*x11*x23    *x42    
+        +coeff[ 84]*x11*x23*x32*x41    
+        +coeff[ 85]*x12*x24*x31        
         ;
 
     return v_l_l5p77_q1ex                            ;
@@ -3835,78 +3835,78 @@ float x_l5p77_q2ex                            (float *x,int m){
 //                 function
 
     float v_x_l5p77_q2ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]            *x41    
         +coeff[  4]    *x21        *x51
-        +coeff[  5]    *x21    *x41
-        +coeff[  6]*x13        *x41
-        +coeff[  7]*x12*x21*x31
+        +coeff[  5]    *x21    *x41    
+        +coeff[  6]*x13        *x41    
+        +coeff[  7]*x12*x21*x31        
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
         +coeff[  8]    *x21*x31    *x52
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]        *x31
-        +coeff[ 11]*x11    *x31
-        +coeff[ 12]*x11        *x41
-        +coeff[ 13]    *x21*x31
-        +coeff[ 14]    *x23
-        +coeff[ 15]    *x21    *x42
-        +coeff[ 16]*x13*x22
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]        *x31        
+        +coeff[ 11]*x11    *x31        
+        +coeff[ 12]*x11        *x41    
+        +coeff[ 13]    *x21*x31        
+        +coeff[ 14]    *x23            
+        +coeff[ 15]    *x21    *x42    
+        +coeff[ 16]*x13*x22            
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
-        +coeff[ 17]    *x23*x31*x41
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
+        +coeff[ 17]    *x23*x31*x41    
         +coeff[ 18]                *x51
         +coeff[ 19]*x11            *x51
-        +coeff[ 20]    *x22
-        +coeff[ 21]*x13
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]    *x23    *x41
-        +coeff[ 25]*x13*x22    *x41
+        +coeff[ 20]    *x22            
+        +coeff[ 21]*x13                
+        +coeff[ 22]*x11*x22            
+        +coeff[ 23]    *x21*x31*x41    
+        +coeff[ 24]    *x23    *x41    
+        +coeff[ 25]*x13*x22    *x41    
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
-        +coeff[ 26]*x12*x21
-        +coeff[ 27]*x11        *x42
-        +coeff[ 28]    *x21*x32
-        +coeff[ 29]*x11*x22    *x41
-        +coeff[ 30]*x13    *x31*x41
-        +coeff[ 31]*x11*x21
-        +coeff[ 32]            *x42
-        +coeff[ 33]*x11    *x31*x41
-        +coeff[ 34]*x12*x21    *x41
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
+        +coeff[ 26]*x12*x21            
+        +coeff[ 27]*x11        *x42    
+        +coeff[ 28]    *x21*x32        
+        +coeff[ 29]*x11*x22    *x41    
+        +coeff[ 30]*x13    *x31*x41    
+        +coeff[ 31]*x11*x21            
+        +coeff[ 32]            *x42    
+        +coeff[ 33]*x11    *x31*x41    
+        +coeff[ 34]*x12*x21    *x41    
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
-        +coeff[ 35]*x11*x22*x31
-        +coeff[ 36]        *x33*x41
-        +coeff[ 37]        *x31*x41
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
+        +coeff[ 35]*x11*x22*x31        
+        +coeff[ 36]        *x33*x41    
+        +coeff[ 37]        *x31*x41    
         +coeff[ 38]    *x21        *x52
-        +coeff[ 39]*x11    *x32
-        +coeff[ 40]    *x22    *x41
+        +coeff[ 39]*x11    *x32        
+        +coeff[ 40]    *x22    *x41    
         +coeff[ 41]    *x21    *x42*x51
-        +coeff[ 42]    *x21    *x43
-        +coeff[ 43]    *x21*x32*x42
+        +coeff[ 42]    *x21    *x43    
+        +coeff[ 43]    *x21*x32*x42    
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
-        +coeff[ 44]    *x21*x31*x43
-        +coeff[ 45]*x12*x21*x31*x42
-        +coeff[ 46]    *x23*x31*x42
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
+        +coeff[ 44]    *x21*x31*x43    
+        +coeff[ 45]*x12*x21*x31*x42    
+        +coeff[ 46]    *x23*x31*x42    
         +coeff[ 47]            *x41*x51
-        +coeff[ 48]        *x32
-        +coeff[ 49]*x11*x21    *x41
+        +coeff[ 48]        *x32        
+        +coeff[ 49]*x11*x21    *x41    
         +coeff[ 50]    *x21*x31    *x51
         +coeff[ 51]    *x21    *x41*x51
-        +coeff[ 52]    *x22*x31
+        +coeff[ 52]    *x22*x31        
     ;
-    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex
+    v_x_l5p77_q2ex                            =v_x_l5p77_q2ex                            
         +coeff[ 53]    *x21*x31*x41*x51
-        +coeff[ 54]    *x21*x31*x42
+        +coeff[ 54]    *x21*x31*x42    
         +coeff[ 55]*x13        *x41*x51
         +coeff[ 56]    *x23    *x41*x51
-        +coeff[ 57]    *x21*x33*x41
-        +coeff[ 58]*x12*x21*x32*x41
-        +coeff[ 59]    *x23*x32*x41
+        +coeff[ 57]    *x21*x33*x41    
+        +coeff[ 58]*x12*x21*x32*x41    
+        +coeff[ 59]    *x23*x32*x41    
         ;
 
     return v_x_l5p77_q2ex                            ;
@@ -3970,66 +3970,66 @@ float t_l5p77_q2ex                            (float *x,int m){
 //                 function
 
     float v_t_l5p77_q2ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]            *x41
-        +coeff[  4]    *x21    *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]            *x41    
+        +coeff[  4]    *x21    *x41    
         +coeff[  5]    *x21        *x51
-        +coeff[  6]*x12*x21*x31
-        +coeff[  7]    *x23*x31
+        +coeff[  6]*x12*x21*x31        
+        +coeff[  7]    *x23*x31        
     ;
-    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex
-        +coeff[  8]*x13        *x41
-        +coeff[  9]*x13*x22*x31
-        +coeff[ 10]        *x31
-        +coeff[ 11]*x11*x21
-        +coeff[ 12]    *x21*x31
-        +coeff[ 13]*x11        *x41
+    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex                            
+        +coeff[  8]*x13        *x41    
+        +coeff[  9]*x13*x22*x31        
+        +coeff[ 10]        *x31        
+        +coeff[ 11]*x11*x21            
+        +coeff[ 12]    *x21*x31        
+        +coeff[ 13]*x11        *x41    
         +coeff[ 14]*x11            *x51
-        +coeff[ 15]    *x23
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 15]    *x23            
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex
-        +coeff[ 17]*x13*x22
-        +coeff[ 18]*x12*x21*x31*x41
-        +coeff[ 19]    *x23*x31*x41
+    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex                            
+        +coeff[ 17]*x13*x22            
+        +coeff[ 18]*x12*x21*x31*x41    
+        +coeff[ 19]    *x23*x31*x41    
         +coeff[ 20]                *x51
-        +coeff[ 21]*x11    *x31
-        +coeff[ 22]*x13
-        +coeff[ 23]*x11*x22
-        +coeff[ 24]    *x21*x31*x41
-        +coeff[ 25]    *x23    *x41
+        +coeff[ 21]*x11    *x31        
+        +coeff[ 22]*x13                
+        +coeff[ 23]*x11*x22            
+        +coeff[ 24]    *x21*x31*x41    
+        +coeff[ 25]    *x23    *x41    
     ;
-    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex
-        +coeff[ 26]*x13*x22    *x41
-        +coeff[ 27]    *x22
-        +coeff[ 28]*x12*x21
-        +coeff[ 29]    *x21*x32
-        +coeff[ 30]*x11        *x42
-        +coeff[ 31]*x12*x21    *x41
-        +coeff[ 32]*x11*x22    *x41
-        +coeff[ 33]*x13    *x31*x41
-        +coeff[ 34]    *x22    *x41
+    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex                            
+        +coeff[ 26]*x13*x22    *x41    
+        +coeff[ 27]    *x22            
+        +coeff[ 28]*x12*x21            
+        +coeff[ 29]    *x21*x32        
+        +coeff[ 30]*x11        *x42    
+        +coeff[ 31]*x12*x21    *x41    
+        +coeff[ 32]*x11*x22    *x41    
+        +coeff[ 33]*x13    *x31*x41    
+        +coeff[ 34]    *x22    *x41    
     ;
-    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex
-        +coeff[ 35]*x11    *x31*x41
+    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex                            
+        +coeff[ 35]*x11    *x31*x41    
         +coeff[ 36]    *x21        *x52
-        +coeff[ 37]*x13    *x31
-        +coeff[ 38]*x11*x22*x31
-        +coeff[ 39]    *x21    *x43
-        +coeff[ 40]    *x23*x31*x42
-        +coeff[ 41]            *x42
+        +coeff[ 37]*x13    *x31        
+        +coeff[ 38]*x11*x22*x31        
+        +coeff[ 39]    *x21    *x43    
+        +coeff[ 40]    *x23*x31*x42    
+        +coeff[ 41]            *x42    
         +coeff[ 42]            *x41*x51
-        +coeff[ 43]*x11    *x32
+        +coeff[ 43]*x11    *x32        
     ;
-    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex
+    v_t_l5p77_q2ex                            =v_t_l5p77_q2ex                            
         +coeff[ 44]    *x22        *x51
         +coeff[ 45]*x11        *x41*x51
         +coeff[ 46]    *x21    *x41*x51
-        +coeff[ 47]*x12    *x31*x41
-        +coeff[ 48]        *x33*x41
-        +coeff[ 49]    *x21*x31*x42
+        +coeff[ 47]*x12    *x31*x41    
+        +coeff[ 48]        *x33*x41    
+        +coeff[ 49]    *x21*x31*x42    
         ;
 
     return v_t_l5p77_q2ex                            ;
@@ -4109,121 +4109,121 @@ float y_l5p77_q2ex                            (float *x,int m){
 //                 function
 
     float v_y_l5p77_q2ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]            *x42
-        +coeff[  6]    *x22
-        +coeff[  7]*x11*x21
+        +coeff[  5]            *x42    
+        +coeff[  6]    *x22            
+        +coeff[  7]*x11*x21            
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[  8]    *x22    *x41
-        +coeff[  9]        *x31*x41
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[  8]    *x22    *x41    
+        +coeff[  9]        *x31*x41    
         +coeff[ 10]            *x41*x51
-        +coeff[ 11]    *x22*x31
-        +coeff[ 12]*x11*x21    *x41
-        +coeff[ 13]*x11
-        +coeff[ 14]        *x32
-        +coeff[ 15]*x12
-        +coeff[ 16]*x11*x21*x31
+        +coeff[ 11]    *x22*x31        
+        +coeff[ 12]*x11*x21    *x41    
+        +coeff[ 13]*x11                
+        +coeff[ 14]        *x32        
+        +coeff[ 15]*x12                
+        +coeff[ 16]*x11*x21*x31        
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 17]    *x21    *x41
-        +coeff[ 18]    *x22    *x42
-        +coeff[ 19]    *x22*x31*x41
-        +coeff[ 20]*x11*x21    *x42
-        +coeff[ 21]    *x24
-        +coeff[ 22]*x11*x21*x31*x41
-        +coeff[ 23]*x11*x23
-        +coeff[ 24]    *x21*x31
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 17]    *x21    *x41    
+        +coeff[ 18]    *x22    *x42    
+        +coeff[ 19]    *x22*x31*x41    
+        +coeff[ 20]*x11*x21    *x42    
+        +coeff[ 21]    *x24            
+        +coeff[ 22]*x11*x21*x31*x41    
+        +coeff[ 23]*x11*x23            
+        +coeff[ 24]    *x21*x31        
         +coeff[ 25]        *x31    *x51
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
         +coeff[ 26]                *x52
-        +coeff[ 27]*x12        *x41
-        +coeff[ 28]*x12*x22
-        +coeff[ 29]*x11        *x41
-        +coeff[ 30]*x11    *x31
-        +coeff[ 31]        *x31*x42
+        +coeff[ 27]*x12        *x41    
+        +coeff[ 28]*x12*x22            
+        +coeff[ 29]*x11        *x41    
+        +coeff[ 30]*x11    *x31        
+        +coeff[ 31]        *x31*x42    
         +coeff[ 32]            *x42*x51
         +coeff[ 33]            *x41*x52
-        +coeff[ 34]*x12    *x31
+        +coeff[ 34]*x12    *x31        
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 35]    *x22*x32
-        +coeff[ 36]            *x45
-        +coeff[ 37]*x11*x21*x32
-        +coeff[ 38]        *x32*x43
-        +coeff[ 39]        *x32*x45
-        +coeff[ 40]    *x21    *x42
-        +coeff[ 41]    *x21*x31*x41
-        +coeff[ 42]    *x23
-        +coeff[ 43]*x11*x22
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 35]    *x22*x32        
+        +coeff[ 36]            *x45    
+        +coeff[ 37]*x11*x21*x32        
+        +coeff[ 38]        *x32*x43    
+        +coeff[ 39]        *x32*x45    
+        +coeff[ 40]    *x21    *x42    
+        +coeff[ 41]    *x21*x31*x41    
+        +coeff[ 42]    *x23            
+        +coeff[ 43]*x11*x22            
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 44]    *x22    *x43
-        +coeff[ 45]*x11*x23    *x41
-        +coeff[ 46]    *x24    *x43
-        +coeff[ 47]    *x21*x32
-        +coeff[ 48]        *x33
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 44]    *x22    *x43    
+        +coeff[ 45]*x11*x23    *x41    
+        +coeff[ 46]    *x24    *x43    
+        +coeff[ 47]    *x21*x32        
+        +coeff[ 48]        *x33        
         +coeff[ 49]        *x31*x41*x51
         +coeff[ 50]*x11*x21        *x51
-        +coeff[ 51]    *x23    *x41
-        +coeff[ 52]        *x31*x44
+        +coeff[ 51]    *x23    *x41    
+        +coeff[ 52]        *x31*x44    
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 53]*x12        *x42
-        +coeff[ 54]*x12    *x31*x41
-        +coeff[ 55]    *x22*x31*x42
-        +coeff[ 56]    *x24    *x41
-        +coeff[ 57]*x13*x21
-        +coeff[ 58]    *x24*x31
-        +coeff[ 59]*x11*x23*x31
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 53]*x12        *x42    
+        +coeff[ 54]*x12    *x31*x41    
+        +coeff[ 55]    *x22*x31*x42    
+        +coeff[ 56]    *x24    *x41    
+        +coeff[ 57]*x13*x21            
+        +coeff[ 58]    *x24*x31        
+        +coeff[ 59]*x11*x23*x31        
         +coeff[ 60]    *x24        *x51
-        +coeff[ 61]*x12*x22    *x41
+        +coeff[ 61]*x12*x22    *x41    
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 62]*x12*x22*x31
-        +coeff[ 63]    *x22*x31*x44
-        +coeff[ 64]            *x43
-        +coeff[ 65]        *x32*x41
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 62]*x12*x22*x31        
+        +coeff[ 63]    *x22*x31*x44    
+        +coeff[ 64]            *x43    
+        +coeff[ 65]        *x32*x41    
         +coeff[ 66]    *x22        *x51
-        +coeff[ 67]        *x31*x43
-        +coeff[ 68]        *x32*x42
-        +coeff[ 69]*x12*x21
+        +coeff[ 67]        *x31*x43    
+        +coeff[ 68]        *x32*x42    
+        +coeff[ 69]*x12*x21            
         +coeff[ 70]        *x31    *x52
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 71]    *x23*x31
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 71]    *x23*x31        
         +coeff[ 72]                *x53
-        +coeff[ 73]*x11*x22    *x41
-        +coeff[ 74]*x12    *x32
-        +coeff[ 75]    *x22*x32*x41
-        +coeff[ 76]*x11*x21*x31*x42
-        +coeff[ 77]    *x22*x33
-        +coeff[ 78]    *x21    *x45
-        +coeff[ 79]        *x31*x45
+        +coeff[ 73]*x11*x22    *x41    
+        +coeff[ 74]*x12    *x32        
+        +coeff[ 75]    *x22*x32*x41    
+        +coeff[ 76]*x11*x21*x31*x42    
+        +coeff[ 77]    *x22*x33        
+        +coeff[ 78]    *x21    *x45    
+        +coeff[ 79]        *x31*x45    
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
-        +coeff[ 80]*x11*x21*x32*x41
-        +coeff[ 81]    *x21*x31*x44
-        +coeff[ 82]        *x32*x44
-        +coeff[ 83]    *x24    *x42
-        +coeff[ 84]    *x24*x31*x41
-        +coeff[ 85]*x11*x21    *x45
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
+        +coeff[ 80]*x11*x21*x32*x41    
+        +coeff[ 81]    *x21*x31*x44    
+        +coeff[ 82]        *x32*x44    
+        +coeff[ 83]    *x24    *x42    
+        +coeff[ 84]    *x24*x31*x41    
+        +coeff[ 85]*x11*x21    *x45    
         +coeff[ 86]    *x21        *x51
-        +coeff[ 87]*x11        *x42
-        +coeff[ 88]*x11    *x31*x41
+        +coeff[ 87]*x11        *x42    
+        +coeff[ 88]*x11    *x31*x41    
     ;
-    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex
+    v_y_l5p77_q2ex                            =v_y_l5p77_q2ex                            
         +coeff[ 89]    *x21    *x41*x51
-        +coeff[ 90]            *x44
+        +coeff[ 90]            *x44    
         +coeff[ 91]    *x21*x31    *x51
         +coeff[ 92]        *x32    *x51
-        +coeff[ 93]    *x21*x32*x41
-        +coeff[ 94]        *x33*x41
+        +coeff[ 93]    *x21*x32*x41    
+        +coeff[ 94]        *x33*x41    
         +coeff[ 95]*x12            *x51
         +coeff[ 96]    *x22    *x41*x51
         ;
@@ -4290,72 +4290,72 @@ float p_l5p77_q2ex                            (float *x,int m){
 //                 function
 
     float v_p_l5p77_q2ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]        *x31
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]        *x31        
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]    *x22
-        +coeff[  5]            *x42
+        +coeff[  4]    *x22            
+        +coeff[  5]            *x42    
         +coeff[  6]        *x31    *x51
         +coeff[  7]            *x41*x51
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[  8]*x11*x21
-        +coeff[  9]    *x21
-        +coeff[ 10]    *x21    *x41
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[  8]*x11*x21            
+        +coeff[  9]    *x21            
+        +coeff[ 10]    *x21    *x41    
         +coeff[ 11]                *x52
         +coeff[ 12]    *x22        *x51
-        +coeff[ 13]*x11
-        +coeff[ 14]    *x21*x31
-        +coeff[ 15]        *x31*x41
-        +coeff[ 16]    *x22    *x41
+        +coeff[ 13]*x11                
+        +coeff[ 14]    *x21*x31        
+        +coeff[ 15]        *x31*x41    
+        +coeff[ 16]    *x22    *x41    
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[ 17]*x11*x21    *x41
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[ 17]*x11*x21    *x41    
         +coeff[ 18]*x11*x21        *x51
-        +coeff[ 19]    *x24*x31
-        +coeff[ 20]        *x32
-        +coeff[ 21]    *x22*x31
-        +coeff[ 22]            *x43
-        +coeff[ 23]*x12
-        +coeff[ 24]*x11*x21*x31
+        +coeff[ 19]    *x24*x31        
+        +coeff[ 20]        *x32        
+        +coeff[ 21]    *x22*x31        
+        +coeff[ 22]            *x43    
+        +coeff[ 23]*x12                
+        +coeff[ 24]*x11*x21*x31        
         +coeff[ 25]            *x41*x52
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[ 26]    *x22    *x42
-        +coeff[ 27]    *x24*x31*x41
-        +coeff[ 28]*x11        *x41
-        +coeff[ 29]        *x32*x41
-        +coeff[ 30]        *x31*x42
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[ 26]    *x22    *x42    
+        +coeff[ 27]    *x24*x31*x41    
+        +coeff[ 28]*x11        *x41    
+        +coeff[ 29]        *x32*x41    
+        +coeff[ 30]        *x31*x42    
         +coeff[ 31]        *x31*x41*x51
         +coeff[ 32]    *x22    *x41*x51
-        +coeff[ 33]*x11*x23
-        +coeff[ 34]*x12        *x41
+        +coeff[ 33]*x11*x23            
+        +coeff[ 34]*x12        *x41    
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[ 35]*x11*x21    *x42
-        +coeff[ 36]*x11*x23*x31*x41
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[ 35]*x11*x21    *x42    
+        +coeff[ 36]*x11*x23*x31*x41    
         +coeff[ 37]    *x21        *x51
-        +coeff[ 38]    *x21    *x42
+        +coeff[ 38]    *x21    *x42    
         +coeff[ 39]*x11            *x51
         +coeff[ 40]    *x21    *x41*x51
         +coeff[ 41]            *x42*x51
-        +coeff[ 42]    *x24
+        +coeff[ 42]    *x24            
         +coeff[ 43]        *x31    *x52
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[ 44]    *x22*x32
-        +coeff[ 45]    *x22*x31*x41
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[ 44]    *x22*x32        
+        +coeff[ 45]    *x22*x31*x41    
         +coeff[ 46]                *x53
         +coeff[ 47]    *x22*x31    *x51
-        +coeff[ 48]    *x24    *x41
-        +coeff[ 49]*x11*x21*x31*x41
-        +coeff[ 50]    *x23*x31*x41
+        +coeff[ 48]    *x24    *x41    
+        +coeff[ 49]*x11*x21*x31*x41    
+        +coeff[ 50]    *x23*x31*x41    
         +coeff[ 51]*x12            *x51
         +coeff[ 52]*x11*x21    *x41*x51
     ;
-    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex
-        +coeff[ 53]*x12*x22
+    v_p_l5p77_q2ex                            =v_p_l5p77_q2ex                            
+        +coeff[ 53]*x12*x22            
         ;
 
     return v_p_l5p77_q2ex                            ;
@@ -4431,115 +4431,115 @@ float l_l5p77_q2ex                            (float *x,int m){
 //                 function
 
     float v_l_l5p77_q2ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]        *x31
-        +coeff[  2]            *x41
-        +coeff[  3]    *x22
-        +coeff[  4]    *x21*x31
-        +coeff[  5]        *x32
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]        *x31*x41
+        +coeff[  0]                    
+        +coeff[  1]        *x31        
+        +coeff[  2]            *x41    
+        +coeff[  3]    *x22            
+        +coeff[  4]    *x21*x31        
+        +coeff[  5]        *x32        
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]        *x31*x41    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
-        +coeff[  8]            *x42
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
+        +coeff[  8]            *x42    
         +coeff[  9]        *x31    *x51
         +coeff[ 10]            *x41*x51
-        +coeff[ 11]*x11*x21
-        +coeff[ 12]    *x23
-        +coeff[ 13]    *x22*x31
-        +coeff[ 14]    *x22    *x41
+        +coeff[ 11]*x11*x21            
+        +coeff[ 12]    *x23            
+        +coeff[ 13]    *x22*x31        
+        +coeff[ 14]    *x22    *x41    
         +coeff[ 15]            *x42*x51
-        +coeff[ 16]*x11*x21    *x41
+        +coeff[ 16]*x11*x21    *x41    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
-        +coeff[ 17]    *x22    *x42
-        +coeff[ 18]    *x21
-        +coeff[ 19]*x11
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
+        +coeff[ 17]    *x22    *x42    
+        +coeff[ 18]    *x21            
+        +coeff[ 19]*x11                
         +coeff[ 20]                *x52
-        +coeff[ 21]*x12
-        +coeff[ 22]            *x43
-        +coeff[ 23]    *x24
-        +coeff[ 24]    *x22*x31*x41
-        +coeff[ 25]*x11*x23
+        +coeff[ 21]*x12                
+        +coeff[ 22]            *x43    
+        +coeff[ 23]    *x24            
+        +coeff[ 24]    *x22*x31*x41    
+        +coeff[ 25]*x11*x23            
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
-        +coeff[ 26]*x11*x21    *x42
-        +coeff[ 27]        *x33*x42
-        +coeff[ 28]        *x33
-        +coeff[ 29]        *x31*x42
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
+        +coeff[ 26]*x11*x21    *x42    
+        +coeff[ 27]        *x33*x42    
+        +coeff[ 28]        *x33        
+        +coeff[ 29]        *x31*x42    
         +coeff[ 30]            *x41*x52
-        +coeff[ 31]*x11*x21*x31
+        +coeff[ 31]*x11*x21*x31        
         +coeff[ 32]*x11*x21        *x51
-        +coeff[ 33]    *x24    *x41
-        +coeff[ 34]*x11*x23    *x41
+        +coeff[ 33]    *x24    *x41    
+        +coeff[ 34]*x11*x23    *x41    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
         +coeff[ 35]                *x51
         +coeff[ 36]    *x21        *x51
         +coeff[ 37]*x11            *x51
-        +coeff[ 38]        *x32*x41
-        +coeff[ 39]    *x21    *x42
+        +coeff[ 38]        *x32*x41    
+        +coeff[ 39]    *x21    *x42    
         +coeff[ 40]    *x22        *x51
         +coeff[ 41]        *x31*x41*x51
-        +coeff[ 42]    *x22*x32
-        +coeff[ 43]*x11*x21*x31*x41
+        +coeff[ 42]    *x22*x32        
+        +coeff[ 43]*x11*x21*x31*x41    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
-        +coeff[ 44]    *x24*x31
-        +coeff[ 45]    *x22    *x43
-        +coeff[ 46]    *x24*x31*x42
-        +coeff[ 47]*x11    *x31
-        +coeff[ 48]*x11        *x41
-        +coeff[ 49]    *x21*x31*x41
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
+        +coeff[ 44]    *x24*x31        
+        +coeff[ 45]    *x22    *x43    
+        +coeff[ 46]    *x24*x31*x42    
+        +coeff[ 47]*x11    *x31        
+        +coeff[ 48]*x11        *x41    
+        +coeff[ 49]    *x21*x31*x41    
         +coeff[ 50]        *x31    *x52
-        +coeff[ 51]*x11*x22
-        +coeff[ 52]*x12    *x31
+        +coeff[ 51]*x11*x22            
+        +coeff[ 52]*x12    *x31        
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
         +coeff[ 53]*x12            *x51
-        +coeff[ 54]    *x23    *x41
-        +coeff[ 55]            *x44
+        +coeff[ 54]    *x23    *x41    
+        +coeff[ 55]            *x44    
         +coeff[ 56]    *x22*x31    *x51
-        +coeff[ 57]*x12*x22
-        +coeff[ 58]    *x22*x31*x42
-        +coeff[ 59]*x11*x23*x31
-        +coeff[ 60]*x11*x21    *x43
-        +coeff[ 61]*x12        *x43
+        +coeff[ 57]*x12*x22            
+        +coeff[ 58]    *x22*x31*x42    
+        +coeff[ 59]*x11*x23*x31        
+        +coeff[ 60]*x11*x21    *x43    
+        +coeff[ 61]*x12        *x43    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
-        +coeff[ 62]        *x33*x43
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
+        +coeff[ 62]        *x33*x43    
         +coeff[ 63]                *x53
-        +coeff[ 64]    *x23*x31
-        +coeff[ 65]        *x33*x41
-        +coeff[ 66]    *x21    *x43
-        +coeff[ 67]        *x31*x43
+        +coeff[ 64]    *x23*x31        
+        +coeff[ 65]        *x33*x41    
+        +coeff[ 66]    *x21    *x43    
+        +coeff[ 67]        *x31*x43    
         +coeff[ 68]            *x43*x51
         +coeff[ 69]            *x42*x52
-        +coeff[ 70]*x11*x22    *x41
+        +coeff[ 70]*x11*x22    *x41    
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
         +coeff[ 71]*x11*x21*x31    *x51
         +coeff[ 72]*x11*x21    *x41*x51
-        +coeff[ 73]    *x22*x32*x41
-        +coeff[ 74]        *x32*x43
-        +coeff[ 75]*x11*x21*x32*x41
-        +coeff[ 76]*x11*x21*x31*x42
-        +coeff[ 77]*x12*x22    *x41
+        +coeff[ 73]    *x22*x32*x41    
+        +coeff[ 74]        *x32*x43    
+        +coeff[ 75]*x11*x21*x32*x41    
+        +coeff[ 76]*x11*x21*x31*x42    
+        +coeff[ 77]*x12*x22    *x41    
         +coeff[ 78]        *x33*x42*x51
         +coeff[ 79]    *x24        *x52
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
         +coeff[ 80]*x11*x23        *x52
         +coeff[ 81]    *x21*x31    *x51
         +coeff[ 82]    *x21        *x52
-        +coeff[ 83]*x12        *x41
-        +coeff[ 84]    *x21*x31*x42
-        +coeff[ 85]        *x32*x42
+        +coeff[ 83]*x12        *x41    
+        +coeff[ 84]    *x21*x31*x42    
+        +coeff[ 85]        *x32*x42    
         +coeff[ 86]    *x23        *x51
         +coeff[ 87]    *x22    *x41*x51
         +coeff[ 88]        *x32*x41*x51
     ;
-    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex
+    v_l_l5p77_q2ex                            =v_l_l5p77_q2ex                            
         +coeff[ 89]        *x31*x42*x51
         ;
 
@@ -4607,78 +4607,78 @@ float x_l5p77_q3en                            (float *x,int m){
 //                 function
 
     float v_x_l5p77_q3en                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
+        +coeff[  0]                    
+        +coeff[  1]*x11                
         +coeff[  2]                *x51
-        +coeff[  3]    *x21
-        +coeff[  4]            *x41
+        +coeff[  3]    *x21            
+        +coeff[  4]            *x41    
         +coeff[  5]    *x21        *x51
-        +coeff[  6]    *x22
-        +coeff[  7]    *x21    *x41
+        +coeff[  6]    *x22            
+        +coeff[  7]    *x21    *x41    
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
-        +coeff[  8]*x13        *x41
-        +coeff[  9]*x12*x21*x31
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
+        +coeff[  8]*x13        *x41    
+        +coeff[  9]*x12*x21*x31        
         +coeff[ 10]    *x21*x31    *x52
-        +coeff[ 11]    *x23*x31
-        +coeff[ 12]        *x31
+        +coeff[ 11]    *x23*x31        
+        +coeff[ 12]        *x31        
         +coeff[ 13]                *x52
-        +coeff[ 14]*x11    *x31
-        +coeff[ 15]*x11        *x41
-        +coeff[ 16]    *x21*x31
+        +coeff[ 14]*x11    *x31        
+        +coeff[ 15]*x11        *x41    
+        +coeff[ 16]    *x21*x31        
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
-        +coeff[ 17]            *x42
-        +coeff[ 18]    *x23
-        +coeff[ 19]    *x21    *x42
-        +coeff[ 20]*x11*x22
-        +coeff[ 21]    *x21*x31*x41
-        +coeff[ 22]    *x23    *x41
-        +coeff[ 23]*x11*x21
-        +coeff[ 24]        *x31*x41
-        +coeff[ 25]*x12*x21
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
+        +coeff[ 17]            *x42    
+        +coeff[ 18]    *x23            
+        +coeff[ 19]    *x21    *x42    
+        +coeff[ 20]*x11*x22            
+        +coeff[ 21]    *x21*x31*x41    
+        +coeff[ 22]    *x23    *x41    
+        +coeff[ 23]*x11*x21            
+        +coeff[ 24]        *x31*x41    
+        +coeff[ 25]*x12*x21            
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
         +coeff[ 26]    *x21    *x41*x51
-        +coeff[ 27]    *x21*x32
-        +coeff[ 28]    *x22    *x41
-        +coeff[ 29]*x11*x22    *x41
-        +coeff[ 30]    *x22*x33
+        +coeff[ 27]    *x21*x32        
+        +coeff[ 28]    *x22    *x41    
+        +coeff[ 29]*x11*x22    *x41    
+        +coeff[ 30]    *x22*x33        
         +coeff[ 31]            *x41*x51
-        +coeff[ 32]*x11        *x42
+        +coeff[ 32]*x11        *x42    
         +coeff[ 33]    *x22        *x51
         +coeff[ 34]    *x21*x31    *x51
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
-        +coeff[ 35]    *x22*x31
-        +coeff[ 36]*x12*x21    *x41
-        +coeff[ 37]*x11*x22*x31
-        +coeff[ 38]*x13    *x31*x41
-        +coeff[ 39]*x12
-        +coeff[ 40]        *x32
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
+        +coeff[ 35]    *x22*x31        
+        +coeff[ 36]*x12*x21    *x41    
+        +coeff[ 37]*x11*x22*x31        
+        +coeff[ 38]*x13    *x31*x41    
+        +coeff[ 39]*x12                
+        +coeff[ 40]        *x32        
         +coeff[ 41]*x11        *x41*x51
-        +coeff[ 42]*x11*x21    *x41
-        +coeff[ 43]*x11    *x31*x41
+        +coeff[ 42]*x11*x21    *x41    
+        +coeff[ 43]*x11    *x31*x41    
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
         +coeff[ 44]            *x42*x51
         +coeff[ 45]    *x23        *x51
-        +coeff[ 46]    *x21    *x43
-        +coeff[ 47]*x13    *x32
-        +coeff[ 48]    *x21*x31*x43
-        +coeff[ 49]*x12*x21*x31*x42
-        +coeff[ 50]    *x23*x31*x42
+        +coeff[ 46]    *x21    *x43    
+        +coeff[ 47]*x13    *x32        
+        +coeff[ 48]    *x21*x31*x43    
+        +coeff[ 49]*x12*x21*x31*x42    
+        +coeff[ 50]    *x23*x31*x42    
         +coeff[ 51]        *x31    *x51
-        +coeff[ 52]*x13
+        +coeff[ 52]*x13                
     ;
-    v_x_l5p77_q3en                            =v_x_l5p77_q3en
+    v_x_l5p77_q3en                            =v_x_l5p77_q3en                            
         +coeff[ 53]                *x53
-        +coeff[ 54]*x12        *x41
+        +coeff[ 54]*x12        *x41    
         +coeff[ 55]*x11    *x31    *x51
         +coeff[ 56]    *x21        *x52
-        +coeff[ 57]*x11    *x32
+        +coeff[ 57]*x11    *x32        
         +coeff[ 58]*x11*x22        *x51
-        +coeff[ 59]*x11*x23
+        +coeff[ 59]*x11*x23            
         ;
 
     return v_x_l5p77_q3en                            ;
@@ -4742,66 +4742,66 @@ float t_l5p77_q3en                            (float *x,int m){
 //                 function
 
     float v_t_l5p77_q3en                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
         +coeff[  3]                *x51
-        +coeff[  4]    *x22
-        +coeff[  5]    *x21    *x41
+        +coeff[  4]    *x22            
+        +coeff[  5]    *x21    *x41    
         +coeff[  6]    *x21        *x51
-        +coeff[  7]*x12        *x41
+        +coeff[  7]*x12        *x41    
     ;
-    v_t_l5p77_q3en                            =v_t_l5p77_q3en
-        +coeff[  8]*x12*x21*x31
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]*x13        *x41
-        +coeff[ 11]            *x41
-        +coeff[ 12]*x11    *x31
-        +coeff[ 13]    *x21*x31
-        +coeff[ 14]*x11        *x41
+    v_t_l5p77_q3en                            =v_t_l5p77_q3en                            
+        +coeff[  8]*x12*x21*x31        
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]*x13        *x41    
+        +coeff[ 11]            *x41    
+        +coeff[ 12]*x11    *x31        
+        +coeff[ 13]    *x21*x31        
+        +coeff[ 14]*x11        *x41    
         +coeff[ 15]                *x52
-        +coeff[ 16]    *x23
+        +coeff[ 16]    *x23            
     ;
-    v_t_l5p77_q3en                            =v_t_l5p77_q3en
-        +coeff[ 17]*x12    *x31
-        +coeff[ 18]    *x21    *x42
-        +coeff[ 19]*x13*x22
-        +coeff[ 20]    *x23*x31*x41
-        +coeff[ 21]        *x31
-        +coeff[ 22]*x11*x21
-        +coeff[ 23]            *x42
+    v_t_l5p77_q3en                            =v_t_l5p77_q3en                            
+        +coeff[ 17]*x12    *x31        
+        +coeff[ 18]    *x21    *x42    
+        +coeff[ 19]*x13*x22            
+        +coeff[ 20]    *x23*x31*x41    
+        +coeff[ 21]        *x31        
+        +coeff[ 22]*x11*x21            
+        +coeff[ 23]            *x42    
         +coeff[ 24]*x11            *x51
-        +coeff[ 25]*x13
+        +coeff[ 25]*x13                
     ;
-    v_t_l5p77_q3en                            =v_t_l5p77_q3en
-        +coeff[ 26]*x11*x22
-        +coeff[ 27]    *x22    *x41
-        +coeff[ 28]    *x21*x31*x41
-        +coeff[ 29]    *x23    *x41
-        +coeff[ 30]*x12*x21
-        +coeff[ 31]    *x22*x31
-        +coeff[ 32]    *x21*x32
-        +coeff[ 33]*x11*x22    *x41
-        +coeff[ 34]*x13        *x42
+    v_t_l5p77_q3en                            =v_t_l5p77_q3en                            
+        +coeff[ 26]*x11*x22            
+        +coeff[ 27]    *x22    *x41    
+        +coeff[ 28]    *x21*x31*x41    
+        +coeff[ 29]    *x23    *x41    
+        +coeff[ 30]*x12*x21            
+        +coeff[ 31]    *x22*x31        
+        +coeff[ 32]    *x21*x32        
+        +coeff[ 33]*x11*x22    *x41    
+        +coeff[ 34]*x13        *x42    
     ;
-    v_t_l5p77_q3en                            =v_t_l5p77_q3en
-        +coeff[ 35]*x12
-        +coeff[ 36]*x11    *x31*x41
-        +coeff[ 37]*x11        *x42
+    v_t_l5p77_q3en                            =v_t_l5p77_q3en                            
+        +coeff[ 35]*x12                
+        +coeff[ 36]*x11    *x31*x41    
+        +coeff[ 37]*x11        *x42    
         +coeff[ 38]            *x42*x51
-        +coeff[ 39]*x11*x22*x31
-        +coeff[ 40]*x12*x21    *x41
-        +coeff[ 41]    *x21    *x43
-        +coeff[ 42]        *x31*x41
+        +coeff[ 39]*x11*x22*x31        
+        +coeff[ 40]*x12*x21    *x41    
+        +coeff[ 41]    *x21    *x43    
+        +coeff[ 42]        *x31*x41    
         +coeff[ 43]        *x31    *x51
     ;
-    v_t_l5p77_q3en                            =v_t_l5p77_q3en
-        +coeff[ 44]*x11    *x32
-        +coeff[ 45]*x11*x21    *x41
+    v_t_l5p77_q3en                            =v_t_l5p77_q3en                            
+        +coeff[ 44]*x11    *x32        
+        +coeff[ 45]*x11*x21    *x41    
         +coeff[ 46]    *x22        *x51
         +coeff[ 47]    *x21        *x52
         +coeff[ 48]                *x53
-        +coeff[ 49]    *x22    *x42
+        +coeff[ 49]    *x22    *x42    
         ;
 
     return v_t_l5p77_q3en                            ;
@@ -4880,122 +4880,122 @@ float y_l5p77_q3en                            (float *x,int m){
 //                 function
 
     float v_y_l5p77_q3en                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]            *x42
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]    *x22
+        +coeff[  5]            *x42    
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]    *x22            
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[  8]    *x21*x31
-        +coeff[  9]        *x32
-        +coeff[ 10]*x11        *x41
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[  8]    *x21*x31        
+        +coeff[  9]        *x32        
+        +coeff[ 10]*x11        *x41    
         +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
+        +coeff[ 12]*x11*x21            
         +coeff[ 13]    *x21        *x51
         +coeff[ 14]        *x31    *x51
         +coeff[ 15]                *x52
-        +coeff[ 16]    *x22    *x41
+        +coeff[ 16]    *x22    *x41    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 17]    *x23
-        +coeff[ 18]    *x22*x31
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 17]    *x23            
+        +coeff[ 18]    *x22*x31        
         +coeff[ 19]    *x21    *x41*x51
         +coeff[ 20]    *x22        *x51
-        +coeff[ 21]        *x31*x43
+        +coeff[ 21]        *x31*x43    
         +coeff[ 22]            *x41*x52
-        +coeff[ 23]        *x33*x41
-        +coeff[ 24]    *x21    *x44
-        +coeff[ 25]        *x31*x41
+        +coeff[ 23]        *x33*x41    
+        +coeff[ 24]    *x21    *x44    
+        +coeff[ 25]        *x31*x41    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 26]            *x43
-        +coeff[ 27]*x12
-        +coeff[ 28]    *x21*x31*x41
-        +coeff[ 29]*x11*x21    *x41
-        +coeff[ 30]*x11*x21*x31
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 26]            *x43    
+        +coeff[ 27]*x12                
+        +coeff[ 28]    *x21*x31*x41    
+        +coeff[ 29]*x11*x21    *x41    
+        +coeff[ 30]*x11*x21*x31        
         +coeff[ 31]*x11*x21        *x51
-        +coeff[ 32]    *x24
-        +coeff[ 33]*x11
-        +coeff[ 34]    *x21    *x42
+        +coeff[ 32]    *x24            
+        +coeff[ 33]*x11                
+        +coeff[ 34]    *x21    *x42    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
         +coeff[ 35]*x11            *x51
-        +coeff[ 36]*x11        *x42
+        +coeff[ 36]*x11        *x42    
         +coeff[ 37]            *x42*x51
-        +coeff[ 38]*x11*x22
-        +coeff[ 39]*x12        *x41
-        +coeff[ 40]    *x22    *x42
-        +coeff[ 41]*x11*x22    *x41
-        +coeff[ 42]*x11*x23
-        +coeff[ 43]*x11    *x31
+        +coeff[ 38]*x11*x22            
+        +coeff[ 39]*x12        *x41    
+        +coeff[ 40]    *x22    *x42    
+        +coeff[ 41]*x11*x22    *x41    
+        +coeff[ 42]*x11*x23            
+        +coeff[ 43]*x11    *x31        
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 44]        *x31*x42
-        +coeff[ 45]*x11    *x31*x41
-        +coeff[ 46]    *x21    *x43
-        +coeff[ 47]    *x21*x31*x42
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 44]        *x31*x42    
+        +coeff[ 45]*x11    *x31*x41    
+        +coeff[ 46]    *x21    *x43    
+        +coeff[ 47]    *x21*x31*x42    
         +coeff[ 48]        *x31    *x52
         +coeff[ 49]                *x53
         +coeff[ 50]    *x22    *x41*x51
         +coeff[ 51]*x11*x21    *x41*x51
-        +coeff[ 52]    *x23    *x42
+        +coeff[ 52]    *x23    *x42    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
         +coeff[ 53]        *x31*x41*x51
-        +coeff[ 54]*x12    *x31
+        +coeff[ 54]*x12    *x31        
         +coeff[ 55]    *x21        *x52
-        +coeff[ 56]    *x22*x31*x41
-        +coeff[ 57]*x11*x21    *x42
+        +coeff[ 56]    *x22*x31*x41    
+        +coeff[ 57]*x11*x21    *x42    
         +coeff[ 58]    *x21    *x42*x51
-        +coeff[ 59]    *x23*x31
-        +coeff[ 60]    *x22*x32
+        +coeff[ 59]    *x23*x31        
+        +coeff[ 60]    *x22*x32        
         +coeff[ 61]*x12            *x51
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 62]*x11*x21*x31*x41
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 62]*x11*x21*x31*x41    
         +coeff[ 63]    *x21*x31*x41*x51
-        +coeff[ 64]*x11*x21*x32
+        +coeff[ 64]*x11*x21*x32        
         +coeff[ 65]    *x22*x31    *x51
-        +coeff[ 66]*x12*x21    *x41
-        +coeff[ 67]*x12*x22
+        +coeff[ 66]*x12*x21    *x41    
+        +coeff[ 67]*x12*x22            
         +coeff[ 68]*x11*x21*x31    *x51
         +coeff[ 69]    *x22        *x52
-        +coeff[ 70]*x11*x21    *x43
+        +coeff[ 70]*x11*x21    *x43    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 71]*x11*x22    *x42
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 71]*x11*x22    *x42    
         +coeff[ 72]    *x22    *x42*x51
         +coeff[ 73]    *x22*x31*x41*x51
-        +coeff[ 74]    *x23*x32*x41
-        +coeff[ 75]    *x24    *x43
+        +coeff[ 74]    *x23*x32*x41    
+        +coeff[ 75]    *x24    *x43    
         +coeff[ 76]            *x45*x53
-        +coeff[ 77]        *x32*x41
+        +coeff[ 77]        *x32*x41    
         +coeff[ 78]    *x21*x31    *x51
         +coeff[ 79]        *x32    *x51
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
         +coeff[ 80]*x11        *x41*x51
-        +coeff[ 81]*x12*x21
-        +coeff[ 82]*x11        *x43
-        +coeff[ 83]*x11    *x31*x42
-        +coeff[ 84]        *x31*x44
-        +coeff[ 85]*x12        *x42
+        +coeff[ 81]*x12*x21            
+        +coeff[ 82]*x11        *x43    
+        +coeff[ 83]*x11    *x31*x42    
+        +coeff[ 84]        *x31*x44    
+        +coeff[ 85]*x12        *x42    
         +coeff[ 86]    *x23        *x51
-        +coeff[ 87]*x12    *x31*x41
-        +coeff[ 88]    *x24    *x41
+        +coeff[ 87]*x12    *x31*x41    
+        +coeff[ 88]    *x24    *x41    
     ;
-    v_y_l5p77_q3en                            =v_y_l5p77_q3en
-        +coeff[ 89]    *x23*x31*x41
+    v_y_l5p77_q3en                            =v_y_l5p77_q3en                            
+        +coeff[ 89]    *x23*x31*x41    
         +coeff[ 90]*x11*x21        *x52
-        +coeff[ 91]*x11*x22*x31*x41
+        +coeff[ 91]*x11*x22*x31*x41    
         +coeff[ 92]        *x31*x42*x53
-        +coeff[ 93]    *x21*x32
-        +coeff[ 94]        *x33
-        +coeff[ 95]*x11    *x32
+        +coeff[ 93]    *x21*x32        
+        +coeff[ 94]        *x33        
+        +coeff[ 95]*x11    *x32        
         +coeff[ 96]*x11    *x31    *x51
         ;
 
@@ -5075,116 +5075,116 @@ float p_l5p77_q3en                            (float *x,int m){
 //                 function
 
     float v_p_l5p77_q3en                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21*x31        
+        +coeff[  7]    *x21    *x41    
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[  8]        *x32
-        +coeff[  9]        *x31*x41
-        +coeff[ 10]            *x42
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[  8]        *x32        
+        +coeff[  9]        *x31*x41    
+        +coeff[ 10]            *x42    
         +coeff[ 11]    *x21        *x51
         +coeff[ 12]        *x31    *x51
         +coeff[ 13]            *x41*x51
-        +coeff[ 14]*x11*x21
+        +coeff[ 14]*x11*x21            
         +coeff[ 15]                *x52
-        +coeff[ 16]    *x22*x31
+        +coeff[ 16]    *x22*x31        
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 17]*x11        *x41
-        +coeff[ 18]    *x22    *x41
-        +coeff[ 19]    *x21    *x42
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 17]*x11        *x41    
+        +coeff[ 18]    *x22    *x41    
+        +coeff[ 19]    *x21    *x42    
         +coeff[ 20]    *x22        *x51
         +coeff[ 21]    *x21    *x41*x51
         +coeff[ 22]*x11*x21        *x51
-        +coeff[ 23]    *x25
-        +coeff[ 24]    *x23
-        +coeff[ 25]    *x21*x31*x41
+        +coeff[ 23]    *x25            
+        +coeff[ 24]    *x23            
+        +coeff[ 25]    *x21*x31*x41    
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 26]            *x43
-        +coeff[ 27]*x12
-        +coeff[ 28]    *x24
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 26]            *x43    
+        +coeff[ 27]*x12                
+        +coeff[ 28]    *x24            
         +coeff[ 29]            *x41*x52
-        +coeff[ 30]    *x22    *x42
+        +coeff[ 30]    *x22    *x42    
         +coeff[ 31]    *x22    *x41*x51
-        +coeff[ 32]*x11*x23*x31
-        +coeff[ 33]*x11    *x31
+        +coeff[ 32]*x11*x23*x31        
+        +coeff[ 33]*x11    *x31        
         +coeff[ 34]*x11            *x51
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
         +coeff[ 35]        *x31*x41*x51
-        +coeff[ 36]*x11*x22
+        +coeff[ 36]*x11*x22            
         +coeff[ 37]    *x21        *x52
-        +coeff[ 38]*x11        *x42
+        +coeff[ 38]*x11        *x42    
         +coeff[ 39]    *x22*x31    *x51
-        +coeff[ 40]*x11*x23
-        +coeff[ 41]*x12        *x41
-        +coeff[ 42]*x11*x22    *x41
-        +coeff[ 43]*x13
+        +coeff[ 40]*x11*x23            
+        +coeff[ 41]*x12        *x41    
+        +coeff[ 42]*x11*x22    *x41    
+        +coeff[ 43]*x13                
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 44]*x11*x23    *x41
-        +coeff[ 45]*x11    *x33*x41
-        +coeff[ 46]*x13*x22
-        +coeff[ 47]*x11
-        +coeff[ 48]        *x32*x41
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 44]*x11*x23    *x41    
+        +coeff[ 45]*x11    *x33*x41    
+        +coeff[ 46]*x13*x22            
+        +coeff[ 47]*x11                
+        +coeff[ 48]        *x32*x41    
         +coeff[ 49]        *x32    *x51
-        +coeff[ 50]*x11*x21*x31
-        +coeff[ 51]*x11*x21    *x41
-        +coeff[ 52]*x11    *x31*x41
+        +coeff[ 50]*x11*x21*x31        
+        +coeff[ 51]*x11*x21    *x41    
+        +coeff[ 52]*x11    *x31*x41    
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
         +coeff[ 53]                *x53
-        +coeff[ 54]    *x21    *x43
-        +coeff[ 55]    *x23    *x42
+        +coeff[ 54]    *x21    *x43    
+        +coeff[ 55]    *x23    *x42    
         +coeff[ 56]*x12            *x51
         +coeff[ 57]*x11*x21    *x41*x51
         +coeff[ 58]    *x23    *x41*x51
-        +coeff[ 59]*x12*x21    *x41
+        +coeff[ 59]*x12*x21    *x41    
         +coeff[ 60]    *x22*x31    *x52
-        +coeff[ 61]    *x23*x31*x42
+        +coeff[ 61]    *x23*x31*x42    
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 62]    *x23    *x43
-        +coeff[ 63]    *x21*x32
-        +coeff[ 64]        *x31*x42
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 62]    *x23    *x43    
+        +coeff[ 63]    *x21*x32        
+        +coeff[ 64]        *x31*x42    
         +coeff[ 65]            *x42*x51
-        +coeff[ 66]*x11    *x32
-        +coeff[ 67]    *x22*x32
-        +coeff[ 68]    *x21*x31*x42
+        +coeff[ 66]*x11    *x32        
+        +coeff[ 67]    *x22*x32        
+        +coeff[ 68]    *x21*x31*x42    
         +coeff[ 69]    *x21    *x42*x51
-        +coeff[ 70]*x12    *x31
+        +coeff[ 70]*x12    *x31        
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 71]    *x24    *x41
-        +coeff[ 72]*x11*x21*x31*x41
-        +coeff[ 73]    *x23*x31*x41
-        +coeff[ 74]*x11*x21    *x42
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 71]    *x24    *x41    
+        +coeff[ 72]*x11*x21*x31*x41    
+        +coeff[ 73]    *x23*x31*x41    
+        +coeff[ 74]*x11*x21    *x42    
         +coeff[ 75]*x11*x21*x31    *x51
         +coeff[ 76]    *x22    *x42*x51
-        +coeff[ 77]*x12*x22
+        +coeff[ 77]*x12*x22            
         +coeff[ 78]    *x21*x33    *x51
         +coeff[ 79]    *x22    *x41*x52
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 80]*x11*x22    *x42
-        +coeff[ 81]    *x23*x32*x41
-        +coeff[ 82]*x12*x21    *x42
-        +coeff[ 83]*x11*x22*x33
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 80]*x11*x22    *x42    
+        +coeff[ 81]    *x23*x32*x41    
+        +coeff[ 82]*x12*x21    *x42    
+        +coeff[ 83]*x11*x22*x33        
         +coeff[ 84]    *x21*x33    *x52
         +coeff[ 85]    *x24*x31*x41*x51
-        +coeff[ 86]    *x22    *x45
-        +coeff[ 87]    *x23*x31
+        +coeff[ 86]    *x22    *x45    
+        +coeff[ 87]    *x23*x31        
         +coeff[ 88]        *x31    *x52
     ;
-    v_p_l5p77_q3en                            =v_p_l5p77_q3en
-        +coeff[ 89]    *x22*x31*x41
+    v_p_l5p77_q3en                            =v_p_l5p77_q3en                            
+        +coeff[ 89]    *x22*x31*x41    
         ;
 
     return v_p_l5p77_q3en                            ;
@@ -5256,84 +5256,84 @@ float l_l5p77_q3en                            (float *x,int m){
 //                 function
 
     float v_l_l5p77_q3en                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]*x11
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
+        +coeff[  4]*x11                
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21    *x41    
         +coeff[  7]    *x21        *x51
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]        *x31
-        +coeff[ 11]    *x21*x31
-        +coeff[ 12]*x11    *x31
-        +coeff[ 13]    *x23
-        +coeff[ 14]    *x21    *x42
-        +coeff[ 15]*x11*x22
-        +coeff[ 16]    *x23*x31*x41
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[  8]*x11        *x41    
+        +coeff[  9]    *x23*x31        
+        +coeff[ 10]        *x31        
+        +coeff[ 11]    *x21*x31        
+        +coeff[ 12]*x11    *x31        
+        +coeff[ 13]    *x23            
+        +coeff[ 14]    *x21    *x42    
+        +coeff[ 15]*x11*x22            
+        +coeff[ 16]    *x23*x31*x41    
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 17]*x11*x21
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 17]*x11*x21            
         +coeff[ 18]*x11            *x51
-        +coeff[ 19]    *x22    *x41
-        +coeff[ 20]    *x21*x31*x41
-        +coeff[ 21]    *x23    *x41
-        +coeff[ 22]            *x44
-        +coeff[ 23]*x11*x22    *x41
-        +coeff[ 24]            *x42
+        +coeff[ 19]    *x22    *x41    
+        +coeff[ 20]    *x21*x31*x41    
+        +coeff[ 21]    *x23    *x41    
+        +coeff[ 22]            *x44    
+        +coeff[ 23]*x11*x22    *x41    
+        +coeff[ 24]            *x42    
         +coeff[ 25]            *x41*x51
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 26]    *x22*x31
-        +coeff[ 27]    *x21*x32
-        +coeff[ 28]*x11        *x42
-        +coeff[ 29]*x12*x21
-        +coeff[ 30]*x11*x22*x31
-        +coeff[ 31]*x11    *x33*x41
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 26]    *x22*x31        
+        +coeff[ 27]    *x21*x32        
+        +coeff[ 28]*x11        *x42    
+        +coeff[ 29]*x12*x21            
+        +coeff[ 30]*x11*x22*x31        
+        +coeff[ 31]*x11    *x33*x41    
         +coeff[ 32]        *x31    *x51
-        +coeff[ 33]*x12
+        +coeff[ 33]*x12                
         +coeff[ 34]    *x22        *x51
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 35]*x11    *x31*x41
-        +coeff[ 36]    *x24
-        +coeff[ 37]    *x21    *x43
-        +coeff[ 38]*x12*x21    *x41
-        +coeff[ 39]    *x21*x33*x42
-        +coeff[ 40]        *x32
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 35]*x11    *x31*x41    
+        +coeff[ 36]    *x24            
+        +coeff[ 37]    *x21    *x43    
+        +coeff[ 38]*x12*x21    *x41    
+        +coeff[ 39]    *x21*x33*x42    
+        +coeff[ 40]        *x32        
         +coeff[ 41]            *x42*x51
         +coeff[ 42]    *x21        *x52
-        +coeff[ 43]*x11    *x32
+        +coeff[ 43]*x11    *x32        
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 44]*x11*x21    *x41
-        +coeff[ 45]    *x21*x32*x41
-        +coeff[ 46]    *x22    *x42
-        +coeff[ 47]    *x21*x31*x42
-        +coeff[ 48]*x11*x23
-        +coeff[ 49]*x12*x21*x31
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 44]*x11*x21    *x41    
+        +coeff[ 45]    *x21*x32*x41    
+        +coeff[ 46]    *x22    *x42    
+        +coeff[ 47]    *x21*x31*x42    
+        +coeff[ 48]*x11*x23            
+        +coeff[ 49]*x12*x21*x31        
         +coeff[ 50]    *x23*x31    *x51
-        +coeff[ 51]        *x31*x41
+        +coeff[ 51]        *x31*x41    
         +coeff[ 52]                *x52
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 53]            *x43
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 53]            *x43    
         +coeff[ 54]    *x21    *x41*x51
         +coeff[ 55]        *x31*x41*x51
-        +coeff[ 56]*x11*x21*x31
+        +coeff[ 56]*x11*x21*x31        
         +coeff[ 57]*x11        *x41*x51
         +coeff[ 58]*x11            *x52
-        +coeff[ 59]*x13
-        +coeff[ 60]    *x22*x31*x41
-        +coeff[ 61]    *x24    *x41
+        +coeff[ 59]*x13                
+        +coeff[ 60]    *x22*x31*x41    
+        +coeff[ 61]    *x24    *x41    
     ;
-    v_l_l5p77_q3en                            =v_l_l5p77_q3en
-        +coeff[ 62]    *x21*x31*x43
-        +coeff[ 63]    *x21    *x44
+    v_l_l5p77_q3en                            =v_l_l5p77_q3en                            
+        +coeff[ 62]    *x21*x31*x43    
+        +coeff[ 63]    *x21    *x44    
         +coeff[ 64]    *x21    *x43*x51
         +coeff[ 65]            *x41*x54
         +coeff[ 66]*x11*x24*x31    *x51
@@ -5400,63 +5400,63 @@ float x_l5p77_q3ex                            (float *x,int m){
 //                 function
 
     float v_x_l5p77_q3ex                            =avdat
-        +coeff[  0]
+        +coeff[  0]                    
         +coeff[  1]                *x51
-        +coeff[  2]    *x21
+        +coeff[  2]    *x21            
         +coeff[  3]                *x52
         +coeff[  4]    *x21        *x51
-        +coeff[  5]    *x21    *x41
-        +coeff[  6]*x13
-        +coeff[  7]*x11
+        +coeff[  5]    *x21    *x41    
+        +coeff[  6]*x13                
+        +coeff[  7]*x11                
     ;
-    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x22
-        +coeff[ 10]    *x21*x31
-        +coeff[ 11]            *x41
-        +coeff[ 12]            *x42
-        +coeff[ 13]    *x23
-        +coeff[ 14]    *x21    *x42
-        +coeff[ 15]        *x31
-        +coeff[ 16]*x11    *x31
+    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex                            
+        +coeff[  8]*x11        *x41    
+        +coeff[  9]    *x22            
+        +coeff[ 10]    *x21*x31        
+        +coeff[ 11]            *x41    
+        +coeff[ 12]            *x42    
+        +coeff[ 13]    *x23            
+        +coeff[ 14]    *x21    *x42    
+        +coeff[ 15]        *x31        
+        +coeff[ 16]*x11    *x31        
     ;
-    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex
-        +coeff[ 17]        *x31*x41
+    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex                            
+        +coeff[ 17]        *x31*x41    
         +coeff[ 18]                *x53
-        +coeff[ 19]*x11*x22
+        +coeff[ 19]*x11*x22            
         +coeff[ 20]    *x21    *x41*x51
-        +coeff[ 21]    *x21*x31*x41
+        +coeff[ 21]    *x21*x31*x41    
         +coeff[ 22]            *x43*x51
-        +coeff[ 23]    *x23    *x41
+        +coeff[ 23]    *x23    *x41    
         +coeff[ 24]*x11            *x51
         +coeff[ 25]            *x41*x51
     ;
-    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex
-        +coeff[ 26]*x12*x21
+    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex                            
+        +coeff[ 26]*x12*x21            
         +coeff[ 27]    *x22        *x51
         +coeff[ 28]    *x21*x31    *x51
-        +coeff[ 29]    *x21*x32
-        +coeff[ 30]    *x22    *x41
-        +coeff[ 31]*x11*x22    *x41
-        +coeff[ 32]    *x23*x31
+        +coeff[ 29]    *x21*x32        
+        +coeff[ 30]    *x22    *x41    
+        +coeff[ 31]*x11*x22    *x41    
+        +coeff[ 32]    *x23*x31        
         +coeff[ 33]        *x31    *x51
-        +coeff[ 34]*x11    *x31*x41
+        +coeff[ 34]*x11    *x31*x41    
     ;
-    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex
-        +coeff[ 35]*x11        *x42
-        +coeff[ 36]    *x22*x31
-        +coeff[ 37]*x11*x23
-        +coeff[ 38]*x11*x22*x31
-        +coeff[ 39]*x11*x21    *x42
+    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex                            
+        +coeff[ 35]*x11        *x42    
+        +coeff[ 36]    *x22*x31        
+        +coeff[ 37]*x11*x23            
+        +coeff[ 38]*x11*x22*x31        
+        +coeff[ 39]*x11*x21    *x42    
         +coeff[ 40]    *x23        *x51
-        +coeff[ 41]    *x22    *x42
-        +coeff[ 42]*x11*x21
+        +coeff[ 41]    *x22    *x42    
+        +coeff[ 42]*x11*x21            
         +coeff[ 43]*x11        *x41*x51
     ;
-    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex
+    v_x_l5p77_q3ex                            =v_x_l5p77_q3ex                            
         +coeff[ 44]    *x21        *x52
-        +coeff[ 45]*x11    *x32
-        +coeff[ 46]*x12*x21    *x41
+        +coeff[ 45]*x11    *x32        
+        +coeff[ 46]*x12*x21    *x41    
         +coeff[ 47]*x11*x22        *x51
         +coeff[ 48]    *x21    *x42*x51
         +coeff[ 49]*x13    *x31    *x51
@@ -5523,65 +5523,65 @@ float t_l5p77_q3ex                            (float *x,int m){
 //                 function
 
     float v_t_l5p77_q3ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
-        +coeff[  4]            *x41
+        +coeff[  0]                    
+        +coeff[  1]*x11                
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
+        +coeff[  4]            *x41    
         +coeff[  5]                *x51
         +coeff[  6]    *x21        *x51
         +coeff[  7]                *x52
     ;
-    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex
-        +coeff[  8]    *x22
-        +coeff[  9]    *x21    *x41
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x42
+    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex                            
+        +coeff[  8]    *x22            
+        +coeff[  9]    *x21    *x41    
+        +coeff[ 10]            *x42    
+        +coeff[ 11]    *x21    *x42    
         +coeff[ 12]    *x21    *x41*x51
         +coeff[ 13]    *x21        *x52
-        +coeff[ 14]*x11*x23
-        +coeff[ 15]        *x31*x41
+        +coeff[ 14]*x11*x23            
+        +coeff[ 15]        *x31*x41    
         +coeff[ 16]*x11            *x51
     ;
-    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex
+    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex                            
         +coeff[ 17]            *x41*x51
         +coeff[ 18]                *x53
         +coeff[ 19]        *x31    *x53
-        +coeff[ 20]    *x21*x31
-        +coeff[ 21]*x11        *x41
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x22    *x41
-        +coeff[ 24]*x11        *x42
+        +coeff[ 20]    *x21*x31        
+        +coeff[ 21]*x11        *x41    
+        +coeff[ 22]*x11*x22            
+        +coeff[ 23]    *x22    *x41    
+        +coeff[ 24]*x11        *x42    
         +coeff[ 25]    *x21*x31    *x51
     ;
-    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex
-        +coeff[ 26]    *x23    *x41
-        +coeff[ 27]    *x22    *x42
-        +coeff[ 28]*x11    *x31
+    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex                            
+        +coeff[ 26]    *x23    *x41    
+        +coeff[ 27]    *x22    *x42    
+        +coeff[ 28]*x11    *x31        
         +coeff[ 29]        *x31    *x51
-        +coeff[ 30]    *x22*x31
+        +coeff[ 30]    *x22*x31        
         +coeff[ 31]    *x22        *x51
         +coeff[ 32]            *x42*x51
         +coeff[ 33]*x11            *x52
         +coeff[ 34]    *x23        *x51
     ;
-    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex
+    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex                            
         +coeff[ 35]    *x21    *x42*x51
-        +coeff[ 36]    *x22    *x43
+        +coeff[ 36]    *x22    *x43    
         +coeff[ 37]*x13*x22        *x51
         +coeff[ 38]    *x23*x31*x41*x51
-        +coeff[ 39]*x12
-        +coeff[ 40]*x11*x21
-        +coeff[ 41]*x12*x21
-        +coeff[ 42]        *x31*x42
+        +coeff[ 39]*x12                
+        +coeff[ 40]*x11*x21            
+        +coeff[ 41]*x12*x21            
+        +coeff[ 42]        *x31*x42    
         +coeff[ 43]*x11    *x31    *x51
     ;
-    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex
+    v_t_l5p77_q3ex                            =v_t_l5p77_q3ex                            
         +coeff[ 44]*x11        *x41*x51
         +coeff[ 45]            *x41*x52
-        +coeff[ 46]*x12*x21    *x41
-        +coeff[ 47]*x11*x21*x31*x41
-        +coeff[ 48]    *x21    *x43
+        +coeff[ 46]*x12*x21    *x41    
+        +coeff[ 47]*x11*x21*x31*x41    
+        +coeff[ 48]    *x21    *x43    
         +coeff[ 49]*x13            *x51
         ;
 
@@ -5662,123 +5662,123 @@ float y_l5p77_q3ex                            (float *x,int m){
 //                 function
 
     float v_y_l5p77_q3ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
+        +coeff[  0]                    
+        +coeff[  1]            *x41    
+        +coeff[  2]    *x21            
+        +coeff[  3]        *x31        
         +coeff[  4]                *x51
-        +coeff[  5]            *x42
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]    *x22
+        +coeff[  5]            *x42    
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]    *x22            
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[  8]    *x21*x31
-        +coeff[  9]        *x32
-        +coeff[ 10]*x11        *x41
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[  8]    *x21*x31        
+        +coeff[  9]        *x32        
+        +coeff[ 10]*x11        *x41    
         +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
+        +coeff[ 12]*x11*x21            
         +coeff[ 13]    *x21        *x51
         +coeff[ 14]        *x31    *x51
-        +coeff[ 15]    *x21    *x42
+        +coeff[ 15]    *x21    *x42    
         +coeff[ 16]                *x52
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 17]    *x22    *x41
-        +coeff[ 18]    *x23
-        +coeff[ 19]    *x22*x31
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 17]    *x22    *x41    
+        +coeff[ 18]    *x23            
+        +coeff[ 19]    *x22*x31        
         +coeff[ 20]    *x21    *x41*x51
         +coeff[ 21]    *x22        *x51
-        +coeff[ 22]        *x31*x43
+        +coeff[ 22]        *x31*x43    
         +coeff[ 23]*x11*x21        *x51
-        +coeff[ 24]        *x33*x41
-        +coeff[ 25]        *x33*x43
+        +coeff[ 24]        *x33*x41    
+        +coeff[ 25]        *x33*x43    
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 26]        *x31*x41
-        +coeff[ 27]            *x43
-        +coeff[ 28]*x12
-        +coeff[ 29]    *x21*x31*x41
-        +coeff[ 30]*x11*x21    *x41
-        +coeff[ 31]*x11*x21*x31
-        +coeff[ 32]    *x24
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 26]        *x31*x41    
+        +coeff[ 27]            *x43    
+        +coeff[ 28]*x12                
+        +coeff[ 29]    *x21*x31*x41    
+        +coeff[ 30]*x11*x21    *x41    
+        +coeff[ 31]*x11*x21*x31        
+        +coeff[ 32]    *x24            
         +coeff[ 33]    *x22    *x41*x51
         +coeff[ 34]*x11            *x51
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 35]*x11        *x42
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 35]*x11        *x42    
         +coeff[ 36]        *x31*x41*x51
-        +coeff[ 37]    *x21    *x43
-        +coeff[ 38]*x12        *x41
+        +coeff[ 37]    *x21    *x43    
+        +coeff[ 38]*x12        *x41    
         +coeff[ 39]            *x41*x52
-        +coeff[ 40]    *x22    *x42
-        +coeff[ 41]*x13
-        +coeff[ 42]*x11*x22    *x41
-        +coeff[ 43]*x11*x23
+        +coeff[ 40]    *x22    *x42    
+        +coeff[ 41]*x13                
+        +coeff[ 42]*x11*x22    *x41    
+        +coeff[ 43]*x11*x23            
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 44]*x11*x22    *x42
-        +coeff[ 45]*x13    *x31
-        +coeff[ 46]*x11    *x33*x41
-        +coeff[ 47]*x11*x24
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 44]*x11*x22    *x42    
+        +coeff[ 45]*x13    *x31        
+        +coeff[ 46]*x11    *x33*x41    
+        +coeff[ 47]*x11*x24            
         +coeff[ 48]    *x24*x31    *x51
-        +coeff[ 49]*x11
-        +coeff[ 50]*x11    *x31
-        +coeff[ 51]        *x31*x42
-        +coeff[ 52]*x11    *x31*x41
+        +coeff[ 49]*x11                
+        +coeff[ 50]*x11    *x31        
+        +coeff[ 51]        *x31*x42    
+        +coeff[ 52]*x11    *x31*x41    
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 53]*x11*x22
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 53]*x11*x22            
         +coeff[ 54]*x11        *x41*x51
-        +coeff[ 55]    *x21*x31*x42
+        +coeff[ 55]    *x21*x31*x42    
         +coeff[ 56]    *x21        *x52
         +coeff[ 57]    *x21    *x42*x51
         +coeff[ 58]*x12            *x51
         +coeff[ 59]                *x53
         +coeff[ 60]    *x23        *x51
-        +coeff[ 61]*x12*x21    *x41
+        +coeff[ 61]*x12*x21    *x41    
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
         +coeff[ 62]*x11*x21    *x41*x51
-        +coeff[ 63]    *x23    *x42
-        +coeff[ 64]*x12*x22
+        +coeff[ 63]    *x23    *x42    
+        +coeff[ 64]*x12*x22            
         +coeff[ 65]            *x42*x51
-        +coeff[ 66]*x11    *x32
+        +coeff[ 66]*x11    *x32        
         +coeff[ 67]        *x32    *x51
-        +coeff[ 68]*x12    *x31
-        +coeff[ 69]    *x23    *x41
-        +coeff[ 70]    *x22*x31*x41
+        +coeff[ 68]*x12    *x31        
+        +coeff[ 69]    *x23    *x41    
+        +coeff[ 70]    *x22*x31*x41    
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 71]    *x23*x31
-        +coeff[ 72]    *x22*x32
-        +coeff[ 73]*x11*x21*x31*x41
-        +coeff[ 74]*x11*x21*x32
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 71]    *x23*x31        
+        +coeff[ 72]    *x22*x32        
+        +coeff[ 73]*x11*x21*x31*x41    
+        +coeff[ 74]*x11*x21*x32        
         +coeff[ 75]    *x22*x31    *x51
         +coeff[ 76]*x11*x21*x31    *x51
-        +coeff[ 77]    *x23*x31*x41
+        +coeff[ 77]    *x23*x31*x41    
         +coeff[ 78]            *x41*x53
         +coeff[ 79]    *x22    *x42*x51
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 80]*x11*x23    *x41
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 80]*x11*x23    *x41    
         +coeff[ 81]    *x22*x31*x41*x51
         +coeff[ 82]        *x31*x42*x52
-        +coeff[ 83]*x11*x21    *x44
-        +coeff[ 84]    *x24    *x42
-        +coeff[ 85]*x11*x23    *x42
-        +coeff[ 86]*x11*x21    *x45
-        +coeff[ 87]    *x24    *x43
+        +coeff[ 83]*x11*x21    *x44    
+        +coeff[ 84]    *x24    *x42    
+        +coeff[ 85]*x11*x23    *x42    
+        +coeff[ 86]*x11*x21    *x45    
+        +coeff[ 87]    *x24    *x43    
         +coeff[ 88]        *x32*x43*x52
     ;
-    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex
-        +coeff[ 89]        *x32*x41
-        +coeff[ 90]    *x21*x32
-        +coeff[ 91]            *x44
-        +coeff[ 92]*x12*x21
+    v_y_l5p77_q3ex                            =v_y_l5p77_q3ex                            
+        +coeff[ 89]        *x32*x41    
+        +coeff[ 90]    *x21*x32        
+        +coeff[ 91]            *x44    
+        +coeff[ 92]*x12*x21            
         +coeff[ 93]        *x31    *x52
-        +coeff[ 94]*x11        *x43
-        +coeff[ 95]    *x21*x32*x41
-        +coeff[ 96]*x11*x21    *x42
+        +coeff[ 94]*x11        *x43    
+        +coeff[ 95]    *x21*x32*x41    
+        +coeff[ 96]*x11*x21    *x42    
         ;
 
     return v_y_l5p77_q3ex                            ;
@@ -5859,112 +5859,112 @@ float p_l5p77_q3ex                            (float *x,int m){
 //                 function
 
     float v_p_l5p77_q3ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
         +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21*x31        
+        +coeff[  7]    *x21    *x41    
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
-        +coeff[  8]            *x42
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
+        +coeff[  8]            *x42    
         +coeff[  9]    *x21        *x51
         +coeff[ 10]        *x31    *x51
         +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
+        +coeff[ 12]*x11*x21            
         +coeff[ 13]                *x52
-        +coeff[ 14]*x11        *x41
-        +coeff[ 15]    *x22    *x41
-        +coeff[ 16]    *x21    *x42
+        +coeff[ 14]*x11        *x41    
+        +coeff[ 15]    *x22    *x41    
+        +coeff[ 16]    *x21    *x42    
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
         +coeff[ 17]    *x22        *x51
-        +coeff[ 18]    *x22*x31*x41
-        +coeff[ 19]        *x33*x41
-        +coeff[ 20]    *x25
-        +coeff[ 21]    *x24*x31
+        +coeff[ 18]    *x22*x31*x41    
+        +coeff[ 19]        *x33*x41    
+        +coeff[ 20]    *x25            
+        +coeff[ 21]    *x24*x31        
         +coeff[ 22]            *x43*x52
-        +coeff[ 23]        *x35*x41
-        +coeff[ 24]        *x32
-        +coeff[ 25]        *x31*x41
+        +coeff[ 23]        *x35*x41    
+        +coeff[ 24]        *x32        
+        +coeff[ 25]        *x31*x41    
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
-        +coeff[ 26]    *x22*x31
-        +coeff[ 27]*x12
-        +coeff[ 28]    *x24
-        +coeff[ 29]*x11*x21    *x41
-        +coeff[ 30]*x11*x23*x31
-        +coeff[ 31]*x11
-        +coeff[ 32]    *x23
-        +coeff[ 33]    *x21*x31*x41
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
+        +coeff[ 26]    *x22*x31        
+        +coeff[ 27]*x12                
+        +coeff[ 28]    *x24            
+        +coeff[ 29]*x11*x21    *x41    
+        +coeff[ 30]*x11*x23*x31        
+        +coeff[ 31]*x11                
+        +coeff[ 32]    *x23            
+        +coeff[ 33]    *x21*x31*x41    
         +coeff[ 34]*x11            *x51
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
         +coeff[ 35]            *x42*x51
-        +coeff[ 36]*x11*x22
-        +coeff[ 37]*x11*x21*x31
+        +coeff[ 36]*x11*x22            
+        +coeff[ 37]*x11*x21*x31        
         +coeff[ 38]        *x31    *x52
         +coeff[ 39]            *x41*x52
-        +coeff[ 40]*x11        *x42
+        +coeff[ 40]*x11        *x42    
         +coeff[ 41]*x11*x21        *x51
-        +coeff[ 42]*x11*x23
-        +coeff[ 43]    *x22    *x43
+        +coeff[ 42]*x11*x23            
+        +coeff[ 43]    *x22    *x43    
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
         +coeff[ 44]            *x41*x53
-        +coeff[ 45]            *x45
-        +coeff[ 46]*x11*x22    *x43
-        +coeff[ 47]*x11    *x31*x41
-        +coeff[ 48]    *x21    *x43
-        +coeff[ 49]*x11*x22*x31
-        +coeff[ 50]*x12        *x41
-        +coeff[ 51]*x11*x22    *x41
-        +coeff[ 52]*x12*x22
+        +coeff[ 45]            *x45    
+        +coeff[ 46]*x11*x22    *x43    
+        +coeff[ 47]*x11    *x31*x41    
+        +coeff[ 48]    *x21    *x43    
+        +coeff[ 49]*x11*x22*x31        
+        +coeff[ 50]*x12        *x41    
+        +coeff[ 51]*x11*x22    *x41    
+        +coeff[ 52]*x12*x22            
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
-        +coeff[ 53]*x12*x21    *x41
-        +coeff[ 54]    *x23*x31*x42
-        +coeff[ 55]*x13    *x31
-        +coeff[ 56]*x11    *x31
-        +coeff[ 57]        *x32*x41
-        +coeff[ 58]            *x43
-        +coeff[ 59]    *x22*x32
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
+        +coeff[ 53]*x12*x21    *x41    
+        +coeff[ 54]    *x23*x31*x42    
+        +coeff[ 55]*x13    *x31        
+        +coeff[ 56]*x11    *x31        
+        +coeff[ 57]        *x32*x41    
+        +coeff[ 58]            *x43    
+        +coeff[ 59]    *x22*x32        
         +coeff[ 60]*x11    *x31    *x51
-        +coeff[ 61]*x12    *x31
+        +coeff[ 61]*x12    *x31        
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
-        +coeff[ 62]*x11*x21*x31*x41
-        +coeff[ 63]*x11*x21    *x42
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
+        +coeff[ 62]*x11*x21*x31*x41    
+        +coeff[ 63]*x11*x21    *x42    
         +coeff[ 64]*x12            *x51
         +coeff[ 65]*x11*x21    *x41*x51
         +coeff[ 66]        *x31    *x53
         +coeff[ 67]    *x22    *x42*x51
         +coeff[ 68]    *x25        *x51
         +coeff[ 69]*x11*x22        *x52
-        +coeff[ 70]    *x26    *x41
+        +coeff[ 70]    *x26    *x41    
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
         +coeff[ 71]        *x31*x44*x51
-        +coeff[ 72]    *x25*x32*x41
+        +coeff[ 72]    *x25*x32*x41    
         +coeff[ 73]    *x21*x31    *x51
         +coeff[ 74]    *x21    *x41*x51
         +coeff[ 75]        *x32    *x51
-        +coeff[ 76]*x11    *x32
-        +coeff[ 77]    *x21*x31*x42
+        +coeff[ 76]*x11    *x32        
+        +coeff[ 77]    *x21*x31*x42    
         +coeff[ 78]*x11        *x41*x51
-        +coeff[ 79]*x12*x21
+        +coeff[ 79]*x12*x21            
     ;
-    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex
+    v_p_l5p77_q3ex                            =v_p_l5p77_q3ex                            
         +coeff[ 80]    *x22        *x52
         +coeff[ 81]            *x43*x51
-        +coeff[ 82]*x11*x21*x32
-        +coeff[ 83]    *x23    *x42
-        +coeff[ 84]*x11        *x43
-        +coeff[ 85]    *x21    *x44
+        +coeff[ 82]*x11*x21*x32        
+        +coeff[ 83]    *x23    *x42    
+        +coeff[ 84]*x11        *x43    
+        +coeff[ 85]    *x21    *x44    
         +coeff[ 86]    *x23        *x52
-        +coeff[ 87]    *x25*x31
+        +coeff[ 87]    *x25*x31        
         ;
 
     return v_p_l5p77_q3ex                            ;
@@ -6035,87 +6035,87 @@ float l_l5p77_q3ex                            (float *x,int m){
 //                 function
 
     float v_l_l5p77_q3ex                            =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]*x11
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]*x11        *x41
+        +coeff[  4]*x11                
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x21    *x41    
+        +coeff[  7]*x11        *x41    
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
-        +coeff[  8]    *x23*x31
-        +coeff[  9]    *x21*x31
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
+        +coeff[  8]    *x23*x31        
+        +coeff[  9]    *x21*x31        
         +coeff[ 10]    *x21        *x51
         +coeff[ 11]                *x52
-        +coeff[ 12]*x11*x21
-        +coeff[ 13]*x11    *x31
-        +coeff[ 14]    *x23
-        +coeff[ 15]        *x33
-        +coeff[ 16]    *x22    *x41
+        +coeff[ 12]*x11*x21            
+        +coeff[ 13]*x11    *x31        
+        +coeff[ 14]    *x23            
+        +coeff[ 15]        *x33        
+        +coeff[ 16]    *x22    *x41    
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
-        +coeff[ 17]    *x21    *x42
-        +coeff[ 18]*x11*x22
-        +coeff[ 19]    *x23*x31*x41
-        +coeff[ 20]            *x42
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
+        +coeff[ 17]    *x21    *x42    
+        +coeff[ 18]*x11*x22            
+        +coeff[ 19]    *x23*x31*x41    
+        +coeff[ 20]            *x42    
         +coeff[ 21]*x11            *x51
-        +coeff[ 22]    *x22*x31
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]*x12*x21
-        +coeff[ 25]    *x23    *x41
+        +coeff[ 22]    *x22*x31        
+        +coeff[ 23]    *x21*x31*x41    
+        +coeff[ 24]*x12*x21            
+        +coeff[ 25]    *x23    *x41    
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
-        +coeff[ 26]*x11*x22    *x41
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
+        +coeff[ 26]*x11*x22    *x41    
         +coeff[ 27]            *x41*x51
-        +coeff[ 28]    *x21*x32
-        +coeff[ 29]*x11        *x42
-        +coeff[ 30]*x11*x22*x31
-        +coeff[ 31]*x11*x22*x31*x41
-        +coeff[ 32]*x11    *x33*x41
-        +coeff[ 33]        *x31
-        +coeff[ 34]*x12
+        +coeff[ 28]    *x21*x32        
+        +coeff[ 29]*x11        *x42    
+        +coeff[ 30]*x11*x22*x31        
+        +coeff[ 31]*x11*x22*x31*x41    
+        +coeff[ 32]*x11    *x33*x41    
+        +coeff[ 33]        *x31        
+        +coeff[ 34]*x12                
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
         +coeff[ 35]                *x53
-        +coeff[ 36]*x11*x21    *x41
-        +coeff[ 37]*x11    *x31*x41
-        +coeff[ 38]    *x24
-        +coeff[ 39]    *x21    *x43
-        +coeff[ 40]*x12*x21    *x41
-        +coeff[ 41]    *x23*x31*x42
+        +coeff[ 36]*x11*x21    *x41    
+        +coeff[ 37]*x11    *x31*x41    
+        +coeff[ 38]    *x24            
+        +coeff[ 39]    *x21    *x43    
+        +coeff[ 40]*x12*x21    *x41    
+        +coeff[ 41]    *x23*x31*x42    
         +coeff[ 42]        *x31    *x51
         +coeff[ 43]    *x22        *x51
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
         +coeff[ 44]    *x21*x31    *x51
         +coeff[ 45]    *x21    *x41*x51
-        +coeff[ 46]*x11    *x32
+        +coeff[ 46]*x11    *x32        
         +coeff[ 47]*x11        *x41*x51
-        +coeff[ 48]    *x22    *x42
-        +coeff[ 49]    *x21*x31*x42
+        +coeff[ 48]    *x22    *x42    
+        +coeff[ 49]    *x21*x31*x42    
         +coeff[ 50]    *x21*x31*x41*x51
-        +coeff[ 51]*x11*x23
-        +coeff[ 52]*x12*x21*x31
+        +coeff[ 51]*x11*x23            
+        +coeff[ 52]*x12*x21*x31        
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
-        +coeff[ 53]    *x21    *x44
-        +coeff[ 54]    *x23*x32*x41
-        +coeff[ 55]        *x32
-        +coeff[ 56]            *x43
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
+        +coeff[ 53]    *x21    *x44    
+        +coeff[ 54]    *x23*x32*x41    
+        +coeff[ 55]        *x32        
+        +coeff[ 56]            *x43    
         +coeff[ 57]*x11            *x52
-        +coeff[ 58]*x13
-        +coeff[ 59]    *x21*x33
-        +coeff[ 60]    *x22*x31*x41
-        +coeff[ 61]    *x21*x32*x41
+        +coeff[ 58]*x13                
+        +coeff[ 59]    *x21*x33        
+        +coeff[ 60]    *x22*x31*x41    
+        +coeff[ 61]    *x21*x32*x41    
     ;
-    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex
-        +coeff[ 62]        *x33*x41
+    v_l_l5p77_q3ex                            =v_l_l5p77_q3ex                            
+        +coeff[ 62]        *x33*x41    
         +coeff[ 63]*x11*x21    *x41*x51
-        +coeff[ 64]    *x24    *x41
-        +coeff[ 65]*x11*x23*x31
-        +coeff[ 66]*x11*x22    *x42
+        +coeff[ 64]    *x24    *x41    
+        +coeff[ 65]*x11*x23*x31        
+        +coeff[ 66]*x11*x22    *x42    
         ;
 
     return v_l_l5p77_q3ex                            ;
@@ -6156,12 +6156,12 @@ float x_l5p77_sen                             (float *x,int m){
 //                 function
 
     float v_x_l5p77_sen                             =avdat
-        +coeff[  0]
+        +coeff[  0]                    
         +coeff[  1]                *x51
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
-        +coeff[  4]            *x42
-        +coeff[  5]        *x31*x41
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
+        +coeff[  4]            *x42    
+        +coeff[  5]        *x31*x41    
         ;
 
     return v_x_l5p77_sen                             ;
@@ -6224,66 +6224,66 @@ float t_l5p77_sen                             (float *x,int m){
 //                 function
 
     float v_t_l5p77_sen                             =avdat
-        +coeff[  0]
-        +coeff[  1]        *x31
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]        *x31        
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]    *x21
-        +coeff[  5]        *x31*x41
-        +coeff[  6]    *x22    *x41
-        +coeff[  7]*x11
+        +coeff[  4]    *x21            
+        +coeff[  5]        *x31*x41    
+        +coeff[  6]    *x22    *x41    
+        +coeff[  7]*x11                
     ;
-    v_t_l5p77_sen                             =v_t_l5p77_sen
-        +coeff[  8]*x11*x21
-        +coeff[  9]    *x22
-        +coeff[ 10]    *x22*x31
-        +coeff[ 11]*x11*x21    *x41
-        +coeff[ 12]*x13*x21*x31
-        +coeff[ 13]        *x32
+    v_t_l5p77_sen                             =v_t_l5p77_sen                             
+        +coeff[  8]*x11*x21            
+        +coeff[  9]    *x22            
+        +coeff[ 10]    *x22*x31        
+        +coeff[ 11]*x11*x21    *x41    
+        +coeff[ 12]*x13*x21*x31        
+        +coeff[ 13]        *x32        
         +coeff[ 14]            *x41*x51
-        +coeff[ 15]*x11*x21*x31
-        +coeff[ 16]    *x21    *x41
+        +coeff[ 15]*x11*x21*x31        
+        +coeff[ 16]    *x21    *x41    
     ;
-    v_t_l5p77_sen                             =v_t_l5p77_sen
-        +coeff[ 17]            *x42
+    v_t_l5p77_sen                             =v_t_l5p77_sen                             
+        +coeff[ 17]            *x42    
         +coeff[ 18]    *x21        *x51
         +coeff[ 19]        *x31    *x51
-        +coeff[ 20]*x12        *x41
-        +coeff[ 21]*x11*x23
-        +coeff[ 22]    *x23*x31
-        +coeff[ 23]    *x22*x31*x41
-        +coeff[ 24]*x11*x21    *x42
-        +coeff[ 25]    *x22    *x42
+        +coeff[ 20]*x12        *x41    
+        +coeff[ 21]*x11*x23            
+        +coeff[ 22]    *x23*x31        
+        +coeff[ 23]    *x22*x31*x41    
+        +coeff[ 24]*x11*x21    *x42    
+        +coeff[ 25]    *x22    *x42    
     ;
-    v_t_l5p77_sen                             =v_t_l5p77_sen
-        +coeff[ 26]        *x31*x43
-        +coeff[ 27]*x13*x21*x31*x41
-        +coeff[ 28]*x12
-        +coeff[ 29]*x11        *x41
+    v_t_l5p77_sen                             =v_t_l5p77_sen                             
+        +coeff[ 26]        *x31*x43    
+        +coeff[ 27]*x13*x21*x31*x41    
+        +coeff[ 28]*x12                
+        +coeff[ 29]*x11        *x41    
         +coeff[ 30]                *x52
-        +coeff[ 31]*x12*x22
-        +coeff[ 32]    *x22*x32
-        +coeff[ 33]*x11*x21*x31*x41
-        +coeff[ 34]        *x32*x42
+        +coeff[ 31]*x12*x22            
+        +coeff[ 32]    *x22*x32        
+        +coeff[ 33]*x11*x21*x31*x41    
+        +coeff[ 34]        *x32*x42    
     ;
-    v_t_l5p77_sen                             =v_t_l5p77_sen
-        +coeff[ 35]    *x22*x31*x43
-        +coeff[ 36]*x11    *x31
-        +coeff[ 37]    *x21*x31
+    v_t_l5p77_sen                             =v_t_l5p77_sen                             
+        +coeff[ 35]    *x22*x31*x43    
+        +coeff[ 36]*x11    *x31        
+        +coeff[ 37]    *x21*x31        
         +coeff[ 38]*x11            *x51
-        +coeff[ 39]*x12    *x31
-        +coeff[ 40]            *x43
-        +coeff[ 41]*x13*x21
-        +coeff[ 42]*x11*x21*x32
+        +coeff[ 39]*x12    *x31        
+        +coeff[ 40]            *x43    
+        +coeff[ 41]*x13*x21            
+        +coeff[ 42]*x11*x21*x32        
         +coeff[ 43]*x11*x21    *x41*x51
     ;
-    v_t_l5p77_sen                             =v_t_l5p77_sen
+    v_t_l5p77_sen                             =v_t_l5p77_sen                             
         +coeff[ 44]    *x22    *x41*x51
         +coeff[ 45]        *x31*x42*x51
-        +coeff[ 46]*x12*x22    *x41
-        +coeff[ 47]*x11*x23    *x41
-        +coeff[ 48]    *x22*x32*x41
-        +coeff[ 49]*x12    *x31*x42
+        +coeff[ 46]*x12*x22    *x41    
+        +coeff[ 47]*x11*x23    *x41    
+        +coeff[ 48]    *x22*x32*x41    
+        +coeff[ 49]*x12    *x31*x42    
         ;
 
     return v_t_l5p77_sen                             ;
@@ -6328,19 +6328,19 @@ float y_l5p77_sen                             (float *x,int m){
 //                 function
 
     float v_y_l5p77_sen                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]*x11
-        +coeff[  3]    *x21    *x41
-        +coeff[  4]    *x21*x31
-        +coeff[  5]            *x41
-        +coeff[  6]        *x31
-        +coeff[  7]*x11        *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]*x11                
+        +coeff[  3]    *x21    *x41    
+        +coeff[  4]    *x21*x31        
+        +coeff[  5]            *x41    
+        +coeff[  6]        *x31        
+        +coeff[  7]*x11        *x41    
     ;
-    v_y_l5p77_sen                             =v_y_l5p77_sen
-        +coeff[  8]*x11    *x31
-        +coeff[  9]    *x23
-        +coeff[ 10]*x11*x22
+    v_y_l5p77_sen                             =v_y_l5p77_sen                             
+        +coeff[  8]*x11    *x31        
+        +coeff[  9]    *x23            
+        +coeff[ 10]*x11*x22            
         ;
 
     return v_y_l5p77_sen                             ;
@@ -6385,18 +6385,18 @@ float p_l5p77_sen                             (float *x,int m){
 //                 function
 
     float v_p_l5p77_sen                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]    *x21    *x41
-        +coeff[  3]*x11
-        +coeff[  4]    *x21*x31
-        +coeff[  5]            *x41
-        +coeff[  6]*x11        *x41
-        +coeff[  7]        *x31
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]    *x21    *x41    
+        +coeff[  3]*x11                
+        +coeff[  4]    *x21*x31        
+        +coeff[  5]            *x41    
+        +coeff[  6]*x11        *x41    
+        +coeff[  7]        *x31        
     ;
-    v_p_l5p77_sen                             =v_p_l5p77_sen
-        +coeff[  8]    *x23
-        +coeff[  9]*x11*x22
+    v_p_l5p77_sen                             =v_p_l5p77_sen                             
+        +coeff[  8]    *x23            
+        +coeff[  9]*x11*x22            
         ;
 
     return v_p_l5p77_sen                             ;
@@ -6438,42 +6438,39 @@ float l_l5p77_sen                             (float *x,int m){
 //                 function
 
     float v_l_l5p77_sen                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
-        +coeff[  4]    *x22
-        +coeff[  5]        *x31*x41
-        +coeff[  6]            *x42
-        +coeff[  7]    *x22    *x41
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
+        +coeff[  4]    *x22            
+        +coeff[  5]        *x31*x41    
+        +coeff[  6]            *x42    
+        +coeff[  7]    *x22    *x41    
         ;
 
     return v_l_l5p77_sen                             ;
 }
 float x_l5p77_sex                             (float *x,int m){
-    int ncoeff= 49;
-    float avdat=  0.4850814E-02;
+    int ncoeff= 38;
+    float avdat=  0.2689277E+00;
     float xmin[10]={
-        -0.14998E-01,-0.44508E-01,-0.14989E-01,-0.33113E-01,-0.47801E-01,
+        -0.14934E-01,-0.45642E-01,-0.14989E-01,-0.33638E-01,-0.49937E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float xmax[10]={
-         0.15000E-01, 0.48696E-01, 0.14990E-01, 0.25296E-01, 0.49919E-01,
+         0.15000E-01, 0.49450E-01, 0.14990E-01, 0.27012E-01, 0.49919E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    float coeff[ 50]={
-         0.73665543E-02,-0.37995819E-01, 0.65293777E+00,-0.52604344E-01,
-         0.43976791E-01, 0.15137231E-01, 0.36930632E-01,-0.30657919E-02,
-         0.77053253E-02, 0.14181478E-01,-0.14557523E-01,-0.29401777E-01,
-         0.39109876E-02, 0.56102672E-02, 0.17066566E-01, 0.10962527E-01,
-        -0.27189681E-02, 0.27488384E-02, 0.41870973E-02,-0.44432557E-02,
-        -0.79075755E-04,-0.32041839E-02, 0.55091535E-02,-0.10267943E-01,
-         0.39130161E-02,-0.20187652E-01,-0.13401572E-02, 0.16599483E-03,
-         0.11631739E-02, 0.14370932E-02, 0.15681073E-02, 0.20424565E-02,
-        -0.14076697E-02,-0.10330845E-01,-0.49683470E-02,-0.43462724E-02,
-         0.63118450E-02, 0.64997573E-03,-0.14600570E-02, 0.39820308E-02,
-         0.35143178E-02,-0.11653090E-02,-0.25365625E-02, 0.37741067E-02,
-        -0.25085355E-02, 0.11700870E-02,-0.48278663E-02, 0.34487743E-02,
-         0.16507468E-02,
+    float coeff[ 39]={
+        -0.99148257E-02,-0.30488586E-02, 0.16796464E-01, 0.67776307E-01,
+         0.48944475E-02, 0.77776128E-03, 0.23698914E-02,-0.37771170E-02,
+        -0.17695170E-02, 0.18824406E-03,-0.13179049E-02,-0.15502929E-02,
+        -0.14355731E-02, 0.87142553E-05, 0.27666197E-03, 0.16149151E-03,
+        -0.19752014E-03,-0.26371228E-03,-0.22013810E-03, 0.17484295E-02,
+         0.37508064E-04,-0.73969903E-04,-0.15672973E-03,-0.66891639E-03,
+        -0.21761646E-03, 0.17538620E-03, 0.80049108E-03, 0.11704508E-02,
+         0.13448243E-03, 0.55890345E-04,-0.49523591E-04,-0.50573439E-04,
+        -0.99663121E-04, 0.12094952E-03,-0.20641361E-03, 0.47543802E-03,
+         0.19096673E-03, 0.13247451E-03,
               0.      };
     int ientry=0;
 
@@ -6499,102 +6496,90 @@ float x_l5p77_sex                             (float *x,int m){
     float x23 = x22*x2;
     float x31 = x3;
     float x32 = x31*x3;
+    float x33 = x32*x3;
     float x41 = x4;
     float x42 = x41*x4;
+    float x43 = x42*x4;
     float x51 = x5;
     float x52 = x51*x5;
-    float x53 = x52*x5;
 
 //                 function
 
     float v_x_l5p77_sex                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]                *x51
-        +coeff[  3]                *x52
-        +coeff[  4]    *x21        *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]    *x21
+        +coeff[  0]                    
+        +coeff[  1]                *x51
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
+        +coeff[  4]    *x22            
+        +coeff[  5]    *x21            
+        +coeff[  6]*x11*x21            
+        +coeff[  7]    *x22    *x41    
     ;
-    v_x_l5p77_sex                             =v_x_l5p77_sex
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x21*x31
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x42
-        +coeff[ 12]            *x41
-        +coeff[ 13]                *x53
-        +coeff[ 14]    *x21    *x41*x51
-        +coeff[ 15]    *x23
-        +coeff[ 16]*x11            *x51
+    v_x_l5p77_sex                             =v_x_l5p77_sex                             
+        +coeff[  8]*x11*x21    *x41    
+        +coeff[  9]*x11                
+        +coeff[ 10]        *x31*x41    
+        +coeff[ 11]            *x42    
+        +coeff[ 12]    *x22*x31        
+        +coeff[ 13]*x11*x23*x31        
+        +coeff[ 14]*x12                
+        +coeff[ 15]                *x52
+        +coeff[ 16]            *x41*x51
     ;
-    v_x_l5p77_sex                             =v_x_l5p77_sex
-        +coeff[ 17]*x11    *x31
-        +coeff[ 18]            *x41*x51
-        +coeff[ 19]        *x31*x41
-        +coeff[ 20]*x12    *x31
-        +coeff[ 21]    *x21        *x52
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x21*x31*x41
-        +coeff[ 24]*x11*x23
-        +coeff[ 25]    *x23    *x41
+    v_x_l5p77_sex                             =v_x_l5p77_sex                             
+        +coeff[ 17]        *x32        
+        +coeff[ 18]    *x21    *x41    
+        +coeff[ 19]    *x22    *x42    
+        +coeff[ 20]    *x22*x33*x41    
+        +coeff[ 21]    *x21*x31        
+        +coeff[ 22]*x12        *x41    
+        +coeff[ 23]*x11*x21*x31        
+        +coeff[ 24]    *x22        *x51
+        +coeff[ 25]            *x43    
     ;
-    v_x_l5p77_sex                             =v_x_l5p77_sex
-        +coeff[ 26]    *x23*x31    *x51
-        +coeff[ 27]*x13*x22    *x41
-        +coeff[ 28]        *x31
-        +coeff[ 29]        *x31    *x51
-        +coeff[ 30]*x12*x21
-        +coeff[ 31]    *x22        *x51
-        +coeff[ 32]    *x21*x32
-        +coeff[ 33]*x11*x22    *x41
-        +coeff[ 34]    *x21    *x42*x51
+    v_x_l5p77_sex                             =v_x_l5p77_sex                             
+        +coeff[ 26]*x11*x21    *x42    
+        +coeff[ 27]    *x22*x31*x41    
+        +coeff[ 28]        *x31*x43    
+        +coeff[ 29]*x13*x21*x31*x41    
+        +coeff[ 30]*x11        *x41    
+        +coeff[ 31]        *x31    *x51
+        +coeff[ 32]*x11*x21        *x51
+        +coeff[ 33]        *x31*x42    
+        +coeff[ 34]*x11*x23            
     ;
-    v_x_l5p77_sex                             =v_x_l5p77_sex
-        +coeff[ 35]    *x23*x31
-        +coeff[ 36]    *x22    *x42
-        +coeff[ 37]*x11            *x52
-        +coeff[ 38]*x11    *x31*x41
-        +coeff[ 39]    *x21*x31    *x51
-        +coeff[ 40]*x11*x22        *x51
-        +coeff[ 41]    *x22        *x52
-        +coeff[ 42]*x11*x22*x31
-        +coeff[ 43]    *x23        *x51
-    ;
-    v_x_l5p77_sex                             =v_x_l5p77_sex
-        +coeff[ 44]    *x21*x31*x41*x51
-        +coeff[ 45]*x13        *x41*x51
-        +coeff[ 46]    *x23    *x41*x51
-        +coeff[ 47]    *x22    *x42*x51
-        +coeff[ 48]*x13    *x31    *x53
+    v_x_l5p77_sex                             =v_x_l5p77_sex                             
+        +coeff[ 35]*x11*x21*x31*x41    
+        +coeff[ 36]    *x22*x32        
+        +coeff[ 37]        *x32*x42    
         ;
 
     return v_x_l5p77_sex                             ;
 }
 float t_l5p77_sex                             (float *x,int m){
     int ncoeff= 50;
-    float avdat=  0.1246783E-02;
+    float avdat=  0.2273838E+00;
     float xmin[10]={
-        -0.14998E-01,-0.44508E-01,-0.14989E-01,-0.33113E-01,-0.47801E-01,
+        -0.14934E-01,-0.45642E-01,-0.14989E-01,-0.33638E-01,-0.49937E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float xmax[10]={
-         0.15000E-01, 0.48696E-01, 0.14990E-01, 0.25296E-01, 0.49919E-01,
+         0.15000E-01, 0.49450E-01, 0.14990E-01, 0.27012E-01, 0.49919E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     float coeff[ 51]={
-         0.13610454E-02,-0.34647479E-02,-0.18788554E-01,-0.54564876E-04,
-         0.58289759E-04, 0.11297005E+00, 0.53696432E-02,-0.10615933E-01,
-         0.11454147E-02,-0.11069913E-02,-0.22524882E-02,-0.22141344E-02,
-         0.21624689E-02,-0.78605616E-03, 0.84544026E-03,-0.69176994E-03,
-        -0.31655843E-03, 0.63878635E-03, 0.11204408E-02, 0.25421859E-04,
-        -0.17859080E-03,-0.27667859E-03,-0.36402428E-03,-0.73233357E-03,
-         0.40273461E-03, 0.40990915E-03,-0.63067366E-03, 0.13648443E-02,
-        -0.78024612E-04, 0.24767272E-03,-0.28033348E-03, 0.22862288E-03,
-         0.19827017E-03, 0.16813961E-03, 0.41615704E-03,-0.68232138E-03,
-         0.71254856E-03, 0.67612348E-03,-0.87276765E-03,-0.64878201E-04,
-         0.99597441E-04,-0.60150411E-04, 0.10238977E-03, 0.89657100E-04,
-         0.11578119E-03,-0.11452480E-03, 0.16251726E-03, 0.14832940E-03,
-        -0.24610086E-03,-0.11560744E-03,
+        -0.64876471E-02, 0.13314123E-02, 0.24091532E-02, 0.38758621E-01,
+        -0.63984781E-02, 0.96428702E-02,-0.58037871E-02,-0.36269092E-04,
+         0.41814400E-02,-0.32684610E-02,-0.26463084E-02, 0.42143039E-03,
+         0.16384583E-04,-0.13727698E-04, 0.29791717E-03, 0.50294021E-03,
+        -0.51887694E-03,-0.24181313E-02, 0.33827548E-03,-0.21368158E-02,
+         0.36462226E-02,-0.11950155E-04,-0.18478425E-03,-0.14324413E-03,
+        -0.41511125E-03,-0.33589476E-03, 0.44638733E-03,-0.44957796E-03,
+         0.24155702E-02, 0.15583811E-02, 0.95424359E-04,-0.11699797E-03,
+        -0.96925214E-03,-0.24846988E-03,-0.18092857E-03, 0.88503794E-03,
+        -0.45747358E-04,-0.42878612E-04,-0.82813523E-04, 0.18507949E-03,
+         0.13163568E-03,-0.35118865E-03, 0.32598691E-03,-0.15422236E-03,
+         0.11384128E-03,-0.57684076E-04,-0.55239932E-04, 0.86021537E-04,
+         0.10467041E-03,-0.13982096E-03,
               0.      };
     int ientry=0;
 
@@ -6619,308 +6604,113 @@ float t_l5p77_sex                             (float *x,int m){
     float x22 = x21*x2;
     float x23 = x22*x2;
     float x31 = x3;
+    float x32 = x31*x3;
+    float x33 = x32*x3;
     float x41 = x4;
     float x42 = x41*x4;
     float x43 = x42*x4;
     float x51 = x5;
     float x52 = x51*x5;
-    float x53 = x52*x5;
 
 //                 function
 
     float v_t_l5p77_sex                             =avdat
-        +coeff[  0]
-        +coeff[  1]*x11
-        +coeff[  2]    *x21
-        +coeff[  3]        *x31
-        +coeff[  4]            *x41
-        +coeff[  5]                *x51
-        +coeff[  6]    *x21        *x51
-        +coeff[  7]                *x52
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]        *x31        
+        +coeff[  3]            *x41    
+        +coeff[  4]                *x51
+        +coeff[  5]    *x22            
+        +coeff[  6]    *x22    *x41    
+        +coeff[  7]*x13*x21            
     ;
-    v_t_l5p77_sex                             =v_t_l5p77_sex
-        +coeff[  8]    *x22
-        +coeff[  9]    *x21    *x41
-        +coeff[ 10]            *x42
-        +coeff[ 11]    *x21    *x42
-        +coeff[ 12]    *x21    *x41*x51
-        +coeff[ 13]    *x21        *x52
-        +coeff[ 14]*x11*x23
-        +coeff[ 15]        *x31*x41
-        +coeff[ 16]*x11            *x51
+    v_t_l5p77_sex                             =v_t_l5p77_sex                             
+        +coeff[  8]*x11*x21            
+        +coeff[  9]            *x42    
+        +coeff[ 10]*x11*x21    *x41    
+        +coeff[ 11]        *x31*x42    
+        +coeff[ 12]*x12    *x31*x41    
+        +coeff[ 13]        *x33*x41    
+        +coeff[ 14]*x11                
+        +coeff[ 15]*x12                
+        +coeff[ 16]    *x21    *x41    
     ;
-    v_t_l5p77_sex                             =v_t_l5p77_sex
-        +coeff[ 17]            *x41*x51
-        +coeff[ 18]                *x53
-        +coeff[ 19]        *x31    *x53
-        +coeff[ 20]    *x21*x31
-        +coeff[ 21]*x11        *x41
-        +coeff[ 22]*x11*x22
-        +coeff[ 23]    *x22    *x41
-        +coeff[ 24]*x11        *x42
-        +coeff[ 25]    *x21*x31    *x51
+    v_t_l5p77_sex                             =v_t_l5p77_sex                             
+        +coeff[ 17]        *x31*x41    
+        +coeff[ 18]                *x52
+        +coeff[ 19]    *x22*x31        
+        +coeff[ 20]    *x22    *x42    
+        +coeff[ 21]*x11*x23*x31        
+        +coeff[ 22]    *x22*x33*x41    
+        +coeff[ 23]    *x21*x31        
+        +coeff[ 24]        *x32        
+        +coeff[ 25]            *x41*x51
     ;
-    v_t_l5p77_sex                             =v_t_l5p77_sex
-        +coeff[ 26]    *x23    *x41
-        +coeff[ 27]    *x22    *x42
-        +coeff[ 28]*x11    *x31
-        +coeff[ 29]        *x31    *x51
-        +coeff[ 30]    *x22*x31
-        +coeff[ 31]    *x22        *x51
-        +coeff[ 32]            *x42*x51
-        +coeff[ 33]*x11            *x52
-        +coeff[ 34]    *x23        *x51
+    v_t_l5p77_sex                             =v_t_l5p77_sex                             
+        +coeff[ 26]            *x43    
+        +coeff[ 27]    *x22        *x51
+        +coeff[ 28]    *x22*x31*x41    
+        +coeff[ 29]*x11*x21    *x42    
+        +coeff[ 30]*x13*x21*x31*x41    
+        +coeff[ 31]*x11        *x41    
+        +coeff[ 32]*x11*x21*x31        
+        +coeff[ 33]*x12        *x41    
+        +coeff[ 34]*x11*x21        *x51
     ;
-    v_t_l5p77_sex                             =v_t_l5p77_sex
-        +coeff[ 35]    *x21    *x42*x51
-        +coeff[ 36]    *x22    *x43
-        +coeff[ 37]*x13*x22        *x51
-        +coeff[ 38]    *x23*x31*x41*x51
-        +coeff[ 39]*x12
-        +coeff[ 40]*x11*x21
-        +coeff[ 41]*x12*x21
-        +coeff[ 42]        *x31*x42
-        +coeff[ 43]*x11    *x31    *x51
+    v_t_l5p77_sex                             =v_t_l5p77_sex                             
+        +coeff[ 35]*x11*x21*x31*x41    
+        +coeff[ 36]*x11    *x31        
+        +coeff[ 37]    *x21        *x51
+        +coeff[ 38]        *x31    *x51
+        +coeff[ 39]    *x23            
+        +coeff[ 40]        *x32*x41    
+        +coeff[ 41]*x11*x23            
+        +coeff[ 42]    *x22*x32        
+        +coeff[ 43]    *x21*x31*x42*x52
     ;
-    v_t_l5p77_sex                             =v_t_l5p77_sex
-        +coeff[ 44]*x11        *x41*x51
-        +coeff[ 45]            *x41*x52
-        +coeff[ 46]*x12*x21    *x41
-        +coeff[ 47]*x11*x21*x31*x41
-        +coeff[ 48]    *x21    *x43
-        +coeff[ 49]*x13            *x51
+    v_t_l5p77_sex                             =v_t_l5p77_sex                             
+        +coeff[ 44]*x11*x22            
+        +coeff[ 45]*x12    *x31        
+        +coeff[ 46]    *x21    *x42    
+        +coeff[ 47]        *x31*x41*x51
+        +coeff[ 48]            *x42*x51
+        +coeff[ 49]*x12*x22            
         ;
 
     return v_t_l5p77_sex                             ;
 }
 float y_l5p77_sex                             (float *x,int m){
-    int ncoeff= 97;
-    float avdat= -0.1005435E-01;
+    int ncoeff= 84;
+    float avdat= -0.1665796E-02;
     float xmin[10]={
-        -0.14998E-01,-0.44508E-01,-0.14989E-01,-0.33113E-01,-0.47801E-01,
+        -0.14934E-01,-0.45642E-01,-0.14989E-01,-0.33638E-01,-0.49937E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float xmax[10]={
-         0.15000E-01, 0.48696E-01, 0.14990E-01, 0.25296E-01, 0.49919E-01,
+         0.15000E-01, 0.49450E-01, 0.14990E-01, 0.27012E-01, 0.49919E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    float coeff[ 98]={
-         0.65170373E-02,-0.59205592E-01, 0.13075430E-01, 0.11103833E-01,
-        -0.17059630E-01,-0.15923406E-02,-0.32548006E-02,-0.71285306E-02,
-        -0.17285218E-02,-0.46245498E-02,-0.33543792E-02, 0.10840210E-01,
-        -0.68390802E-02,-0.68930436E-04,-0.64344858E-04, 0.69019529E-02,
-        -0.71534398E-03, 0.52608508E-02, 0.24673267E-03, 0.13028190E-02,
-        -0.25707176E-02, 0.64810598E-02, 0.45800009E-02, 0.78306231E-03,
-         0.26954676E-02,-0.88454189E-03, 0.63687604E-03,-0.19460334E-02,
-         0.45873541E-02, 0.16111672E-02, 0.27144498E-02, 0.78555220E-03,
-        -0.43049683E-02, 0.10812604E-02, 0.29410238E-02,-0.28960968E-02,
-        -0.16620336E-02,-0.56533527E-03, 0.20937492E-03,-0.46297577E-02,
-         0.78232371E-03,-0.18276208E-02, 0.53455081E-03, 0.83134189E-03,
-         0.28245812E-02,-0.11332378E-02, 0.54305681E-03,-0.21958493E-02,
-        -0.14797725E-02, 0.26076841E-02,-0.16080920E-02,-0.62764520E-02,
-         0.22293869E-02, 0.12296953E-02, 0.63777401E-03, 0.17202366E-03,
-         0.43299180E-03,-0.19844405E-02, 0.44707116E-03,-0.11669641E-02,
-        -0.30878978E-03,-0.15550818E-02,-0.43529461E-03, 0.61408174E-03,
-        -0.11350361E-02, 0.60451211E-03, 0.12153829E-02,-0.22525168E-02,
-        -0.67765207E-03,-0.84672478E-03, 0.23823092E-02, 0.26475871E-03,
-         0.10984284E-02,-0.94178133E-04,-0.29518903E-03,-0.34515437E-03,
-        -0.14498901E-03,-0.12038877E-03, 0.20628994E-03, 0.99936570E-03,
-        -0.41741613E-03,-0.58441347E-03, 0.17096348E-03, 0.53942105E-03,
-        -0.35443399E-03,-0.33422135E-03, 0.13789161E-02, 0.29712886E-03,
-        -0.52222196E-03,-0.26421202E-03, 0.39295095E-03, 0.40099127E-03,
-        -0.27005718E-03, 0.43283586E-03, 0.75291598E-03,-0.13170148E-03,
-        -0.59410941E-03,
-              0.      };
-    int ientry=0;
-
-    if (ientry==0){
-        ientry=1;
-        for(int i=0;i<m;i++){
-            if(xmin[i]==xmax[i]) continue;
-            scale[i]=2./(xmax[i]-xmin[i]);
-        }
-    }
-//  normalize variables between -1 and +1
-    float x1 =1.+(x[  0]-xmax[  0])*scale[  0];
-    float x2 =1.+(x[  1]-xmax[  1])*scale[  1];
-    float x3 =1.+(x[  2]-xmax[  2])*scale[  2];
-    float x4 =1.+(x[  3]-xmax[  3])*scale[  3];
-    float x5 =1.+(x[  4]-xmax[  4])*scale[  4];
-//  set up monomials   functions
-    float x11 = x1;
-    float x12 = x11*x1;
-    float x21 = x2;
-    float x22 = x21*x2;
-    float x23 = x22*x2;
-    float x24 = x23*x2;
-    float x31 = x3;
-    float x32 = x31*x3;
-    float x33 = x32*x3;
-    float x34 = x33*x3;
-    float x41 = x4;
-    float x42 = x41*x4;
-    float x43 = x42*x4;
-    float x44 = x43*x4;
-    float x51 = x5;
-    float x52 = x51*x5;
-    float x53 = x52*x5;
-
-//                 function
-
-    float v_y_l5p77_sex                             =avdat
-        +coeff[  0]
-        +coeff[  1]            *x41
-        +coeff[  2]                *x51
-        +coeff[  3]    *x21    *x41
-        +coeff[  4]    *x22
-        +coeff[  5]*x11        *x41
-        +coeff[  6]            *x41*x51
-        +coeff[  7]*x11*x21
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[  8]    *x21        *x51
-        +coeff[  9]        *x31    *x51
-        +coeff[ 10]                *x52
-        +coeff[ 11]    *x22    *x41
-        +coeff[ 12]    *x21    *x41*x51
-        +coeff[ 13]            *x44
-        +coeff[ 14]        *x31*x43
-        +coeff[ 15]            *x41*x52
-        +coeff[ 16]*x11
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 17]*x11*x21    *x41
-        +coeff[ 18]    *x22*x31    *x52
-        +coeff[ 19]    *x22    *x41*x53
-        +coeff[ 20]        *x31
-        +coeff[ 21]            *x42
-        +coeff[ 22]        *x31*x41
-        +coeff[ 23]        *x32
-        +coeff[ 24]    *x21    *x42
-        +coeff[ 25]*x12
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 26]*x11            *x51
-        +coeff[ 27]            *x42*x51
-        +coeff[ 28]    *x22*x31
-        +coeff[ 29]*x11*x21*x31
-        +coeff[ 30]    *x22        *x51
-        +coeff[ 31]*x11        *x41*x51
-        +coeff[ 32]    *x22    *x42
-        +coeff[ 33]*x11*x21        *x51
-        +coeff[ 34]        *x31    *x52
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 35]    *x22*x31*x41
-        +coeff[ 36]    *x23        *x51
-        +coeff[ 37]    *x23    *x42
-        +coeff[ 38]    *x21*x31    *x52
-        +coeff[ 39]            *x41*x53
-        +coeff[ 40]    *x23        *x52
-        +coeff[ 41]    *x21
-        +coeff[ 42]            *x43
-        +coeff[ 43]*x11        *x42
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 44]    *x23
-        +coeff[ 45]        *x31*x41*x51
-        +coeff[ 46]*x11*x22
-        +coeff[ 47]*x11*x21    *x42
-        +coeff[ 48]    *x21    *x42*x51
-        +coeff[ 49]    *x24
-        +coeff[ 50]*x11*x21*x31*x41
-        +coeff[ 51]    *x22    *x41*x51
-        +coeff[ 52]*x11*x23
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 53]    *x21    *x41*x52
-        +coeff[ 54]    *x21*x31
-        +coeff[ 55]*x11    *x31
-        +coeff[ 56]    *x21*x31*x41
-        +coeff[ 57]    *x21    *x43
-        +coeff[ 58]*x12        *x41
-        +coeff[ 59]    *x21*x31*x42
-        +coeff[ 60]*x11    *x31    *x51
-        +coeff[ 61]            *x43*x51
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 62]*x11            *x52
-        +coeff[ 63]                *x53
-        +coeff[ 64]    *x22*x31    *x51
-        +coeff[ 65]*x12*x22
-        +coeff[ 66]    *x21    *x43*x51
-        +coeff[ 67]    *x22    *x42*x51
-        +coeff[ 68]    *x21        *x53
-        +coeff[ 69]        *x31    *x53
-        +coeff[ 70]    *x22    *x41*x52
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 71]*x11    *x31*x41*x52
-        +coeff[ 72]            *x44*x52
-        +coeff[ 73]        *x31*x42
-        +coeff[ 74]        *x32*x41
-        +coeff[ 75]    *x21*x31    *x51
-        +coeff[ 76]        *x32    *x51
-        +coeff[ 77]*x12*x21
-        +coeff[ 78]*x12    *x31
-        +coeff[ 79]    *x21        *x52
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 80]    *x23*x31
-        +coeff[ 81]    *x22*x32
-        +coeff[ 82]*x12            *x51
-        +coeff[ 83]*x11*x22    *x41
-        +coeff[ 84]*x11        *x42*x51
-        +coeff[ 85]*x11*x21*x32
-        +coeff[ 86]    *x22    *x43
-        +coeff[ 87]*x12*x21    *x41
-        +coeff[ 88]*x11*x21    *x41*x51
-    ;
-    v_y_l5p77_sex                             =v_y_l5p77_sex
-        +coeff[ 89]*x11*x21*x31    *x51
-        +coeff[ 90]    *x22        *x52
-        +coeff[ 91]*x11    *x31*x43
-        +coeff[ 92]*x12        *x41*x51
-        +coeff[ 93]*x11        *x41*x52
-        +coeff[ 94]    *x21*x31*x42*x51
-        +coeff[ 95]    *x21*x34
-        +coeff[ 96]*x11*x23    *x41
-        ;
-
-    return v_y_l5p77_sex                             ;
-}
-float p_l5p77_sex                             (float *x,int m){
-    int ncoeff= 88;
-    float avdat= -0.8726283E-02;
-    float xmin[10]={
-        -0.14998E-01,-0.44508E-01,-0.14989E-01,-0.33113E-01,-0.47801E-01,
-         0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
-    float xmax[10]={
-         0.15000E-01, 0.48696E-01, 0.14990E-01, 0.25296E-01, 0.49919E-01,
-         0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
-    float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    float coeff[ 89]={
-         0.31087459E-02,-0.17550972E-02, 0.60103172E-02,-0.32550465E-01,
-         0.11132461E-01,-0.15728759E-01, 0.21492946E-02, 0.20090608E-01,
-         0.65019373E-02,-0.32881526E-02,-0.36899175E-02,-0.20557264E-01,
-        -0.68714907E-02, 0.13136443E-02,-0.27759343E-02, 0.17848238E-01,
-         0.55295043E-02,-0.36096491E-02,-0.18700310E-02, 0.16883461E-03,
-        -0.16874974E-03,-0.44804325E-03,-0.66132176E-04,-0.14528082E-03,
-         0.78978599E-03, 0.44170893E-02, 0.48174555E-02,-0.86248352E-03,
-         0.43175304E-02, 0.30869315E-02,-0.49025076E-03,-0.63911907E-03,
-         0.43229964E-02, 0.19765997E-02, 0.36523244E-03,-0.39645040E-03,
-         0.10976845E-02, 0.16878002E-02, 0.94880757E-03, 0.29695451E-02,
-         0.14757375E-02,-0.88586583E-03, 0.25625774E-02, 0.12724109E-02,
-        -0.12439745E-02, 0.23487753E-03, 0.12303308E-02, 0.66318561E-03,
-        -0.25460871E-02, 0.21825028E-05, 0.62858849E-03, 0.13259274E-02,
-         0.68047480E-03, 0.51072915E-03,-0.11788579E-02,-0.34821380E-04,
-        -0.20769864E-03,-0.29133211E-03, 0.14745751E-02,-0.61941094E-03,
-        -0.13578311E-03, 0.17639925E-03,-0.14418671E-02,-0.14228341E-02,
-        -0.14806696E-03, 0.49855199E-03,-0.25576004E-03,-0.16686295E-02,
-        -0.21363680E-03,-0.34475076E-03, 0.68151834E-03, 0.85092586E-04,
-        -0.10972444E-02,-0.11117007E-03,-0.86817985E-04, 0.56695804E-04,
-         0.46252844E-04,-0.11806986E-02, 0.13195942E-03,-0.11505177E-03,
-         0.35964517E-03,-0.46569301E-03,-0.28071320E-03,-0.12628649E-02,
-        -0.22171719E-03, 0.55413943E-03, 0.17941769E-03,-0.43722929E-03,
+    float coeff[ 85]={
+        -0.76538906E-03,-0.91859274E-01,-0.13462696E-01,-0.67187096E-02,
+        -0.24116870E-02,-0.51505299E-03,-0.15057975E-02,-0.56447287E-03,
+         0.25684221E-02, 0.19392639E-02,-0.19972946E-02,-0.14489510E-02,
+        -0.19430104E-03,-0.24841202E-03, 0.19047866E-02, 0.13594190E-02,
+        -0.72868061E-04,-0.16492872E-03, 0.59420650E-03, 0.35770619E-03,
+         0.44971402E-03, 0.28953765E-03,-0.34974096E-03,-0.13199108E-03,
+         0.71573741E-04, 0.52881958E-04,-0.75173710E-04,-0.66174318E-04,
+        -0.69692649E-03,-0.71231899E-03, 0.69526699E-03, 0.48776189E-03,
+         0.29579725E-03,-0.32450844E-05, 0.84183324E-04, 0.93289651E-04,
+         0.67331435E-04, 0.22721862E-04,-0.10565117E-04,-0.83332794E-04,
+        -0.14933337E-03,-0.24815468E-03,-0.15705638E-03,-0.73027208E-04,
+        -0.21792916E-04,-0.54137148E-04,-0.51359566E-04,-0.42639032E-03,
+         0.11195807E-03,-0.31214213E-03,-0.32341978E-03,-0.23720109E-03,
+         0.11854302E-04, 0.80461859E-05,-0.29294153E-04,-0.28884155E-04,
+         0.20967420E-04,-0.32627035E-04, 0.81839164E-04, 0.58552221E-04,
+        -0.75502772E-04,-0.80663136E-04, 0.86796128E-04,-0.58761190E-04,
+         0.55635228E-04, 0.31681400E-05,-0.85813399E-05, 0.10124159E-04,
+         0.41050895E-04, 0.55485307E-05, 0.27268210E-04, 0.89756832E-05,
+        -0.37041729E-04,-0.22083503E-04,-0.29315772E-04,-0.11577904E-04,
+         0.13734239E-04,-0.57812758E-04, 0.11516697E-04,-0.31510310E-04,
+        -0.48502021E-04, 0.96486765E-05, 0.11783921E-03,-0.81994003E-04,
               0.      };
     int ientry=0;
 
@@ -6945,13 +6735,9 @@ float p_l5p77_sex                             (float *x,int m){
     float x22 = x21*x2;
     float x23 = x22*x2;
     float x24 = x23*x2;
-    float x25 = x24*x2;
-    float x26 = x25*x2;
     float x31 = x3;
     float x32 = x31*x3;
     float x33 = x32*x3;
-    float x34 = x33*x3;
-    float x35 = x34*x3;
     float x41 = x4;
     float x42 = x41*x4;
     float x43 = x42*x4;
@@ -6959,153 +6745,137 @@ float p_l5p77_sex                             (float *x,int m){
     float x45 = x44*x4;
     float x51 = x5;
     float x52 = x51*x5;
-    float x53 = x52*x5;
 
 //                 function
 
-    float v_p_l5p77_sex                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]        *x31
-        +coeff[  3]            *x41
-        +coeff[  4]                *x51
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21*x31
-        +coeff[  7]    *x21    *x41
+    float v_y_l5p77_sex                             =avdat
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]*x11                
+        +coeff[  3]    *x21    *x41    
+        +coeff[  4]    *x21*x31        
+        +coeff[  5]            *x41    
+        +coeff[  6]*x11        *x41    
+        +coeff[  7]*x11    *x31        
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[  8]            *x42
-        +coeff[  9]    *x21        *x51
-        +coeff[ 10]        *x31    *x51
-        +coeff[ 11]            *x41*x51
-        +coeff[ 12]*x11*x21
-        +coeff[ 13]                *x52
-        +coeff[ 14]*x11        *x41
-        +coeff[ 15]    *x22    *x41
-        +coeff[ 16]    *x21    *x42
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[  8]    *x21    *x42    
+        +coeff[  9]    *x21*x31*x41    
+        +coeff[ 10]    *x23            
+        +coeff[ 11]*x11*x22            
+        +coeff[ 12]        *x31        
+        +coeff[ 13]    *x21        *x51
+        +coeff[ 14]    *x23    *x41    
+        +coeff[ 15]*x11*x22    *x41    
+        +coeff[ 16]                *x51
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 17]    *x22        *x51
-        +coeff[ 18]    *x22*x31*x41
-        +coeff[ 19]        *x33*x41
-        +coeff[ 20]    *x25
-        +coeff[ 21]    *x24*x31
-        +coeff[ 22]            *x43*x52
-        +coeff[ 23]        *x35*x41
-        +coeff[ 24]        *x32
-        +coeff[ 25]        *x31*x41
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 17]    *x22            
+        +coeff[ 18]*x11        *x42    
+        +coeff[ 19]    *x21*x32        
+        +coeff[ 20]*x11    *x31*x41    
+        +coeff[ 21]    *x21    *x41*x51
+        +coeff[ 22]*x12*x21            
+        +coeff[ 23]    *x21*x31*x43    
+        +coeff[ 24]            *x42    
+        +coeff[ 25]        *x31*x41    
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 26]    *x22*x31
-        +coeff[ 27]*x12
-        +coeff[ 28]    *x24
-        +coeff[ 29]*x11*x21    *x41
-        +coeff[ 30]*x11*x23*x31
-        +coeff[ 31]*x11
-        +coeff[ 32]    *x23
-        +coeff[ 33]    *x21*x31*x41
-        +coeff[ 34]*x11            *x51
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 26]*x11*x21            
+        +coeff[ 27]*x11            *x51
+        +coeff[ 28]    *x21    *x43    
+        +coeff[ 29]    *x21*x31*x42    
+        +coeff[ 30]    *x23*x31        
+        +coeff[ 31]*x11*x22*x31        
+        +coeff[ 32]*x12*x21    *x41    
+        +coeff[ 33]    *x23*x32*x41    
+        +coeff[ 34]*x11    *x32        
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 35]            *x42*x51
-        +coeff[ 36]*x11*x22
-        +coeff[ 37]*x11*x21*x31
-        +coeff[ 38]        *x31    *x52
-        +coeff[ 39]            *x41*x52
-        +coeff[ 40]*x11        *x42
-        +coeff[ 41]*x11*x21        *x51
-        +coeff[ 42]*x11*x23
-        +coeff[ 43]    *x22    *x43
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 35]    *x21*x31    *x51
+        +coeff[ 36]*x11        *x41*x51
+        +coeff[ 37]            *x41*x51
+        +coeff[ 38]*x12                
+        +coeff[ 39]    *x22    *x41    
+        +coeff[ 40]*x11        *x43    
+        +coeff[ 41]    *x21*x32*x41    
+        +coeff[ 42]*x11    *x31*x42    
+        +coeff[ 43]    *x21    *x42*x51
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 44]            *x41*x53
-        +coeff[ 45]            *x45
-        +coeff[ 46]*x11*x22    *x43
-        +coeff[ 47]*x11    *x31*x41
-        +coeff[ 48]    *x21    *x43
-        +coeff[ 49]*x11*x22*x31
-        +coeff[ 50]*x12        *x41
-        +coeff[ 51]*x11*x22    *x41
-        +coeff[ 52]*x12*x22
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 44]*x13                
+        +coeff[ 45]*x11    *x32*x41    
+        +coeff[ 46]    *x21*x31*x41*x51
+        +coeff[ 47]    *x23    *x42    
+        +coeff[ 48]*x12*x21*x31        
+        +coeff[ 49]    *x23*x31*x41    
+        +coeff[ 50]*x11*x22    *x42    
+        +coeff[ 51]*x11*x22*x31*x41    
+        +coeff[ 52]        *x32        
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 53]*x12*x21    *x41
-        +coeff[ 54]    *x23*x31*x42
-        +coeff[ 55]*x13    *x31
-        +coeff[ 56]*x11    *x31
-        +coeff[ 57]        *x32*x41
-        +coeff[ 58]            *x43
-        +coeff[ 59]    *x22*x32
-        +coeff[ 60]*x11    *x31    *x51
-        +coeff[ 61]*x12    *x31
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 53]        *x31    *x51
+        +coeff[ 54]    *x22*x31        
+        +coeff[ 55]*x11*x21    *x41    
+        +coeff[ 56]*x11    *x31    *x51
+        +coeff[ 57]    *x21*x33        
+        +coeff[ 58]    *x23        *x51
+        +coeff[ 59]*x11*x22        *x51
+        +coeff[ 60]    *x23    *x41*x51
+        +coeff[ 61]*x12*x21    *x42    
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 62]*x11*x21*x31*x41
-        +coeff[ 63]*x11*x21    *x42
-        +coeff[ 64]*x12            *x51
-        +coeff[ 65]*x11*x21    *x41*x51
-        +coeff[ 66]        *x31    *x53
-        +coeff[ 67]    *x22    *x42*x51
-        +coeff[ 68]    *x25        *x51
-        +coeff[ 69]*x11*x22        *x52
-        +coeff[ 70]    *x26    *x41
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 62]*x11*x24            
+        +coeff[ 63]*x12*x21*x31*x41    
+        +coeff[ 64]*x12*x23            
+        +coeff[ 65]                *x52
+        +coeff[ 66]*x11*x21*x31        
+        +coeff[ 67]    *x22        *x51
+        +coeff[ 68]    *x22    *x42    
+        +coeff[ 69]*x11*x21        *x51
+        +coeff[ 70]    *x22*x31*x41    
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 71]        *x31*x44*x51
-        +coeff[ 72]    *x25*x32*x41
-        +coeff[ 73]    *x21*x31    *x51
-        +coeff[ 74]    *x21    *x41*x51
-        +coeff[ 75]        *x32    *x51
-        +coeff[ 76]*x11    *x32
-        +coeff[ 77]    *x21*x31*x42
-        +coeff[ 78]*x11        *x41*x51
-        +coeff[ 79]*x12*x21
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 71]*x11*x21    *x42    
+        +coeff[ 72]    *x24            
+        +coeff[ 73]*x11        *x42*x51
+        +coeff[ 74]*x11*x23            
+        +coeff[ 75]*x11    *x31*x41*x51
+        +coeff[ 76]*x13        *x41    
+        +coeff[ 77]    *x23*x32        
+        +coeff[ 78]*x12*x21        *x51
+        +coeff[ 79]*x11*x22*x32        
     ;
-    v_p_l5p77_sex                             =v_p_l5p77_sex
-        +coeff[ 80]    *x22        *x52
-        +coeff[ 81]            *x43*x51
-        +coeff[ 82]*x11*x21*x32
-        +coeff[ 83]    *x23    *x42
-        +coeff[ 84]*x11        *x43
-        +coeff[ 85]    *x21    *x44
-        +coeff[ 86]    *x23        *x52
-        +coeff[ 87]    *x25*x31
+    v_y_l5p77_sex                             =v_y_l5p77_sex                             
+        +coeff[ 80]*x11*x22    *x41*x51
+        +coeff[ 81]    *x23        *x52
+        +coeff[ 82]    *x21*x31*x45    
+        +coeff[ 83]*x11*x24    *x41    
         ;
 
-    return v_p_l5p77_sex                             ;
+    return v_y_l5p77_sex                             ;
 }
-float l_l5p77_sex                             (float *x,int m){
-    int ncoeff= 81;
-    float avdat= -0.1987057E-01;
+float p_l5p77_sex                             (float *x,int m){
+    int ncoeff= 37;
+    float avdat=  0.6314797E-03;
     float xmin[10]={
-        -0.14998E-01,-0.44508E-01,-0.14989E-01,-0.33113E-01,-0.47801E-01,
+        -0.14934E-01,-0.45642E-01,-0.14989E-01,-0.33638E-01,-0.49937E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float xmax[10]={
-         0.15000E-01, 0.48696E-01, 0.14990E-01, 0.25296E-01, 0.49919E-01,
+         0.15000E-01, 0.49450E-01, 0.14990E-01, 0.27012E-01, 0.49919E-01,
          0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
     float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    float coeff[ 82]={
-         0.83441073E-02,-0.24360231E+00,-0.34637661E-02,-0.33813886E-01,
-         0.41575912E-01,-0.26284715E-01,-0.99122055E-01,-0.26512446E-01,
-        -0.21665953E-01, 0.11416291E-01,-0.35530519E-01, 0.39644921E-02,
-        -0.79143019E-02,-0.27368957E-01,-0.20160317E-01, 0.39728206E-01,
-        -0.17377678E-01, 0.40605819E-03,-0.30036096E-03,-0.37966294E-02,
-        -0.79438174E-02,-0.34970627E-02, 0.25771398E-02,-0.16564309E-02,
-         0.25794279E-01,-0.23089738E-02, 0.49719093E-02,-0.44403509E-02,
-         0.38621280E-01, 0.23833012E-01,-0.92207291E-03,-0.56213476E-02,
-         0.42304178E-02, 0.59777969E-02, 0.77205044E-02,-0.77581900E-03,
-        -0.24938094E-03,-0.82184188E-03, 0.92981802E-03,-0.27437564E-02,
-         0.47346670E-02,-0.41362992E-02, 0.45841848E-02,-0.21131453E-03,
-         0.13493160E-02, 0.14714708E-02, 0.71005872E-03, 0.93072787E-03,
-         0.67209657E-02,-0.10662257E-01,-0.94233248E-02,-0.74733078E-03,
-        -0.27614215E-02, 0.15268204E-02, 0.71182516E-02, 0.50195251E-02,
-        -0.13378052E-03, 0.73608979E-04, 0.12467285E-02,-0.45532800E-03,
-         0.42610307E-03, 0.24744534E-03, 0.33570733E-03, 0.10494553E-03,
-        -0.32920748E-03, 0.30218664E-03, 0.31781604E-02,-0.33803007E-02,
-        -0.48886548E-03, 0.10078787E-02,-0.10469309E-02,-0.80185715E-03,
-         0.51515625E-03,-0.81025198E-03,-0.52791811E-03,-0.73398004E-03,
-         0.18900851E-02, 0.66593068E-03, 0.25862025E-02, 0.96391345E-03,
-         0.41168286E-02,
+    float coeff[ 38]={
+        -0.13688068E-03,-0.38390405E-01, 0.23439443E-02,-0.11059671E-01,
+        -0.23852834E-02, 0.11571327E-02,-0.94588398E-03,-0.36859196E-02,
+        -0.31463916E-02, 0.36376209E-02,-0.21554497E-02, 0.15469558E-03,
+        -0.32639553E-03,-0.47108246E-03,-0.82202133E-03, 0.39270408E-02,
+         0.22801396E-02,-0.96486416E-04,-0.32911997E-03,-0.18779165E-03,
+         0.25117008E-02, 0.59469754E-03,-0.14232387E-02,-0.46829970E-03,
+        -0.37532899E-03, 0.19101643E-03, 0.43643019E-03, 0.38180000E-03,
+         0.39315538E-03,-0.11314271E-02, 0.91829233E-05, 0.66959916E-03,
+         0.41565939E-03,-0.72270422E-03, 0.11872269E-03,-0.65869019E-04,
+         0.12437374E-03,
               0.      };
     int ientry=0;
 
@@ -7125,7 +6895,108 @@ float l_l5p77_sex                             (float *x,int m){
 //  set up monomials   functions
     float x11 = x1;
     float x12 = x11*x1;
-    float x13 = x12*x1;
+    float x21 = x2;
+    float x22 = x21*x2;
+    float x23 = x22*x2;
+    float x31 = x3;
+    float x32 = x31*x3;
+    float x41 = x4;
+    float x42 = x41*x4;
+    float x43 = x42*x4;
+    float x51 = x5;
+
+//                 function
+
+    float v_p_l5p77_sex                             =avdat
+        +coeff[  0]                    
+        +coeff[  1]    *x21            
+        +coeff[  2]*x11                
+        +coeff[  3]    *x21    *x41    
+        +coeff[  4]*x11        *x41    
+        +coeff[  5]    *x23*x31        
+        +coeff[  6]            *x41    
+        +coeff[  7]    *x21*x31        
+    ;
+    v_p_l5p77_sex                             =v_p_l5p77_sex                             
+        +coeff[  8]    *x23            
+        +coeff[  9]    *x21    *x42    
+        +coeff[ 10]*x11*x22            
+        +coeff[ 11]    *x23*x31*x41    
+        +coeff[ 12]        *x31        
+        +coeff[ 13]    *x22            
+        +coeff[ 14]*x11    *x31        
+        +coeff[ 15]    *x23    *x41    
+        +coeff[ 16]*x11*x22    *x41    
+    ;
+    v_p_l5p77_sex                             =v_p_l5p77_sex                             
+        +coeff[ 17]                *x51
+        +coeff[ 18]    *x21        *x51
+        +coeff[ 19]*x11*x21            
+        +coeff[ 20]    *x21*x31*x41    
+        +coeff[ 21]*x11        *x42    
+        +coeff[ 22]    *x21    *x43    
+        +coeff[ 23]*x12*x21            
+        +coeff[ 24]    *x23*x31*x42    
+        +coeff[ 25]            *x42    
+    ;
+    v_p_l5p77_sex                             =v_p_l5p77_sex                             
+        +coeff[ 26]    *x21*x32        
+        +coeff[ 27]    *x21    *x41*x51
+        +coeff[ 28]*x11    *x31*x41    
+        +coeff[ 29]    *x21*x31*x42    
+        +coeff[ 30]        *x31*x43    
+        +coeff[ 31]*x11*x22*x31        
+        +coeff[ 32]*x12*x21    *x41    
+        +coeff[ 33]    *x23*x32*x41    
+        +coeff[ 34]        *x31*x41    
+    ;
+    v_p_l5p77_sex                             =v_p_l5p77_sex                             
+        +coeff[ 35]*x11            *x51
+        +coeff[ 36]    *x21*x31    *x51
+        ;
+
+    return v_p_l5p77_sex                             ;
+}
+float l_l5p77_sex                             (float *x,int m){
+    int ncoeff= 40;
+    float avdat= -0.1230109E-02;
+    float xmin[10]={
+        -0.14934E-01,-0.45642E-01,-0.14989E-01,-0.33638E-01,-0.49937E-01,
+         0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
+    float xmax[10]={
+         0.15000E-01, 0.49450E-01, 0.14990E-01, 0.27012E-01, 0.49919E-01,
+         0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00, 0.00000E+00};
+    float scale[10]={0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    float coeff[ 41]={
+         0.21900223E-02,-0.18116201E-02,-0.87485658E-02, 0.54951501E-03,
+        -0.30039959E-02, 0.18621763E-03,-0.80642931E-03,-0.36306001E-03,
+        -0.22201373E-04,-0.24696294E-03, 0.14221275E-03,-0.30118450E-04,
+         0.46964276E-04,-0.36224523E-04,-0.52720690E-04, 0.26368609E-03,
+         0.19281653E-03,-0.13002488E-05, 0.28647246E-05, 0.54911456E-04,
+         0.61462129E-05, 0.14223379E-04, 0.16255863E-03, 0.10029079E-03,
+         0.26215059E-04, 0.24967701E-04,-0.14271411E-03,-0.14861011E-03,
+        -0.83509658E-04,-0.29899793E-04, 0.53812705E-05, 0.11246563E-04,
+        -0.14017652E-04, 0.11982693E-04,-0.30235382E-04,-0.11827250E-04,
+        -0.20494022E-04,-0.25131310E-04,-0.64139836E-04,-0.18504303E-04,
+              0.      };
+    int ientry=0;
+
+    if (ientry==0){
+        ientry=1;
+        for(int i=0;i<m;i++){
+            if(xmin[i]==xmax[i]) continue;
+            scale[i]=2./(xmax[i]-xmin[i]);
+        }
+    }
+//  normalize variables between -1 and +1
+    float x1 =1.+(x[  0]-xmax[  0])*scale[  0];
+    float x2 =1.+(x[  1]-xmax[  1])*scale[  1];
+    float x3 =1.+(x[  2]-xmax[  2])*scale[  2];
+    float x4 =1.+(x[  3]-xmax[  3])*scale[  3];
+    float x5 =1.+(x[  4]-xmax[  4])*scale[  4];
+//  set up monomials   functions
+    float x11 = x1;
+    float x12 = x11*x1;
     float x21 = x2;
     float x22 = x21*x2;
     float x23 = x22*x2;
@@ -7133,117 +7004,64 @@ float l_l5p77_sex                             (float *x,int m){
     float x31 = x3;
     float x32 = x31*x3;
     float x33 = x32*x3;
+    float x34 = x33*x3;
     float x41 = x4;
     float x42 = x41*x4;
     float x43 = x42*x4;
-    float x44 = x43*x4;
     float x51 = x5;
     float x52 = x51*x5;
-    float x53 = x52*x5;
-    float x54 = x53*x5;
 
 //                 function
 
     float v_l_l5p77_sex                             =avdat
-        +coeff[  0]
-        +coeff[  1]    *x21
-        +coeff[  2]            *x41
+        +coeff[  0]                    
+        +coeff[  1]        *x31        
+        +coeff[  2]            *x41    
         +coeff[  3]                *x51
-        +coeff[  4]*x11
-        +coeff[  5]    *x22
-        +coeff[  6]    *x21    *x41
-        +coeff[  7]                *x52
+        +coeff[  4]    *x22            
+        +coeff[  5]        *x31*x41    
+        +coeff[  6]            *x42    
+        +coeff[  7]*x11*x21            
     ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[  8]*x11        *x41
-        +coeff[  9]    *x23*x31
-        +coeff[ 10]    *x21*x31
-        +coeff[ 11]*x11*x21
-        +coeff[ 12]*x11    *x31
-        +coeff[ 13]    *x23
-        +coeff[ 14]    *x22    *x41
-        +coeff[ 15]    *x21    *x42
-        +coeff[ 16]*x11*x22
+    v_l_l5p77_sex                             =v_l_l5p77_sex                             
+        +coeff[  8]    *x23            
+        +coeff[  9]    *x21            
+        +coeff[ 10]            *x41*x51
+        +coeff[ 11]*x11                
+        +coeff[ 12]        *x32        
+        +coeff[ 13]                *x52
+        +coeff[ 14]*x12                
+        +coeff[ 15]    *x22    *x41    
+        +coeff[ 16]*x11*x21    *x41    
     ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 17]            *x44
-        +coeff[ 18]    *x22*x33
-        +coeff[ 19]    *x23*x31*x41
-        +coeff[ 20]            *x42
-        +coeff[ 21]    *x21        *x51
-        +coeff[ 22]            *x41*x51
-        +coeff[ 23]*x11            *x51
-        +coeff[ 24]    *x21*x31*x41
-        +coeff[ 25]    *x21        *x52
+    v_l_l5p77_sex                             =v_l_l5p77_sex                             
+        +coeff[ 17]    *x24*x31        
+        +coeff[ 18]*x11*x23*x31        
+        +coeff[ 19]    *x22        *x51
+        +coeff[ 20]    *x21*x31        
+        +coeff[ 21]        *x31    *x51
+        +coeff[ 22]    *x22*x31        
+        +coeff[ 23]*x11*x21*x31        
+        +coeff[ 24]*x11*x21        *x51
+        +coeff[ 25]*x12        *x41    
     ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 26]                *x53
-        +coeff[ 27]*x12*x21
-        +coeff[ 28]    *x23    *x41
-        +coeff[ 29]*x11*x22    *x41
-        +coeff[ 30]        *x31
-        +coeff[ 31]    *x22*x31
-        +coeff[ 32]    *x21*x32
-        +coeff[ 33]*x11        *x42
-        +coeff[ 34]*x11*x22*x31
+    v_l_l5p77_sex                             =v_l_l5p77_sex                             
+        +coeff[ 26]    *x22*x31*x41    
+        +coeff[ 27]    *x22    *x42    
+        +coeff[ 28]*x11*x21    *x42    
+        +coeff[ 29]*x11*x23*x31*x41    
+        +coeff[ 30]    *x21        *x51
+        +coeff[ 31]    *x21    *x42    
+        +coeff[ 32]*x11*x22            
+        +coeff[ 33]*x12    *x31        
+        +coeff[ 34]    *x22*x32        
     ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 35]*x11*x22*x31*x41
-        +coeff[ 36]*x11    *x33*x41
-        +coeff[ 37]*x12
-        +coeff[ 38]        *x31*x41*x51
-        +coeff[ 39]*x11*x21    *x41
-        +coeff[ 40]*x11    *x31*x41
-        +coeff[ 41]    *x24
-        +coeff[ 42]*x12*x21    *x41
-        +coeff[ 43]        *x31*x41
-    ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 44]    *x21*x31    *x51
-        +coeff[ 45]    *x21    *x41*x51
-        +coeff[ 46]*x11    *x32
-        +coeff[ 47]*x11        *x41*x51
-        +coeff[ 48]    *x22    *x42
-        +coeff[ 49]    *x21*x31*x42
-        +coeff[ 50]    *x21    *x43
-        +coeff[ 51]    *x21*x31*x41*x51
-        +coeff[ 52]*x11*x23
-    ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 53]*x12*x21*x31
-        +coeff[ 54]    *x24    *x41
-        +coeff[ 55]    *x21    *x44
-        +coeff[ 56]    *x24*x31*x41
-        +coeff[ 57]    *x23*x32*x41
-        +coeff[ 58]            *x43
-        +coeff[ 59]    *x22        *x51
-        +coeff[ 60]            *x41*x52
-        +coeff[ 61]*x11    *x31    *x51
-    ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 62]*x11            *x52
-        +coeff[ 63]*x12    *x31
-        +coeff[ 64]*x13
-        +coeff[ 65]    *x22*x32
-        +coeff[ 66]    *x22*x31*x41
-        +coeff[ 67]    *x21*x32*x41
-        +coeff[ 68]    *x23        *x51
-        +coeff[ 69]    *x21    *x42*x51
-        +coeff[ 70]    *x21    *x41*x52
-    ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 71]            *x42*x52
-        +coeff[ 72]    *x21        *x53
-        +coeff[ 73]                *x54
-        +coeff[ 74]*x11*x21    *x41*x51
-        +coeff[ 75]*x11        *x42*x51
-        +coeff[ 76]    *x24*x31
-        +coeff[ 77]        *x33*x42
-        +coeff[ 78]*x11*x23    *x41
-        +coeff[ 79]*x13*x21    *x42
-    ;
-    v_l_l5p77_sex                             =v_l_l5p77_sex
-        +coeff[ 80]    *x23*x31*x43
+    v_l_l5p77_sex                             =v_l_l5p77_sex                             
+        +coeff[ 35]    *x23    *x41    
+        +coeff[ 36]        *x32*x42    
+        +coeff[ 37]        *x31*x43    
+        +coeff[ 38]*x11*x21*x31*x41    
+        +coeff[ 39]*x11*x21*x34        
         ;
 
     return v_l_l5p77_sex                             ;

@@ -55,6 +55,8 @@ protected:
     double fHRSAngle;
     double fHRSMomentum;
 
+    int epflag;
+
     int fSetting;
 
     bool fSieveOn;

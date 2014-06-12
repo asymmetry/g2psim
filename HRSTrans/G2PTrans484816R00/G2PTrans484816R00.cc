@@ -33,7 +33,7 @@ G2PTrans484816R00::~G2PTrans484816R00()
     // Nothing to do
 }
 
-bool G2PTrans484816R00::TransLeftHRS(double* pV5)
+int G2PTrans484816R00::TransLeftHRS(double* pV5)
 {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int ii = 5;

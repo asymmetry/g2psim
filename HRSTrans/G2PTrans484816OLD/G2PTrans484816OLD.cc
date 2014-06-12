@@ -33,7 +33,7 @@ G2PTrans484816OLD::~G2PTrans484816OLD()
     // Nothing to do
 }
 
-bool G2PTrans484816OLD::TransLeftHRS(double* pV5)
+int G2PTrans484816OLD::TransLeftHRS(double* pV5)
 {
     //use right arm routines for left arm before left arm is ready
     //return TransportLeftHRS(pV5);
@@ -54,60 +54,60 @@ bool G2PTrans484816OLD::TransRightHRS(double* pV5)
 
     float x_test, y_test;
 
-    //Target to Septum exit,
+    //Target to Septum exit, ep7
     //y, 480., 0.,none,84.0,388.,97.,97.,-97.,-97.
     x_test = x_r5p65_484816old_sepex_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_sepex_(vector_jjl, ii) * m2cm;
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
-        return false;
+        return 7;
 
-    //Target to Q1 en
+    //Target to Q1 en ep10
     //y,-200., 0.,none,150.,150.,0.,0.,0.,0.
     x_test = x_r5p65_484816old_q1ent_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q1ent_(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 15.0)
-        return false;
+        return 10;
 
-    //Target to Q1 ex,
+    //Target to Q1 ex, ep13
     //y,610.4, 0. ,none,149.2,149.2,0.,0.,0.,0.
     x_test = x_r5p65_484816old_q1ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q1ext_(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
-        return false;
+        return 13;
 
-    //Target to Q2 ex,
+    //Target to Q2 ex, ep20
     //y,-3040.40, 30.,none, 259.81, 300., 1316.53, 0.,0.,0.
     x_test = x_r5p65_484816old_q2ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q2ext_(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
-        return false;
+        return 20;
 
     //in TCS,             xmin,xmax,ymax1,ymax2,ymin1,ymin2,
-    //Target to dipole entrance,
+    //Target to dipole entrance, ep23
     //y,15121.67, -105.,none,-5220.08,-4980.99,132.44,117.56,-132.44,-117.56
     x_test = x_r5p65_484816old_den_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_den_(vector_jjl, ii) * m2cm;
     if ((x_test<-522.0) || (x_test>-498.1) || fabs(y_test) > 13.244)
-        return false;
+        return 23;
 
-    //Target to dipole exit, trapezoid -46.19cm<x<46.19cm  |y| < -0.0161*x+12.5
+    //Target to dipole exit, ep24, trapezoid -46.19cm<x<46.19cm  |y| < -0.0161*x+12.5
     //y,0., 0.,none,-461.88,461.88,132.44,117.56,-132.44,-117.56
     x_test = x_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
     if ((x_test<-46.19) || (x_test > 46.19) || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
-        return false;
+        return 24;
 
-    //Target to Q3 entrance, circle of radius 30.0 cm
+    //Target to Q3 entrance, ep26, circle of radius 30.0 cm
     x_test = x_r5p65_484816old_q3ent_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q3ent_(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
-        return false;
+        return 26;
 
-    //Target to Q3 exit, circle of radius 30.0 cm
+    //Target to Q3 exit, ep29, circle of radius 30.0 cm
     x_test = x_r5p65_484816old_q3ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q3ext_(vector_jjl, ii) * m2cm;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
-        return false;
+        return 29;
 
     /////////////////////////////////////////////////////////////
     // succesfully reach focus plane
