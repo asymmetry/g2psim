@@ -80,7 +80,7 @@ protected:
     double fV5sieve_tr[5];
     double fV5tpproj_tr[5];
 
-    double fV5fp_rot[5];
+    double fV5fp_det[5];
 
     G2PDrift* pDrift;
     G2PSieve* pSieve;

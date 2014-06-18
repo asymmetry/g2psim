@@ -121,10 +121,10 @@ int G2POptics::Process()
     fBeamEnergy = tempdata.eb;
     fV3bpm_lab[0] = tempdata.xb;
     fV3bpm_lab[1] = tempdata.yb;
-    fV5fp_rot[0] = tempdata.xf;
-    fV5fp_rot[1] = tempdata.tf;
-    fV5fp_rot[2] = tempdata.yf;
-    fV5fp_rot[3] = tempdata.pf;
+    fV5fp_det[0] = tempdata.xf;
+    fV5fp_det[1] = tempdata.tf;
+    fV5fp_det[2] = tempdata.yf;
+    fV5fp_det[3] = tempdata.pf;
     int kineID = fHoleID / (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
@@ -269,7 +269,7 @@ void G2POptics::Clear(Option_t* option)
     memset(fV5react_tr, 0, sizeof (fV5react_tr));
     memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
-    memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
+    memset(fV5fp_det, 0, sizeof (fV5fp_det));
 
     G2PProcBase::Clear(option);
 }
@@ -402,10 +402,10 @@ int G2POptics::DefineVariables(EMode mode)
         {"tp.proj.y", "Project to Target Plane Y", kDOUBLE, &fV5tpproj_tr[2]},
         {"tp.proj.p", "Project to Target Plane P", kDOUBLE, &fV5tpproj_tr[3]},
         {"tp.proj.d", "Project to Target Plane D", kDOUBLE, &fV5tpproj_tr[4]},
-        {"fp.x", "Focus Plane X", kDOUBLE, &fV5fp_rot[0]},
-        {"fp.t", "Focus Plane T", kDOUBLE, &fV5fp_rot[1]},
-        {"fp.y", "Focus Plane Y", kDOUBLE, &fV5fp_rot[2]},
-        {"fp.p", "Focus Plane P", kDOUBLE, &fV5fp_rot[3]},
+        {"fp.d_x", "Focus Plane X", kDOUBLE, &fV5fp_det[0]},
+        {"fp.d_t", "Focus Plane T", kDOUBLE, &fV5fp_det[1]},
+        {"fp.d_y", "Focus Plane Y", kDOUBLE, &fV5fp_det[2]},
+        {"fp.d_p", "Focus Plane P", kDOUBLE, &fV5fp_det[3]},
         {0}
     };
 
