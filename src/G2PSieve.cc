@@ -128,18 +128,22 @@ int G2PSieve::Begin()
 int G2PSieve::GetPos(double* V3)
 {
     int selector;
-    double dhole;
     do {
-        dhole = fDHole;
         selector = pRand->Integer(fNRow * fNCol);
         double temp = pRand->Uniform();
-        for (int i = 0; i < fNLargerHole; i++)
+        for (int i = 0; i < fNLargerHole; i++) {
             if (temp < (i + 1) * fThreshold) {
                 selector = fLargerHole[i];
-                dhole = fDLargerHole;
                 break;
             }
+        }
     } while (!fIsOpen[selector]);
+
+    double dhole = fDHole;
+    for (int i = 0; i < fNLargerHole; i++) {
+        if (selector == fLargerHole[i])
+            dhole = fDLargerHole;
+    }
 
     int col = selector / fNRow;
     int row = selector % fNRow;

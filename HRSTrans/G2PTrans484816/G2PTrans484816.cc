@@ -120,7 +120,7 @@ int G2PTrans484816::TransLeftHRS(double* pV5)
     pV5[3] = (double) phi_fp;
     //pV5[4] = (double)delta_fp;  // delta is not change
 
-    return true;
+    return 0;
 }
 
 bool G2PTrans484816::TransRightHRS(double* pV5)

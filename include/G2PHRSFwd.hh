@@ -55,7 +55,7 @@ protected:
     double fHRSAngle;
     double fHRSMomentum;
 
-    int epflag;
+    int fEndPlane;
 
     int fSetting;
 
