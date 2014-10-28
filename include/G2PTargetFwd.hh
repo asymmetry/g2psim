@@ -27,6 +27,11 @@ public:
     virtual int Process();
     virtual void Clear(Option_t* /*option*/ = "");
 
+    // Gets
+
+    // Sets
+    void SetSieve(const char* opt);
+
 protected:
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -34,6 +39,9 @@ protected:
 
     double fHRSAngle;
     double fHRSMomentum;
+
+    bool fSieveOn;
+    int fHoleID;
 
     double fV5react_lab[5];
     double fV5react_tr[5];

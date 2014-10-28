@@ -1,7 +1,7 @@
 // -*- C++ -*-
 
 /* class G2PTargetFwd
- * It simulates the movement of the scatted particles only in the target field without any cuts and energy loss.
+ * It simulates the movement of the scatted particles only in the target field without energy loss.
  * Input variables: fV5tp_tr, fV5react_lab (register in gG2PVars).
  */
 
@@ -36,7 +36,7 @@ using namespace std;
 G2PTargetFwd* G2PTargetFwd::pG2PTargetFwd = NULL;
 
 G2PTargetFwd::G2PTargetFwd() :
-fHRSAngle(0.0), fHRSMomentum(0.0), pDrift(NULL), pSieve(NULL)
+fHRSAngle(0.0), fHRSMomentum(0.0), fSieveOn(false), fHoleID(-1), pDrift(NULL), pSieve(NULL)
 {
     if (pG2PTargetFwd) {
         Error("G2PTargetFwd()", "Only one instance of G2PTargetFwd allowed.");
@@ -129,6 +129,11 @@ int G2PTargetFwd::Process()
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
     }
 
+    if (fSieveOn) {
+        fHoleID = pSieve->CanPass(fV5sieve_tr);
+        if (fHoleID < 0) return -1;
+    }
+
     Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
     fV5tpproj_tr[1] = fV5sieve_tr[1];
     fV5tpproj_tr[3] = fV5sieve_tr[3];
@@ -149,6 +154,19 @@ void G2PTargetFwd::Clear(Option_t * option)
     memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
 
     G2PProcBase::Clear(option);
+}
+
+void G2PTargetFwd::SetSieve(const char* opt)
+{
+    TString str(opt);
+
+    if (str == "in") {
+        fSieveOn = true;
+        fConfigIsSet.insert((unsigned long) &fSieveOn);
+    } else {
+        fSieveOn = false;
+        fConfigIsSet.insert((unsigned long) &fSieveOn);
+    }
 }
 
 int G2PTargetFwd::Configure(EMode mode)
@@ -173,6 +191,7 @@ int G2PTargetFwd::DefineVariables(EMode mode)
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
+        {"id", "Hole ID", kINT, &fHoleID},
         {"sieve.x", "Sieve X", kDOUBLE, &fV5sieve_tr[0]},
         {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
         {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},
