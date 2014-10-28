@@ -143,7 +143,7 @@ int main(int argc, char** argv)
         switch (fGunType[fGun]) {
         case 1:
         {
-            G2PGun* gun = new G2PFlatGun();
+            G2PGun* gun = new G2PFlatGun("trans");
             gG2PApps->Add(gun);
             break;
         }
