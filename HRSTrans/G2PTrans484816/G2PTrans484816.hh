@@ -8,6 +8,7 @@
 // History:
 //   Sep 2013, M. Huang, first add this module
 //   Apr 2014, M. Huang, complete the module with forward transport functions to multiple end-planes along the trajectory
+//
 
 #ifndef HRSTRANS_G2P_484816_H
 #define HRSTRANS_G2P_484816_H
@@ -20,12 +21,9 @@ public:
     ~G2PTrans484816();
 
     int TransLeftHRS(double* vector_jjl);
-    bool TransRightHRS(double* vector_jjl);
+    int TransRightHRS(double* vector_jjl);
     void ReconLeftHRS(double* vector_jjl);
     void ReconRightHRS(double* vector_jjl);
-
-    void FPCorrLeft(const double* V5tg, double* V5fp);
-    void FPCorrRight(const double* V5tg, double* V5fp);
 };
 
 #endif

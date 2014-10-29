@@ -20,12 +20,9 @@ public:
     ~G2PTrans400016();
 
     int TransLeftHRS(double* vector_jjl);
-    bool TransRightHRS(double* vector_jjl);
+    int TransRightHRS(double* vector_jjl);
     void ReconLeftHRS(double* vector_jjl);
     void ReconRightHRS(double* vector_jjl);
-
-    void FPCorrLeft(const double* V5tg, double* V5fp);
-    void FPCorrRight(const double* V5tg, double* V5fp);
 };
 
 #endif

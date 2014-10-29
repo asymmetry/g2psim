@@ -18,7 +18,7 @@ public:
     virtual ~HRSTransBase();
 
     virtual int TransLeftHRS(double* v) = 0;
-    virtual bool TransRightHRS(double* v) = 0;
+    virtual int TransRightHRS(double* v) = 0;
     virtual void ReconLeftHRS(double* v) = 0;
     virtual void ReconRightHRS(double* v) = 0;
 
