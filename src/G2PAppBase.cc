@@ -45,15 +45,11 @@ G2PRand* G2PAppBase::pRand = G2PRand::GetInstance();
 G2PAppBase::G2PAppBase() :
 fPrefix(NULL), fStatus(kNOTINIT), fDebug(0), fIsInit(false), fIsSetup(false), fPriority(0)
 {
-    // COnstructor
-
     fConfigIsSet.clear();
 }
 
 G2PAppBase::~G2PAppBase()
 {
-    // Destructor
-
     delete [] fPrefix;
     fPrefix = NULL;
 

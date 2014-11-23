@@ -34,7 +34,6 @@ G2PSieve* G2PSieve::pG2PSieve = NULL;
 G2PSieve::G2PSieve() :
 fHRSAngle(0.0), fNRow(7), fNCol(7), fZ(799.6e-3), fXOffset(0), fYOffset(0), fNLargerHole(0), fDHole(0), fDLargerHole(0)
 {
-    // Constructor
     if (pG2PSieve) {
         Error("G2PSieve()", "Only one instance of G2PSieve allowed.");
         MakeZombie();

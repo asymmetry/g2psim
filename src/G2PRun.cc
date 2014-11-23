@@ -41,8 +41,6 @@ G2PRun* G2PRun::pG2PRun = NULL;
 
 G2PRun::G2PRun() : fConfigFile(NULL)
 {
-    // Constructor
-
     if (pG2PRun) {
         Error("G2PRun()", "Only one instance of G2PRun allowed.");
         MakeZombie();
@@ -71,8 +69,6 @@ G2PRun::G2PRun() : fConfigFile(NULL)
 
 G2PRun::~G2PRun()
 {
-    // Destructor
-
     Clear();
 
     if (pG2PRun == this) pG2PRun = NULL;

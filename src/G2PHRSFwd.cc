@@ -526,7 +526,8 @@ bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
         //pModel->FPCorrLeft(V5tp_tr, V5);
     } else {
         //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
-        isgood = pModel->TransRightHRS(V5);
+        fEndPlane = pModel->TransRightHRS(V5);
+        if (!fEndPlane) isgood = true;
         //pModel->FPCorrRight(V5tp_tr, V5);
     }
 
