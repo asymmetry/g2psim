@@ -10,6 +10,7 @@
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Add configure functions.
+//   Nov 2014, C. Gu, Set random seed in G2PRun class.
 //
 
 #ifndef G2P_APPBASE_H
@@ -25,7 +26,8 @@ using namespace std;
 
 class G2PRand;
 
-class G2PAppBase : public TObject {
+class G2PAppBase : public TObject
+{
 public:
     virtual ~G2PAppBase();
 
@@ -37,26 +39,20 @@ public:
         kREAD = 0, kWRITE, kTWOWAY, kDEFINE = 0, kDELETE
     };
 
-    //static const double kLARGE;
-
     // General processes
     virtual int Init();
     virtual int Begin();
     virtual int End();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
-    int GetDebugLevel() const;
-    const char* GetPrefix() const;
-    bool IsInit() const;
-    bool IsOK() const;
     EStatus Status() const;
+    bool IsInit() const;
+    int GetDebugLevel() const;
     int GetPriority() const;
 
     // Sets
     void SetDebugLevel(int level);
-
-    static void SetSeed(unsigned n);
 
 protected:
     G2PAppBase(); // No instance allowed for this class
@@ -68,28 +64,29 @@ protected:
     virtual void HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr);
     virtual void Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout);
 
-    virtual void TRCS2FCS(const double* V5_tr, double angle, double* V5_fp);
-    virtual void FCS2TRCS(const double* V5_fp, double angle, double* V5_tr);
-    virtual void TRCS2DCS(const double* V5_tr, double angle, double* V5_det);
-    virtual void DCS2TRCS(const double* V5_det, double angle, double* V5_tr);
-    virtual void FCS2DCS(const double* V5_fp, double angle, double* V5_det);
-    virtual void DCS2FCS(const double* V5_det, double angle, double* V5_fp);
+    virtual void TRCS2FCS(const double *V5_tr, double angle, double *V5_fp);
+    virtual void FCS2TRCS(const double *V5_fp, double angle, double *V5_tr);
+    virtual void TRCS2DCS(const double *V5_tr, double angle, double *V5_det);
+    virtual void DCS2TRCS(const double *V5_det, double angle, double *V5_tr);
+    virtual void FCS2DCS(const double *V5_fp, double angle, double *V5_det);
+    virtual void DCS2FCS(const double *V5_det, double angle, double *V5_fp);
 
     // Configure functions
     virtual int Configure(EMode mode = kTWOWAY) = 0;
-    int ConfigureFromList(const ConfDef* list, EMode mode = kTWOWAY);
-    virtual int WriteConfs();
+    int ConfigureFromList(const ConfDef *list, EMode mode = kTWOWAY);
 
     // Make Prefix
     virtual void MakePrefix() = 0;
-    void MakePrefix(const char* basename);
+    void MakePrefix(const char *basename);
+
+    char *fPrefix;
 
     // General status variables
-    char* fPrefix;
     EStatus fStatus;
-    int fDebug;
-    bool fIsInit;
-    bool fIsSetup;
+    bool fIsInit; // Init flag
+    bool fIsSetup; // Configure flag
+
+    int fDebug; // Debug level
 
     // FIXME :
     // I understand that to use a priority variable is a bad idea.
@@ -99,12 +96,12 @@ protected:
     set<unsigned long> fConfigIsSet;
 
     // Random number generator
-    static G2PRand* pRand;
+    static G2PRand *pRand;
 
 private:
     // Prevent default copy and assignment function
-    G2PAppBase(const G2PAppBase&);
-    G2PAppBase& operator=(const G2PAppBase&);
+    G2PAppBase(const G2PAppBase &);
+    G2PAppBase &operator=(const G2PAppBase &);
 
     ClassDef(G2PAppBase, 1)
 };

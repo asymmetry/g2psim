@@ -28,6 +28,7 @@
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
 #include "G2PGlobals.hh"
+#include "G2PRand.hh"
 #include "G2PVarDef.hh"
 
 #include "G2PRun.hh"
@@ -37,7 +38,8 @@ using namespace std;
 static const double e = 1.60217656535e-19;
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PRun* G2PRun::pG2PRun = NULL;
+G2PRand *G2PRun::pRand = G2PRand::GetInstance();
+G2PRun *G2PRun::pG2PRun = NULL;
 
 G2PRun::G2PRun() : fConfigFile(NULL)
 {
@@ -46,6 +48,7 @@ G2PRun::G2PRun() : fConfigFile(NULL)
         MakeZombie();
         return;
     }
+
     pG2PRun = this;
 
     fConfig.clear();
@@ -72,14 +75,8 @@ G2PRun::~G2PRun()
     Clear();
 
     if (pG2PRun == this) pG2PRun = NULL;
+
     gG2PRun = NULL;
-}
-
-int G2PRun::Init()
-{
-    //static const char* const here = "Init()"
-
-    return 0;
 }
 
 int G2PRun::Begin()
@@ -92,21 +89,18 @@ int G2PRun::Begin()
 
     if (fConfigIsSet.find("run.seed") == fConfigIsSet.end())
         SetSeed(0);
-    //if (fConfig["run.debuglevel"] > 0) Print();
 
     return 0;
 }
 
 int G2PRun::End()
 {
-    // Default does nothing
-
     if (fConfig["run.debuglevel"] > 1) Print();
 
     return 0;
 }
 
-void G2PRun::Clear(Option_t* option)
+void G2PRun::Clear(Option_t *option)
 {
     fConfig.clear();
     fConfigIsSet.clear();
@@ -114,9 +108,9 @@ void G2PRun::Clear(Option_t* option)
     return;
 }
 
-void G2PRun::Print(Option_t* option) const
+void G2PRun::Print(Option_t *option) const
 {
-    static const char* const here = "Print()";
+    static const char *const here = "Print()";
 
     Info(here, "The configuration is :");
 
@@ -130,11 +124,11 @@ void G2PRun::Print(Option_t* option) const
     }
 }
 
-int G2PRun::GetConfig(const ConfDef* item, const char* prefix)
+int G2PRun::GetConfig(const ConfDef *item, const char *prefix)
 {
     // Get value of item
 
-    static const char* const here = "GetConfig()";
+    static const char *const here = "GetConfig()";
 
     if (!item) {
         Error(here, "Bad variable.");
@@ -146,35 +140,41 @@ int G2PRun::GetConfig(const ConfDef* item, const char* prefix)
         string keystr(prefix);
         keystr.append(item->name);
         string key(item->name);
-        if (fConfig.count(key) > 0) {
+
+        if (fConfig.count(key) > 0)
             dval = fConfig[key];
-        } else if (fConfig.count(keystr) > 0) {
+        else if (fConfig.count(keystr) > 0)
             dval = fConfig[keystr];
-        } else {
+        else
             return 0;
-        }
 
         switch (item->type) {
         case kBOOL:
-            *((bool*) item->var) = (bool) dval;
+            *((bool *) item->var) = (bool) dval;
             break;
+
         case kCHAR:
-            *((char*) item->var) = (char) dval;
+            *((char *) item->var) = (char) dval;
             break;
+
         case kINT:
-            *((int*) item->var) = (int) dval;
+            *((int *) item->var) = (int) dval;
             break;
+
         case kSHORT:
-            *((short*) item->var) = (short) dval;
+            *((short *) item->var) = (short) dval;
             break;
+
         case kLONG:
-            *((long*) item->var) = (long) dval;
+            *((long *) item->var) = (long) dval;
             break;
+
         case kFLOAT:
-            *((float*) item->var) = (float) dval;
+            *((float *) item->var) = (float) dval;
             break;
+
         case kDOUBLE:
-            *((double*) item->var) = dval;
+            *((double *) item->var) = dval;
             break;
         }
     }
@@ -182,11 +182,11 @@ int G2PRun::GetConfig(const ConfDef* item, const char* prefix)
     return 1;
 }
 
-int G2PRun::SetConfig(const ConfDef* item, const char* prefix)
+int G2PRun::SetConfig(const ConfDef *item, const char *prefix)
 {
-    // Get value of item
+    // Set value of item
 
-    static const char* const here = "SetConfig()";
+    static const char *const here = "SetConfig()";
 
     if (!item) {
         Error(here, "Bad variable.");
@@ -195,50 +195,53 @@ int G2PRun::SetConfig(const ConfDef* item, const char* prefix)
 
     if (item->var) {
         double dval = 0;
+
         switch (item->type) {
         case kBOOL:
-            dval = (double) (*((bool*) item->var));
+            dval = (double)(*((bool *) item->var));
             break;
+
         case kCHAR:
-            dval = (double) (*((char*) item->var));
+            dval = (double)(*((char *) item->var));
             break;
+
         case kINT:
-            dval = (double) (*((int*) item->var));
+            dval = (double)(*((int *) item->var));
             break;
+
         case kSHORT:
-            dval = (double) (*((short*) item->var));
+            dval = (double)(*((short *) item->var));
             break;
+
         case kLONG:
-            dval = (double) (*((long*) item->var));
+            dval = (double)(*((long *) item->var));
             break;
+
         case kFLOAT:
-            dval = (double) (*((float*) item->var));
+            dval = (double)(*((float *) item->var));
             break;
+
         case kDOUBLE:
-            dval = *((double*) item->var);
+            dval = *((double *) item->var);
             break;
         }
+
         string keystr(prefix);
         keystr.append(item->name);
         string key(item->name);
-        if (fConfig.count(keystr) > 0) {
+
+        if (fConfig.count(keystr) > 0)
             fConfig[keystr] = dval;
-        } else if (fConfig.count(key) > 0) {
+        else if (fConfig.count(key) > 0)
             fConfig[key] = dval;
-        } else {
+        else
             fConfig[keystr] = dval;
-        }
     }
 
     return 1;
 }
 
-int G2PRun::GetDebugLevel()
-{
-    return (int) (fConfig["run.debuglevel"]);
-}
-
-void G2PRun::SetConfigFile(const char* file)
+void G2PRun::SetConfigFile(const char *file)
 {
     fConfigFile = file;
 }
@@ -250,7 +253,7 @@ void G2PRun::SetDebugLevel(int n)
     fConfigIsSet.insert("run.debuglevel");
 }
 
-void G2PRun::SetRunType(const char* type)
+void G2PRun::SetRunType(const char *type)
 {
     map<string, int> tempmap;
     tempmap["production"] = 10;
@@ -268,7 +271,7 @@ void G2PRun::SetRunType(const char* type)
 
 void G2PRun::SetParticle(int id)
 {
-    static const char* const here = "SetParticle()";
+    static const char *const here = "SetParticle()";
 
     fConfig["run.particle.id"] = (double) id;
 
@@ -277,18 +280,22 @@ void G2PRun::SetParticle(int id)
         fConfig["run.particle.mass"] = 0.5109989281e-3;
         fConfig["run.particle.charge"] = -1 * e;
         break;
+
     case -11: // e+
         fConfig["run.particle.mass"] = 0.5109989281e-3;
         fConfig["run.particle.charge"] = e;
         break;
+
     case -211: // pi-
         fConfig["run.particle.mass"] = 139.5701835e-3;
         fConfig["run.particle.charge"] = -1 * e;
         break;
+
     case 211: // pi+
         fConfig["run.particle.mass"] = 139.5701835e-3;
         fConfig["run.particle.charge"] = e;
         break;
+
     default: // e-
         Warning(here, "Unknown pid, use electrons.");
         fConfig["run.particle.mass"] = 0.5109989281e-3;
@@ -348,14 +355,14 @@ void G2PRun::SetFieldRatio(double ratio)
 void G2PRun::SetSeed(unsigned n)
 {
     fConfig["run.seed"] = (double) n;
-    G2PAppBase::SetSeed(n);
+    G2PRun::StaticSetSeed(n);
 
     fConfigIsSet.insert("run.seed");
 }
 
 int G2PRun::ParseConfigFile()
 {
-    static const char* const here = "ParseConfigFile()";
+    static const char *const here = "ParseConfigFile()";
 
     config_t cfg;
     config_init(&cfg);
@@ -366,7 +373,7 @@ int G2PRun::ParseConfigFile()
         return -1;
     }
 
-    config_setting_t* root = config_root_setting(&cfg);
+    config_setting_t *root = config_root_setting(&cfg);
 
     if (ParseSetting("", root)) {
         config_destroy(&cfg);
@@ -377,39 +384,45 @@ int G2PRun::ParseConfigFile()
     return 0;
 }
 
-int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting)
+int G2PRun::ParseSetting(const char *prefix, const config_setting_t *setting)
 {
-    static const char* const here = "ParseConfigFile()"; // Notice: this is not a typo
+    static const char *const here = "ParseConfigFile()"; // NOTICE: this is not a typo
 
     int type = config_setting_type(setting);
     bool isgood = true;
+
     switch (type) {
     case CONFIG_TYPE_GROUP:
         for (int i = 0; i < config_setting_length(setting); i++) {
-            config_setting_t* subsetting = config_setting_get_elem(setting, i);
-            const char* newprefix;
-            if (config_setting_name(setting) == NULL) {
+            config_setting_t *subsetting = config_setting_get_elem(setting, i);
+            const char *newprefix;
+
+            if (config_setting_name(setting) == NULL)
                 newprefix = prefix;
-            } else {
+            else
                 newprefix = Form("%s%s.", prefix, config_setting_name(setting));
-            }
+
             if (ParseSetting(newprefix, subsetting)) {
                 isgood = false;
                 break;
             }
         }
+
         break;
+
     case CONFIG_TYPE_BOOL:
     case CONFIG_TYPE_INT:
     case CONFIG_TYPE_INT64:
-    case CONFIG_TYPE_FLOAT:
-    {
+    case CONFIG_TYPE_FLOAT: {
         string name = Form("%s%s", prefix, config_setting_name(setting));
         double value = GetValue(setting);
+
         if (fConfigIsSet.find(name) == fConfigIsSet.end())
             fConfig[name] = value;
+
         return 0;
     }
+
     default:
         Error(here, "Found illegal configuration, check the format.");
         return -1;
@@ -418,27 +431,36 @@ int G2PRun::ParseSetting(const char* prefix, const config_setting_t* setting)
     return (isgood ? 0 : -1);
 }
 
-double G2PRun::GetValue(const config_setting_t* setting)
+double G2PRun::GetValue(const config_setting_t *setting)
 {
     double value = 0;
 
     int type = config_setting_type(setting);
+
     switch (type) {
     case CONFIG_TYPE_INT:
         value = (double) config_setting_get_int(setting);
         break;
+
     case CONFIG_TYPE_INT64:
         value = (double) config_setting_get_int64(setting);
         break;
+
     case CONFIG_TYPE_FLOAT:
         value = config_setting_get_float(setting);
         break;
+
     case CONFIG_TYPE_BOOL:
         value = (double) config_setting_get_bool(setting);
         break;
     }
 
     return value;
+}
+
+void G2PRun::StaticSetSeed(unsigned n)
+{
+    pRand->SetSeed(n);
 }
 
 ClassImp(G2PRun)

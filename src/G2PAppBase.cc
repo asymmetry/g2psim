@@ -10,6 +10,7 @@
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Add configure functions.
+//   Nov 2014, C. Gu, Set random seed in G2PRun class.
 //
 
 #include <cstdlib>
@@ -32,25 +33,23 @@
 
 using namespace std;
 
-static const double kLT[4] = {-1.001135e+00, -3.313373e-01, -4.290819e-02, +4.470852e-03};
-static const double kLY[4] = {-8.060915e-03, +1.071977e-03, +9.019102e-04, -3.239615e-04};
-static const double kLP[4] = {-2.861912e-03, -2.469069e-03, +8.427172e-03, +2.274635e-03};
-static const double kRT[4] = {-1.004600e+00, -3.349200e-01, -4.078700e-02, +0.000000e+00};
-static const double kRY[4] = {-5.157400e-03, +2.642400e-04, +2.234600e-03, +0.000000e+00};
-static const double kRP[4] = {-7.435500e-04, -2.130200e-03, +1.195000e-03, +0.000000e+00};
+static const double kLT[4] = { -1.001135e+00, -3.313373e-01, -4.290819e-02, +4.470852e-03};
+static const double kLY[4] = { -8.060915e-03, +1.071977e-03, +9.019102e-04, -3.239615e-04};
+static const double kLP[4] = { -2.861912e-03, -2.469069e-03, +8.427172e-03, +2.274635e-03};
+static const double kRT[4] = { -1.004600e+00, -3.349200e-01, -4.078700e-02, +0.000000e+00};
+static const double kRY[4] = { -5.157400e-03, +2.642400e-04, +2.234600e-03, +0.000000e+00};
+static const double kRP[4] = { -7.435500e-04, -2.130200e-03, +1.195000e-03, +0.000000e+00};
 
-//const double G2PAppBase::kLARGE = 1.e38;
-G2PRand* G2PAppBase::pRand = G2PRand::GetInstance();
+G2PRand *G2PAppBase::pRand = G2PRand::GetInstance();
 
-G2PAppBase::G2PAppBase() :
-fPrefix(NULL), fStatus(kNOTINIT), fDebug(0), fIsInit(false), fIsSetup(false), fPriority(0)
+G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTINIT), fIsInit(false), fIsSetup(false), fDebug(0), fPriority(0)
 {
     fConfigIsSet.clear();
 }
 
 G2PAppBase::~G2PAppBase()
 {
-    delete [] fPrefix;
+    delete[] fPrefix;
     fPrefix = NULL;
 
     fConfigIsSet.clear();
@@ -58,13 +57,16 @@ G2PAppBase::~G2PAppBase()
 
 int G2PAppBase::Init()
 {
-    static const char* const here = "Init()";
+    static const char *const here = "Init()";
 
-    if (fDebug > 1) Info(here, "Initializing ...");
+    if (fDebug > 1)
+        Info(here, "Initializing ...");
 
-    if (IsZombie()) return (fStatus = kNOTINIT);
+    if (IsZombie())
+        return (fStatus = kNOTINIT);
 
     EStatus status = kOK;
+
     MakePrefix();
 
     return (fStatus = status);
@@ -72,12 +74,15 @@ int G2PAppBase::Init()
 
 int G2PAppBase::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (fDebug > 1) Info(here, "Beginning ...");
+    if (fDebug > 1)
+        Info(here, "Beginning ...");
 
     EStatus status = kOK;
-    if (Configure(kTWOWAY)) status = kINITERROR;
+
+    if (Configure(kTWOWAY))
+        status = kINITERROR;
 
     return (fStatus = status);
 }
@@ -89,36 +94,26 @@ int G2PAppBase::End()
     return (Configure(kWRITE));
 }
 
-void G2PAppBase::Clear(Option_t* option)
+void G2PAppBase::Clear(Option_t *option)
 {
     // Default does nothing
 
     return;
 }
 
-int G2PAppBase::GetDebugLevel() const
+G2PAppBase::EStatus G2PAppBase::Status() const
 {
-    return fDebug;
-}
-
-const char* G2PAppBase::GetPrefix() const
-{
-    return fPrefix;
+    return fStatus;
 }
 
 bool G2PAppBase::IsInit() const
 {
-    return IsOK();
-}
-
-bool G2PAppBase::IsOK() const
-{
     return (fStatus == kOK);
 }
 
-G2PAppBase::EStatus G2PAppBase::Status() const
+int G2PAppBase::GetDebugLevel() const
 {
-    return fStatus;
+    return fDebug;
 }
 
 int G2PAppBase::GetPriority() const
@@ -131,32 +126,28 @@ void G2PAppBase::SetDebugLevel(int level)
     fDebug = level;
 }
 
-void G2PAppBase::SetSeed(unsigned n)
-{
-    pRand->SetSeed(n);
-}
-
 void G2PAppBase::TCS2HCS(double x_tr, double y_tr, double z_tr, double angle, double &x_lab, double &y_lab, double &z_lab)
 {
     // Position transform function from TCS to HCS
 
-    static const char* const here = "TCS2HCS()";
+    static const char *const here = "TCS2HCS()";
 
     double cosang = cos(angle);
     double sinang = sin(angle);
 
-    x_lab = y_tr * cosang + z_tr*sinang;
+    x_lab = y_tr * cosang + z_tr * sinang;
     y_lab = -x_tr;
-    z_lab = z_tr * cosang - y_tr*sinang;
+    z_lab = z_tr * cosang - y_tr * sinang;
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_tr, y_tr, z_tr, x_lab, y_lab, z_lab);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_tr, y_tr, z_tr, x_lab, y_lab, z_lab);
 }
 
 void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, double &p_lab)
 {
     // Angle transform function from TCS to HCS
 
-    static const char* const here = "TCS2HCS()";
+    static const char *const here = "TCS2HCS()";
 
     double x = tan(t_tr);
     double y = tan(p_tr);
@@ -165,30 +156,32 @@ void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, 
     t_lab = acos(z / sqrt(x * x + y * y + z * z));
     p_lab = atan2(y, x);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", t_tr, p_tr, t_lab, p_lab);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", t_tr, p_tr, t_lab, p_lab);
 }
 
 void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double angle, double &x_tr, double &y_tr, double &z_tr)
 {
     // Position transform function from HCS to TCS
 
-    static const char* const here = "HCS2TCS()";
+    static const char *const here = "HCS2TCS()";
 
     double cosang = cos(angle);
     double sinang = sin(angle);
 
     x_tr = -y_lab;
-    y_tr = x_lab * cosang - z_lab*sinang;
-    z_tr = x_lab * sinang + z_lab*cosang;
+    y_tr = x_lab * cosang - z_lab * sinang;
+    z_tr = x_lab * sinang + z_lab * cosang;
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_lab, y_lab, z_lab, x_tr, y_tr, z_tr);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_lab, y_lab, z_lab, x_tr, y_tr, z_tr);
 }
 
 void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr)
 {
     // Angle transform function from HCS to TCS
 
-    static const char* const here = "HCS2TCS()";
+    static const char *const here = "HCS2TCS()";
 
     double x = sin(t_lab) * cos(p_lab);
     double y = sin(t_lab) * sin(p_lab);
@@ -197,14 +190,15 @@ void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr,
     t_tr = atan2(x, z);
     p_tr = atan2(y, z);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e -> %10.3e %10.3e", t_lab, p_lab, t_tr, p_tr);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e -> %10.3e %10.3e", t_lab, p_lab, t_tr, p_tr);
 }
 
 void G2PAppBase::Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout)
 {
     // Project along z direction
 
-    static const char* const here = "Project()";
+    static const char *const here = "Project()";
 
     double xsave = x;
     double ysave = y;
@@ -212,12 +206,13 @@ void G2PAppBase::Project(double x, double y, double z, double zout, double t, do
     xout = xsave + (zout - z) * tan(t);
     yout = ysave + (zout - z) * tan(p);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
 }
 
-void G2PAppBase::TRCS2FCS(const double* V5_tr, double angle, double* V5_fp)
+void G2PAppBase::TRCS2FCS(const double *V5_tr, double angle, double *V5_fp)
 {
-    static const char* const here = "TRCS2FCS()";
+    static const char *const here = "TRCS2FCS()";
 
     double x_tr = V5_tr[0];
     double t_tr = tan(V5_tr[1]);
@@ -227,12 +222,12 @@ void G2PAppBase::TRCS2FCS(const double* V5_tr, double angle, double* V5_fp)
     double x = x_tr;
 
     double x1 = x;
-    double x2 = x1*x;
-    double x3 = x2*x;
+    double x2 = x1 * x;
+    double x3 = x2 * x;
 
-    const double* tMat;
-    const double* yMat;
-    const double* pMat;
+    const double *tMat;
+    const double *yMat;
+    const double *pMat;
 
     if (angle > 0) {
         tMat = kLT;
@@ -266,12 +261,13 @@ void G2PAppBase::TRCS2FCS(const double* V5_tr, double angle, double* V5_fp)
     V5_fp[2] = y;
     V5_fp[3] = atan(p);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
 }
 
-void G2PAppBase::FCS2TRCS(const double* V5_fp, double angle, double* V5_tr)
+void G2PAppBase::FCS2TRCS(const double *V5_fp, double angle, double *V5_tr)
 {
-    static const char* const here = "FCS2TRCS()";
+    static const char *const here = "FCS2TRCS()";
 
     double x = V5_fp[0];
     double t = tan(V5_fp[1]);
@@ -279,12 +275,12 @@ void G2PAppBase::FCS2TRCS(const double* V5_fp, double angle, double* V5_tr)
     double p = tan(V5_fp[3]);
 
     double x1 = x;
-    double x2 = x1*x;
-    double x3 = x2*x;
+    double x2 = x1 * x;
+    double x3 = x2 * x;
 
-    const double* tMat;
-    const double* yMat;
-    const double* pMat;
+    const double *tMat;
+    const double *yMat;
+    const double *pMat;
 
     if (angle > 0) {
         tMat = kLT;
@@ -319,20 +315,20 @@ void G2PAppBase::FCS2TRCS(const double* V5_fp, double angle, double* V5_tr)
     V5_tr[2] = y_tr;
     V5_tr[3] = atan(p_tr);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
 }
 
-void G2PAppBase::TRCS2DCS(const double* V5_tr, double angle, double* V5_det)
+void G2PAppBase::TRCS2DCS(const double *V5_tr, double angle, double *V5_det)
 {
-    static const char* const here = "TRCS2DCS()";
+    static const char *const here = "TRCS2DCS()";
 
-    const double* tMat;
+    const double *tMat;
 
-    if (angle > 0) {
+    if (angle > 0)
         tMat = kLT;
-    } else {
+    else
         tMat = kRT;
-    }
 
     double tan_rho_0 = tMat[0];
     double cos_rho_0 = 1.0 / sqrt(1.0 + tan_rho_0 * tan_rho_0);
@@ -343,7 +339,7 @@ void G2PAppBase::TRCS2DCS(const double* V5_tr, double angle, double* V5_det)
     double p_tr = tan(V5_tr[3]);
 
     double x_det = x_tr / (cos_rho_0 * (1 + t_tr * tan_rho_0));
-    double y_det = y_tr - tan_rho_0 * cos_rho_0 * p_tr*x_det;
+    double y_det = y_tr - tan_rho_0 * cos_rho_0 * p_tr * x_det;
     double t_det = (t_tr - tan_rho_0) / (1 + t_tr * tan_rho_0);
     double p_det = p_tr * (1.0 - t_det * tan_rho_0) * cos_rho_0;
 
@@ -352,20 +348,20 @@ void G2PAppBase::TRCS2DCS(const double* V5_tr, double angle, double* V5_det)
     V5_det[2] = y_det;
     V5_det[3] = atan(p_det);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
 }
 
-void G2PAppBase::DCS2TRCS(const double* V5_det, double angle, double* V5_tr)
+void G2PAppBase::DCS2TRCS(const double *V5_det, double angle, double *V5_tr)
 {
-    static const char* const here = "DCS2TRCS()";
+    static const char *const here = "DCS2TRCS()";
 
-    const double* tMat;
+    const double *tMat;
 
-    if (angle > 0) {
+    if (angle > 0)
         tMat = kLT;
-    } else {
+    else
         tMat = kRT;
-    }
 
     double tan_rho_0 = tMat[0];
     double cos_rho_0 = 1.0 / sqrt(1.0 + tan_rho_0 * tan_rho_0);
@@ -378,19 +374,20 @@ void G2PAppBase::DCS2TRCS(const double* V5_det, double angle, double* V5_tr)
     double t_tr = (t_det + tan_rho_0) / (1.0 - t_det * tan_rho_0);
     double p_tr = p_det / (cos_rho_0 * (1.0 - t_det * tan_rho_0));
     double x_tr = x_det * cos_rho_0 * (1 + t_tr * tan_rho_0);
-    double y_tr = y_det + tan_rho_0 * cos_rho_0 * p_tr*x_det;
+    double y_tr = y_det + tan_rho_0 * cos_rho_0 * p_tr * x_det;
 
     V5_tr[0] = x_tr;
     V5_tr[1] = atan(t_tr);
     V5_tr[2] = y_tr;
     V5_tr[3] = atan(p_tr);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
 }
 
-void G2PAppBase::FCS2DCS(const double* V5_fp, double angle, double* V5_det)
+void G2PAppBase::FCS2DCS(const double *V5_fp, double angle, double *V5_det)
 {
-    static const char* const here = "FCS2DCS()";
+    static const char *const here = "FCS2DCS()";
 
     double V5_tr[5];
 
@@ -402,12 +399,13 @@ void G2PAppBase::FCS2DCS(const double* V5_fp, double angle, double* V5_det)
 
     fDebug = save;
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
 }
 
-void G2PAppBase::DCS2FCS(const double* V5_det, double angle, double* V5_fp)
+void G2PAppBase::DCS2FCS(const double *V5_det, double angle, double *V5_fp)
 {
-    static const char* const here = "DCS2FCS()";
+    static const char *const here = "DCS2FCS()";
 
     double V5_tr[5];
 
@@ -419,32 +417,33 @@ void G2PAppBase::DCS2FCS(const double* V5_det, double angle, double* V5_fp)
 
     fDebug = save;
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
 }
 
-int G2PAppBase::ConfigureFromList(const ConfDef* list, EMode mode)
+int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
 {
     // Load configurations in the list from run manager
 
-    static const char* const here = "LoadConfigFile()";
+    static const char *const here = "LoadConfigFile()";
 
     if (!gG2PRun) {
         Error(here, "No run manager.");
         return ((mode == kREAD || mode == kTWOWAY) ? kINITERROR : kOK);
     }
 
-    const ConfDef* item = list;
+    const ConfDef *item = list;
+
     if (mode == kREAD || mode == kTWOWAY) {
         while (item->name) {
-            bool isset = false;
-            if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end()) isset = true;
-            if (isset) {
+            if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end()) {
                 if (mode == kTWOWAY)
                     gG2PRun->SetConfig(item, fPrefix);
             } else {
                 if (gG2PRun->GetConfig(item, fPrefix))
                     fConfigIsSet.insert((unsigned long) item->var);
             }
+
             item++;
         }
     } else if (mode == kWRITE) {
@@ -452,24 +451,19 @@ int G2PAppBase::ConfigureFromList(const ConfDef* list, EMode mode)
             gG2PRun->SetConfig(item, fPrefix);
             item++;
         }
-    } else return kINITERROR;
+    } else
+        return kINITERROR;
 
     return kOK;
 }
 
-int G2PAppBase::WriteConfs()
-{
-    // Default method to write configurations to run manager
-
-    return Configure(kWRITE);
-}
-
-void G2PAppBase::MakePrefix(const char* basename)
+void G2PAppBase::MakePrefix(const char *basename)
 {
     // Set up name prefix for global variables
 
-    delete [] fPrefix;
-    if (basename&&*basename) {
+    delete[] fPrefix;
+
+    if (basename && *basename) {
         fPrefix = new char[strlen(basename) + 3];
         strcpy(fPrefix, basename);
         strcat(fPrefix, ".");

@@ -27,28 +27,28 @@
 
 using namespace std;
 
-class G2PRun : public TObject {
+class G2PRand;
+
+class G2PRun : public TObject
+{
 public:
     G2PRun();
     virtual ~G2PRun();
 
-    virtual int Init();
     virtual int Begin();
     virtual int End();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
-    virtual void Print(Option_t* /*option*/ = "") const;
+    virtual void Print(Option_t * /*option*/ = "") const;
 
-    int GetConfig(const ConfDef* item, const char* prefix);
-    int SetConfig(const ConfDef* item, const char* prefix);
-
-    //Gets
-    int GetDebugLevel();
+    int GetConfig(const ConfDef *item, const char *prefix);
+    int SetConfig(const ConfDef *item, const char *prefix);
 
     //Sets
-    void SetConfigFile(const char* file);
+    void SetConfigFile(const char *file);
     void SetDebugLevel(int n);
-    void SetRunType(const char* type);
+    void SetSeed(unsigned n);
+    void SetRunType(const char *type);
     void SetBeamEnergy(double value);
     void SetParticle(int id);
     void SetTarget(int Z, int A);
@@ -56,20 +56,23 @@ public:
     void SetHRSAngle(double angle);
     void SetHRSMomentum(double P0);
     void SetFieldRatio(double ratio);
-    void SetSeed(unsigned n);
 
 protected:
     int ParseConfigFile();
-    int ParseSetting(const char* prefix, const config_setting_t* setting);
-    double GetValue(const config_setting_t* setting);
+    int ParseSetting(const char *prefix, const config_setting_t *setting);
+    double GetValue(const config_setting_t *setting);
 
-    const char* fConfigFile;
+    const char *fConfigFile;
 
     map<string, double> fConfig;
     set<string> fConfigIsSet;
 
 private:
-    static G2PRun* pG2PRun;
+    // Random number generator
+    static G2PRand *pRand;
+    static void StaticSetSeed(unsigned n);
+
+    static G2PRun *pG2PRun;
 
     ClassDef(G2PRun, 1)
 };
