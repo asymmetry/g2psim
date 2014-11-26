@@ -19,17 +19,17 @@ enum VarType {
 };
 
 struct VarDef {
-    const char* name;
-    const char* desc;
+    const char *name;
+    const char *desc;
     VarType type;
-    const void* loc;
+    const void *loc;
 };
 
 struct ConfDef {
-    const char* name;
-    const char* desc;
+    const char *name;
+    const char *desc;
     VarType type;
-    void* var;
+    void *var;
 };
 
 #endif

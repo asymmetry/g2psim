@@ -23,25 +23,24 @@
 
 using namespace std;
 
-G2PVar::G2PVar() :
-fValueD(NULL), fType(kDOUBLE)
+G2PVar::G2PVar() : fValueD(NULL), fType(kDOUBLE)
 {
     // Nothing to do
 }
 
-G2PVar::G2PVar(const G2PVar& rhs) :
-TNamed(rhs), fValueD(rhs.fValueD), fType(rhs.fType)
+G2PVar::G2PVar(const G2PVar &rhs) : TNamed(rhs), fValueD(rhs.fValueD), fType(rhs.fType)
 {
     // Nothing to do
 }
 
-G2PVar& G2PVar::operator=(const G2PVar& rhs)
+G2PVar &G2PVar::operator=(const G2PVar &rhs)
 {
     if (this != &rhs) {
         TNamed::operator=(rhs);
         fValueD = rhs.fValueD;
         fType = rhs.fType;
     }
+
     return *this;
 }
 
@@ -50,16 +49,16 @@ G2PVar::~G2PVar()
     // Nothing to do
 }
 
-const char* G2PVar::GetTypeName() const
+const char *G2PVar::GetTypeName() const
 {
-    static const char* const type[] = {"Bool", "Char", "Int", "Short", "Long", "Float", "Double"};
+    static const char *const type[] = {"Bool", "Char", "Int", "Short", "Long", "Float", "Double"};
 
     return type[fType];
 }
 
 int G2PVar::GetTypeSize() const
 {
-    static const int size[] = {sizeof (bool), sizeof (char), sizeof (int), sizeof (short), sizeof (long), sizeof (float), sizeof (double)};
+    static const int size[] = {sizeof(bool), sizeof(char), sizeof(int), sizeof(short), sizeof(long), sizeof(float), sizeof(double)};
 
     return size[fType];
 }
@@ -68,19 +67,25 @@ double G2PVar::GetValue() const
 {
     switch (fType) {
     case kBOOL:
-        return static_cast<double> (*fValueB);
+        return static_cast<double>(*fValueB);
+
     case kCHAR:
-        return static_cast<double> (*fValueC);
+        return static_cast<double>(*fValueC);
+
     case kINT:
-        return static_cast<double> (*fValueI);
+        return static_cast<double>(*fValueI);
+
     case kSHORT:
-        return static_cast<double> (*fValueS);
+        return static_cast<double>(*fValueS);
+
     case kLONG:
-        return static_cast<double> (*fValueL);
+        return static_cast<double>(*fValueL);
+
     case kFLOAT:
-        return static_cast<double> (*fValueF);
+        return static_cast<double>(*fValueF);
+
     case kDOUBLE:
-        return static_cast<double> (*fValueD);
+        return static_cast<double>(*fValueD);
     }
 
     return 1.0e38;
@@ -91,43 +96,43 @@ VarType G2PVar::GetType() const
     return fType;
 }
 
-void G2PVar::SetVar(const bool& var)
+void G2PVar::SetVar(const bool &var)
 {
     fValueB = &var;
     fType = kBOOL;
 }
 
-void G2PVar::SetVar(const char& var)
+void G2PVar::SetVar(const char &var)
 {
     fValueC = &var;
     fType = kCHAR;
 }
 
-void G2PVar::SetVar(const int& var)
+void G2PVar::SetVar(const int &var)
 {
     fValueI = &var;
     fType = kINT;
 }
 
-void G2PVar::SetVar(const short& var)
+void G2PVar::SetVar(const short &var)
 {
     fValueS = &var;
     fType = kSHORT;
 }
 
-void G2PVar::SetVar(const long& var)
+void G2PVar::SetVar(const long &var)
 {
     fValueL = &var;
     fType = kLONG;
 }
 
-void G2PVar::SetVar(const float& var)
+void G2PVar::SetVar(const float &var)
 {
     fValueF = &var;
     fType = kFLOAT;
 }
 
-void G2PVar::SetVar(const double& var)
+void G2PVar::SetVar(const double &var)
 {
     fValueD = &var;
     fType = kDOUBLE;

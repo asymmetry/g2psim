@@ -16,75 +16,76 @@
 
 #include "G2PVarDef.hh"
 
-class G2PVar : public TNamed {
+class G2PVar : public TNamed
+{
 public:
     G2PVar();
-    G2PVar(const G2PVar& rhs);
-    G2PVar& operator=(const G2PVar&);
+    G2PVar(const G2PVar &rhs);
+    G2PVar &operator=(const G2PVar &);
     virtual ~G2PVar();
 
     // Constructors by type
 
-    G2PVar(const char* name, const char* descript, const bool* var) :
-    TNamed(name, descript), fValueB(var), fType(kBOOL)
+    G2PVar(const char *name, const char *descript, const bool *var) :
+        TNamed(name, descript), fValueB(var), fType(kBOOL)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const char* var) :
-    TNamed(name, descript), fValueC(var), fType(kCHAR)
+    G2PVar(const char *name, const char *descript, const char *var) :
+        TNamed(name, descript), fValueC(var), fType(kCHAR)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const int* var) :
-    TNamed(name, descript), fValueI(var), fType(kINT)
+    G2PVar(const char *name, const char *descript, const int *var) :
+        TNamed(name, descript), fValueI(var), fType(kINT)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const short* var) :
-    TNamed(name, descript), fValueS(var), fType(kSHORT)
+    G2PVar(const char *name, const char *descript, const short *var) :
+        TNamed(name, descript), fValueS(var), fType(kSHORT)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const long* var) :
-    TNamed(name, descript), fValueL(var), fType(kLONG)
+    G2PVar(const char *name, const char *descript, const long *var) :
+        TNamed(name, descript), fValueL(var), fType(kLONG)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const float* var) :
-    TNamed(name, descript), fValueF(var), fType(kFLOAT)
+    G2PVar(const char *name, const char *descript, const float *var) :
+        TNamed(name, descript), fValueF(var), fType(kFLOAT)
     {
     }
 
-    G2PVar(const char* name, const char* descript, const double* var) :
-    TNamed(name, descript), fValueD(var), fType(kDOUBLE)
+    G2PVar(const char *name, const char *descript, const double *var) :
+        TNamed(name, descript), fValueD(var), fType(kDOUBLE)
     {
     }
 
     // Gets
     VarType GetType() const;
-    const char* GetTypeName() const;
+    const char *GetTypeName() const;
     int GetTypeSize() const;
     double GetValue() const;
 
     // Sets
-    void SetVar(const bool& var);
-    void SetVar(const char& var);
-    void SetVar(const int& var);
-    void SetVar(const short& var);
-    void SetVar(const long& var);
-    void SetVar(const float& var);
-    void SetVar(const double& var);
+    void SetVar(const bool &var);
+    void SetVar(const char &var);
+    void SetVar(const int &var);
+    void SetVar(const short &var);
+    void SetVar(const long &var);
+    void SetVar(const float &var);
+    void SetVar(const double &var);
 
 protected:
 
     union {
-        const bool* fValueB;
-        const char* fValueC;
-        const int* fValueI;
-        const short* fValueS;
-        const long* fValueL;
-        const float* fValueF;
-        const double* fValueD;
+        const bool *fValueB;
+        const char *fValueC;
+        const int *fValueI;
+        const short *fValueS;
+        const long *fValueL;
+        const float *fValueF;
+        const double *fValueD;
     };
 
     VarType fType;
