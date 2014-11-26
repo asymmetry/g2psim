@@ -12,18 +12,22 @@
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Put HallB field map into G2PField.
+//   Nov 2014, C. Gu, Rewrite it with G2PGeoBase.
 //
 
 #ifndef G2P_FIELD_H
 #define G2P_FIELD_H
 
+//#define DEBUGWITHROOT
+
 #include <vector>
 
-#include "G2PAppBase.hh"
+#include "G2PGeoBase.hh"
 
 using namespace std;
 
-class G2PField : public G2PAppBase {
+class G2PField : public G2PGeoBase
+{
 public:
     G2PField();
     virtual ~G2PField();
@@ -31,53 +35,42 @@ public:
     virtual int Init();
     virtual int Begin();
 
-    virtual void GetField(const double* x, double* b);
+    virtual void GetField(const double *x, double *b);
 
     // Gets
 
     // Sets
-    void SetOrigin(double x, double y, double z);
-    void SetEulerAngle(double alpha, double beta, double gamma);
     void SetZRange(double zmin, double zmax);
     void SetRRange(double rmin, double rmax);
     void SetZStep(double stepz);
     void SetRStep(double stepr);
 
 protected:
-    void SetRotationMatrix();
-
     virtual int ReadMap();
     virtual int CreateMap();
 
-    virtual int Interpolate(const double* x, double* b, int order);
+    virtual int Interpolate(const double *x, double *b, int order);
 
-    void TransLab2Field(const double* x, double* xout);
-    void TransField2Lab(const double* b, double* bout);
-
+#ifdef DEBUGWITHROOT
     void SaveRootFile();
+#endif
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
 
-    const char* fMapFile;
+    const char *fMapFile;
 
     vector<vector<vector<double> > > fBField;
-
-    double fOrigin[3];
 
     double fZMin, fZMax;
     double fRMin, fRMax;
     double fZStep, fRStep;
     int nZ, nR;
 
-    bool fRotation;
-    double fEulerAngle[3];
-    double fRotationMatrix[2][3][3];
-
     double fRatio;
 
 private:
-    static G2PField* pG2PField;
+    static G2PField *pG2PField;
 
     ClassDef(G2PField, 1)
 };
