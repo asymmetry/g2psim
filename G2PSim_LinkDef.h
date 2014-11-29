@@ -13,8 +13,9 @@
 #pragma link C++ class G2PVarList+;
 #pragma link C++ class G2PAppBase+;
 #pragma link C++ class G2PAppList+;
-#pragma link C++ class G2PDrift+;
+#pragma link C++ class G2PGeoBase+;
 #pragma link C++ class G2PField+;
+#pragma link C++ class G2PDrift+;
 #pragma link C++ class G2PMaterial+;
 #pragma link C++ class G2PSieve+;
 #pragma link C++ class G2PProcBase+;
@@ -23,7 +24,6 @@
 #pragma link C++ class G2PFPData+;
 #pragma link C++ class G2PGun+;
 #pragma link C++ class G2PFlatGun+;
-#pragma link C++ class G2PSieveGun+;
 #pragma link C++ class G2PHRSFwd+;
 #pragma link C++ class G2PHRSBwd+;
 #pragma link C++ class G2POptics+;

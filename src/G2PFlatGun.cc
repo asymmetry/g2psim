@@ -157,4 +157,3 @@ int G2PFlatGun::ShootHCS(double* V5beam_lab, double* V5react_tr)
 }
 
 ClassImp(G2PFlatGun)
-

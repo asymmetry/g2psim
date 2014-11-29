@@ -34,7 +34,6 @@
 #include "G2PHRSFwd.hh"
 #include "G2PPhys.hh"
 #include "G2PRun.hh"
-#include "G2PSieveGun.hh"
 #include "G2PSim.hh"
 
 // #define CLOCKS_PER_SEC 1000000
@@ -149,7 +148,7 @@ int main(int argc, char** argv)
         }
         case 2:
         {
-            G2PGun* gun = new G2PSieveGun();
+            G2PGun* gun = new G2PFlatGun("lab");
             gG2PApps->Add(gun);
             break;
         }

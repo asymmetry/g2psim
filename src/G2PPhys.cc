@@ -282,3 +282,5 @@ void G2PPhys::MakePrefix()
 
     G2PAppBase::MakePrefix(base);
 }
+
+ClassImp(G2PPhys)

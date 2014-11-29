@@ -30,28 +30,31 @@ G2PAppList::~G2PAppList()
     Clear();
 }
 
-G2PAppBase* G2PAppList::Find(const char* name) const
+G2PAppBase *G2PAppList::Find(const char *name) const
 {
-    static const char* const g2papp = "G2PAppBase";
+    static const char *const g2papp = "G2PAppBase";
+    
     TIter next(this);
-    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+
+    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
         if (aobj->IsA()->InheritsFrom(g2papp) && aobj->IsA()->InheritsFrom(name)) {
-            if (!aobj->IsZombie()) {
+            if (!aobj->IsZombie())
                 return aobj;
-            }
         }
     }
 
     return NULL;
 }
 
-G2PAppList* G2PAppList::FindList(const char* name) const
+G2PAppList *G2PAppList::FindList(const char *name) const
 {
-    static const char* const g2papp = "G2PAppBase";
-    G2PAppList* list = new G2PAppList();
+    static const char *const g2papp = "G2PAppBase";
+
+    G2PAppList *list = new G2PAppList();
     TIter next(this);
     int n = 0;
-    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+
+    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
         if (aobj->IsA()->InheritsFrom(g2papp) && aobj->IsA()->InheritsFrom(name)) {
             if (!aobj->IsZombie()) {
                 list->Add(aobj);
@@ -63,13 +66,15 @@ G2PAppList* G2PAppList::FindList(const char* name) const
     return list;
 }
 
-G2PAppList* G2PAppList::FindList(int priority) const
+G2PAppList *G2PAppList::FindList(int priority) const
 {
-    static const char* const g2papp = "G2PAppBase";
-    G2PAppList* list = new G2PAppList();
+    static const char *const g2papp = "G2PAppBase";
+
+    G2PAppList *list = new G2PAppList();
     TIter next(this);
     int n = 0;
-    while (G2PAppBase * aobj = static_cast<G2PAppBase*> (next())) {
+
+    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
         if (aobj->IsA()->InheritsFrom(g2papp)) {
             if (!aobj->IsZombie()) {
                 if (aobj->GetPriority() == priority) {
