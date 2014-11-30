@@ -46,6 +46,8 @@ public:
     void SetRStep(double stepr);
 
 protected:
+    bool AtBoundary(double *V3);
+
     virtual int ReadMap();
     virtual int CreateMap();
 

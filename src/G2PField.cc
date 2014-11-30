@@ -186,6 +186,13 @@ void G2PField::SetRStep(double stepr)
     fConfigIsSet.insert((unsigned long) &fRStep);
 }
 
+bool G2PField::AtBoundary(double *V3)
+{
+    // Default does nothing
+
+    return false;
+}
+
 int G2PField::ReadMap()
 {
     static const char *const here = "ReadMap()";

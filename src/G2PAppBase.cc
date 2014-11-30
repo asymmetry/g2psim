@@ -65,11 +65,9 @@ int G2PAppBase::Init()
     if (IsZombie())
         return (fStatus = kNOTINIT);
 
-    EStatus status = kOK;
-
     MakePrefix();
 
-    return (fStatus = status);
+    return (fStatus = kOK);
 }
 
 int G2PAppBase::Begin()
@@ -79,12 +77,10 @@ int G2PAppBase::Begin()
     if (fDebug > 1)
         Info(here, "Beginning ...");
 
-    EStatus status = kOK;
-
     if (Configure(kTWOWAY))
-        status = kINITERROR;
+        return (fStatus = kINITERROR);
 
-    return (fStatus = status);
+    return (fStatus = kOK);
 }
 
 int G2PAppBase::End()

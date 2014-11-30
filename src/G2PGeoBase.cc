@@ -3,8 +3,9 @@
 /* class G2PGeoBase
  * Abstract base class for g2p geometries.
  * It provides fundamental functions like rotation.
- *
- * Use SetEulerAngle() to set the pointing direction of the geometry.
+ * No instance allowed for this class.
+ * The rotation matrix is defined with Euler angle in Z-X'-Z" convention.
+ * G2PDrift class uses AtBoundary() to test the boundary of a geometry and stop drifting.
  */
 
 // History:
@@ -37,34 +38,14 @@ G2PGeoBase::~G2PGeoBase()
     // Nothing to do
 }
 
-int G2PGeoBase::Init()
-{
-    // Default does nothing
-
-    return (G2PAppBase::Init());
-}
-
 int G2PGeoBase::Begin()
 {
     if (G2PAppBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kINITERROR);
 
     SetRotationMatrix();
+
     return (G2PAppBase::Begin());
-}
-
-int G2PGeoBase::End()
-{
-    // Default does nothing
-
-    return (G2PAppBase::End());
-}
-
-void G2PGeoBase::Clear(Option_t *option)
-{
-    // Default does nothing
-
-    G2PAppBase::Clear(option);
 }
 
 void G2PGeoBase::SetOrigin(double x, double y, double z)

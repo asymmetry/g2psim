@@ -28,10 +28,8 @@ public:
     };
 
     virtual int Init();
-    virtual int Begin();
+    
     virtual int Process() = 0;
-    virtual int End();
-    virtual void Clear(Option_t* /*option*/ = "");
 
     // Gets
     EStage GetStage();
@@ -44,14 +42,10 @@ protected:
 
     int ArrayCopy(double* out, const double* in, int length);
 
-    virtual int Configure(EMode mode = kTWOWAY) = 0;
-
     // Global variable functions
     virtual int DefineVariables(EMode mode = kDEFINE) = 0;
     int DefineVarsFromList(const VarDef* list, EMode mode = kDEFINE) const;
     virtual int RemoveVariables();
-
-    virtual void MakePrefix() = 0;
 
     EStage fStage;
 

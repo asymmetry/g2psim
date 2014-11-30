@@ -52,27 +52,6 @@ int G2PProcBase::Init()
     return (fStatus = status);
 }
 
-int G2PProcBase::Begin()
-{
-    // Default does nothing
-
-    return (G2PAppBase::Begin());
-}
-
-int G2PProcBase::End()
-{
-    // Default does nothing
-
-    return (G2PAppBase::End());
-}
-
-void G2PProcBase::Clear(Option_t* option)
-{
-    // Default does nothing
-
-    G2PAppBase::Clear(option);
-}
-
 G2PProcBase::EStage G2PProcBase::GetStage()
 {
     return fStage;
