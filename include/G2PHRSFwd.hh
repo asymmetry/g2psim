@@ -2,7 +2,7 @@
 
 /* class G2PHRSFwd
  * It simulates the movement of the scatted particles in the spectrometers.
- * G2PDrift, G2PHRS and G2PSieve are used in this class.
+ * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5tg_tr, fV5react_lab (register in gG2PVars).
  */
 
@@ -17,7 +17,7 @@
 #include "G2PProcBase.hh"
 
 class G2PDrift;
-class G2PSieve;
+class G2PGeoSieve;
 class HRSTransBase;
 
 class G2PHRSFwd : public G2PProcBase {
@@ -72,7 +72,7 @@ protected:
     double fV5fp_rot[5];
 
     G2PDrift* pDrift;
-    G2PSieve* pSieve;
+    G2PGeoSieve* pSieve;
     HRSTransBase* pModel;
 
 private:

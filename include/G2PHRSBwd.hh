@@ -2,7 +2,7 @@
 
 /* class G2PHRSBwd
  * It simulates the reconstruction of g2p kinematics.
- * G2PDrift, G2PHRS and G2PSieve are used in this class.
+ * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5bpm_lab, fV5fp_tr (register in gG2PVars).
  */
 
@@ -17,7 +17,7 @@
 #include "G2PProcBase.hh"
 
 class G2PDrift;
-class G2PSieve;
+class G2PGeoSieve;
 class HRSTransBase;
 
 class G2PHRSBwd : public G2PProcBase {
@@ -69,7 +69,7 @@ protected:
     double fV5tprec_lab[5];
 
     G2PDrift* pDrift;
-    G2PSieve* pSieve;
+    G2PGeoSieve* pSieve;
     HRSTransBase* pModel;
 
 private:

@@ -22,7 +22,7 @@
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
-#include "G2PSieve.hh"
+#include "G2PGeoSieve.hh"
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
@@ -81,9 +81,9 @@ int G2POptics::Init()
         gG2PApps->Add(pDrift);
     }
 
-    pSieve = static_cast<G2PSieve*> (gG2PApps->Find("G2PSieve"));
+    pSieve = static_cast<G2PGeoSieve*> (gG2PApps->Find("G2PGeoSieve"));
     if (!pSieve) {
-        pSieve = new G2PSieve();
+        pSieve = new G2PGeoSieve();
         gG2PApps->Add(pSieve);
     }
 

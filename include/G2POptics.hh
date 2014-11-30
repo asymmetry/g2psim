@@ -16,7 +16,7 @@
 #include "G2PProcBase.hh"
 
 class G2PDrift;
-class G2PSieve;
+class G2PGeoSieve;
 
 class G2POptics : public G2PProcBase {
 public:
@@ -83,7 +83,7 @@ protected:
     double fV5fp_det[5];
 
     G2PDrift* pDrift;
-    G2PSieve* pSieve;
+    G2PGeoSieve* pSieve;
 
 private:
     static G2POptics* pG2POptics;

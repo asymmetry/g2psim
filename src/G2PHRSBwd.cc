@@ -2,7 +2,7 @@
 
 /* class G2PHRSBwd
  * It simulates the reconstruction of g2p kinematics.
- * G2PDrift, G2PHRS and G2PSieve are used in this class.
+ * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5bpm_lab, fV5fp_tr (register in gG2PVars).
  */
 
@@ -32,7 +32,7 @@
 #include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
-#include "G2PSieve.hh"
+#include "G2PGeoSieve.hh"
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
@@ -93,9 +93,9 @@ int G2PHRSBwd::Init()
         gG2PApps->Add(pDrift);
     }
 
-    pSieve = static_cast<G2PSieve*> (gG2PApps->Find("G2PSieve"));
+    pSieve = static_cast<G2PGeoSieve*> (gG2PApps->Find("G2PGeoSieve"));
     if (!pSieve) {
-        pSieve = new G2PSieve();
+        pSieve = new G2PGeoSieve();
         gG2PApps->Add(pSieve);
     }
 

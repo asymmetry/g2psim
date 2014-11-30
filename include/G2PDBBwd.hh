@@ -23,7 +23,7 @@
 using namespace std;
 
 class G2PDrift;
-class G2PSieve;
+class G2PGeoSieve;
 
 class G2PDBBwd : public G2PProcBase {
 public:
@@ -72,7 +72,7 @@ protected:
     double fV5tprec_lab[5];
 
     G2PDrift* pDrift;
-    G2PSieve* pSieve;
+    G2PGeoSieve* pSieve;
 
 private:
 

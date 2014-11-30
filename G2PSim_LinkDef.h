@@ -17,9 +17,9 @@
 #pragma link C++ class G2PField+;
 #pragma link C++ class G2PGeoSolid+;
 #pragma link C++ class G2PGeoPlane+;
+#pragma link C++ class G2PGeoSieve+;
 #pragma link C++ class G2PDrift+;
 #pragma link C++ class G2PMaterial+;
-#pragma link C++ class G2PSieve+;
 #pragma link C++ class G2PProcBase+;
 #pragma link C++ class G2PBPM+;
 #pragma link C++ class G2PDBBwd+;
