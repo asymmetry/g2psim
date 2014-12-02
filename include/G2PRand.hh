@@ -15,15 +15,16 @@
 
 #include "TRandom2.h"
 
-class G2PRand : public TRandom2 {
+class G2PRand : public TRandom2
+{
 public:
-    static G2PRand* GetInstance(); // Only allow one instance at a time
+    static G2PRand *GetInstance(); // Only allow one instance at a time
 
 private:
     G2PRand(); // Only for ROOT I/O
     virtual ~G2PRand();
 
-    static G2PRand* pG2PRand;
+    static G2PRand *pG2PRand;
 
     ClassDef(G2PRand, 1)
 };

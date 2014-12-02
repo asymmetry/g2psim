@@ -12,13 +12,14 @@
 //
 
 #ifndef G2P_MATERIAL_H
-#define	G2P_MATERIAL_H
+#define G2P_MATERIAL_H
 
 #include "G2PAppBase.hh"
 
-class G2PMaterial : public G2PAppBase {
+class G2PMaterial : public G2PAppBase
+{
 public:
-    G2PMaterial(const char* name, double z, double a, double x0, double density);
+    G2PMaterial(const char *name, double z, double a, double x0, double density);
     virtual ~G2PMaterial();
 
     virtual double EnergyLoss(double E, double l);
@@ -34,7 +35,7 @@ protected:
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
 
-    const char* fName;
+    const char *fName;
     int fZ, fA;
     double fMass;
     double fDensity; // density in g/cm^3
@@ -42,7 +43,7 @@ protected:
     double fB; // value of b_func()
 
 private:
-    static G2PAppList* pG2PMaterial;
+    static G2PAppList *pG2PMaterial;
 
     ClassDef(G2PMaterial, 1)
 };

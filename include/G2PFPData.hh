@@ -18,25 +18,25 @@
 
 using namespace std;
 
-class G2PFPData : public G2PProcBase {
+class G2PFPData : public G2PProcBase
+{
 public:
-    G2PFPData(const char* filename);
+    G2PFPData(const char *filename);
     virtual ~G2PFPData();
 
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
 protected:
     G2PFPData(); // Only for ROOT I/O
 
     int LoadData();
 
-    virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    const char* fDataFile;
+    const char *fDataFile;
 
     typedef struct {
         int ind;
@@ -45,14 +45,12 @@ protected:
 
     queue<sData> fData;
 
-    double fHRSAngle;
-
     double fV5bpm_lab[5];
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 
 private:
-    static G2PFPData* pG2PFPData;
+    static G2PFPData *pG2PFPData;
 
     ClassDef(G2PFPData, 1)
 };

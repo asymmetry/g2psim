@@ -42,24 +42,24 @@
 
 using namespace std;
 
-G2PDBBwd* G2PDBBwd::pG2PDBBwd = NULL;
+G2PDBBwd *G2PDBBwd::pG2PDBBwd = NULL;
 
 G2PDBBwd::G2PDBBwd()
 {
     // Only for ROOT I/O
 }
 
-G2PDBBwd::G2PDBBwd(const char* name) :
-fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), frecz_lab(0.0), pDrift(NULL), pSieve(NULL), fDBPrefix(NULL), fDBFile(name)
+G2PDBBwd::G2PDBBwd(const char *name) : fHRSMomentum(0.0), fFieldRatio(0.0), frecz_lab(0.0), pDrift(NULL), pSieve(NULL), fDBPrefix(NULL), fDBFile(name)
 {
     if (pG2PDBBwd) {
         Error("G2PDBBwd()", "Only one instance of G2PDBBwd allowed.");
         MakeZombie();
         return;
     }
+
     pG2PDBBwd = this;
 
-    memset(fFitPars, 0, sizeof (fFitPars));
+    memset(fFitPars, 0, sizeof(fFitPars));
 
     fPriority = 5;
 
@@ -68,22 +68,26 @@ fHRSAngle(0.0), fHRSMomentum(0.0), fFieldRatio(0.0), frecz_lab(0.0), pDrift(NULL
 
 G2PDBBwd::~G2PDBBwd()
 {
-    if (pG2PDBBwd == this) pG2PDBBwd = NULL;
+    if (pG2PDBBwd == this)
+        pG2PDBBwd = NULL;
 }
 
 int G2PDBBwd::Init()
 {
     //static const char* const here = "Init()";
 
-    if (G2PProcBase::Init() != 0) return fStatus;
+    if (G2PProcBase::Init() != 0)
+        return fStatus;
 
-    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
+
     if (!pDrift) {
         pDrift = new G2PDrift();
         gG2PApps->Add(pDrift);
     }
 
-    pSieve = static_cast<G2PGeoSieve*> (gG2PApps->Find("G2PGeoSieve"));
+    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
+
     if (!pSieve) {
         pSieve = new G2PGeoSieve();
         gG2PApps->Add(pSieve);
@@ -94,20 +98,26 @@ int G2PDBBwd::Init()
 
 int G2PDBBwd::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (G2PAppBase::Begin() != 0) return fStatus;
+    if (G2PAppBase::Begin() != 0)
+        return fStatus;
 
     if (fHRSAngle > 0) {
         fDBPrefix = "L";
-        if (fDBFile == NULL) fDBFile = "db_L.vdc.dat";
+
+        if (fDBFile == NULL)
+            fDBFile = "db_L.vdc.dat";
     } else {
         fDBPrefix = "R";
-        if (fDBFile == NULL) fDBFile = "db_R.vdc.dat";
+
+        if (fDBFile == NULL)
+            fDBFile = "db_R.vdc.dat";
     }
 
     // Read VDC database
     ifstream ifs(fDBFile, ios_base::in);
+
     if (!ifs.good()) {
         Error(here, "Cannot initialize, database file \"%s\" does not exist.", fDBFile);
         return (fStatus = kINITERROR);
@@ -115,10 +125,12 @@ int G2PDBBwd::Begin()
 
     TString tag(fDBPrefix);
     Ssiz_t pos = tag.Index(".");
+
     if (pos != kNPOS)
         tag = tag(0, pos + 1);
     else
         tag.Append(".");
+
     tag.Prepend("[");
     tag.Append("global]");
     tag.ToLower();
@@ -129,13 +141,17 @@ int G2PDBBwd::Begin()
 
     // Locate the matrix label in the database file
     bool found = false;
-    while ((!found)&&(ifs.getline(buff, LEN) != 0)) {
+
+    while ((!found) && (ifs.getline(buff, LEN) != 0)) {
         tmpline = ::Compress(buff); //strip blanks
 
-        if (tmpline.EndsWith("\n")) tmpline.Chop();
+        if (tmpline.EndsWith("\n"))
+            tmpline.Chop();
+
         tmpline.ToLower();
 
-        if (tag == tmpline) found = true;
+        if (tag == tmpline)
+            found = true;
     }
 
     if (!found) {
@@ -187,25 +203,33 @@ int G2PDBBwd::Begin()
     matrix_map["P"] = &fPMatrixElems;
     matrix_map["PTA"] = &fPTAMatrixElems;
 
-    if (fDebug > 0) Info(here, "Loading matrix from %s ...", fDBFile);
+    if (fDebug > 0)
+        Info(here, "Loading matrix from %s ...", fDBFile);
 
     // Read matrix elements line by line
     while (ifs.getline(buff, LEN) != 0) {
         TString tmpline(buff);
 
-        if (tmpline.EndsWith("\n")) tmpline.Chop();
+        if (tmpline.EndsWith("\n"))
+            tmpline.Chop();
 
         istringstream ist(tmpline.Data());
         string tmpstr;
         vector<string> line_spl;
-        while (ist >> tmpstr) {
+
+        while (ist >> tmpstr)
             line_spl.push_back(tmpstr);
+
+        if (line_spl.empty()) {
+            continue;    // ignore empty lines
         }
 
-        if (line_spl.empty()) continue; // ignore empty lines
-        const char* w = line_spl[0].c_str();
+        const char *w = line_spl[0].c_str();
         vsiz_t npow = power[w];
-        if (npow == 0) break; // stop if the line does not start with a string referring to a known type of matrix element
+
+        if (npow == 0) {
+            break;    // stop if the line does not start with a string referring to a known type of matrix element
+        }
 
         THaMatrixElement ME;
         ME.fPower.resize(npow);
@@ -213,28 +237,37 @@ int G2PDBBwd::Begin()
         ME.fOrder = 0;
 
         vsiz_t pos;
-        for (pos = 1; (pos <= npow)&&(pos < line_spl.size()); pos++)
+
+        for (pos = 1; (pos <= npow) && (pos < line_spl.size()); pos++)
             ME.fPower[pos - 1] = atoi(line_spl[pos].c_str());
+
         vsiz_t p_cnt;
-        for (p_cnt = 0; (pos < line_spl.size())&&(p_cnt < kPORDER)&&(pos <= npow + kPORDER); pos++, p_cnt++) {
+
+        for (p_cnt = 0; (pos < line_spl.size()) && (p_cnt < kPORDER) && (pos <= npow + kPORDER); pos++, p_cnt++) {
             ME.fPoly[p_cnt] = atof(line_spl[pos].c_str());
+
             if (ME.fPoly[p_cnt] != 0.0) {
                 ME.fIsZero = false;
                 ME.fOrder = p_cnt + 1;
             }
         }
+
         if (p_cnt < 1) {
             Error(here, "Cannot Initialize, matrix element %s%d%d%d has error.", w, ME.fPower[0], ME.fPower[1], ME.fPower[2]);
             ifs.close();
             return (fStatus = kINITERROR);
         }
 
-        if (ME.fIsZero) continue;
+        if (ME.fIsZero)
+            continue;
 
-        vector<THaMatrixElement>* mat = matrix_map[w];
+        vector<THaMatrixElement> *mat = matrix_map[w];
+
         if (mat) {
             bool match = false;
-            for (vector<THaMatrixElement>::iterator it = mat->begin(); (it != mat->end())&&(!(match = it->IsMatch(ME))); it++);
+
+            for (vector<THaMatrixElement>::iterator it = mat->begin(); (it != mat->end()) && (!(match = it->IsMatch(ME))); it++);
+
             if (match)
                 Warning(here, "Duplicate definition of matrix element %s%d%d%d.", w, ME.fPower[0], ME.fPower[1], ME.fPower[2]);
             else
@@ -250,9 +283,10 @@ int G2PDBBwd::Begin()
 
 int G2PDBBwd::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
+    if (fDebug > 2)
+        Info(here, " ");
 
     fV5bpm_lab[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
     fV5bpm_lab[1] = gG2PVars->FindSuffix("bpm.l_t")->GetValue();
@@ -265,38 +299,38 @@ int G2PDBBwd::Process()
     fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
     fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
 
-    HCS2TCS(fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4], fHRSAngle, fV5bpm_tr[0], fV5bpm_tr[2], fV5bpm_tr[4]);
-    HCS2TCS(fV5bpm_lab[1], fV5bpm_lab[3], fHRSAngle, fV5bpm_tr[1], fV5bpm_tr[3]);
+    HCS2TCS(fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4], fV5bpm_tr[0], fV5bpm_tr[2], fV5bpm_tr[4]);
+    HCS2TCS(fV5bpm_lab[1], fV5bpm_lab[3], fV5bpm_tr[1], fV5bpm_tr[3]);
 
     fV5fp_tr[4] = fV5bpm_tr[0];
 
-    if (!Backward(fV5fp_tr, fV5tpmat_tr)) return -1;
+    if (!Backward(fV5fp_tr, fV5tpmat_tr))
+        return -1;
 
     fV5tpmat_tr[0] = GetEffBPM(0); // Get effective bpm x
     fV5tpmat_tr[2] = GetEffBPM(1); // Get effective bpm y
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
-    }
 
     Project(fV5tpmat_tr[0], fV5tpmat_tr[2], 0.0, pSieve->GetZ(), fV5tpmat_tr[1], fV5tpmat_tr[3], fV5sieveproj_tr[0], fV5sieveproj_tr[2]);
     fV5sieveproj_tr[1] = fV5tpmat_tr[1];
     fV5sieveproj_tr[3] = fV5tpmat_tr[3];
     fV5sieveproj_tr[4] = fV5tpmat_tr[4];
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
-    }
 
     pDrift->Drift(fV5sieveproj_tr, pSieve->GetZ(), fHRSMomentum, fHRSAngle, 0.0, fV5tprec_tr);
-    TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fHRSAngle, fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]);
-    TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fHRSAngle, fV5tprec_lab[1], fV5tprec_lab[3]);
+    TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]);
+    TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fV5tprec_lab[1], fV5tprec_lab[3]);
 
     if (fabs(frecz_lab) > 1.0e-5) {
         double x[3] = {fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]};
-        double p[3] = {fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * cos(fV5tprec_lab[3]),
-            fHRSMomentum * (1 + fV5tprec_tr[4]) * sin(fV5tprec_lab[1]) * sin(fV5tprec_lab[3]),
-            fHRSMomentum * (1 + fV5tprec_tr[4]) * cos(fV5tprec_lab[1])};
+        double p[3] = {fHRSMomentum *(1 + fV5tprec_tr[4]) *sin(fV5tprec_lab[1]) *cos(fV5tprec_lab[3]),
+                       fHRSMomentum *(1 + fV5tprec_tr[4]) *sin(fV5tprec_lab[1]) *sin(fV5tprec_lab[3]),
+                       fHRSMomentum *(1 + fV5tprec_tr[4]) *cos(fV5tprec_lab[1])
+                      };
         pDrift->Drift(x, p, frecz_lab, x, p);
         double z_tr;
         fV5tprec_lab[0] = x[0];
@@ -304,31 +338,30 @@ int G2PDBBwd::Process()
         fV5tprec_lab[2] = x[1];
         fV5tprec_lab[3] = atan2(p[1], p[0]);
         fV5tprec_lab[4] = x[2];
-        HCS2TCS(x[0], x[1], x[2], fHRSAngle, fV5tprec_tr[0], fV5tprec_tr[2], z_tr);
-        HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[2], fHRSAngle, fV5tprec_tr[1], fV5tprec_tr[3]);
+        HCS2TCS(x[0], x[1], x[2], fV5tprec_tr[0], fV5tprec_tr[2], z_tr);
+        HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[2], fV5tprec_tr[1], fV5tprec_tr[3]);
     }
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
-    }
 
     return 0;
 }
 
-void G2PDBBwd::Clear(Option_t* option)
+void G2PDBBwd::Clear(Option_t *option)
 {
-    memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
-    memset(fV5bpm_tr, 0, sizeof (fV5bpm_tr));
-    memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
-    memset(fV5tpmat_tr, 0, sizeof (fV5tpmat_tr));
-    memset(fV5sieveproj_tr, 0, sizeof (fV5sieveproj_tr));
-    memset(fV5tprec_tr, 0, sizeof (fV5tprec_tr));
-    memset(fV5tprec_lab, 0, sizeof (fV5tprec_lab));
+    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
+    memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
+    memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
+    memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
+    memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
+    memset(fV5tprec_tr, 0, sizeof(fV5tprec_tr));
+    memset(fV5tprec_lab, 0, sizeof(fV5tprec_lab));
 
     G2PProcBase::Clear(option);
 }
 
-void G2PDBBwd::SetParsX(const double* pars)
+void G2PDBBwd::SetParsX(const double *pars)
 {
     fFitPars[0][0] = pars[0];
     fFitPars[0][1] = pars[1];
@@ -339,7 +372,7 @@ void G2PDBBwd::SetParsX(const double* pars)
     fConfigIsSet.insert((unsigned long) &fFitPars[0][2]);
 }
 
-void G2PDBBwd::SetParsY(const double* pars)
+void G2PDBBwd::SetParsY(const double *pars)
 {
     fFitPars[1][0] = pars[0];
     fFitPars[1][1] = pars[1];
@@ -359,43 +392,45 @@ void G2PDBBwd::SetRecZ(double z)
 
 double G2PDBBwd::GetEffBPM(int axis)
 {
-    static const char* const here = "GetEffBPM()";
+    static const char *const here = "GetEffBPM()";
 
     double xbpm_tr = fV5bpm_tr[0];
     double ybpm_tr = fV5bpm_tr[2];
 
     double effbpm_tr;
+
     if (axis == 0)
         effbpm_tr = xbpm_tr;
     else if (axis == 1)
         effbpm_tr = ybpm_tr;
-    else return 1e38;
+    else
+        return 1e38;
 
     if (fFieldRatio > 1e-5) {
         // Fit:
         // (Xbpm_tr-Xeffbpm_tr) vs P
         // ([0]+[1]/x)
         double p = (1 + fV5tpmat_tr[4]) * fHRSMomentum;
+
         if (axis == 0)
             effbpm_tr = xbpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * ybpm_tr) / p) / 1000;
         else if (axis == 1)
             effbpm_tr = ybpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * xbpm_tr) / p) / 1000;
     }
 
-    if (fDebug > 2) {
+    if (fDebug > 2)
         Info(here, "effbpm_tr :%10.3e", effbpm_tr);
-    }
 
     return effbpm_tr;
 }
 
-bool G2PDBBwd::Backward(const double* V5fp_tr, double* V5tp_tr)
+bool G2PDBBwd::Backward(const double *V5fp_tr, double *V5tp_tr)
 {
-    static const char* const here = "Backward()";
+    static const char *const here = "Backward()";
 
     double V5fp_rot[5] = {0};
 
-    TRCS2FCS(V5fp_tr, fHRSAngle, V5fp_rot);
+    TRCS2FCS(V5fp_tr, V5fp_rot);
 
     // Calculate target coordinates from focal plane coordinates
     double x_fp, y_fp, t_fp, p_fp;
@@ -427,20 +462,18 @@ bool G2PDBBwd::Backward(const double* V5fp_tr, double* V5tp_tr)
     V5tp_tr[3] = atan(CalcVar(powers, fPMatrixElems));
     V5tp_tr[4] = CalcVar(powers, fDMatrixElems);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5tp_tr[0], V5tp_tr[1], V5tp_tr[2], V5tp_tr[3], V5tp_tr[4]);
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5tp_tr[0], V5tp_tr[1], V5tp_tr[2], V5tp_tr[3], V5tp_tr[4]);
 
     return true;
 }
 
 int G2PDBBwd::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"fit.x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
@@ -453,12 +486,16 @@ int G2PDBBwd::Configure(EMode mode)
         {0}
     };
 
+    G2PAppBase::Configure(mode);
+
     return ConfigureFromList(confs, mode);
 }
 
 int G2PDBBwd::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -490,7 +527,7 @@ int G2PDBBwd::DefineVariables(EMode mode)
 
 void G2PDBBwd::MakePrefix()
 {
-    const char* base = "bwd";
+    const char *base = "bwd";
 
     G2PAppBase::MakePrefix(base);
 }
@@ -501,15 +538,19 @@ double G2PDBBwd::CalcVar(const double powers[][5], vector<THaMatrixElement> &mat
     // Must already have x values for the matrix elements
     double value = 0.0;
     double v = 0.0;
+
     for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
         if (it->fValue != 0.0) {
             v = it->fValue;
             vector<int>::size_type np = it->fPower.size();
+
             for (vector<int>::size_type i = 0; i < np; i++)
                 v *= powers[it->fPower[i]][i + 1];
+
             value += v;
         }
     }
+
     return value;
 }
 
@@ -520,17 +561,20 @@ void G2PDBBwd::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
 
     for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
         value = 0.0;
+
         if (it->fOrder > 0) {
             for (int i = it->fOrder - 1; i >= 1; i--)
                 value = x * (value + it->fPoly[i]);
+
             value += it->fPoly[0];
         }
+
         it->fValue = value;
     }
 }
 
 G2PDBBwd::THaMatrixElement::THaMatrixElement() :
-fIsZero(true), fPower(3), fOrder(0), fPoly(G2PDBBwd::kPORDER), fValue(0)
+    fIsZero(true), fPower(3), fOrder(0), fPoly(G2PDBBwd::kPORDER), fValue(0)
 {
     // Nothing to do
 }
@@ -540,25 +584,32 @@ G2PDBBwd::THaMatrixElement::~THaMatrixElement()
     // Nothing to do
 }
 
-bool G2PDBBwd::THaMatrixElement::IsMatch(const THaMatrixElement& rhs) const
+bool G2PDBBwd::THaMatrixElement::IsMatch(const THaMatrixElement &rhs) const
 {
     // Compare coefficients of this matrix element to another
-    if (fPower.size() != rhs.fPower.size()) return false;
+    if (fPower.size() != rhs.fPower.size())
+        return false;
+
     for (vector<int>::size_type i = 0; i < fPower.size(); i++) {
-        if (fPower[i] != rhs.fPower[i]) return false;
+        if (fPower[i] != rhs.fPower[i])
+            return false;
     }
+
     return true;
 }
 
 void G2PDBBwd::THaMatrixElement::SkimPoly()
 {
-    if (fIsZero) return;
+    if (fIsZero)
+        return;
 
-    while ((!fPoly[fOrder - 1])&&(fOrder > 0)) {
+    while ((!fPoly[fOrder - 1]) && (fOrder > 0)) {
         fPoly.pop_back();
         fOrder = fOrder - 1;
     }
-    if (fOrder == 0) fIsZero = true;
+
+    if (fOrder == 0)
+        fIsZero = true;
 }
 
 ClassImp(G2PDBBwd)

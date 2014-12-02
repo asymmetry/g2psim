@@ -46,21 +46,21 @@ using namespace std;
 
 static double kPI = 3.14159265358979323846;
 
-G2PHRSFwd* G2PHRSFwd::pG2PHRSFwd = NULL;
+G2PHRSFwd *G2PHRSFwd::pG2PHRSFwd = NULL;
 
 G2PHRSFwd::G2PHRSFwd()
 {
     //Only for ROOT I/O
 }
 
-G2PHRSFwd::G2PHRSFwd(const char* name) :
-fRunType(0), fHRSAngle(0.0), fHRSMomentum(0.0), fSetting(1), fSieveOn(false), fHoleID(-1), pDrift(NULL), pSieve(NULL), pModel(NULL)
+G2PHRSFwd::G2PHRSFwd(const char *name) : fRunType(0), fHRSMomentum(0.0), fSetting(1), fSieveOn(false), fHoleID(-1), pDrift(NULL), pSieve(NULL), pModel(NULL)
 {
     if (pG2PHRSFwd) {
         Error("G2PHRSFwd()", "Only one instance of G2PHRSFwd allowed.");
         MakeZombie();
         return;
     }
+
     pG2PHRSFwd = this;
 
     map<string, int> model_map;
@@ -81,22 +81,26 @@ fRunType(0), fHRSAngle(0.0), fHRSMomentum(0.0), fSetting(1), fSieveOn(false), fH
 
 G2PHRSFwd::~G2PHRSFwd()
 {
-    if (pG2PHRSFwd == this) pG2PHRSFwd = NULL;
+    if (pG2PHRSFwd == this)
+        pG2PHRSFwd = NULL;
 }
 
 int G2PHRSFwd::Init()
 {
     //static const char* const here = "Init()";
 
-    if (G2PProcBase::Init() != 0) return fStatus;
+    if (G2PProcBase::Init() != 0)
+        return fStatus;
 
-    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
+
     if (!pDrift) {
         pDrift = new G2PDrift();
         gG2PApps->Add(pDrift);
     }
 
-    pSieve = static_cast<G2PGeoSieve*> (gG2PApps->Find("G2PGeoSieve"));
+    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
+
     if (!pSieve) {
         pSieve = new G2PGeoSieve();
         gG2PApps->Add(pSieve);
@@ -107,29 +111,36 @@ int G2PHRSFwd::Init()
 
 int G2PHRSFwd::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0)
+        return fStatus;
 
     switch (fSetting) {
     case 1:
         pModel = new G2PTrans484816();
         break;
+
     case 2:
-        //pModel = new G2PTrans403216();
-        //break;
+
+    //pModel = new G2PTrans403216();
+    //break;
     case 3:
         pModel = new G2PTrans400016();
         break;
+
     case 11:
         pModel = new G2PTrans484816OLD();
         break;
+
     case 12:
         pModel = new G2PTrans484816R00();
         break;
+
     case 21:
         pModel = new G2PTrans400016OLD();
         break;
+
     default:
         Error(here, "Cannot initialize, invalid setting.");
         return (fStatus = kINITERROR);
@@ -141,9 +152,10 @@ int G2PHRSFwd::Begin()
 
 int G2PHRSFwd::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
+    if (fDebug > 2)
+        Info(here, " ");
 
     fV5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
     fV5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
@@ -176,26 +188,32 @@ int G2PHRSFwd::Process()
     double dlentot = 0.0, elosstot = 0.0;
     double x_tr, y_tr, z_tr;
 
-    HCS2TCS(fV5react_lab[0], fV5react_lab[2], fV5react_lab[4], fHRSAngle, x_tr, y_tr, z_tr);
+    HCS2TCS(fV5react_lab[0], fV5react_lab[2], fV5react_lab[4], x_tr, y_tr, z_tr);
 
     // Drift to target wall or end-cap
     switch (fRunType) {
     case 10: // production target
         break;
+
     case 20: // 40 mil carbon target, without LHe
         RunType20(1.016e-3, fV5react_tr, z_tr, V5troj_tr, dlentot, elosstot);
         break;
+
     case 21: // 125 mil carbon target, without LHe
         RunType20(3.175e-3, fV5react_tr, z_tr, V5troj_tr, dlentot, elosstot);
         break;
+
     case 22: // 40 mil carbon target, with LHe
         RunType21(1.016e-3, fV5react_tr, z_tr, V5troj_tr, dlentot, elosstot);
         break;
+
     case 23: // 125 mil carbon target, with LHe
         RunType21(3.175e-3, fV5react_tr, z_tr, V5troj_tr, dlentot, elosstot);
         break;
+
     case 31: // pure LHe
         RunType31(fV5react_tr, z_tr, V5troj_tr, dlentot, elosstot);
+
     default:
         break;
     }
@@ -262,24 +280,32 @@ int G2PHRSFwd::Process()
 
     // Local dump front face
     double V5troj_lab[5];
-    TCS2HCS(V5troj_tr[0], V5troj_tr[2], z_tr, fHRSAngle, V5troj_lab[0], V5troj_lab[2], V5troj_lab[4]);
-    TCS2HCS(V5troj_tr[1], V5troj_tr[3], fHRSAngle, V5troj_lab[1], V5troj_lab[3]);
+    TCS2HCS(V5troj_tr[0], V5troj_tr[2], z_tr, V5troj_lab[0], V5troj_lab[2], V5troj_lab[4]);
+    TCS2HCS(V5troj_tr[1], V5troj_tr[3], V5troj_lab[1], V5troj_lab[3]);
     double pp = fHRSMomentum * (1 + V5troj_tr[4]);
     double x[3] = {V5troj_lab[0], V5troj_lab[2], V5troj_lab[4]};
-    double p[3] = {pp * sin(V5troj_lab[1]) * cos(V5troj_lab[3]), pp * sin(V5troj_lab[1]) * sin(V5troj_lab[3]), pp * cos(V5troj_lab[1])};
+    double p[3] = {pp * sin(V5troj_lab[1]) *cos(V5troj_lab[3]), pp * sin(V5troj_lab[1]) *sin(V5troj_lab[3]), pp * cos(V5troj_lab[1])};
 
     driftlength = 0;
     driftlength += pDrift->Drift(x, p, 640.0e-3, x, p); // along z direction in lab coordinate
-    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3)) return -1;
-    if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3)) return -1;
+
+    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3))
+        return -1;
+
+    if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3))
+        return -1;
 
     // Local dump back face
     driftlength += pDrift->Drift(x, p, 790.0e-3, x, p);
-    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3)) return -1;
-    if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3)) return -1;
 
-    HCS2TCS(x[0], x[1], x[2], fHRSAngle, V5troj_tr[0], V5troj_tr[2], z_tr);
-    HCS2TCS(acos(p[2] / pp), atan2(p[1], p[0]), fHRSAngle, V5troj_tr[1], V5troj_tr[3]);
+    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3))
+        return -1;
+
+    if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3))
+        return -1;
+
+    HCS2TCS(x[0], x[1], x[2], V5troj_tr[0], V5troj_tr[2], z_tr);
+    HCS2TCS(acos(p[2] / pp), atan2(p[1], p[0]), V5troj_tr[1], V5troj_tr[3]);
 
     // He4 energy loss
     driftlength += pDrift->Drift(V5troj_tr, z_tr, fHRSMomentum, fHRSAngle, pSieve->GetZ(), fV5sieve_tr);
@@ -314,16 +340,15 @@ int G2PHRSFwd::Process()
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     elosstot += eloss;
 
-    if (fDebug > 2) {
+    if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", dlentot, elosstot);
-    }
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
-    }
 
     if (fSieveOn) {
-        if (pSieve->CanPass(fV5sieve_tr, fHoleID)) return -1;
+        if (pSieve->CanPass(fV5sieve_tr, fHoleID))
+            return -1;
     }
 
     Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
@@ -331,36 +356,36 @@ int G2PHRSFwd::Process()
     fV5tpproj_tr[3] = fV5sieve_tr[3];
     fV5tpproj_tr[4] = fV5sieve_tr[4];
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "tpproj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpproj_tr[0], fV5tpproj_tr[1], fV5tpproj_tr[2], fV5tpproj_tr[3], fV5tpproj_tr[4]);
-    }
 
-    if (!Forward(fV5tpproj_tr, fV5fp_tr)) return -1;
+    if (!Forward(fV5tpproj_tr, fV5fp_tr))
+        return -1;
+
     ApplyVDCRes(fV5fp_tr);
-    TRCS2FCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
+    TRCS2FCS(fV5fp_tr, fV5fp_rot);
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "fp_tr     : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5fp_tr[0], fV5fp_tr[1], fV5fp_tr[2], fV5fp_tr[3], fV5fp_tr[4]);
-    }
 
     return 0;
 }
 
-void G2PHRSFwd::Clear(Option_t * option)
+void G2PHRSFwd::Clear(Option_t *option)
 {
     fHoleID = -1;
 
-    memset(fV5react_lab, 0, sizeof (fV5react_lab));
-    memset(fV5react_tr, 0, sizeof (fV5react_tr));
-    memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
-    memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
-    memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
-    memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
+    memset(fV5react_lab, 0, sizeof(fV5react_lab));
+    memset(fV5react_tr, 0, sizeof(fV5react_tr));
+    memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
+    memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));
+    memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
+    memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
     G2PProcBase::Clear(option);
 }
 
-void G2PHRSFwd::SetSieve(const char* opt)
+void G2PHRSFwd::SetSieve(const char *opt)
 {
     TString str(opt);
 
@@ -373,7 +398,7 @@ void G2PHRSFwd::SetSieve(const char* opt)
     }
 }
 
-void G2PHRSFwd::RunType20(double thickness, double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot)
+void G2PHRSFwd::RunType20(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot)
 {
     // carbon target, without LHe
 
@@ -418,7 +443,7 @@ void G2PHRSFwd::RunType20(double thickness, double* V5react_tr, double& z_tr, do
     dlentot += driftlength;
 }
 
-void G2PHRSFwd::RunType21(double thickness, double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot)
+void G2PHRSFwd::RunType21(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot)
 {
     // carbon target, with LHe
 
@@ -480,7 +505,7 @@ void G2PHRSFwd::RunType21(double thickness, double* V5react_tr, double& z_tr, do
     elosstot += eloss;
 }
 
-void G2PHRSFwd::RunType31(double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot)
+void G2PHRSFwd::RunType31(double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot)
 {
     static G2PMaterial *pLHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145);
 
@@ -499,9 +524,9 @@ void G2PHRSFwd::RunType31(double* V5react_tr, double& z_tr, double* V5troj_tr, d
     elosstot += eloss;
 }
 
-bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
+bool G2PHRSFwd::Forward(const double *V5tp_tr, double *V5fp_tr)
 {
-    static const char* const here = "Forward()";
+    static const char *const here = "Forward()";
 
     // Definition of variables
     // V5tp_tr = {x_tp, theta_tp, y_tp, phi_tp, delta@tp};
@@ -521,12 +546,18 @@ bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
     if (fHRSAngle > 0) {
         //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
         fEndPlane = pModel->TransLeftHRS(V5);
-        if (!fEndPlane) isgood = true;
+
+        if (!fEndPlane)
+            isgood = true;
+
         //pModel->FPCorrLeft(V5tp_tr, V5);
     } else {
         //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         fEndPlane = pModel->TransRightHRS(V5);
-        if (!fEndPlane) isgood = true;
+
+        if (!fEndPlane)
+            isgood = true;
+
         //pModel->FPCorrRight(V5tp_tr, V5);
     }
 
@@ -536,15 +567,14 @@ bool G2PHRSFwd::Forward(const double* V5tp_tr, double* V5fp_tr)
     V5fp_tr[3] = atan(V5[3]);
     V5fp_tr[4] = V5[4];
 
-    if (fDebug > 2) {
+    if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5tp_tr[0], V5tp_tr[1], V5tp_tr[2], V5tp_tr[3], V5tp_tr[4], V5fp_tr[0], V5fp_tr[1], V5fp_tr[2], V5fp_tr[3], V5fp_tr[4]);
-    }
 
 
     return isgood;
 }
 
-void G2PHRSFwd::ApplyVDCRes(double* V5fp_tr)
+void G2PHRSFwd::ApplyVDCRes(double *V5fp_tr)
 {
     // VDC Res set to 0.1mm (pos) and 0.5mrad (angle), HallA NIM ch3.3
 
@@ -561,24 +591,25 @@ void G2PHRSFwd::ApplyVDCRes(double* V5fp_tr)
 
 int G2PHRSFwd::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
         {"run.type", "Run Type", kINT, &fRunType},
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {0}
     };
+
+    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }
 
 int G2PHRSFwd::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -610,7 +641,7 @@ int G2PHRSFwd::DefineVariables(EMode mode)
 
 void G2PHRSFwd::MakePrefix()
 {
-    const char* base = "fwd";
+    const char *base = "fwd";
 
     G2PAppBase::MakePrefix(base);
 }

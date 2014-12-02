@@ -19,7 +19,8 @@
 
 using namespace std;
 
-class G2PProcBase : public G2PAppBase {
+class G2PProcBase : public G2PAppBase
+{
 public:
     virtual ~G2PProcBase();
 
@@ -28,7 +29,7 @@ public:
     };
 
     virtual int Init();
-    
+
     virtual int Process() = 0;
 
     // Gets
@@ -40,11 +41,11 @@ public:
 protected:
     G2PProcBase(); // No instance allowed for this class
 
-    int ArrayCopy(double* out, const double* in, int length);
+    int ArrayCopy(double *out, const double *in, int length);
 
     // Global variable functions
     virtual int DefineVariables(EMode mode = kDEFINE) = 0;
-    int DefineVarsFromList(const VarDef* list, EMode mode = kDEFINE) const;
+    int DefineVarsFromList(const VarDef *list, EMode mode = kDEFINE) const;
     virtual int RemoveVariables();
 
     EStage fStage;

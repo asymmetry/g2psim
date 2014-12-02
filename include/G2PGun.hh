@@ -20,7 +20,8 @@ using namespace std;
 
 class G2PDrift;
 
-class G2PGun : public G2PProcBase {
+class G2PGun : public G2PProcBase
+{
 public:
     G2PGun();
     virtual ~G2PGun();
@@ -28,7 +29,7 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
@@ -40,19 +41,18 @@ public:
     void SetTargetTh(double low, double high);
     void SetTargetPh(double low, double high);
     void SetDelta(double low, double high);
-    void SetDelta(const char* elastic);
+    void SetDelta(const char *elastic);
 
 protected:
-    virtual int Shoot(double* V51, double* V52) = 0;
+    virtual int Shoot(double *V51, double *V52) = 0;
 
     void SetTiltAngle();
-    void GetReactPoint(double x, double y, double reactz, double* V5);
+    void GetReactPoint(double x, double y, double reactz, double *V5);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
     double fParticleMass;
@@ -85,10 +85,10 @@ protected:
 
     double fV5tp_tr[5];
 
-    G2PDrift* pDrift;
+    G2PDrift *pDrift;
 
 private:
-    static G2PGun* pG2PGun;
+    static G2PGun *pG2PGun;
 
     ClassDef(G2PGun, 1)
 };

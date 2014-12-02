@@ -6,7 +6,7 @@
  * Orbits are defined in G2PBPMTrans.
  *
  * Variables ending with "_bpm" are defined in a special coordinates.
- * TransBPM2Lab() will transform it to lab coordinates.
+ * BPM2Lab() will transform it to lab coordinates.
  * In output, these variables are labeled as "b_".
  */
 
@@ -40,16 +40,16 @@
 
 //#define USE_SINGLE_BPM 1
 
-G2PBPM* G2PBPM::pG2PBPM = NULL;
+G2PBPM *G2PBPM::pG2PBPM = NULL;
 
-G2PBPM::G2PBPM() :
-fBeamEnergy(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(-957.6e-3), fBPMBZ(-692.0e-3), fBPMARes(0.0), fBPMBRes(0.0), pDrift(NULL), pfGetBPM(NULL)
+G2PBPM::G2PBPM() : fBeamEnergy(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(-957.6e-3), fBPMBZ(-692.0e-3), fBPMARes(0.0), fBPMBRes(0.0), pDrift(NULL), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");
         MakeZombie();
         return;
     }
+
     pG2PBPM = this;
 
     fPriority = 2;
@@ -58,16 +58,19 @@ fBeamEnergy(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMB
 
 G2PBPM::~G2PBPM()
 {
-    if (pG2PBPM == this) pG2PBPM = NULL;
+    if (pG2PBPM == this)
+        pG2PBPM = NULL;
 }
 
 int G2PBPM::Init()
 {
     //static const char* const here = "Init()";
 
-    if (G2PProcBase::Init() != 0) return fStatus;
+    if (G2PProcBase::Init() != 0)
+        return fStatus;
 
-    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
+
     if (!pDrift) {
         pDrift = new G2PDrift();
         gG2PApps->Add(pDrift);
@@ -80,7 +83,8 @@ int G2PBPM::Begin()
 {
     //static const char* const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0)
+        return fStatus;
 
     SetBPMPos();
 
@@ -89,9 +93,10 @@ int G2PBPM::Begin()
 
 int G2PBPM::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
+    if (fDebug > 2)
+        Info(here, " ");
 
     fV5beam_lab[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
     fV5beam_lab[1] = gG2PVars->FindSuffix("gun.beam.l_t")->GetValue();
@@ -106,20 +111,21 @@ int G2PBPM::Process()
     fV2bpmb_bpm[0] = V4[2];
     fV2bpmb_bpm[1] = V4[3];
 
-    TransBPM2Lab(fV5bpm_bpm, fV5bpm_lab);
+    BPM2Lab(fV5bpm_bpm, fV5bpm_lab);
 
-    if (fDebug > 1) Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
+    if (fDebug > 1)
+        Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
 
     return 0;
 }
 
-void G2PBPM::Clear(Option_t* option)
+void G2PBPM::Clear(Option_t *option)
 {
-    memset(fV5beam_lab, 0, sizeof (fV5beam_lab));
-    memset(fV5bpm_bpm, 0, sizeof (fV5bpm_bpm));
-    memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
-    memset(fV2bpma_bpm, 0, sizeof (fV2bpma_bpm));
-    memset(fV2bpmb_bpm, 0, sizeof (fV2bpmb_bpm));
+    memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
+    memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
+    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
+    memset(fV2bpma_bpm, 0, sizeof(fV2bpma_bpm));
+    memset(fV2bpmb_bpm, 0, sizeof(fV2bpmb_bpm));
 
     G2PProcBase::Clear(option);
 }
@@ -133,18 +139,19 @@ void G2PBPM::SetBPMRes(double a, double b)
     fConfigIsSet.insert((unsigned long) &fBPMBRes);
 }
 
-void G2PBPM::GetBPM(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
-    static const char* const here = "GetBPM()";
+    static const char *const here = "GetBPM()";
 
     (this->*pfGetBPM)(V5beam_lab, V5bpm_bpm, V4);
 
-    if (fDebug > 2) Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5bpm_bpm[0], V5bpm_bpm[1], V5bpm_bpm[2], V5bpm_bpm[3], V5bpm_bpm[4]);
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5beam_lab[0], V5beam_lab[1], V5beam_lab[2], V5beam_lab[3], V5beam_lab[4], V5bpm_bpm[0], V5bpm_bpm[1], V5bpm_bpm[2], V5bpm_bpm[3], V5bpm_bpm[4]);
 }
 
-void G2PBPM::TransBPM2Lab(const double* V5_bpm, double* V5_lab)
+void G2PBPM::BPM2Lab(const double *V5_bpm, double *V5_lab)
 {
-    static const char* const here = "TransBPM2Lab()";
+    static const char *const here = "BPM2Lab()";
 
     V5_lab[0] = V5_bpm[0];
     V5_lab[2] = V5_bpm[2];
@@ -155,23 +162,24 @@ void G2PBPM::TransBPM2Lab(const double* V5_bpm, double* V5_lab)
     V5_lab[1] = acos(1.0 / pp);
     V5_lab[3] = atan2(p[1], p[0]);
 
-    if (fDebug > 3) Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_bpm[0], V5_bpm[1], V5_bpm[2], V5_bpm[3], V5_lab[0], V5_lab[1], V5_lab[2], V5_lab[3]);
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_bpm[0], V5_bpm[1], V5_bpm[2], V5_bpm[3], V5_lab[0], V5_lab[1], V5_lab[2], V5_lab[3]);
 }
 
-void G2PBPM::GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     // it is an estimation when there is target field
     // need to find better method
 
     double x[3] = {V5beam_lab[0], V5beam_lab[2], V5beam_lab[4]};
-    double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) * cos(V5beam_lab[3]), fBeamEnergy * sin(V5beam_lab[1]) * sin(V5beam_lab[3]), fBeamEnergy * cos(V5beam_lab[1])};
+    double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) *cos(V5beam_lab[3]), fBeamEnergy * sin(V5beam_lab[1]) *sin(V5beam_lab[3]), fBeamEnergy * cos(V5beam_lab[1])};
 
     pDrift->Drift(x, p, fBPMBZ, x, p);
-    V4[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes)*1e3;
-    V4[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes)*1e3;
+    V4[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes) * 1e3;
+    V4[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes) * 1e3;
     pDrift->Drift(x, p, fBPMAZ, x, p);
-    V4[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes)*1e3;
-    V4[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes)*1e3;
+    V4[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes) * 1e3;
+    V4[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes) * 1e3;
 
     double res = fBPMBRes / (fBPMBZ - fBPMAZ);
     // here theta phi are special coords defined by Pengjia
@@ -195,94 +203,106 @@ void G2PBPM::GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
     V5bpm_bpm[4] = x[2];
 }
 
-void G2PBPM::GetBPM1(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     using namespace Orbit1;
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
-    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
+
+    V5bpm_bpm[0] = target_x(x, 4) * 1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
-    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4) * 1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPM4(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     using namespace Orbit4;
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
-    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
+
+    V5bpm_bpm[0] = target_x(x, 4) * 1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
-    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4) * 1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPM5(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     using namespace Orbit5;
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
-    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
+
+    V5bpm_bpm[0] = target_x(x, 4) * 1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
-    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4) * 1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPM7(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     using namespace Orbit7;
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
-    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
+
+    V5bpm_bpm[0] = target_x(x, 4) * 1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
-    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4) * 1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPM9(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     using namespace Orbit9;
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
 
-    V5bpm_bpm[0] = target_x(x, 4)*1e-3;
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
+
+    V5bpm_bpm[0] = target_x(x, 4) * 1e-3;
     V5bpm_bpm[1] = target_theta(x, 4);
-    V5bpm_bpm[2] = target_y(x, 4)*1e-3;
+    V5bpm_bpm[2] = target_y(x, 4) * 1e-3;
     V5bpm_bpm[3] = target_phi(x, 4);
     V5bpm_bpm[4] = 0.0;
 }
 
-void G2PBPM::GetBPMO(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
+void G2PBPM::GetBPMO(const double *V5beam_lab, double *V5bpm_bpm, double *V4)
 {
     // optics (no field) situation
 
     float x[4];
     GetBPMAB(V5beam_lab, x);
-    for (int i = 0; i < 4; i++) V4[i] = x[i];
+
+    for (int i = 0; i < 4; i++)
+        V4[i] = x[i];
 
     double xbpm[4];
-    xbpm[0] = x[0]*1e-3;
-    xbpm[1] = x[1]*1e-3;
-    xbpm[2] = x[2]*1e-3;
-    xbpm[3] = x[3]*1e-3;
+    xbpm[0] = x[0] * 1e-3;
+    xbpm[1] = x[1] * 1e-3;
+    xbpm[2] = x[2] * 1e-3;
+    xbpm[3] = x[3] * 1e-3;
 
 #ifdef USE_SINGLE_BPM
     V5bpm_bpm[0] = (xbpm[0] + xbpm[2]) / 2.0;
@@ -304,21 +324,24 @@ void G2PBPM::GetBPMO(const double* V5beam_lab, double* V5bpm_bpm, double* V4)
 #endif
 }
 
-void G2PBPM::GetBPMAB(const double* V5beam_lab, float* xout)
+void G2PBPM::GetBPMAB(const double *V5beam_lab, float *xout)
 {
-    static const char* const here = "GetBPMAB()";
+    static const char *const here = "GetBPMAB()";
 
     double x[3] = {V5beam_lab[0], V5beam_lab[2], V5beam_lab[4]};
-    double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) * cos(V5beam_lab[3]), fBeamEnergy * sin(V5beam_lab[1]) * sin(V5beam_lab[3]), fBeamEnergy * cos(V5beam_lab[1])};
+    double p[3] = {fBeamEnergy * sin(V5beam_lab[1]) *cos(V5beam_lab[3]), fBeamEnergy * sin(V5beam_lab[1]) *sin(V5beam_lab[3]), fBeamEnergy * cos(V5beam_lab[1])};
 
     int save = pDrift->GetDebugLevel();
-    if (fDebug <= 3) pDrift->SetDebugLevel(0);
+
+    if (fDebug <= 3)
+        pDrift->SetDebugLevel(0);
+
     pDrift->Drift(x, p, fBPMBZ, x, p);
-    xout[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes)*1e3;
-    xout[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes)*1e3;
+    xout[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes) * 1e3;
+    xout[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes) * 1e3;
     pDrift->Drift(x, p, fBPMAZ, x, p);
-    xout[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes)*1e3;
-    xout[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes)*1e3;
+    xout[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes) * 1e3;
+    xout[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes) * 1e3;
     pDrift->SetDebugLevel(save);
 
     if (fDebug > 2) {
@@ -329,9 +352,10 @@ void G2PBPM::GetBPMAB(const double* V5beam_lab, float* xout)
 
 void G2PBPM::SetBPMPos()
 {
-    static const char* const here = "SetBPMPos()";
+    static const char *const here = "SetBPMPos()";
 
     int orbit;
+
     if (fabs(fFieldRatio - 0.5) < 1e-8) {
         if (fabs(fBeamEnergy - 2.254) < 0.2) {
             fBPMAX = 0.743197468425e-3;
@@ -396,17 +420,17 @@ void G2PBPM::SetBPMPos()
     }
 
     if (fDebug > 0) {
-        if (orbit >= 0) Info(here, "Using orbit %d.", orbit);
-        else if (orbit == -1) Info(here, "Using optics orbit.");
+        if (orbit >= 0)
+            Info(here, "Using orbit %d.", orbit);
+        else if (orbit == -1)
+            Info(here, "Using optics orbit.");
     }
 }
 
 int G2PBPM::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
@@ -416,12 +440,16 @@ int G2PBPM::Configure(EMode mode)
         {0}
     };
 
+    G2PAppBase::Configure(mode);
+
     return ConfigureFromList(confs, mode);
 }
 
 int G2PBPM::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -444,7 +472,7 @@ int G2PBPM::DefineVariables(EMode mode)
 
 void G2PBPM::MakePrefix()
 {
-    const char* base = "bpm";
+    const char *base = "bpm";
 
     G2PAppBase::MakePrefix(base);
 }

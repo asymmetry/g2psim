@@ -13,8 +13,8 @@
 #ifndef G2P_GLOBALS_H
 #define G2P_GLOBALS_H
 
-extern class G2PAppList* gG2PApps;
-extern class G2PRun* gG2PRun;
-extern class G2PVarList* gG2PVars;
+extern class G2PAppList *gG2PApps;
+extern class G2PRun *gG2PRun;
+extern class G2PVarList *gG2PVars;
 
 #endif

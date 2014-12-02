@@ -30,7 +30,7 @@
 using namespace std;
 
 G2POutput::G2POutput() :
-fNVar(0), fVar(NULL), fTree(NULL)
+    fNVar(0), fVar(NULL), fTree(NULL)
 {
     fVName.clear();
     fVariables.clear();
@@ -38,13 +38,16 @@ fNVar(0), fVar(NULL), fTree(NULL)
 
 G2POutput::~G2POutput()
 {
-    if (fTree) delete fTree;
-    if (fVar) delete [] fVar;
+    if (fTree)
+        delete fTree;
+
+    if (fVar)
+        delete [] fVar;
 }
 
 int G2POutput::Init()
 {
-    static const char* const here = "Init()";
+    static const char *const here = "Init()";
 
     if (!gG2PVars) {
         Error(here, "Cannot initialize, no global vars.");
@@ -55,7 +58,8 @@ int G2POutput::Init()
 
     fNVar = 0;
     TIter next(gG2PVars);
-    while (G2PVar * pvar = static_cast<G2PVar*> (next())) {
+
+    while (G2PVar *pvar = static_cast<G2PVar *>(next())) {
         fNVar++;
         fVName.push_back(pvar->GetName());
     }
@@ -65,7 +69,8 @@ int G2POutput::Init()
     for (int i = 0; i < fNVar; i++)
         fTree->Branch(fVName[i], &fVar[i], Form("%s/D", fVName[i]));
 
-    if (Attach() != 0) return -1;
+    if (Attach() != 0)
+        return -1;
 
     return 0;
 }
@@ -73,39 +78,45 @@ int G2POutput::Init()
 int G2POutput::Process()
 {
     G2PVar *pvar;
+
     for (int i = 0; i < fNVar; i++) {
         pvar = fVariables[i];
-        if (pvar) fVar[i] = pvar->GetValue();
+
+        if (pvar)
+            fVar[i] = pvar->GetValue();
     }
 
-    if (fTree != 0) fTree->Fill();
+    if (fTree != 0)
+        fTree->Fill();
 
     return 0;
 }
 
 int G2POutput::End()
 {
-    if (fTree != 0) fTree->Write();
+    if (fTree != 0)
+        fTree->Write();
 
     return 0;
 }
 
 int G2POutput::Attach()
 {
-    static const char* const here = "Attach()";
+    static const char *const here = "Attach()";
 
-    if (!gG2PVars) return -1;
+    if (!gG2PVars)
+        return -1;
 
-    G2PVar* pvar;
+    G2PVar *pvar;
     fVariables.resize(fNVar);
 
     for (int i = 0; i < fNVar; i++) {
         pvar = gG2PVars->Find(fVName[i]);
-        if (pvar) {
+
+        if (pvar)
             fVariables[i] = pvar;
-        } else {
+        else
             Error(here, "Global variable %s does not exist.", fVName[i]);
-        }
     }
 
     return 0;

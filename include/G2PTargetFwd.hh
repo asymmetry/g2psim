@@ -17,7 +17,8 @@
 class G2PDrift;
 class G2PGeoSieve;
 
-class G2PTargetFwd : public G2PProcBase {
+class G2PTargetFwd : public G2PProcBase
+{
 public:
     G2PTargetFwd();
     virtual ~G2PTargetFwd();
@@ -25,19 +26,18 @@ public:
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetSieve(const char* opt);
+    void SetSieve(const char *opt);
 
 protected:
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSAngle;
     double fHRSMomentum;
 
     bool fSieveOn;
@@ -49,11 +49,11 @@ protected:
     double fV5sieve_tr[5];
     double fV5tpproj_tr[5];
 
-    G2PDrift* pDrift;
-    G2PGeoSieve* pSieve;
+    G2PDrift *pDrift;
+    G2PGeoSieve *pSieve;
 
 private:
-    static G2PTargetFwd* pG2PTargetFwd;
+    static G2PTargetFwd *pG2PTargetFwd;
 
     ClassDef(G2PTargetFwd, 1)
 };

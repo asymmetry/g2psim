@@ -6,7 +6,7 @@
  * Orbits are defined in G2PBPMTrans.
  *
  * Variables ending with "_bpm" are defined in a special coordinates.
- * TransBPM2Lab() will transform it to lab coordinates.
+ * BPM2Lab() will transform it to lab coordinates.
  * In output, these variables are labeled as "b_".
  */
 
@@ -24,17 +24,18 @@
 
 class G2PDrift;
 
-class G2PBPM : public G2PProcBase {
+class G2PBPM : public G2PProcBase
+{
 public:
     G2PBPM();
     virtual ~G2PBPM();
 
-    typedef void (G2PBPM::*pfGetBPM_)(const double*, double*, double*);
+    typedef void (G2PBPM::*pfGetBPM_)(const double *, double *, double *);
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
@@ -42,18 +43,18 @@ public:
     void SetBPMRes(double a, double b);
 
 protected:
-    void GetBPM(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void TransBPM2Lab(const double* V5_bpm, double* V5_lab);
+    void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void BPM2Lab(const double *V5_bpm, double *V5_lab);
 
-    void GetBPM0(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPM1(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPM4(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPM5(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPM7(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPM9(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
-    void GetBPMO(const double* V5beam_lab, double* V5bpm_bpm, double* V4);
+    void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPMO(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
 
-    void GetBPMAB(const double* V5beam_lab, float* xout);
+    void GetBPMAB(const double *V5beam_lab, float *xout);
 
     void SetBPMPos();
 
@@ -75,12 +76,12 @@ protected:
     double fV2bpma_bpm[2];
     double fV2bpmb_bpm[2];
 
-    G2PDrift* pDrift;
+    G2PDrift *pDrift;
 
     pfGetBPM_ pfGetBPM;
 
 private:
-    static G2PBPM* pG2PBPM;
+    static G2PBPM *pG2PBPM;
 
     ClassDef(G2PBPM, 1)
 };

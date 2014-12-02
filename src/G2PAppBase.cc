@@ -11,6 +11,7 @@
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Add configure functions.
 //   Nov 2014, C. Gu, Set random seed in G2PRun class.
+//   Nov 2014, C. Gu, Add fHRSAngle and several interface function for coordinate transform.
 //
 
 #include <cstdlib>
@@ -42,7 +43,7 @@ static const double kRP[4] = { -7.435500e-04, -2.130200e-03, +1.195000e-03, +0.0
 
 G2PRand *G2PAppBase::pRand = G2PRand::GetInstance();
 
-G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTINIT), fIsInit(false), fIsSetup(false), fDebug(0), fPriority(0)
+G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTINIT), fIsInit(false), fIsSetup(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
 {
     fConfigIsSet.clear();
 }
@@ -77,7 +78,7 @@ int G2PAppBase::Begin()
     if (fDebug > 1)
         Info(here, "Beginning ...");
 
-    if (Configure(kTWOWAY))
+    if (Configure(kTWOWAY) != 0)
         return (fStatus = kINITERROR);
 
     return (fStatus = kOK);
@@ -122,14 +123,36 @@ void G2PAppBase::SetDebugLevel(int level)
     fDebug = level;
 }
 
-void G2PAppBase::TCS2HCS(double x_tr, double y_tr, double z_tr, double angle, double &x_lab, double &y_lab, double &z_lab)
+void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab, double &t_lab, double &p_lab)
+{
+    // Interface function
+
+    TCS2HCS(V5_tr, z_tr, V3_lab);
+    TCS2HCS(V5_tr, z_tr, t_lab, p_lab);
+}
+
+void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab)
+{
+    // Interface function
+
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, V3_lab[0], V3_lab[1], V3_lab[2]);
+}
+
+void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double &t_lab, double &p_lab)
+{
+    // Interface function
+
+    TCS2HCS(V5_tr[1], V5_tr[3], t_lab, t_lab);
+}
+
+void G2PAppBase::TCS2HCS(double x_tr, double y_tr, double z_tr, double &x_lab, double &y_lab, double &z_lab)
 {
     // Position transform function from TCS to HCS
 
     static const char *const here = "TCS2HCS()";
 
-    double cosang = cos(angle);
-    double sinang = sin(angle);
+    double cosang = cos(fHRSAngle);
+    double sinang = sin(fHRSAngle);
 
     x_lab = y_tr * cosang + z_tr * sinang;
     y_lab = -x_tr;
@@ -139,7 +162,7 @@ void G2PAppBase::TCS2HCS(double x_tr, double y_tr, double z_tr, double angle, do
         Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_tr, y_tr, z_tr, x_lab, y_lab, z_lab);
 }
 
-void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, double &p_lab)
+void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double &t_lab, double &p_lab)
 {
     // Angle transform function from TCS to HCS
 
@@ -148,7 +171,12 @@ void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, 
     double x = tan(t_tr);
     double y = tan(p_tr);
     double z = 1.0;
-    TCS2HCS(x, y, z, angle, x, y, z);
+
+    int save = fDebug;
+    fDebug = 0;
+    TCS2HCS(x, y, z, x, y, z);
+    fDebug = save;
+
     t_lab = acos(z / sqrt(x * x + y * y + z * z));
     p_lab = atan2(y, x);
 
@@ -156,14 +184,36 @@ void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, 
         Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", t_tr, p_tr, t_lab, p_lab);
 }
 
-void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double angle, double &x_tr, double &y_tr, double &z_tr)
+void G2PAppBase::HCS2TCS(const double *V3_lab, double t_lab, double p_lab, double *V5_tr, double &z_tr)
+{
+    // Interface function
+
+    HCS2TCS(V3_lab, V5_tr, z_tr);
+    HCS2TCS(t_lab, p_lab, V5_tr, z_tr);
+}
+
+void G2PAppBase::HCS2TCS(const double *V3_lab, double *V5_tr, double &z_tr)
+{
+    // Interface function
+
+    HCS2TCS(V3_lab[0], V3_lab[1], V3_lab[2], V5_tr[0], V5_tr[2], z_tr);
+}
+
+void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double *V5_tr, double &z_tr)
+{
+    // Interface function
+
+    HCS2TCS(t_lab, p_lab, V5_tr[1], V5_tr[3]);
+}
+
+void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double &x_tr, double &y_tr, double &z_tr)
 {
     // Position transform function from HCS to TCS
 
     static const char *const here = "HCS2TCS()";
 
-    double cosang = cos(angle);
-    double sinang = sin(angle);
+    double cosang = cos(fHRSAngle);
+    double sinang = sin(fHRSAngle);
 
     x_tr = -y_lab;
     y_tr = x_lab * cosang - z_lab * sinang;
@@ -173,7 +223,7 @@ void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double angle,
         Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e\n", x_lab, y_lab, z_lab, x_tr, y_tr, z_tr);
 }
 
-void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr)
+void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double &t_tr, double &p_tr)
 {
     // Angle transform function from HCS to TCS
 
@@ -182,12 +232,28 @@ void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr,
     double x = sin(t_lab) * cos(p_lab);
     double y = sin(t_lab) * sin(p_lab);
     double z = cos(t_lab);
-    HCS2TCS(x, y, z, angle, x, y, z);
+
+    int save = fDebug;
+    fDebug = 0;
+    HCS2TCS(x, y, z, x, y, z);
+    fDebug = save;
+
     t_tr = atan2(x, z);
     p_tr = atan2(y, z);
 
     if (fDebug > 3)
         Info(here, "%10.3e %10.3e -> %10.3e %10.3e", t_lab, p_lab, t_tr, p_tr);
+}
+
+void G2PAppBase::Project(const double *V5_tr, double z_tr, double zout_tr, double *V5out_tr)
+{
+    // Interface function
+
+    V5out_tr[1] = V5_tr[1];
+    V5out_tr[3] = V5_tr[3];
+    V5out_tr[4] = V5_tr[4];
+
+    Project(V5_tr[0], V5_tr[2], z_tr, zout_tr, V5_tr[1], V5_tr[3], V5out_tr[0], V5out_tr[2]);
 }
 
 void G2PAppBase::Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout)
@@ -206,7 +272,7 @@ void G2PAppBase::Project(double x, double y, double z, double zout, double t, do
         Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
 }
 
-void G2PAppBase::TRCS2FCS(const double *V5_tr, double angle, double *V5_fp)
+void G2PAppBase::TRCS2FCS(const double *V5_tr, double *V5_fp)
 {
     static const char *const here = "TRCS2FCS()";
 
@@ -225,7 +291,7 @@ void G2PAppBase::TRCS2FCS(const double *V5_tr, double angle, double *V5_fp)
     const double *yMat;
     const double *pMat;
 
-    if (angle > 0) {
+    if (fHRSAngle > 0) {
         tMat = kLT;
         yMat = kLY;
         pMat = kLP;
@@ -261,7 +327,7 @@ void G2PAppBase::TRCS2FCS(const double *V5_tr, double angle, double *V5_fp)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
 }
 
-void G2PAppBase::FCS2TRCS(const double *V5_fp, double angle, double *V5_tr)
+void G2PAppBase::FCS2TRCS(const double *V5_fp, double *V5_tr)
 {
     static const char *const here = "FCS2TRCS()";
 
@@ -278,7 +344,7 @@ void G2PAppBase::FCS2TRCS(const double *V5_fp, double angle, double *V5_tr)
     const double *yMat;
     const double *pMat;
 
-    if (angle > 0) {
+    if (fHRSAngle > 0) {
         tMat = kLT;
         yMat = kLY;
         pMat = kLP;
@@ -315,13 +381,13 @@ void G2PAppBase::FCS2TRCS(const double *V5_fp, double angle, double *V5_tr)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
 }
 
-void G2PAppBase::TRCS2DCS(const double *V5_tr, double angle, double *V5_det)
+void G2PAppBase::TRCS2DCS(const double *V5_tr, double *V5_det)
 {
     static const char *const here = "TRCS2DCS()";
 
     const double *tMat;
 
-    if (angle > 0)
+    if (fHRSAngle > 0)
         tMat = kLT;
     else
         tMat = kRT;
@@ -348,13 +414,13 @@ void G2PAppBase::TRCS2DCS(const double *V5_tr, double angle, double *V5_det)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
 }
 
-void G2PAppBase::DCS2TRCS(const double *V5_det, double angle, double *V5_tr)
+void G2PAppBase::DCS2TRCS(const double *V5_det, double *V5_tr)
 {
     static const char *const here = "DCS2TRCS()";
 
     const double *tMat;
 
-    if (angle > 0)
+    if (fHRSAngle > 0)
         tMat = kLT;
     else
         tMat = kRT;
@@ -381,7 +447,7 @@ void G2PAppBase::DCS2TRCS(const double *V5_det, double angle, double *V5_tr)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3]);
 }
 
-void G2PAppBase::FCS2DCS(const double *V5_fp, double angle, double *V5_det)
+void G2PAppBase::FCS2DCS(const double *V5_fp, double *V5_det)
 {
     static const char *const here = "FCS2DCS()";
 
@@ -389,17 +455,15 @@ void G2PAppBase::FCS2DCS(const double *V5_fp, double angle, double *V5_det)
 
     int save = fDebug;
     fDebug = 0;
-
-    FCS2TRCS(V5_fp, angle, V5_tr);
-    TRCS2DCS(V5_tr, angle, V5_det);
-
+    FCS2TRCS(V5_fp, V5_tr);
+    TRCS2DCS(V5_tr, V5_det);
     fDebug = save;
 
     if (fDebug > 3)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3], V5_det[0], V5_det[1], V5_det[2], V5_det[3]);
 }
 
-void G2PAppBase::DCS2FCS(const double *V5_det, double angle, double *V5_fp)
+void G2PAppBase::DCS2FCS(const double *V5_det, double *V5_fp)
 {
     static const char *const here = "DCS2FCS()";
 
@@ -407,14 +471,27 @@ void G2PAppBase::DCS2FCS(const double *V5_det, double angle, double *V5_fp)
 
     int save = fDebug;
     fDebug = 0;
-
-    DCS2TRCS(V5_det, angle, V5_tr);
-    TRCS2FCS(V5_tr, angle, V5_fp);
-
+    DCS2TRCS(V5_det, V5_tr);
+    TRCS2FCS(V5_tr, V5_fp);
     fDebug = save;
 
     if (fDebug > 3)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
+}
+
+int G2PAppBase::Configure(EMode mode)
+{
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
+
+    ConfDef confs[] = {
+        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
+        {0}
+    };
+
+    fIsInit = true;
+
+    return ConfigureFromList(confs, mode);
 }
 
 int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)

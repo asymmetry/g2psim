@@ -27,39 +27,42 @@
 
 using namespace std;
 
-G2PFPData* G2PFPData::pG2PFPData = NULL;
+G2PFPData *G2PFPData::pG2PFPData = NULL;
 
 G2PFPData::G2PFPData()
 {
     // Only for ROOT I/O
 }
 
-G2PFPData::G2PFPData(const char* filename) :
-fDataFile(filename), fHRSAngle(0.0)
+G2PFPData::G2PFPData(const char *filename) : fDataFile(filename)
 {
     if (pG2PFPData) {
         Error("G2PFPData()", "Only one instance of G2PFPData allowed.");
         MakeZombie();
         return;
     }
+
     pG2PFPData = this;
 
     fPriority = 1;
+
     Clear();
 }
 
 G2PFPData::~G2PFPData()
 {
-    if (pG2PFPData == this) pG2PFPData = NULL;
+    if (pG2PFPData == this)
+        pG2PFPData = NULL;
 
     Clear();
 }
 
 int G2PFPData::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0)
+        return fStatus;
 
     if (LoadData() != 0) {
         Error(here, "Cannot read data.");
@@ -71,13 +74,16 @@ int G2PFPData::Begin()
 
 int G2PFPData::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
+    if (fDebug > 2)
+        Info(here, " ");
 
     sData tempdata;
 
-    if (fData.empty()) return -1;
+    if (fData.empty())
+        return -1;
+
     tempdata = fData.front();
     fV5bpm_lab[0] = tempdata.xb;
     fV5bpm_lab[1] = tempdata.tb;
@@ -90,7 +96,7 @@ int G2PFPData::Process()
     fV5fp_tr[3] = atan(tempdata.pf);
     fV5fp_tr[4] = 0.0;
 
-    TRCS2FCS(fV5fp_tr, fHRSAngle, fV5fp_rot);
+    TRCS2FCS(fV5fp_tr, fV5fp_rot);
 
     if (fDebug > 1) {
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
@@ -102,11 +108,11 @@ int G2PFPData::Process()
     return 0;
 }
 
-void G2PFPData::Clear(Option_t* option)
+void G2PFPData::Clear(Option_t *option)
 {
-    memset(fV5bpm_lab, 0, sizeof (fV5bpm_lab));
-    memset(fV5fp_tr, 0, sizeof (fV5fp_tr));
-    memset(fV5fp_rot, 0, sizeof (fV5fp_rot));
+    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
+    memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
+    memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
     G2PProcBase::Clear(option);
 }
@@ -115,10 +121,12 @@ int G2PFPData::LoadData()
 {
     FILE *fp;
 
-    if ((fp = fopen(fDataFile, "r")) == NULL) return -1;
+    if ((fp = fopen(fDataFile, "r")) == NULL)
+        return -1;
 
     sData temp;
     fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
+
     while (!feof(fp)) {
         fData.push(temp);
         fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
@@ -126,28 +134,17 @@ int G2PFPData::LoadData()
 
     fclose(fp);
 
-    if (!fData.empty()) return 0;
-    else return -1;
-}
-
-int G2PFPData::Configure(EMode mode)
-{
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
-
-    ConfDef confs[] = {
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
-        {0}
-    };
-
-    return ConfigureFromList(confs, mode);
+    if (!fData.empty())
+        return 0;
+    else
+        return -1;
 }
 
 int G2PFPData::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -172,7 +169,7 @@ int G2PFPData::DefineVariables(EMode mode)
 
 void G2PFPData::MakePrefix()
 {
-    const char* base = "data";
+    const char *base = "data";
 
     G2PAppBase::MakePrefix(base);
 }

@@ -14,20 +14,21 @@
 
 #include "G2PGun.hh"
 
-class G2PFlatGun : public G2PGun {
+class G2PFlatGun : public G2PGun
+{
 public:
-    G2PFlatGun(const char* coords);
+    G2PFlatGun(const char *coords);
     virtual ~G2PFlatGun();
 
-    typedef int (G2PFlatGun::*pfShoot_)(double*, double*);
+    typedef int (G2PFlatGun::*pfShoot_)(double *, double *);
 
-    virtual int Shoot(double* V5beam_lab, double* V5react_tr);
+    virtual int Shoot(double *V5beam_lab, double *V5react_tr);
 
 protected:
     G2PFlatGun(); // Only for ROOT I/O
 
-    virtual int ShootTCS(double* V51, double* V52);
-    virtual int ShootHCS(double* V51, double* V52);
+    virtual int ShootTCS(double *V51, double *V52);
+    virtual int ShootHCS(double *V51, double *V52);
 
     pfShoot_ pfShoot;
 

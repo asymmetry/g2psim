@@ -49,24 +49,25 @@
 
 class G2PPhysBase;
 
-class G2PPhys : public G2PProcBase {
+class G2PPhys : public G2PProcBase
+{
 public:
     G2PPhys(const char *name);
     virtual ~G2PPhys();
 
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetPars(double* array, int n);
+    void SetPars(double *array, int n);
 
 protected:
     G2PPhys(); // Only for ROOT I/O
 
-    double CalXS(const double* V5lab, const double* V5tr, double& scatangle);
+    double CalXS(const double *V5lab, const double *V5tr, double &scatangle);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -79,10 +80,9 @@ protected:
     int fZ, fA; // Define Target
     double fTargetMass;
 
-    double* fPars;
+    double *fPars;
     int fNPars;
 
-    double fHRSAngle;
     double fHRSMomentum;
 
     double fBeamEnergy;
@@ -92,10 +92,10 @@ protected:
     double fXSrec;
     double fTHrec;
 
-    G2PPhysBase* pModel;
+    G2PPhysBase *pModel;
 
 private:
-    static G2PPhys* pG2PPhys;
+    static G2PPhys *pG2PPhys;
 
     ClassDef(G2PPhys, 1)
 };

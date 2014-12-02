@@ -145,7 +145,7 @@ void G2PField::GetField(const double *x, double *b)
 
     Lab2Geo(x, pos);
     Interpolate(pos, field, 2);
-    FieldGeo2Lab(field, b);
+    Geo2LabField(field, b);
     b[0] *= fRatio;
     b[1] *= fRatio;
     b[2] *= fRatio;
@@ -184,13 +184,6 @@ void G2PField::SetRStep(double stepr)
     fRStep = stepr;
 
     fConfigIsSet.insert((unsigned long) &fRStep);
-}
-
-bool G2PField::AtBoundary(double *V3)
-{
-    // Default does nothing
-
-    return false;
 }
 
 int G2PField::ReadMap()
@@ -395,6 +388,38 @@ int G2PField::Interpolate(const double *pos, double *b, int order)
     }
 
     return 0;
+}
+
+void G2PField::Lab2GeoField(const double *V3_lab, double *V3_geo)
+{
+    if (fRotation) {
+        for (int i = 0; i < 3; i++)
+            V3_geo[i] = fRotationMatrix[0][i][0] * V3_lab[0] + fRotationMatrix[0][i][1] * V3_lab[1] + fRotationMatrix[0][i][2] * V3_lab[2];
+    } else {
+        for (int i = 0; i < 3; i++)
+            V3_geo[i] = V3_lab[i];
+    }
+}
+
+void G2PField::Geo2LabField(const double *V3_geo, double *V3_lab)
+{
+    if (fRotation) {
+        for (int i = 0; i < 3; i++)
+            V3_lab[i] = fRotationMatrix[1][i][0] * V3_geo[0] + fRotationMatrix[1][i][1] * V3_geo[1] + fRotationMatrix[1][i][2] * V3_geo[2];
+    } else {
+        for (int i = 0; i < 3; i++)
+            V3_lab[i] = V3_geo[i];
+    }
+}
+
+bool G2PField::TouchBoundaryGeo(double x, double y, double z)
+{
+    // Default does nothing
+
+    if ((z > fZMax) || (z < fZMax) || (x * x + y * y > fRMax) || (x * x + y * y < fRMin))
+        return true;
+
+    return false;
 }
 
 #ifdef DEBUGWITHROOT

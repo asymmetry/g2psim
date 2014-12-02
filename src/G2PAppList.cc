@@ -33,7 +33,7 @@ G2PAppList::~G2PAppList()
 G2PAppBase *G2PAppList::Find(const char *name) const
 {
     static const char *const g2papp = "G2PAppBase";
-    
+
     TIter next(this);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {

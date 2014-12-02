@@ -18,29 +18,30 @@
 class G2PDrift;
 class G2PGeoSieve;
 
-class G2POptics : public G2PProcBase {
+class G2POptics : public G2PProcBase
+{
 public:
-    G2POptics(const char* filename);
+    G2POptics(const char *filename);
     virtual ~G2POptics();
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetHRSMomentum(int n, double* value);
-    void SetTiltAngle(int n, double* value);
-    void SetReactZ(int n, double* value);
-    void SetEnergyLoss(int n, double* value);
+    void SetHRSMomentum(int n, double *value);
+    void SetTiltAngle(int n, double *value);
+    void SetReactZ(int n, double *value);
+    void SetEnergyLoss(int n, double *value);
 
 protected:
     G2POptics(); // Only for ROOT I/O
 
-    void Drift(double* ang, double* pos);
-    double Distance(double* V2a, double* V2b);
+    void Drift(double *ang, double *pos);
+    double Distance(double *V2a, double *V2b);
 
     int LoadData();
 
@@ -48,7 +49,7 @@ protected:
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    const char* fDataFile;
+    const char *fDataFile;
 
     typedef struct {
         int ind;
@@ -57,7 +58,6 @@ protected:
 
     queue<sData> fData;
 
-    double fHRSAngle;
     double fHRSMomentum;
     double fBeamEnergy;
     double fTiltAngle;
@@ -82,11 +82,11 @@ protected:
 
     double fV5fp_det[5];
 
-    G2PDrift* pDrift;
-    G2PGeoSieve* pSieve;
+    G2PDrift *pDrift;
+    G2PGeoSieve *pSieve;
 
 private:
-    static G2POptics* pG2POptics;
+    static G2POptics *pG2POptics;
 
     ClassDef(G2POptics, 1)
 };

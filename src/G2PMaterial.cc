@@ -30,7 +30,7 @@ using namespace std;
 
 static const double kELECTRONMASS = 0.510998918; // MeV
 
-// Ionization potentials - source : NIST 
+// Ionization potentials - source : NIST
 static const double kIONI[] = {19.2, 41.8, 40.0, 63.7, 76.0, 78.0, 82.0, 95.0, 115.0, 137.0, 149.0, 156.0, 166.0, 173.0, 173.0, 180.0, 174.0, 188.0, 190.0, 191.0, 216.0, 233.0, 245.0, 257.0, 272.0, 286.0, 297.0, 311.0, 322.0, 330.0, 334.0, 350.0, 347.0, 348.0, 343.0, 352.0, 363.0, 366.0, 379.0, 393.0, 417.0, 424.0, 428.0, 441.0, 449.0, 470.0, 470.0, 469.0, 488.0, 488.0, 487.0, 485.0, 491.0, 482.0, 488.0, 491.0, 501.0, 523.0, 535.0, 546.0, 560.0, 574.0, 580.0, 591.0, 614.0, 628.0, 650.0, 658.0, 674.0, 684.0, 694.0, 705.0, 718.0, 727.0, 736.0, 746.0, 757.0, 790.0, 790.0, 800.0, 810.0, 823.0, 823.0, 830.0, 825.0, 794.0, 827.0, 826.0, 841.0, 847.0, 878.0, 890.0};
 
 static double b_func(int Z)
@@ -42,19 +42,23 @@ static double b_func(int Z)
     switch (Z) {
     case 0:
         return 0;
+
     case 1:
     case 2:
         Lrad = (4.79 - 5.31) * (Z - 1) + 5.31;
         Lradp = (5.621 - 6.144) * (Z - 1) + 6.144;
         break;
+
     case 3:
         Lrad = (4.74 - 4.79) * (Z - 2) + 4.79;
         Lradp = (5.805 - 5.621) * (Z - 2) + 5.621;
         break;
+
     case 4:
         Lrad = (4.71 - 4.74) * (Z - 3) + 4.74;
         Lradp = (5.924 - 5.805) * (Z - 3) + 5.805;
         break;
+
     default:
         Lrad = log(184.15 * pow(Z, -1.0 / 3.0));
         Lradp = log(1194.0 * pow(Z, -2.0 / 3.0));
@@ -64,15 +68,15 @@ static double b_func(int Z)
     return (4.0 / 3.0) * (1.0 + (1.0 / 9.0) * (Z + 1) / (Lrad * Z + Lradp));
 }
 
-G2PAppList* G2PMaterial::pG2PMaterial = new G2PAppList();
+G2PAppList *G2PMaterial::pG2PMaterial = new G2PAppList();
 
 G2PMaterial::G2PMaterial() : fName(NULL)
 {
     // Only for ROOT I/O
 }
 
-G2PMaterial::G2PMaterial(const char* name, double z, double a, double x0, double density) :
-fName(name), fZ(z), fA(a), fMass(0), fDensity(density), fX0(x0)
+G2PMaterial::G2PMaterial(const char *name, double z, double a, double x0, double density) :
+    fName(name), fZ(z), fA(a), fMass(0), fDensity(density), fX0(x0)
 {
     // Constructor
 
@@ -110,12 +114,13 @@ double G2PMaterial::MultiScattering(double E, double l)
     double thicknessr = (l * 100) * fDensity / fX0; // l: m -> cm
     assert(l > -1.0e-8);
 
-    double lPsq = EMeV * EMeV - kELECTRONMASS*kELECTRONMASS;
+    double lPsq = EMeV * EMeV - kELECTRONMASS * kELECTRONMASS;
     double bcp = lPsq / EMeV;
-    double ltheta0 = 13.6 / bcp * sqrt(thicknessr)*(1 + 0.038 * log(thicknessr));
-    if (thicknessr != 0)
-        return pRand->Gaus(0, ltheta0); // rad
-    else
+    double ltheta0 = 13.6 / bcp * sqrt(thicknessr) * (1 + 0.038 * log(thicknessr));
+
+    if (thicknessr != 0) {
+        return pRand->Gaus(0, ltheta0);    // rad
+    } else
         return 0.0;
 }
 
@@ -124,23 +129,23 @@ double G2PMaterial::Ionization(double E, double l)
     // Calculate ionization dE/dx by Seltzer-Berger formula
 
     double fcut = 5;
-    double thickness = l*fDensity;
+    double thickness = l * fDensity;
     double lK = 0.307075; // cm^2/g for A=1 g/mol
     double tau = E / kELECTRONMASS - 1;
     double gamma = tau + 1.0;
-    double gamma2 = gamma*gamma;
+    double gamma2 = gamma * gamma;
     double bg2 = tau * (tau + 2);
     double beta2 = bg2 / gamma2;
 
-    double eexc = kIONI[fZ]* 1e-6 / kELECTRONMASS;
-    double I = kIONI[fZ]* 1e-6;
-    double eexc2 = eexc*eexc;
+    double eexc = kIONI[fZ] * 1e-6 / kELECTRONMASS;
+    double I = kIONI[fZ] * 1e-6;
+    double eexc2 = eexc * eexc;
     double d = fcut / kELECTRONMASS;
-    double dedx = log(2.0 * (tau + 2.0) / eexc2) - 1.0 - beta2 + log((tau - d) * d) + tau / (tau - d)+(0.5 * d * d + (2.0 * tau + 1.) * log(1. - d / tau)) / gamma2;
+    double dedx = log(2.0 * (tau + 2.0) / eexc2) - 1.0 - beta2 + log((tau - d) * d) + tau / (tau - d) + (0.5 * d * d + (2.0 * tau + 1.) * log(1. - d / tau)) / gamma2;
 
     double hnup = 28.816 * sqrt(fDensity * fZ / fA) * 1e-6; // MeV // fDensity is density of absorber
 
-    //density correction 
+    //density correction
     double x = 0.5 * log10(bg2);
     double C = 2.0 * log(I / hnup) + 1.0;
     double delta = 4.6052 * x - C;
@@ -148,13 +153,15 @@ double G2PMaterial::Ionization(double E, double l)
 
     // now you can compute the total ionization loss
     dedx *= lK / 2 * fZ / fA * thickness / beta2;
-    if (dedx < 0.0) {
+
+    if (dedx < 0.0)
         dedx = 0.0;
-    }
 
     double result = FluctIonization(E, dedx);
+
     if (result > (E - kELECTRONMASS))
         result = E - kELECTRONMASS;
+
     if (result < 0)
         result = 0;
 
@@ -169,7 +176,7 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
     double fcut = 5;
     double tau = E / kELECTRONMASS - 1;
     double gamma = tau + 1.0;
-    double gamma2 = gamma*gamma;
+    double gamma2 = gamma * gamma;
     double bg2 = tau * (tau + 2);
     double beta2 = bg2 / gamma2;
 
@@ -182,9 +189,12 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
     double e2 = 0;
 
     double f2fluct = 2. / fZ;
-    if (fZ < 3) f2fluct = 0.;
+
+    if (fZ < 3)
+        f2fluct = 0.;
+
     double f1fluct = 1. - f2fluct;
-    double e2fluct = 10. * fZ * fZ*eV;
+    double e2fluct = 10. * fZ * fZ * eV;
     double loge2fluct = log(e2fluct);
     double ipotfluct = kIONI[fZ] * eV;
     double logipotfluct = log(kIONI[fZ] * eV);
@@ -195,16 +205,16 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
     double tmax = fcut;
     double esmall = 0.5 * sqrt(e0 * ipotfluct);
 
-    if (tmax <= e0) {
+    if (tmax <= e0)
         return meanloss;
-    }
 
     double losstot = 0.;
     int nstep = 1;
+
     if (meanloss < 25. * ipotfluct) {
-        if (pRand->Uniform() < 0.04 * meanloss / ipotfluct) {
+        if (pRand->Uniform() < 0.04 * meanloss / ipotfluct)
             nstep = 1;
-        } else {
+        else {
             nstep = 2;
             meanloss *= 0.5;
         }
@@ -221,13 +231,13 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
                 double C = meanloss * (1. - rate) / (w2 - logipotfluct);
                 a1 = C * f1fluct * (w2 - loge1fluct) / e1fluct;
 
-                if (w2 > loge2fluct) {
+                if (w2 > loge2fluct)
                     a2 = C * f2fluct * (w2 - loge2fluct) / e2fluct;
-                }
 
                 if (a1 < nmax) {
                     // small energy loss
                     double sa1 = sqrt(a1);
+
                     if (pRand->Uniform() < exp(-sa1)) {
                         e1 = esmall;
                         a1 = meanloss * (1. - rate) / e1;
@@ -235,48 +245,49 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
                         e2 = e2fluct;
                     } else {
                         a1 = sa1;
-                        e1 = sa1*e1fluct;
+                        e1 = sa1 * e1fluct;
                         e2 = e2fluct;
                     }
                 } else {
                     // not small energy loss
                     // correction to get better FWHM value
                     a1 /= fw;
-                    e1 = fw*e1fluct;
+                    e1 = fw * e1fluct;
                     e2 = e2fluct;
                 }
             }
         }
 
         double w1 = tmax / e0;
-        if (tmax > e0) {
-            a3 = rate * meanloss * (tmax - e0) / (e0 * tmax * log(w1));
-        }
 
-        // "nearly" Gaussian fluctuation if (a1 > nmax && a2 > nmax && a3 > nmax)  
+        if (tmax > e0)
+            a3 = rate * meanloss * (tmax - e0) / (e0 * tmax * log(w1));
+
+        // "nearly" Gaussian fluctuation if (a1 > nmax && a2 > nmax && a3 > nmax)
         double emean = 0.;
         double sig2e = 0., sige = 0.;
         double p1 = 0., p2 = 0., p3 = 0.;
 
-        // excitation of type 1 
+        // excitation of type 1
         if (a1 > nmax) {
-            emean += a1*e1;
-            sig2e += a1 * e1*e1;
+            emean += a1 * e1;
+            sig2e += a1 * e1 * e1;
         } else if (a1 > 0.) {
             p1 = double(pRand->Poisson(a1));
-            loss += p1*e1;
-            if (p1 > 0.) {
+            loss += p1 * e1;
+
+            if (p1 > 0.)
                 loss += (1. - 2. * pRand->Uniform()) * e1;
-            }
         }
 
         // excitation of type 2
         if (a2 > nmax) {
-            emean += a2*e2;
-            sig2e += a2 * e2*e2;
+            emean += a2 * e2;
+            sig2e += a2 * e2 * e2;
         } else if (a2 > 0.) {
             p2 = double(pRand->Poisson(a2));
-            loss += p2*e2;
+            loss += p2 * e2;
+
             if (p2 > 0.)
                 loss += (1. - 2. * pRand->Uniform()) * e2;
         }
@@ -286,28 +297,32 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
             loss += max(0., pRand->Gaus(emean, sige));
         }
 
-        // ionization 
+        // ionization
         double lossc = 0.;
+
         if (a3 > 0.) {
             emean = 0.;
             sig2e = 0.;
             sige = 0.;
             p3 = a3;
             double alfa = 1.;
+
             if (a3 > nmax) {
                 alfa = w1 * (nmax + a3) / (w1 * nmax + a3);
                 double alfa1 = alfa * log(alfa) / (alfa - 1.);
                 double namean = a3 * w1 * (alfa - 1.) / ((w1 - 1.) * alfa);
-                emean += namean * e0*alfa1;
+                emean += namean * e0 * alfa1;
                 sig2e += e0 * e0 * namean * (alfa - alfa1 * alfa1);
                 p3 = a3 - namean;
             }
 
-            double w2 = alfa*e0;
+            double w2 = alfa * e0;
             double w = (tmax - w2) / tmax;
             int nb = pRand->Poisson(p3);
+
             if (nb > 0) {
-                for (int k = 0; k < nb; k++) lossc += w2 / (1. - w * pRand->Uniform());
+                for (int k = 0; k < nb; k++)
+                    lossc += w2 / (1. - w * pRand->Uniform());
             }
         }
 
@@ -333,10 +348,13 @@ double G2PMaterial::Bremsstrahlung(double E, double l)
     double bt = l * fDensity / fX0 * fB;
 
     double result = 0;
+
     if (bt != 0)
-        result = E * pow(pRand->Uniform()*0.999, 1. / bt);
-    if (result > (E - kELECTRONMASS)) // MeV
+        result = E * pow(pRand->Uniform() * 0.999, 1. / bt);
+
+    if (result > (E - kELECTRONMASS))   // MeV
         result = E - kELECTRONMASS;
+
     if (result < 0)
         result = 0;
 
@@ -346,9 +364,11 @@ double G2PMaterial::Bremsstrahlung(double E, double l)
 int G2PMaterial::Configure(EMode mode)
 {
     if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
+        if (fIsInit)
+            return 0;
 
-        else fIsInit = true;
+        else
+            fIsInit = true;
     }
 
     ConfDef confs[] = {
@@ -365,7 +385,7 @@ int G2PMaterial::Configure(EMode mode)
 
 void G2PMaterial::MakePrefix()
 {
-    const char* base = "material";
+    const char *base = "material";
 
     G2PAppBase::MakePrefix(Form("%s.%s", base, fName));
 }

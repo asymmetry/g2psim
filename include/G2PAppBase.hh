@@ -11,6 +11,7 @@
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Add configure functions.
 //   Nov 2014, C. Gu, Set random seed in G2PRun class.
+//   Nov 2014, C. Gu, Add fHRSAngle and several interface function for coordinate transform.
 //
 
 #ifndef G2P_APPBASE_H
@@ -58,21 +59,30 @@ protected:
     G2PAppBase(); // No instance allowed for this class
 
     // Geometry utility functions
-    virtual void TCS2HCS(double x_tr, double y_tr, double z_tr, double angle, double &x_lab, double &y_lab, double &z_lab);
-    virtual void TCS2HCS(double t_tr, double p_tr, double angle, double &t_lab, double &p_lab);
-    virtual void HCS2TCS(double x_lab, double y_lab, double z_lab, double angle, double &x_tr, double &y_tr, double &z_tr);
-    virtual void HCS2TCS(double t_lab, double p_lab, double angle, double &t_tr, double &p_tr);
+    virtual void TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab, double &t_lab, double &p_lab);
+    virtual void TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab);
+    virtual void TCS2HCS(const double *V5_tr, double z_tr, double &t_lab, double &p_lab);
+    virtual void TCS2HCS(double x_tr, double y_tr, double z_tr, double &x_lab, double &y_lab, double &z_lab);
+    virtual void TCS2HCS(double t_tr, double p_tr, double &t_lab, double &p_lab);
+
+    virtual void HCS2TCS(const double *V3_lab, double t_lab, double p_lab, double *V5_tr, double &z_tr);
+    virtual void HCS2TCS(const double *V3_lab, double *V5_tr, double &z_tr);
+    virtual void HCS2TCS(double t_lab, double p_lab, double *V5_tr, double &z_tr);
+    virtual void HCS2TCS(double x_lab, double y_lab, double z_lab, double &x_tr, double &y_tr, double &z_tr);
+    virtual void HCS2TCS(double t_lab, double p_lab, double &t_tr, double &p_tr);
+
+    virtual void Project(const double *V5_tr, double z_tr, double zout_tr, double *V5out_tr);
     virtual void Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout);
 
-    virtual void TRCS2FCS(const double *V5_tr, double angle, double *V5_fp);
-    virtual void FCS2TRCS(const double *V5_fp, double angle, double *V5_tr);
-    virtual void TRCS2DCS(const double *V5_tr, double angle, double *V5_det);
-    virtual void DCS2TRCS(const double *V5_det, double angle, double *V5_tr);
-    virtual void FCS2DCS(const double *V5_fp, double angle, double *V5_det);
-    virtual void DCS2FCS(const double *V5_det, double angle, double *V5_fp);
+    virtual void TRCS2FCS(const double *V5_tr, double *V5_fp);
+    virtual void FCS2TRCS(const double *V5_fp, double *V5_tr);
+    virtual void TRCS2DCS(const double *V5_tr, double *V5_det);
+    virtual void DCS2TRCS(const double *V5_det, double *V5_tr);
+    virtual void FCS2DCS(const double *V5_fp, double *V5_det);
+    virtual void DCS2FCS(const double *V5_det, double *V5_fp);
 
     // Configure functions
-    virtual int Configure(EMode mode = kTWOWAY) = 0;
+    virtual int Configure(EMode mode = kTWOWAY);
     int ConfigureFromList(const ConfDef *list, EMode mode = kTWOWAY);
 
     // Make Prefix
@@ -95,14 +105,12 @@ protected:
 
     set<unsigned long> fConfigIsSet;
 
+    double fHRSAngle;
+
     // Random number generator
     static G2PRand *pRand;
 
 private:
-    // Prevent default copy and assignment function
-    G2PAppBase(const G2PAppBase &);
-    G2PAppBase &operator=(const G2PAppBase &);
-
     ClassDef(G2PAppBase, 1)
 };
 

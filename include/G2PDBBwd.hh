@@ -25,21 +25,22 @@ using namespace std;
 class G2PDrift;
 class G2PGeoSieve;
 
-class G2PDBBwd : public G2PProcBase {
+class G2PDBBwd : public G2PProcBase
+{
 public:
-    G2PDBBwd(const char* name);
+    G2PDBBwd(const char *name);
     virtual ~G2PDBBwd();
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetParsX(const double* pars);
-    void SetParsY(const double* pars);
+    void SetParsX(const double *pars);
+    void SetParsY(const double *pars);
     void SetRecZ(double z);
 
 protected:
@@ -47,13 +48,12 @@ protected:
 
     double GetEffBPM(int axis);
 
-    bool Backward(const double* V5fp_tr, double* V5tp_tr);
+    bool Backward(const double *V5fp_tr, double *V5tp_tr);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSAngle;
     double fHRSMomentum;
     double fFieldRatio;
 
@@ -71,8 +71,8 @@ protected:
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
 
-    G2PDrift* pDrift;
-    G2PGeoSieve* pSieve;
+    G2PDrift *pDrift;
+    G2PGeoSieve *pSieve;
 
 private:
 
@@ -82,14 +82,15 @@ private:
 
     // Class for storing matrix element data
 
-    class THaMatrixElement {
+    class THaMatrixElement
+    {
     public:
         THaMatrixElement();
         ~THaMatrixElement();
 
         void SkimPoly(); // reduce order to highest non-zero poly
 
-        bool IsMatch(const THaMatrixElement& rhs) const;
+        bool IsMatch(const THaMatrixElement &rhs) const;
 
         bool fIsZero; // whether the element is zero
         vector<int> fPower; // exponents of matrix element, e.g. D100 = {1, 0, 0}
@@ -103,10 +104,10 @@ private:
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
 
-    const char* fDBPrefix;
-    const char* fDBFile;
+    const char *fDBPrefix;
+    const char *fDBFile;
 
-    vector<THaMatrixElement>* fCurrentMatrixElems;
+    vector<THaMatrixElement> *fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;
     vector<THaMatrixElement> fyMatrixElems;
     vector<THaMatrixElement> fpMatrixElems;
@@ -117,7 +118,7 @@ private:
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
-    static G2PDBBwd* pG2PDBBwd;
+    static G2PDBBwd *pG2PDBBwd;
 
     ClassDef(G2PDBBwd, 1)
 };

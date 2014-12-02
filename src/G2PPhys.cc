@@ -73,21 +73,21 @@ using namespace std;
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PPhys* G2PPhys::pG2PPhys = NULL;
+G2PPhys *G2PPhys::pG2PPhys = NULL;
 
 G2PPhys::G2PPhys()
 {
     // Only for ROOT I/O
 }
 
-G2PPhys::G2PPhys(const char *model) :
-fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), pModel(NULL)
+G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSMomentum(0.0), fBeamEnergy(0.0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
         MakeZombie();
         return;
     }
+
     pG2PPhys = this;
 
     fPriority = 7;
@@ -103,31 +103,38 @@ fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), f
 
 G2PPhys::~G2PPhys()
 {
-    if (pG2PPhys == this) pG2PPhys = NULL;
+    if (pG2PPhys == this)
+        pG2PPhys = NULL;
 }
 
 int G2PPhys::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0)
+        return fStatus;
 
     switch (fSetting) {
     case 1:
         pModel = new G2PPhysEl();
         break;
+
     case 11:
         pModel = new G2PPhysPB();
         break;
+
     case 12:
         pModel = new G2PPhysQFS();
         break;
+
     case 21:
         pModel = new G2PPhysEPC();
         break;
+
     case 22:
         pModel = new G2PPhysWISER();
         break;
+
     default:
         Error(here, "Cannot initialize, invalid setting.");
         return (fStatus = kINITERROR);
@@ -143,11 +150,13 @@ int G2PPhys::Begin()
 
 int G2PPhys::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
-    if (fDebug > 2) Info(here, " ");
+    if (fDebug > 2)
+        Info(here, " ");
 
     double V51[5], V52[5];
+
     if (gG2PVars->FindSuffix("gun.beam.l_x") && gG2PVars->FindSuffix("gun.react.x")
             && gG2PVars->FindSuffix("gun.beam.l_t") && gG2PVars->FindSuffix("gun.react.t")
             && gG2PVars->FindSuffix("gun.beam.l_y") && gG2PVars->FindSuffix("gun.react.y")
@@ -166,9 +175,8 @@ int G2PPhys::Process()
         V52[4] = gG2PVars->FindSuffix("gun.react.d")->GetValue();
 
         fXSreact = CalXS(V51, V52, fTHreact);
-    } else {
+    } else
         fXSreact = 0;
-    }
 
     if (gG2PVars->FindSuffix("bpm.l_x") && gG2PVars->FindSuffix("tp.rec.x")
             && gG2PVars->FindSuffix("bpm.l_t") && gG2PVars->FindSuffix("tp.rec.t")
@@ -188,9 +196,8 @@ int G2PPhys::Process()
         V52[4] = gG2PVars->FindSuffix("tp.rec.d")->GetValue();
 
         fXSrec = CalXS(V51, V52, fTHrec);
-    } else {
+    } else
         fXSrec = 0;
-    }
 
     if (fDebug > 1) {
         Info(here, "phys_react: %10.3e %10.3e", fTHreact / kDEG, fXSreact);
@@ -200,7 +207,7 @@ int G2PPhys::Process()
     return 0;
 }
 
-void G2PPhys::Clear(Option_t* option)
+void G2PPhys::Clear(Option_t *option)
 {
     fTHreact = 0.0;
     fXSreact = 0.0;
@@ -210,59 +217,59 @@ void G2PPhys::Clear(Option_t* option)
     G2PProcBase::Clear(option);
 }
 
-void G2PPhys::SetPars(double* array, int n)
+void G2PPhys::SetPars(double *array, int n)
 {
     fPars = array;
     fNPars = n;
 }
 
-double G2PPhys::CalXS(const double* V5lab, const double* V5tr, double& scatangle)
+double G2PPhys::CalXS(const double *V5lab, const double *V5tr, double &scatangle)
 {
-    static const char* const here = "CalXS()";
+    static const char *const here = "CalXS()";
 
-    double Eb[3] = {sin(V5lab[1]) * cos(V5lab[3]), sin(V5lab[1]) * sin(V5lab[3]), cos(V5lab[1])};
+    double Eb[3] = {sin(V5lab[1]) *cos(V5lab[3]), sin(V5lab[1]) *sin(V5lab[3]), cos(V5lab[1])};
 
     double theta, phi;
-    TCS2HCS(V5tr[1], V5tr[3], fHRSAngle, theta, phi);
+    TCS2HCS(V5tr[1], V5tr[3], theta, phi);
 
-    double Ef[3] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
+    double Ef[3] = {sin(theta) *cos(phi), sin(theta) *sin(phi), cos(theta)};
 
     scatangle = acos(Eb[0] * Ef[0] + Eb[1] * Ef[1] + Eb[2] * Ef[2]);
 
     double Ebval = fBeamEnergy;
     double Efval = (1 + V5tr[4]) * fHRSMomentum;
 
-    if (fDebug > 2) {
+    if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e", Ebval, Efval, scatangle / kDEG);
-    }
 
     return pModel->GetXS(Ebval, Efval, scatangle);
 }
 
 int G2PPhys::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
         {"run.particle.id", "Particle ID", kINT, &fPID},
         {"run.target.z", "Target Z", kINT, &fZ},
         {"run.target.a", "Target A", kINT, &fA},
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {0}
     };
+
+    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }
 
 int G2PPhys::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -278,7 +285,7 @@ int G2PPhys::DefineVariables(EMode mode)
 
 void G2PPhys::MakePrefix()
 {
-    const char* base = "phys";
+    const char *base = "phys";
 
     G2PAppBase::MakePrefix(base);
 }

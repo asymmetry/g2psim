@@ -74,7 +74,8 @@ G2PRun::~G2PRun()
 {
     Clear();
 
-    if (pG2PRun == this) pG2PRun = NULL;
+    if (pG2PRun == this)
+        pG2PRun = NULL;
 
     gG2PRun = NULL;
 }
@@ -84,7 +85,8 @@ int G2PRun::Begin()
     //static const char* const here = "Begin()";
 
     if (fConfigFile && *fConfigFile) {
-        if (ParseConfigFile() != 0) return -1;
+        if (ParseConfigFile() != 0)
+            return -1;
     }
 
     if (fConfigIsSet.find("run.seed") == fConfigIsSet.end())
@@ -95,7 +97,8 @@ int G2PRun::Begin()
 
 int G2PRun::End()
 {
-    if (fConfig["run.debuglevel"] > 1) Print();
+    if (fConfig["run.debuglevel"] > 1)
+        Print();
 
     return 0;
 }
@@ -263,8 +266,10 @@ void G2PRun::SetRunType(const char *type)
     tempmap["optics23"] = 23;
     tempmap["empty"] = 31;
 
-    if (tempmap.count(type) > 0) fConfig["run.type"] = (double) tempmap[type];
-    else fConfig["run.type"] = (double) 10;
+    if (tempmap.count(type) > 0)
+        fConfig["run.type"] = (double) tempmap[type];
+    else
+        fConfig["run.type"] = (double) 10;
 
     fConfigIsSet.insert("run.type");
 }

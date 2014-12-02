@@ -40,9 +40,9 @@
 
 using namespace std;
 
-void usage(int argc, char** argv);
+void usage(int argc, char **argv);
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     int c;
 
@@ -79,32 +79,41 @@ int main(int argc, char** argv)
 
         c = getopt_long(argc, argv, "c:d:g:hm:o:x:", long_options, &option_index);
 
-        if (c == -1) break;
+        if (c == -1)
+            break;
 
         switch (c) {
         case 0:
             break;
+
         case 'c':
             strcpy(fConfig, optarg);
             break;
+
         case 'd':
             fDebug = atoi(optarg);
             break;
+
         case 'g':
             strcpy(fGun, optarg);
             break;
+
         case 'h':
             usage(argc, argv);
             exit(0);
+
         case 'm':
             strcpy(fHRS, optarg);
             break;
+
         case 'o':
             strcpy(fOutput, optarg);
             break;
+
         case 'x':
             strcpy(fPhys, optarg);
             break;
+
         case '?':
         default:
             usage(argc, argv);
@@ -112,78 +121,80 @@ int main(int argc, char** argv)
         }
     }
 
-    if (optind < argc) {
+    if (optind < argc)
         fN = atoi(argv[optind++]);
-    } else {
+    else {
         usage(argc, argv);
         exit(-1);
     }
 
-    G2PRun* run = new G2PRun();
+    G2PRun *run = new G2PRun();
     run->SetConfigFile(fConfig);
-    if (fDebug != 1) run->SetDebugLevel(fDebug);
+
+    if (fDebug != 1)
+        run->SetDebugLevel(fDebug);
 
     G2PSim *sim = new G2PSim();
     sim->SetNEvent(fN);
     sim->SetOutFile(fOutput);
 
     if (fBPM) {
-        G2PBPM* bpm = new G2PBPM();
+        G2PBPM *bpm = new G2PBPM();
         gG2PApps->Add(bpm);
     }
 
-    G2PField* field = new G2PField();
+    G2PField *field = new G2PField();
     gG2PApps->Add(field);
-    if (!fField) {
+
+    if (!fField)
         run->SetFieldRatio(0.0);
-    }
 
     if (fGunType.count(fGun) > 0) {
         switch (fGunType[fGun]) {
-        case 1:
-        {
-            G2PGun* gun = new G2PFlatGun("trans");
+        case 1: {
+            G2PGun *gun = new G2PFlatGun("trans");
             gG2PApps->Add(gun);
             break;
         }
-        case 2:
-        {
-            G2PGun* gun = new G2PFlatGun("lab");
+
+        case 2: {
+            G2PGun *gun = new G2PFlatGun("lab");
             gG2PApps->Add(gun);
             break;
         }
         }
     } else {
-        G2PFPData* gun = new G2PFPData(fGun);
+        G2PFPData *gun = new G2PFPData(fGun);
         gG2PApps->Add(gun);
     }
 
     if (strcmp(fHRS, "off") != 0) {
-        G2PHRSFwd* fwd = new G2PHRSFwd(fHRS);
+        G2PHRSFwd *fwd = new G2PHRSFwd(fHRS);
         gG2PApps->Add(fwd);
+
         if (fDB) {
-            G2PDBBwd* db = new G2PDBBwd("db_L.vdc.dat");
+            G2PDBBwd *db = new G2PDBBwd("db_L.vdc.dat");
             gG2PApps->Add(db);
         } else {
-            G2PHRSBwd* bwd = new G2PHRSBwd(fHRS);
+            G2PHRSBwd *bwd = new G2PHRSBwd(fHRS);
             gG2PApps->Add(bwd);
         }
     }
 
     if (strcmp(fPhys, "off") != 0) {
-        G2PPhys* phys = new G2PPhys(fPhys);
+        G2PPhys *phys = new G2PPhys(fPhys);
         gG2PApps->Add(phys);
     }
 
     clock_t start = clock();
     sim->Run();
     clock_t end = clock();
-    printf("Average calculation time for one event: %8.4f ms\n", (double) (end - start)*1000.0 / (double) CLOCKS_PER_SEC / fN);
+    printf("Average calculation time for one event: %8.4f ms\n", (double)(end - start) * 1000.0 / (double) CLOCKS_PER_SEC / fN);
 
     return 0;
 }
 
-void usage(int argc, char** argv)
+void usage(int argc, char **argv)
 {
     printf("usage: %s [options] NEvent\n", argv[0]);
     printf("  -c, --config=sim.cfg           Set configuration file\n");

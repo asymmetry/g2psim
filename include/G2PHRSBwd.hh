@@ -20,21 +20,22 @@ class G2PDrift;
 class G2PGeoSieve;
 class HRSTransBase;
 
-class G2PHRSBwd : public G2PProcBase {
+class G2PHRSBwd : public G2PProcBase
+{
 public:
-    G2PHRSBwd(const char* name);
+    G2PHRSBwd(const char *name);
     virtual ~G2PHRSBwd();
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetParsX(const double* pars);
-    void SetParsY(const double* pars);
+    void SetParsX(const double *pars);
+    void SetParsY(const double *pars);
     void SetRecZ(double z);
 
 protected:
@@ -42,13 +43,12 @@ protected:
 
     double GetEffBPM(int axis);
 
-    bool Backward(const double* V5fp_tr, double* V5tp_tr);
+    bool Backward(const double *V5fp_tr, double *V5tp_tr);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSAngle;
     double fHRSMomentum;
     double fFieldRatio;
 
@@ -68,12 +68,12 @@ protected:
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
 
-    G2PDrift* pDrift;
-    G2PGeoSieve* pSieve;
-    HRSTransBase* pModel;
+    G2PDrift *pDrift;
+    G2PGeoSieve *pSieve;
+    HRSTransBase *pModel;
 
 private:
-    static G2PHRSBwd* pG2PHRSBwd;
+    static G2PHRSBwd *pG2PHRSBwd;
 
     ClassDef(G2PHRSBwd, 1)
 };

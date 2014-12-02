@@ -33,21 +33,21 @@ using namespace std;
 
 static double kPHI = (sqrt(5.0) - 1.0) / 2.0;
 
-G2POptics* G2POptics::pG2POptics = NULL;
+G2POptics *G2POptics::pG2POptics = NULL;
 
 G2POptics::G2POptics() : fDataFile(NULL)
 {
     // Only for ROOT I/O
 }
 
-G2POptics::G2POptics(const char* filename) :
-fDataFile(filename), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), fTargetMass(0.0), fEnergyLoss(0.0), fNFoil(1), fHoleID(-1), pDrift(NULL), pSieve(NULL)
+G2POptics::G2POptics(const char *filename) : fDataFile(filename), fHRSMomentum(0.0), fBeamEnergy(0.0), fTargetMass(0.0), fEnergyLoss(0.0), fNFoil(1), fHoleID(-1), pDrift(NULL), pSieve(NULL)
 {
     if (pG2POptics) {
         Error("G2POptics()", "Only one instance of G2POptics allowed.");
         MakeZombie();
         return;
     }
+
     pG2POptics = this;
 
     fPriority = 1;
@@ -66,22 +66,26 @@ fDataFile(filename), fHRSAngle(0.0), fHRSMomentum(0.0), fBeamEnergy(0.0), fTarge
 
 G2POptics::~G2POptics()
 {
-    if (pG2POptics == this) pG2POptics = NULL;
+    if (pG2POptics == this)
+        pG2POptics = NULL;
 }
 
 int G2POptics::Init()
 {
     //static const char* const here = "Init()";
 
-    if (G2PProcBase::Init() != 0) return fStatus;
+    if (G2PProcBase::Init() != 0)
+        return fStatus;
 
-    pDrift = static_cast<G2PDrift*> (gG2PApps->Find("G2PDrift"));
+    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
+
     if (!pDrift) {
         pDrift = new G2PDrift();
         gG2PApps->Add(pDrift);
     }
 
-    pSieve = static_cast<G2PGeoSieve*> (gG2PApps->Find("G2PGeoSieve"));
+    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
+
     if (!pSieve) {
         pSieve = new G2PGeoSieve();
         gG2PApps->Add(pSieve);
@@ -92,9 +96,10 @@ int G2POptics::Init()
 
 int G2POptics::Begin()
 {
-    static const char* const here = "Begin()";
+    static const char *const here = "Begin()";
 
-    if (G2PProcBase::Begin() != 0) return fStatus;
+    if (G2PProcBase::Begin() != 0)
+        return fStatus;
 
     if (LoadData() != 0) {
         Error(here, "Cannot read data.");
@@ -106,16 +111,17 @@ int G2POptics::Begin()
 
 int G2POptics::Process()
 {
-    static const char* const here = "Process()";
+    static const char *const here = "Process()";
 
     sData tempdata;
 
-    if (fData.empty()) return -1;
+    if (fData.empty())
+        return -1;
+
     tempdata = fData.front();
 
-    if (fDebug > 2) {
+    if (fDebug > 2)
         Info(here, "%04d %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", tempdata.ind, tempdata.xf, tempdata.tf, tempdata.yf, tempdata.pf, tempdata.eb, tempdata.xb, tempdata.yb);
-    }
 
     fHoleID = tempdata.ind;
     fBeamEnergy = tempdata.eb;
@@ -134,18 +140,16 @@ int G2POptics::Process()
     fEnergyLoss = fELoss[foilID];
     fV3bpm_lab[2] = fReactZ_lab[foilID];
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e", fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2]);
-    }
 
-    HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fHRSAngle, fV3bpm_tr[0], fV3bpm_tr[1], fV3bpm_tr[2]);
+    HCS2TCS(fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2], fV3bpm_tr[0], fV3bpm_tr[1], fV3bpm_tr[2]);
 
     double V3siv_tr[3];
     pSieve->GetPos(res, V3siv_tr);
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "sieve_real: %10.3e %10.3e %10.3e", V3siv_tr[0], V3siv_tr[1], V3siv_tr[2]);
-    }
 
     double V3pd_tr[3];
     V3pd_tr[0] = V3siv_tr[0] - fV3bpm_tr[0];
@@ -242,77 +246,79 @@ int G2POptics::Process()
         dlast = Distance(pos, V3siv_tr);
     }
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
-    }
 
     Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
     fV5tpproj_tr[1] = fV5sieve_tr[1];
     fV5tpproj_tr[3] = fV5sieve_tr[3];
     fV5tpproj_tr[4] = fV5sieve_tr[4];
 
-    if (fDebug > 1) {
+    if (fDebug > 1)
         Info(here, "tpproj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpproj_tr[0], fV5tpproj_tr[1], fV5tpproj_tr[2], fV5tpproj_tr[3], fV5tpproj_tr[4]);
-    }
 
     fData.pop();
 
     return 0;
 }
 
-void G2POptics::Clear(Option_t* option)
+void G2POptics::Clear(Option_t *option)
 {
     fHoleID = -1;
 
-    memset(fV3bpm_lab, 0, sizeof (fV3bpm_lab));
-    memset(fV3bpm_tr, 0, sizeof (fV3bpm_tr));
-    memset(fV5react_tr, 0, sizeof (fV5react_tr));
-    memset(fV5sieve_tr, 0, sizeof (fV5sieve_tr));
-    memset(fV5tpproj_tr, 0, sizeof (fV5tpproj_tr));
-    memset(fV5fp_det, 0, sizeof (fV5fp_det));
+    memset(fV3bpm_lab, 0, sizeof(fV3bpm_lab));
+    memset(fV3bpm_tr, 0, sizeof(fV3bpm_tr));
+    memset(fV5react_tr, 0, sizeof(fV5react_tr));
+    memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
+    memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));
+    memset(fV5fp_det, 0, sizeof(fV5fp_det));
 
     G2PProcBase::Clear(option);
 }
 
-void G2POptics::SetHRSMomentum(int n, double* value)
+void G2POptics::SetHRSMomentum(int n, double *value)
 {
     fHRSP0.clear();
+
     for (int i = 0; i < n; i++)
         fHRSP0.push_back(value[i]);
 }
 
-void G2POptics::SetTiltAngle(int n, double* value)
+void G2POptics::SetTiltAngle(int n, double *value)
 {
     fTiltAngleV.clear();
+
     for (int i = 0; i < n; i++)
         fTiltAngleV.push_back(value[i]);
 }
 
-void G2POptics::SetReactZ(int n, double* value)
+void G2POptics::SetReactZ(int n, double *value)
 {
     fNFoil = n;
 
     fReactZ_lab.clear();
+
     for (int i = 0; i < n; i++)
         fReactZ_lab.push_back(value[i]);
 }
 
-void G2POptics::SetEnergyLoss(int n, double* value)
+void G2POptics::SetEnergyLoss(int n, double *value)
 {
     fNFoil = n;
 
     fELoss.clear();
+
     for (int i = 0; i < n; i++)
         fELoss.push_back(value[i]);
 }
 
-void G2POptics::Drift(double* ang, double* pos)
+void G2POptics::Drift(double *ang, double *pos)
 {
     double V3pd_tr[3] = {tan(ang[0]), tan(ang[1]), 1.0};
 
     // Calculate delta based on angle
     double V3pd_lab[3];
-    TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], fHRSAngle, V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
+    TCS2HCS(V3pd_tr[0], V3pd_tr[1], V3pd_tr[2], V3pd_lab[0], V3pd_lab[1], V3pd_lab[2]);
 
     double V3ed_lab[3] = {0, tan(fTiltAngle), 1.0};
 
@@ -332,7 +338,7 @@ void G2POptics::Drift(double* ang, double* pos)
     pos[1] = fV5sieve_tr[2];
 }
 
-double G2POptics::Distance(double* V2a, double* V2b)
+double G2POptics::Distance(double *V2a, double *V2b)
 {
     double V2diff[2] = {V2a[0] - V2b[0], V2a[1] - V2b[1]};
     return sqrt(V2diff[0] * V2diff[0] + V2diff[1] * V2diff[1]);
@@ -342,10 +348,12 @@ int G2POptics::LoadData()
 {
     FILE *fp;
 
-    if ((fp = fopen(fDataFile, "r")) == NULL) return -1;
+    if ((fp = fopen(fDataFile, "r")) == NULL)
+        return -1;
 
     sData temp;
     fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xf, &temp.tf, &temp.yf, &temp.pf, &temp.eb, &temp.xb, &temp.yb);
+
     while (!feof(fp)) {
         fData.push(temp);
         fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xf, &temp.tf, &temp.yf, &temp.pf, &temp.eb, &temp.xb, &temp.yb);
@@ -353,29 +361,32 @@ int G2POptics::LoadData()
 
     fclose(fp);
 
-    if (!fData.empty()) return 0;
-    else return -1;
+    if (!fData.empty())
+        return 0;
+    else
+        return -1;
 }
 
 int G2POptics::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit) return 0;
-        else fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {0}
     };
+
+    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }
 
 int G2POptics::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup) return 0;
+    if (mode == kDEFINE && fIsSetup)
+        return 0;
+
     fIsSetup = (mode == kDEFINE);
 
     VarDef vars[] = {
@@ -414,7 +425,7 @@ int G2POptics::DefineVariables(EMode mode)
 
 void G2POptics::MakePrefix()
 {
-    const char* basename = "optics";
+    const char *basename = "optics";
 
     G2PAppBase::MakePrefix(basename);
 }

@@ -46,12 +46,15 @@ public:
     void SetRStep(double stepr);
 
 protected:
-    bool AtBoundary(double *V3);
-
     virtual int ReadMap();
     virtual int CreateMap();
 
     virtual int Interpolate(const double *x, double *b, int order);
+
+    void Lab2GeoField(const double *V3_lab, double *V3_geo);
+    void Geo2LabField(const double *V3_geo, double *V3_lab);
+
+    bool TouchBoundaryGeo(double x, double y, double z);
 
 #ifdef DEBUGWITHROOT
     void SaveRootFile();

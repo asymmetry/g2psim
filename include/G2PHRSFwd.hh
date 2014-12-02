@@ -20,39 +20,39 @@ class G2PDrift;
 class G2PGeoSieve;
 class HRSTransBase;
 
-class G2PHRSFwd : public G2PProcBase {
+class G2PHRSFwd : public G2PProcBase
+{
 public:
-    G2PHRSFwd(const char* name);
+    G2PHRSFwd(const char *name);
     virtual ~G2PHRSFwd();
 
     virtual int Init();
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
     // Gets
 
     // Sets
-    void SetSieve(const char* opt);
+    void SetSieve(const char *opt);
 
 protected:
     G2PHRSFwd(); // Only for ROOT I/O
 
-    void RunType10(double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot); // production target
-    void RunType20(double thickness, double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot); // carbon target, without LHe
-    void RunType21(double thickness, double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot); // carbon target, with LHe
-    void RunType31(double* V5react_tr, double& z_tr, double* V5troj_tr, double& dlentot, double& elosstot); // pure LHe
+    void RunType10(double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // production target
+    void RunType20(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // carbon target, without LHe
+    void RunType21(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // carbon target, with LHe
+    void RunType31(double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // pure LHe
 
-    bool Forward(const double* V5tp_tr, double* V5fp_tr);
+    bool Forward(const double *V5tp_tr, double *V5fp_tr);
 
-    void ApplyVDCRes(double* V5fp_tr);
+    void ApplyVDCRes(double *V5fp_tr);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
     int fRunType;
-    double fHRSAngle;
     double fHRSMomentum;
 
     int fEndPlane;
@@ -71,12 +71,12 @@ protected:
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 
-    G2PDrift* pDrift;
-    G2PGeoSieve* pSieve;
-    HRSTransBase* pModel;
+    G2PDrift *pDrift;
+    G2PGeoSieve *pSieve;
+    HRSTransBase *pModel;
 
 private:
-    static G2PHRSFwd* pG2PHRSFwd;
+    static G2PHRSFwd *pG2PHRSFwd;
 
     ClassDef(G2PHRSFwd, 1)
 };

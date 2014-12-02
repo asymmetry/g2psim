@@ -20,24 +20,25 @@
 
 class G2PField;
 
-class G2PDrift : public G2PAppBase {
+class G2PDrift : public G2PAppBase
+{
 public:
     G2PDrift();
     virtual ~G2PDrift();
 
-    typedef double (G2PDrift::*pfDriftHCS_)(const double*, const double*, double, double*, double*);
-    typedef double (G2PDrift::*pfDriftTCS_)(const double*, double, double, double, double, double*);
-    typedef double (G2PDrift::*pfDriftCV_)(const double*, double, double, double, double, double*, double&);
-    typedef double (G2PDrift::*pfDriftCL_)(const double*, double, double, double, double, double, double*, double&, int&);
+    typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, double, double *, double *);
+    typedef double (G2PDrift::*pfDriftTCS_)(const double *, double, double, double, double, double *);
+    typedef double (G2PDrift::*pfDriftCV_)(const double *, double, double, double, double, double *, double &);
+    typedef double (G2PDrift::*pfDriftCL_)(const double *, double, double, double, double, double, double *, double &, int &);
 
     virtual int Init();
     virtual int Begin();
-    virtual void Clear(Option_t* /*option*/ = "");
+    virtual void Clear(Option_t * /*option*/ = "");
 
-    virtual double Drift(const double* x, const double* p, double zf, double *xout, double *pout); // HCS
-    virtual double Drift(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout); // TCS
-    virtual double Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // CV // J. Liu
-    virtual double Drift(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // CL // J. Liu
+    virtual double Drift(const double *x, const double *p, double zf, double *xout, double *pout); // HCS
+    virtual double Drift(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout); // TCS
+    virtual double Drift(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // CV // J. Liu
+    virtual double Drift(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // CL // J. Liu
 
     // Gets
 
@@ -46,21 +47,21 @@ public:
     void SetErrLimit(double lo, double hi);
 
 protected:
-    double DriftHCS(const double* x, const double* p, double zf, double *xout, double *pout);
-    double DriftHCSNF(const double* x, const double* p, double zf, double *xout, double *pout);
+    double DriftHCS(const double *x, const double *p, double zf, double *xout, double *pout);
+    double DriftHCSNF(const double *x, const double *p, double zf, double *xout, double *pout);
 
-    double DriftTCS(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout);
-    double DriftTCSNF(const double* x, double z_tr, double p, double angle, double zf_tr, double* xout);
+    double DriftTCS(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout);
+    double DriftTCSNF(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout);
 
-    double DriftCV(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // J. Liu
-    double DriftCVNF(const double* x, double z_tr, double p, double angle, double rf_lab, double* xout, double& zout); // J. Liu
+    double DriftCV(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // J. Liu
+    double DriftCVNF(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // J. Liu
 
-    double DriftCL(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
-    double DriftCLNF(const double* x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double* xout, double &zout, int& surf); // J. Liu
+    double DriftCL(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // J. Liu
+    double DriftCLNF(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // J. Liu
 
-    void NystromRK4(const double* x, const double* dxdt, double step, double* xo, double* err);
+    void NystromRK4(const double *x, const double *dxdt, double step, double *xo, double *err);
     double DistChord();
-    void ComputeRHS(const double* x, double* dxdt);
+    void ComputeRHS(const double *x, double *dxdt);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
@@ -76,7 +77,7 @@ protected:
     double fMPoint[3];
     double fEPoint[3];
 
-    G2PField* pField;
+    G2PField *pField;
 
     pfDriftHCS_ pfDriftHCS;
     pfDriftTCS_ pfDriftTCS;
@@ -84,7 +85,7 @@ protected:
     pfDriftCL_ pfDriftCL;
 
 private:
-    static G2PDrift* pG2PDrift;
+    static G2PDrift *pG2PDrift;
 
     ClassDef(G2PDrift, 1)
 };
