@@ -31,7 +31,6 @@ public:
 
     virtual bool CanPass(double *V3);
     virtual bool CanPass(double *V5, int &id);
-    virtual bool AtBoundary(double *V3);
 
     // Gets
     int GetNRow();
@@ -42,19 +41,14 @@ public:
     // Sets
 
 protected:
-    virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
 
     double fHRSAngle;
 
     int fNRow;
     int fNCol;
-
     vector<double> fX;
-    double fXOffset;
     vector<double> fY;
-    double fYOffset;
-    double fZ;
 
     int fNLargerHole;
     vector<int> fLargerHole; // index of larger sieve holes

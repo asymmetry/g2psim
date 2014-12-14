@@ -14,6 +14,8 @@
 //   Sep 2013, C. Gu, Put HallB field map into G2PField.
 //   Nov 2014, C. Gu, Rewrite it with G2PGeoBase.
 //
+// TODO: Rewrite it as a base class.
+//
 
 #include <cstdlib>
 #include <cstdio>
@@ -64,7 +66,7 @@ static void GetHallBField(const double *pos, double *field)
 
 G2PField *G2PField::pG2PField = NULL;
 
-G2PField::G2PField() : fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRatio(0.0)
+G2PField::G2PField() : fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRatio(0.0), pfGeo2LabField(NULL)
 {
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");
@@ -125,6 +127,11 @@ int G2PField::Begin()
     if (G2PGeoBase::Begin() != 0)
         return fStatus;
 
+    if (fRotation)
+        pfGeo2LabField = &G2PField::Geo2LabNoT;
+    else
+        pfGeo2LabField = &G2PField::Geo2LabNoTNoR;
+
     EStatus status = kINITERROR;
 
     if (ReadMap() == 0)
@@ -143,9 +150,9 @@ void G2PField::GetField(const double *x, double *b)
 
     double pos[3], field[3];
 
-    Lab2Geo(x, pos);
+    (this->*pfLab2Geo)(x, pos);
     Interpolate(pos, field, 2);
-    Geo2LabField(field, b);
+    (this->*pfGeo2LabField)(field, b);
     b[0] *= fRatio;
     b[1] *= fRatio;
     b[2] *= fRatio;
@@ -390,28 +397,6 @@ int G2PField::Interpolate(const double *pos, double *b, int order)
     return 0;
 }
 
-void G2PField::Lab2GeoField(const double *V3_lab, double *V3_geo)
-{
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = fRotationMatrix[0][i][0] * V3_lab[0] + fRotationMatrix[0][i][1] * V3_lab[1] + fRotationMatrix[0][i][2] * V3_lab[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = V3_lab[i];
-    }
-}
-
-void G2PField::Geo2LabField(const double *V3_geo, double *V3_lab)
-{
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            V3_lab[i] = fRotationMatrix[1][i][0] * V3_geo[0] + fRotationMatrix[1][i][1] * V3_geo[1] + fRotationMatrix[1][i][2] * V3_geo[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            V3_lab[i] = V3_geo[i];
-    }
-}
-
 bool G2PField::TouchBoundaryGeo(double x, double y, double z)
 {
     // Default does nothing
@@ -465,12 +450,8 @@ void G2PField::SaveRootFile()
 
 int G2PField::Configure(EMode mode)
 {
-    if (mode == kREAD || mode == kTWOWAY) {
-        if (fIsInit)
-            return 0;
-        else
-            fIsInit = true;
-    }
+    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+        return 0;
 
     ConfDef confs[] = {
         {"ratio", "Field Ratio", kDOUBLE, &fRatio},
@@ -488,6 +469,8 @@ int G2PField::Configure(EMode mode)
         {"z.step", "Z Step", kDOUBLE, &fZStep},
         {0}
     };
+
+    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }

@@ -3,7 +3,7 @@
 /* class G2PGeoSolid
  * Abstract base class for g2p geometry solids.
  * It defines interface functions like IsInside().
- * AtBoundary() is redirected to IsInside() for solids.
+ * TouchBoundaryGeo() is redirected to IsInside() for solids.
  */
 
 // History:
@@ -20,8 +20,6 @@ class G2PGeoSolid : public G2PGeoBase
 public:
     virtual ~G2PGeoSolid();
 
-    bool AtBoundary(double *V3);
-
     // Gets
 
     // Sets
@@ -29,10 +27,11 @@ public:
 protected:
     G2PGeoSolid(); // No instance allowed for this class
 
-    virtual bool IsInside(double *V3) = 0;
+    bool TouchBoundaryGeo(double x, double y, double z);
+
+    virtual bool IsInside(double x, double y, double z) = 0;
 
 private:
-
     ClassDef(G2PGeoSolid, 1)
 };
 

@@ -51,9 +51,6 @@ protected:
 
     virtual int Interpolate(const double *x, double *b, int order);
 
-    void Lab2GeoField(const double *V3_lab, double *V3_geo);
-    void Geo2LabField(const double *V3_geo, double *V3_lab);
-
     bool TouchBoundaryGeo(double x, double y, double z);
 
 #ifdef DEBUGWITHROOT
@@ -73,6 +70,8 @@ protected:
     int nZ, nR;
 
     double fRatio;
+
+    pfX2X_ pfGeo2LabField;
 
 private:
     static G2PField *pG2PField;

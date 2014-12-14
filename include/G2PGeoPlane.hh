@@ -28,6 +28,8 @@ public:
 protected:
     G2PGeoPlane(); // No instance allowed for this class
 
+    bool TouchBoundaryGeo(double x, double y, double z);
+
 private:
     ClassDef(G2PGeoPlane, 1)
 };

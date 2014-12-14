@@ -5,7 +5,7 @@
  * It provides fundamental functions like rotation.
  * No instance allowed for this class.
  * The rotation matrix is defined with Euler angle in Z-X'-Z" convention.
- * G2PDrift class uses AtBoundary() to test the boundary of a geometry and stop drifting.
+ * G2PDrift class uses TouchBoundary() to determine whether stop drifting or not.
  */
 
 // History:
@@ -26,7 +26,7 @@
 
 using namespace std;
 
-G2PGeoBase::G2PGeoBase() : fRotation(false)
+G2PGeoBase::G2PGeoBase() : fUseTrans(false), fTranslation(false), fRotation(false), pfLab2Geo(NULL), pfGeo2Lab(NULL)
 {
     memset(fOrigin, 0, sizeof(fOrigin));
     memset(fEulerAngle, 0, sizeof(fEulerAngle));
@@ -43,9 +43,70 @@ int G2PGeoBase::Begin()
     if (G2PAppBase::Begin() != 0)
         return (fStatus = kINITERROR);
 
-    SetRotationMatrix();
+    SetGeoPosition();
 
-    return (G2PAppBase::Begin());
+    if (fTranslation) {
+        if (fRotation) {
+            pfLab2Geo = &G2PGeoBase::Lab2Geo;
+            pfGeo2Lab = &G2PGeoBase::Geo2Lab;
+        } else {
+            pfLab2Geo = &G2PGeoBase::Lab2GeoNoR;
+            pfGeo2Lab = &G2PGeoBase::Geo2LabNoR;
+        }
+    } else {
+        if (fRotation) {
+            pfLab2Geo = &G2PGeoBase::Lab2GeoNoT;
+            pfGeo2Lab = &G2PGeoBase::Geo2LabNoT;
+        } else {
+            pfLab2Geo = &G2PGeoBase::Lab2GeoNoTNoR;
+            pfGeo2Lab = &G2PGeoBase::Geo2LabNoTNoR;
+        }
+    }
+
+    return (fStatus = kOK);
+}
+
+bool G2PGeoBase::TouchBoundary(const double *V5_tr, double z_tr)
+{
+    bool result = false;
+
+    if (fUseTrans)
+        result = TouchBoundary(V5_tr[0], V5_tr[2], z_tr);
+    else {
+        double V3_lab[3];
+        TCS2HCS(V5_tr, z_tr, V3_lab);
+        result = TouchBoundary(V3_lab[0], V3_lab[1], V3_lab[2]);
+    }
+
+    return result;
+}
+
+bool G2PGeoBase::TouchBoundary(const double *V3_lab)
+{
+    bool result = false;
+
+    if (fUseTrans) {
+        double V5_tr[5], z_tr;
+        HCS2TCS(V3_lab, V5_tr, z_tr);
+        result = TouchBoundary(V5_tr[0], V5_tr[2], z_tr);
+    } else
+        result = TouchBoundary(V3_lab[0], V3_lab[1], V3_lab[2]);
+
+    return result;
+}
+
+bool G2PGeoBase::TouchBoundary(double x, double y, double z)
+{
+    double V3_lab[3] = {x, y, z};
+    double V3_geo[3];
+
+    (this->*pfLab2Geo)(V3_lab, V3_geo);
+    return TouchBoundaryGeo(V3_geo[0], V3_geo[1], V3_geo[2]);
+}
+
+bool G2PGeoBase::UseTrans()
+{
+    return fUseTrans;
 }
 
 void G2PGeoBase::SetOrigin(double x, double y, double z)
@@ -72,10 +133,15 @@ void G2PGeoBase::SetEulerAngle(double alpha, double beta, double gamma)
     fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
 }
 
-void G2PGeoBase::SetRotationMatrix()
+void G2PGeoBase::SetGeoPosition()
 {
-    // The Euler angle is defined using Z-X'-Z" convention
+    // Set translation and rotation
+    if ((fabs(fOrigin[0]) < 1e-5) && (fabs(fOrigin[1]) < 1e-5) && (fabs(fOrigin[2]) < 1e-5))
+        fTranslation = false;
+    else
+        fTranslation = true;
 
+    // The Euler angle is defined using Z-X'-Z" convention
     if ((fabs(fEulerAngle[0]) < 1e-5) && (fabs(fEulerAngle[1]) < 1e-5) && (fabs(fEulerAngle[2]) < 1e-5))
         fRotation = false;
     else {
@@ -114,56 +180,60 @@ void G2PGeoBase::SetRotationMatrix()
 
 void G2PGeoBase::Lab2Geo(const double *V3_lab, double *V3_geo)
 {
-    double temp[3] = {V3_lab[0], V3_lab[1], V3_lab[2]};
+    double temp[3] = {0};
 
-    for (int i = 0; i < 3; i++)
-        temp[i] -= fOrigin[i];
+    Lab2GeoNoR(V3_lab, temp);
+    Lab2GeoNoT(temp, V3_geo);
+}
 
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = fRotationMatrix[0][i][0] * temp[0] + fRotationMatrix[0][i][1] * temp[1] + fRotationMatrix[0][i][2] * temp[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = temp[i];
-    }
+void G2PGeoBase::Lab2GeoNoT(const double *V3_lab, double *V3_geo)
+{
+    V3_geo[0] = fRotationMatrix[0][0][0] * V3_lab[0] + fRotationMatrix[0][0][1] * V3_lab[1] + fRotationMatrix[0][0][2] * V3_lab[2];
+    V3_geo[1] = fRotationMatrix[0][1][0] * V3_lab[0] + fRotationMatrix[0][1][1] * V3_lab[1] + fRotationMatrix[0][1][2] * V3_lab[2];
+    V3_geo[2] = fRotationMatrix[0][2][0] * V3_lab[0] + fRotationMatrix[0][2][1] * V3_lab[1] + fRotationMatrix[0][2][2] * V3_lab[2];
+}
+
+void G2PGeoBase::Lab2GeoNoR(const double *V3_lab, double *V3_geo)
+{
+    V3_geo[0] = V3_lab[0] - fOrigin[0];
+    V3_geo[1] = V3_lab[1] - fOrigin[1];
+    V3_geo[2] = V3_lab[2] - fOrigin[2];
+}
+
+void G2PGeoBase::Lab2GeoNoTNoR(const double *V3_lab, double *V3_geo)
+{
+    V3_geo[0] = V3_lab[0];
+    V3_geo[1] = V3_lab[1];
+    V3_geo[2] = V3_lab[2];
 }
 
 void G2PGeoBase::Geo2Lab(const double *V3_geo, double *V3_lab)
 {
-    double temp[3];
+    double temp[3] = {0};
 
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            temp[i] = fRotationMatrix[1][i][0] * V3_geo[0] + fRotationMatrix[1][i][1] * V3_geo[1] + fRotationMatrix[1][i][2] * V3_geo[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            temp[i] = V3_geo[i];
-    }
-
-    for (int i = 0; i < 3; i++)
-        V3_lab[i] = temp[i] + fOrigin[i];
+    Geo2LabNoT(V3_geo, temp);
+    Geo2LabNoR(temp, V3_lab);
 }
 
-void G2PGeoBase::FieldLab2Geo(const double *V3_lab, double *V3_geo)
+void G2PGeoBase::Geo2LabNoT(const double *V3_geo, double *V3_lab)
 {
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = fRotationMatrix[0][i][0] * V3_lab[0] + fRotationMatrix[0][i][1] * V3_lab[1] + fRotationMatrix[0][i][2] * V3_lab[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            V3_geo[i] = V3_lab[i];
-    }
+    V3_lab[0] = fRotationMatrix[1][0][0] * V3_geo[0] + fRotationMatrix[1][0][1] * V3_geo[1] + fRotationMatrix[1][0][2] * V3_geo[2];
+    V3_lab[1] = fRotationMatrix[1][1][0] * V3_geo[0] + fRotationMatrix[1][1][1] * V3_geo[1] + fRotationMatrix[1][1][2] * V3_geo[2];
+    V3_lab[2] = fRotationMatrix[1][2][0] * V3_geo[0] + fRotationMatrix[1][2][1] * V3_geo[1] + fRotationMatrix[1][2][2] * V3_geo[2];
 }
 
-void G2PGeoBase::FieldGeo2Lab(const double *V3_geo, double *V3_lab)
+void G2PGeoBase::Geo2LabNoR(const double *V3_geo, double *V3_lab)
 {
-    if (fRotation) {
-        for (int i = 0; i < 3; i++)
-            V3_lab[i] = fRotationMatrix[1][i][0] * V3_geo[0] + fRotationMatrix[1][i][1] * V3_geo[1] + fRotationMatrix[1][i][2] * V3_geo[2];
-    } else {
-        for (int i = 0; i < 3; i++)
-            V3_lab[i] = V3_geo[i];
-    }
+    V3_lab[0] = V3_geo[0] + fOrigin[0];
+    V3_lab[1] = V3_geo[1] + fOrigin[1];
+    V3_lab[2] = V3_geo[2] + fOrigin[2];
+}
+
+void G2PGeoBase::Geo2LabNoTNoR(const double *V3_geo, double *V3_lab)
+{
+    V3_lab[0] = V3_geo[0];
+    V3_lab[1] = V3_geo[1];
+    V3_lab[2] = V3_geo[2];
 }
 
 ClassImp(G2PGeoBase)

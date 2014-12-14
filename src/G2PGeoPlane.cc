@@ -33,4 +33,12 @@ G2PGeoPlane::~G2PGeoPlane()
     // Nothing to do
 }
 
+bool G2PGeoPlane::TouchBoundaryGeo(double x, double y, double z)
+{
+    if (z > 0)
+        return true;
+
+    return false;
+}
+
 ClassImp(G2PGeoPlane)
