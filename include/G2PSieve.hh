@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
-/* class G2PGeoSieve
- * This file defines a class G2PGeoSieve.
- * It defines a sieve slit.
+/* class G2PSieve
+ * Defines sieve slits for both arms.
  * Derived from G2PGeoBase so G2PDrift can use it as boundary.
  * Use transport coordinate system in this class.
  */
@@ -12,8 +11,8 @@
 //   Nov 2014, C. Gu, Rewrite it with G2PGeoPlane class.
 //
 
-#ifndef G2P_GEOSIEVE_H
-#define G2P_GEOSIEVE_H
+#ifndef G2P_SIEVE_H
+#define G2P_SIEVE_H
 
 #include <vector>
 
@@ -21,11 +20,11 @@
 
 using namespace std;
 
-class G2PGeoSieve : public G2PGeoPlane
+class G2PSieve : public G2PGeoPlane
 {
 public:
-    G2PGeoSieve();
-    virtual ~G2PGeoSieve();
+    G2PSieve();
+    virtual ~G2PSieve();
 
     virtual int Begin();
 
@@ -41,7 +40,6 @@ public:
     // Sets
 
 protected:
-    virtual void MakePrefix();
 
     double fHRSAngle;
 
@@ -58,9 +56,9 @@ protected:
     double fThreshold;
 
 private:
-    static G2PGeoSieve *pG2PGeoSieve;
+    static G2PSieve *pG2PSieve;
 
-    ClassDef(G2PGeoSieve, 1)
+    ClassDef(G2PSieve, 1)
 };
 
 #endif

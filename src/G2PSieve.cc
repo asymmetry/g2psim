@@ -1,8 +1,7 @@
 // -*- C++ -*-
 
-/* class G2PGeoSieve
- * This file defines a class G2PGeoSieve.
- * It defines a sieve slit.
+/* class G2PSieve
+ * Defines sieve slits for both arms.
  * Derived from G2PGeoBase so G2PDrift can use it as boundary.
  * Use transport coordinate system in this class.
  */
@@ -23,24 +22,23 @@
 
 #include "G2PAppBase.hh"
 #include "G2PGeoPlane.hh"
-#include "G2PVarDef.hh"
 
-#include "G2PGeoSieve.hh"
+#include "G2PSieve.hh"
 
 using namespace std;
 
-G2PGeoSieve *G2PGeoSieve::pG2PGeoSieve = NULL;
+G2PSieve *G2PSieve::pG2PSieve = NULL;
 
-G2PGeoSieve::G2PGeoSieve() : fHRSAngle(0), fNRow(7), fNCol(7), fNLargerHole(0), fDHole(0), fDLargerHole(0), fThreshold(0)
+G2PSieve::G2PSieve() : fHRSAngle(0), fNRow(7), fNCol(7), fNLargerHole(0), fDHole(0), fDLargerHole(0), fThreshold(0)
 {
-    if (pG2PGeoSieve) {
-        Error("G2PGeoSieve()", "Only one instance of G2PGeoSieve allowed.");
+    if (pG2PSieve) {
+        Error("G2PSieve()", "Only one instance of G2PSieve allowed.");
         MakeZombie();
 
         return;
     }
 
-    pG2PGeoSieve = this;
+    pG2PSieve = this;
 
     fX.clear();
     fY.clear();
@@ -49,18 +47,18 @@ G2PGeoSieve::G2PGeoSieve() : fHRSAngle(0), fNRow(7), fNCol(7), fNLargerHole(0), 
     fUseTrans = true;
 }
 
-G2PGeoSieve::~G2PGeoSieve()
+G2PSieve::~G2PSieve()
 {
-    if (pG2PGeoSieve == this)
-        pG2PGeoSieve = NULL;
+    if (pG2PSieve == this)
+        pG2PSieve = NULL;
 }
 
-int G2PGeoSieve::Begin()
+int G2PSieve::Begin()
 {
     //static const char* const here = "Begin()";
 
     if (G2PGeoPlane::Begin() != 0)
-        return (fStatus = kINITERROR);
+        return (fStatus = kBEGINERROR);
 
     fNRow = 7;
     fNCol = 7;
@@ -108,10 +106,10 @@ int G2PGeoSieve::Begin()
     double ratio = fDLargerHole * fDLargerHole / (fDHole * fDHole);
     fThreshold = (ratio - 1) / ((ratio - 1) * fNLargerHole + fNRow * fNCol);
 
-    return kOK;
+    return (fStatus = kOK);
 }
 
-bool G2PGeoSieve::CanPass(double *V3)
+bool G2PSieve::CanPass(double *V3)
 {
     int temp;
     double V5[5] = {V3[0], 0, V3[1], 0, V3[2]};
@@ -119,7 +117,7 @@ bool G2PGeoSieve::CanPass(double *V3)
     return CanPass(V5, temp);
 }
 
-bool G2PGeoSieve::CanPass(double *V5, int &id)
+bool G2PSieve::CanPass(double *V5, int &id)
 {
     id = -1;
 
@@ -149,22 +147,22 @@ bool G2PGeoSieve::CanPass(double *V5, int &id)
     return true;
 }
 
-int G2PGeoSieve::GetNRow()
+int G2PSieve::GetNRow()
 {
     return fNRow;
 }
 
-int G2PGeoSieve::GetNCol()
+int G2PSieve::GetNCol()
 {
     return fNCol;
 }
 
-double G2PGeoSieve::GetZ()
+double G2PSieve::GetZ()
 {
     return fOrigin[2];
 }
 
-void G2PGeoSieve::GetPos(int index, double *V3)
+void G2PSieve::GetPos(int index, double *V3)
 {
     int col = index / fNRow;
     int row = index % fNRow;
@@ -174,11 +172,4 @@ void G2PGeoSieve::GetPos(int index, double *V3)
     V3[2] = fOrigin[2];
 }
 
-void G2PGeoSieve::MakePrefix()
-{
-    const char *base = "sieve";
-
-    G2PAppBase::MakePrefix(base);
-}
-
-ClassImp(G2PGeoSieve)
+ClassImp(G2PSieve)

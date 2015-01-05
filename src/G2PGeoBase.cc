@@ -24,8 +24,6 @@
 
 #include "G2PGeoBase.hh"
 
-using namespace std;
-
 G2PGeoBase::G2PGeoBase() : fUseTrans(false), fTranslation(false), fRotation(false), pfLab2Geo(NULL), pfGeo2Lab(NULL)
 {
     memset(fOrigin, 0, sizeof(fOrigin));
@@ -41,7 +39,7 @@ G2PGeoBase::~G2PGeoBase()
 int G2PGeoBase::Begin()
 {
     if (G2PAppBase::Begin() != 0)
-        return (fStatus = kINITERROR);
+        return (fStatus = kBEGINERROR);
 
     SetGeoPosition();
 
@@ -66,31 +64,16 @@ int G2PGeoBase::Begin()
     return (fStatus = kOK);
 }
 
-bool G2PGeoBase::TouchBoundary(const double *V5_tr, double z_tr)
-{
-    bool result = false;
-
-    if (fUseTrans)
-        result = TouchBoundary(V5_tr[0], V5_tr[2], z_tr);
-    else {
-        double V3_lab[3];
-        TCS2HCS(V5_tr, z_tr, V3_lab);
-        result = TouchBoundary(V3_lab[0], V3_lab[1], V3_lab[2]);
-    }
-
-    return result;
-}
-
-bool G2PGeoBase::TouchBoundary(const double *V3_lab)
+bool G2PGeoBase::TouchBoundary(const double *V3)
 {
     bool result = false;
 
     if (fUseTrans) {
         double V5_tr[5], z_tr;
-        HCS2TCS(V3_lab, V5_tr, z_tr);
+        HCS2TCS(V3[0], V3[1], V3[2], V5_tr[0], V5_tr[2], z_tr);
         result = TouchBoundary(V5_tr[0], V5_tr[2], z_tr);
     } else
-        result = TouchBoundary(V3_lab[0], V3_lab[1], V3_lab[2]);
+        result = TouchBoundary(V3[0], V3[1], V3[2]);
 
     return result;
 }
@@ -234,6 +217,12 @@ void G2PGeoBase::Geo2LabNoTNoR(const double *V3_geo, double *V3_lab)
     V3_lab[0] = V3_geo[0];
     V3_lab[1] = V3_geo[1];
     V3_lab[2] = V3_geo[2];
+}
+
+void G2PGeoBase::MakePrefix()
+{
+    // G2PGeoBase class do not need prefix
+    // This empty function only fulfill the requirement of the abstract class G2PAppBase
 }
 
 ClassImp(G2PGeoBase)

@@ -34,6 +34,7 @@
 #include "G2PAppBase.hh"
 #include "G2PGeoBase.hh"
 #include "G2PGlobals.hh"
+#include "G2PVarDef.hh"
 
 #include "G2PField.hh"
 
@@ -103,7 +104,7 @@ int G2PField::Init()
     //static const char* const here = "Init()";
 
     if (G2PGeoBase::Init() != 0)
-        return fStatus;
+        return (fStatus = kINITERROR);
 
     nZ = int((fZMax - fZMin) / fZStep + 1e-8) + 1;
     nR = int((fRMax - fRMin) / fRStep + 1e-8) + 1;
@@ -125,14 +126,14 @@ int G2PField::Begin()
     static const char *const here = "Begin()";
 
     if (G2PGeoBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
 
     if (fRotation)
         pfGeo2LabField = &G2PField::Geo2LabNoT;
     else
         pfGeo2LabField = &G2PField::Geo2LabNoTNoR;
 
-    EStatus status = kINITERROR;
+    EStatus status = kBEGINERROR;
 
     if (ReadMap() == 0)
         status = kOK;
@@ -450,8 +451,11 @@ void G2PField::SaveRootFile()
 
 int G2PField::Configure(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
+
+    if (G2PGeoBase::Configure(mode) != 0)
+        return -1;
 
     ConfDef confs[] = {
         {"ratio", "Field Ratio", kDOUBLE, &fRatio},
@@ -469,8 +473,6 @@ int G2PField::Configure(EMode mode)
         {"z.step", "Z Step", kDOUBLE, &fZStep},
         {0}
     };
-
-    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }

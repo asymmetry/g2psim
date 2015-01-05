@@ -20,6 +20,8 @@ class G2PGeoSolid : public G2PGeoBase
 public:
     virtual ~G2PGeoSolid();
 
+    virtual bool IsInside(double *V3) = 0;
+
     // Gets
 
     // Sets
@@ -28,8 +30,6 @@ protected:
     G2PGeoSolid(); // No instance allowed for this class
 
     bool TouchBoundaryGeo(double x, double y, double z);
-
-    virtual bool IsInside(double x, double y, double z) = 0;
 
 private:
     ClassDef(G2PGeoSolid, 1)

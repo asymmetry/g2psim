@@ -17,8 +17,6 @@
 
 #include "G2PAppBase.hh"
 
-using namespace std;
-
 class G2PGeoBase : public G2PAppBase
 {
 public:
@@ -28,8 +26,7 @@ public:
 
     virtual int Begin();
 
-    virtual bool TouchBoundary(const double *V5_tr, double z_tr);
-    virtual bool TouchBoundary(const double *V3_lab);
+    virtual bool TouchBoundary(const double *V3);
     virtual bool TouchBoundary(double x, double y, double z);
 
     // Gets
@@ -55,6 +52,8 @@ protected:
     void Geo2LabNoTNoR(const double *V3_geo, double *V3_lab);
 
     virtual bool TouchBoundaryGeo(double x, double y, double z) = 0; // true boundary is defined here
+
+    virtual void MakePrefix();
 
     bool fUseTrans; // flag indicates whether defined in transport coords
 

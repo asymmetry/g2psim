@@ -21,8 +21,6 @@
 
 #include "G2PGeoPlane.hh"
 
-using namespace std;
-
 G2PGeoPlane::G2PGeoPlane()
 {
     // Nothing to do

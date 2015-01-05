@@ -22,8 +22,6 @@
 
 #include "G2PGeoSolid.hh"
 
-using namespace std;
-
 G2PGeoSolid::G2PGeoSolid()
 {
     // Nothing to do
@@ -36,7 +34,9 @@ G2PGeoSolid::~G2PGeoSolid()
 
 bool G2PGeoSolid::TouchBoundaryGeo(double x, double y, double z)
 {
-    return (!IsInside(x, y, z));
+    double V3[3] = {x, y, z};
+
+    return (!IsInside(V3));
 }
 
 ClassImp(G2PGeoSolid)
