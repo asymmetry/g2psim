@@ -11,6 +11,7 @@
 //   Feb 2013, C. Gu, Change algorithm to Nystrom-Runge-Kutta method.
 //   Mar 2013, C. Gu, Add flexible step length and boundary check.
 //   Oct 2013, J. Liu, Add drift function to stop at a cylinder boundary.
+//   Dec 2014, C. Gu, Merge Drift() functions into one. The stop condition is set by Condition class.
 //
 
 #ifndef G2P_DRIFT_H
@@ -19,6 +20,27 @@
 #include "G2PAppBase.hh"
 
 class G2PField;
+class G2PGeoBase;
+
+class Condition
+{
+public:
+    Condition(int zi, int zf);
+    Condition(int zi_tr, int zf_tr, int angle);
+    Condition(G2PGeoBase *geo);
+    ~Condition();
+
+    bool operator()(const double *x);
+
+private:
+    int fType;
+
+    double fZi, fZf;
+    bool fSign;
+    double fSinAng, fCosAng;
+
+    G2PGeoBase *pGeo;
+};
 
 class G2PDrift : public G2PAppBase
 {
@@ -26,19 +48,12 @@ public:
     G2PDrift();
     virtual ~G2PDrift();
 
-    typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, double, double *, double *);
-    typedef double (G2PDrift::*pfDriftTCS_)(const double *, double, double, double, double, double *);
-    typedef double (G2PDrift::*pfDriftCV_)(const double *, double, double, double, double, double *, double &);
-    typedef double (G2PDrift::*pfDriftCL_)(const double *, double, double, double, double, double, double *, double &, int &);
+    typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, Condition &, double *, double *);
 
     virtual int Init();
     virtual int Begin();
-    virtual void Clear(Option_t * /*option*/ = "");
 
-    virtual double Drift(const double *x, const double *p, double zf, double *xout, double *pout); // HCS
-    virtual double Drift(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout); // TCS
-    virtual double Drift(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // CV // J. Liu
-    virtual double Drift(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // CL // J. Liu
+    virtual double Drift(const char *dir, const double *x, const double *p, Condition &stop, double *xout, double *pout);
 
     // Gets
 
@@ -47,17 +62,8 @@ public:
     void SetErrLimit(double lo, double hi);
 
 protected:
-    double DriftHCS(const double *x, const double *p, double zf, double *xout, double *pout);
-    double DriftHCSNF(const double *x, const double *p, double zf, double *xout, double *pout);
-
-    double DriftTCS(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout);
-    double DriftTCSNF(const double *x, double z_tr, double p, double angle, double zf_tr, double *xout);
-
-    double DriftCV(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // J. Liu
-    double DriftCVNF(const double *x, double z_tr, double p, double angle, double rf_lab, double *xout, double &zout); // J. Liu
-
-    double DriftCL(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // J. Liu
-    double DriftCLNF(const double *x, double z_tr, double p, double angle, double rf_lab, double zf_lab, double *xout, double &zout, int &surf); // J. Liu
+    double DriftHCS(const double *x, const double *p, Condition &stop, double *xout, double *pout);
+    double DriftHCSNF(const double *x, const double *p, Condition &stop, double *xout, double *pout);
 
     void NystromRK4(const double *x, const double *dxdt, double step, double *xo, double *err);
     double DistChord();
@@ -67,8 +73,9 @@ protected:
     virtual void MakePrefix();
 
     double fM0;
-    double fQ, fQSave;
+    double fQ;
     double fFieldRatio;
+
     double fStep, fStepLimit, fErrLoLimit, fErrHiLimit;
     double fVelocity, fVelocity2, fGamma;
     double fCof;
@@ -80,9 +87,6 @@ protected:
     G2PField *pField;
 
     pfDriftHCS_ pfDriftHCS;
-    pfDriftTCS_ pfDriftTCS;
-    pfDriftCV_ pfDriftCV;
-    pfDriftCL_ pfDriftCL;
 
 private:
     static G2PDrift *pG2PDrift;

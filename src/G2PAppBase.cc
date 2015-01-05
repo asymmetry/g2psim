@@ -43,7 +43,7 @@ static const double kRP[4] = { -7.435500e-04, -2.130200e-03, +1.195000e-03, +0.0
 
 G2PRand *G2PAppBase::pRand = G2PRand::GetInstance();
 
-G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTINIT), fIsInit(false), fIsSetup(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
+G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kOK), fConfigured(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
 {
     fConfigIsSet.clear();
 }
@@ -64,7 +64,7 @@ int G2PAppBase::Init()
         Info(here, "Initializing ...");
 
     if (IsZombie())
-        return (fStatus = kNOTINIT);
+        return (fStatus = kINITERROR);
 
     MakePrefix();
 
@@ -78,10 +78,12 @@ int G2PAppBase::Begin()
     if (fDebug > 1)
         Info(here, "Beginning ...");
 
-    if (Configure(kTWOWAY) != 0)
-        return (fStatus = kINITERROR);
+    if (Configure(kTWOWAY) == 0)
+        fConfigured = true;
+    else
+        fConfigured = false;
 
-    return (fStatus = kOK);
+    return (fStatus = fConfigured ? kOK : kBEGINERROR);
 }
 
 int G2PAppBase::End()
@@ -123,26 +125,12 @@ void G2PAppBase::SetDebugLevel(int level)
     fDebug = level;
 }
 
-void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab, double &t_lab, double &p_lab)
+void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V5_lab)
 {
     // Interface function
 
-    TCS2HCS(V5_tr, z_tr, V3_lab);
-    TCS2HCS(V5_tr, z_tr, t_lab, p_lab);
-}
-
-void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab)
-{
-    // Interface function
-
-    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, V3_lab[0], V3_lab[1], V3_lab[2]);
-}
-
-void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double &t_lab, double &p_lab)
-{
-    // Interface function
-
-    TCS2HCS(V5_tr[1], V5_tr[3], t_lab, t_lab);
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, V5_lab[0], V5_lab[2], V5_lab[4]);
+    TCS2HCS(V5_tr[1], V5_tr[3], V5_lab[1], V5_lab[3]);
 }
 
 void G2PAppBase::TCS2HCS(double x_tr, double y_tr, double z_tr, double &x_lab, double &y_lab, double &z_lab)
@@ -184,26 +172,12 @@ void G2PAppBase::TCS2HCS(double t_tr, double p_tr, double &t_lab, double &p_lab)
         Info(here, "%10.3e %10.3e -> %10.3e %10.3e\n", t_tr, p_tr, t_lab, p_lab);
 }
 
-void G2PAppBase::HCS2TCS(const double *V3_lab, double t_lab, double p_lab, double *V5_tr, double &z_tr)
+void G2PAppBase::HCS2TCS(const double *V5_lab, double *V5_tr, double &z_tr)
 {
     // Interface function
 
-    HCS2TCS(V3_lab, V5_tr, z_tr);
-    HCS2TCS(t_lab, p_lab, V5_tr, z_tr);
-}
-
-void G2PAppBase::HCS2TCS(const double *V3_lab, double *V5_tr, double &z_tr)
-{
-    // Interface function
-
-    HCS2TCS(V3_lab[0], V3_lab[1], V3_lab[2], V5_tr[0], V5_tr[2], z_tr);
-}
-
-void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double *V5_tr, double &z_tr)
-{
-    // Interface function
-
-    HCS2TCS(t_lab, p_lab, V5_tr[1], V5_tr[3]);
+    HCS2TCS(V5_lab[0], V5_lab[2], V5_lab[4], V5_tr[0], V5_tr[2], z_tr);
+    HCS2TCS(V5_lab[1], V5_lab[3], V5_tr[1], V5_tr[3]);
 }
 
 void G2PAppBase::HCS2TCS(double x_lab, double y_lab, double z_lab, double &x_tr, double &y_tr, double &z_tr)
@@ -243,33 +217,6 @@ void G2PAppBase::HCS2TCS(double t_lab, double p_lab, double &t_tr, double &p_tr)
 
     if (fDebug > 3)
         Info(here, "%10.3e %10.3e -> %10.3e %10.3e", t_lab, p_lab, t_tr, p_tr);
-}
-
-void G2PAppBase::Project(const double *V5_tr, double z_tr, double zout_tr, double *V5out_tr)
-{
-    // Interface function
-
-    V5out_tr[1] = V5_tr[1];
-    V5out_tr[3] = V5_tr[3];
-    V5out_tr[4] = V5_tr[4];
-
-    Project(V5_tr[0], V5_tr[2], z_tr, zout_tr, V5_tr[1], V5_tr[3], V5out_tr[0], V5out_tr[2]);
-}
-
-void G2PAppBase::Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout)
-{
-    // Project along z direction
-
-    static const char *const here = "Project()";
-
-    double xsave = x;
-    double ysave = y;
-
-    xout = xsave + (zout - z) * tan(t);
-    yout = ysave + (zout - z) * tan(p);
-
-    if (fDebug > 2)
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
 }
 
 void G2PAppBase::TRCS2FCS(const double *V5_tr, double *V5_fp)
@@ -481,15 +428,13 @@ void G2PAppBase::DCS2FCS(const double *V5_det, double *V5_fp)
 
 int G2PAppBase::Configure(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
 
     ConfDef confs[] = {
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {0}
     };
-
-    fIsInit = true;
 
     return ConfigureFromList(confs, mode);
 }
@@ -502,7 +447,7 @@ int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
 
     if (!gG2PRun) {
         Error(here, "No run manager.");
-        return ((mode == kREAD || mode == kTWOWAY) ? kINITERROR : kOK);
+        return -1;
     }
 
     const ConfDef *item = list;
@@ -525,9 +470,9 @@ int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
             item++;
         }
     } else
-        return kINITERROR;
+        return -1;
 
-    return kOK;
+    return 0;
 }
 
 void G2PAppBase::MakePrefix(const char *basename)

@@ -33,7 +33,7 @@ public:
     virtual ~G2PAppBase();
 
     enum EStatus {
-        kOK = 0, kNOTINIT, kINITERROR
+        kOK = 0, kINITERROR, kBEGINERROR
     };
 
     enum EMode {
@@ -59,20 +59,13 @@ protected:
     G2PAppBase(); // No instance allowed for this class
 
     // Geometry utility functions
-    virtual void TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab, double &t_lab, double &p_lab);
-    virtual void TCS2HCS(const double *V5_tr, double z_tr, double *V3_lab);
-    virtual void TCS2HCS(const double *V5_tr, double z_tr, double &t_lab, double &p_lab);
+    virtual void TCS2HCS(const double *V5_tr, double z_tr, double *V5_lab);
     virtual void TCS2HCS(double x_tr, double y_tr, double z_tr, double &x_lab, double &y_lab, double &z_lab);
     virtual void TCS2HCS(double t_tr, double p_tr, double &t_lab, double &p_lab);
 
-    virtual void HCS2TCS(const double *V3_lab, double t_lab, double p_lab, double *V5_tr, double &z_tr);
-    virtual void HCS2TCS(const double *V3_lab, double *V5_tr, double &z_tr);
-    virtual void HCS2TCS(double t_lab, double p_lab, double *V5_tr, double &z_tr);
+    virtual void HCS2TCS(const double *V5_lab, double *V5_tr, double &z_tr);
     virtual void HCS2TCS(double x_lab, double y_lab, double z_lab, double &x_tr, double &y_tr, double &z_tr);
     virtual void HCS2TCS(double t_lab, double p_lab, double &t_tr, double &p_tr);
-
-    virtual void Project(const double *V5_tr, double z_tr, double zout_tr, double *V5out_tr);
-    virtual void Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout);
 
     virtual void TRCS2FCS(const double *V5_tr, double *V5_fp);
     virtual void FCS2TRCS(const double *V5_fp, double *V5_tr);
@@ -93,8 +86,7 @@ protected:
 
     // General status variables
     EStatus fStatus;
-    bool fIsInit; // Init flag
-    bool fIsSetup; // Configure flag
+    bool fConfigured; // Configure flag
 
     int fDebug; // Debug level
 

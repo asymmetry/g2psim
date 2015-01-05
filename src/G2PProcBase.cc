@@ -9,7 +9,8 @@
 
 // History:
 //   Apr 2013, C. Gu, First public version.
-//   Sep 2013, C. Gu, Move global variable functions from G2PAppBase to here.
+//   Sep 2013, C. Gu, Move DefineVariables() function from G2PAppBase to here.
+//   Dec 2014, C. Gu, Add drifting functions and projection functions.
 //
 
 #include <cstdlib>
@@ -22,15 +23,15 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
+#include "G2PDrift.hh"
+#include "G2PGeoBase.hh"
 #include "G2PGlobals.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
 #include "G2PProcBase.hh"
 
-using namespace std;
-
-G2PProcBase::G2PProcBase() : fStage(kREADY)
+G2PProcBase::G2PProcBase() : fStage(kREADY), fDefined(false), fHRSMomentum(0.0), pDrift(NULL)
 {
     // Nothing to do
 }
@@ -45,14 +46,21 @@ int G2PProcBase::Init()
     //static const char* const here = "Init()";
 
     if (G2PAppBase::Init() != 0)
-        return fStatus;
+        return (fStatus = kINITERROR);
 
-    EStatus status = kOK;
+    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
 
-    if (DefineVariables(kDEFINE))
-        status = kINITERROR;
+    if (!pDrift) {
+        pDrift = new G2PDrift();
+        gG2PApps->Add(pDrift);
+    }
 
-    return (fStatus = status);
+    if (DefineVariables(kDEFINE) != 0)
+        fDefined = true;
+    else
+        fDefined = false;
+
+    return (fStatus = fDefined ? kOK : kINITERROR);
 }
 
 G2PProcBase::EStage G2PProcBase::GetStage()
@@ -76,6 +84,246 @@ int G2PProcBase::ArrayCopy(double *out, const double *in, int length)
     return 0;
 }
 
+double G2PProcBase::Drift(const char *dir, const double *x, const double *p, double zf, double *xout, double *pout)
+{
+    // Drift in lab coordinates
+
+    static const char *const here = "Drift()";
+
+    double xsave[3] = {x[0], x[1], x[2]};
+    double psave[3] = {p[0], p[1], p[2]};
+
+    Condition stop(x[2], zf);
+
+    double result = pDrift->Drift(dir, x, p, stop, xout, pout);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xsave[0], xsave[1], xsave[2], psave[0], psave[1], psave[2], xout[0], xout[1], xout[2], pout[0], pout[1], pout[2]);
+
+    return result;
+}
+
+double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, double zf_tr, double *V5out_tr)
+{
+    // Drift in transport coordinates
+
+    static const char *const here = "Drift()";
+
+    double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
+
+    double x[3] = {0};
+    double p[3] = {0};
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
+    double theta, phi;
+    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double pp = (1 + V5_tr[4]) * fHRSMomentum;
+    p[0] = pp * sin(theta) * cos(phi);
+    p[1] = pp * sin(theta) * sin(phi);
+    p[2] = pp * cos(theta);
+
+    Condition stop(z_tr, zf_tr, fHRSAngle);
+
+    double xout[3] = {0};
+    double pout[3] = {0};
+    double result = pDrift->Drift(dir, x, p, stop, xout, pout);
+
+    theta = acos(pout[2] / pp);
+    phi = atan2(pout[1], pout[0]);
+    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
+    double temp;
+    HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], temp);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zf_tr);
+
+    return result;
+}
+
+double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, double zf_lab, double *V5out_tr, double &zout_tr)
+{
+    // Drift in transport coordinates
+
+    static const char *const here = "Drift()";
+
+    double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
+
+    double x[3] = {0};
+    double p[3] = {0};
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
+    double theta, phi;
+    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double pp = (1 + V5_tr[4]) * fHRSMomentum;
+    p[0] = pp * sin(theta) * cos(phi);
+    p[1] = pp * sin(theta) * sin(phi);
+    p[2] = pp * cos(theta);
+
+    Condition stop(x[2], zf_lab);
+
+    double xout[3] = {0};
+    double pout[3] = {0};
+    double result = pDrift->Drift(dir, x, p, stop, xout, pout);
+
+    theta = acos(pout[2] / pp);
+    phi = atan2(pout[1], pout[0]);
+    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
+    HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], zout_tr);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
+
+    return result;
+}
+
+double G2PProcBase::Drift(const char *dir, const double *x, const double *p, G2PGeoBase *geo, double *xout, double *pout)
+{
+    // Drift in lab coordinates
+
+    static const char *const here = "Drift()";
+
+    double xsave[3] = {x[0], x[1], x[2]};
+    double psave[3] = {p[0], p[1], p[2]};
+
+    Condition stop(geo);
+
+    double result = pDrift->Drift(dir, x, p, stop, xout, pout);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xsave[0], xsave[1], xsave[2], psave[0], psave[1], psave[2], xout[0], xout[1], xout[2], pout[0], pout[1], pout[2]);
+
+    return result;
+}
+
+double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, G2PGeoBase *geo, double *V5out_tr, double &zout_tr)
+{
+    // Drift in transport coordinates
+
+    static const char *const here = "Drift()";
+
+    double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
+
+    double x[3] = {0};
+    double p[3] = {0};
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
+    double theta, phi;
+    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double pp = (1 + V5_tr[4]) * fHRSMomentum;
+    p[0] = pp * sin(theta) * cos(phi);
+    p[1] = pp * sin(theta) * sin(phi);
+    p[2] = pp * cos(theta);
+
+    Condition stop(geo);
+
+    double xout[3] = {0};
+    double pout[3] = {0};
+    double result = pDrift->Drift(dir, x, p, stop, xout, pout);
+
+    theta = acos(pout[2] / pp);
+    phi = atan2(pout[1], pout[0]);
+    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
+    HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], zout_tr);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
+
+    return result;
+}
+
+double G2PProcBase::Project(const double *x, const double *p, double zf, double *xout, double *pout)
+{
+    // Project along z direction
+
+    static const char *const here = "Project()";
+
+    double xsave[3] = {x[0], x[1], x[2]};
+
+    xout[0] = xsave[0] + (zf - xsave[2]) * p[0] / p[2];
+    xout[1] = xsave[1] + (zf - xsave[2]) * p[1] / p[2];
+    xout[2] = zf;
+
+    pout[0] = p[0];
+    pout[1] = p[1];
+    pout[2] = p[2];
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave[0], xsave[1], xsave[2], xout[0], xout[1], xout[2]);
+
+    double dx[3] = {xout[0] - xsave[0], xout[1] - xsave[1], xout[2] - xsave[2]};
+
+    return sqrt(dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2]);
+}
+
+double G2PProcBase::Project(const double *V5_tr, double z_tr, double zf_tr, double *V5out_tr)
+{
+    // Project along z direction
+
+    static const char *const here = "Project()";
+
+    V5out_tr[1] = V5_tr[1];
+    V5out_tr[3] = V5_tr[3];
+    V5out_tr[4] = V5_tr[4];
+
+    double xsave = V5_tr[0];
+    double ysave = V5_tr[2];
+
+    V5out_tr[0] = xsave + (zf_tr - z_tr) * tan(V5out_tr[1]);
+    V5out_tr[2] = ysave + (zf_tr - z_tr) * tan(V5out_tr[3]);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", xsave, V5_tr[1], ysave, V5_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zf_tr);
+
+    double dx = V5out_tr[0] - xsave;
+    double dy = V5out_tr[2] - ysave;
+    double dz = zf_tr - z_tr;
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+double G2PProcBase::Project(double x, double y, double z, double zout, double t, double p, double &xout, double &yout)
+{
+    // Project along z direction
+
+    static const char *const here = "Project()";
+
+    double xsave = x;
+    double ysave = y;
+
+    xout = xsave + (zout - z) * tan(t);
+    yout = ysave + (zout - z) * tan(p);
+
+    if (fDebug > 2)
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e", xsave, ysave, z, xout, yout, zout);
+
+    double dx = xout - xsave;
+    double dy = yout - ysave;
+    double dz = zout - z;
+
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+int G2PProcBase::Configure(EMode mode)
+{
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
+        return 0;
+
+    if (G2PAppBase::Configure(mode) != 0)
+        return -1;
+
+    ConfDef confs[] = {
+        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+int G2PProcBase::DefineVariables(EMode mode)
+{
+    if ((mode == kDEFINE) && fDefined)
+        return 0;
+
+    return 0;
+}
+
 int G2PProcBase::DefineVarsFromList(const VarDef *list, EMode mode) const
 {
     // Add or delete global variables in "list" to the global list
@@ -83,8 +331,8 @@ int G2PProcBase::DefineVarsFromList(const VarDef *list, EMode mode) const
     static const char *const here = "DefineVarsFromList()";
 
     if (!gG2PVars) {
-        Warning(here, "No global variable list found.");
-        return (mode == kDEFINE ? kINITERROR : kOK);
+        Error(here, "No global variable list.");
+        return -1;
     }
 
     if (mode == kDEFINE)
@@ -95,9 +343,9 @@ int G2PProcBase::DefineVarsFromList(const VarDef *list, EMode mode) const
         while ((item = list++) && item->name)
             gG2PVars->RemoveName(Form("%s%s", fPrefix, item->name));
     } else
-        return kINITERROR;
+        return -1;
 
-    return kOK;
+    return 0;
 }
 
 int G2PProcBase::RemoveVariables()
