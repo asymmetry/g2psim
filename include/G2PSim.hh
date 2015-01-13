@@ -20,28 +20,29 @@ class G2PAppList;
 class G2POutput;
 class G2PRun;
 
-class G2PSim : public TObject {
+class G2PSim : public TObject
+{
 public:
     G2PSim();
     virtual ~G2PSim();
 
     virtual int Run();
-    // Sets
-    void SetNEvent(int n);
-    void SetOutFile(const char* name);
 
     // Gets
 
+    // Sets
+    void SetNEvent(int n);
+    void SetOutFile(const char *name);
+
 protected:
-    virtual int Init();
     virtual int Begin();
     virtual int End();
 
     int Process();
-    bool IsAllDone(G2PAppList* procs);
+    bool IsAllDone(G2PAppList *procs);
 
-    TFile* fFile;
-    const char* fOutFile;
+    TFile *fFile;
+    const char *fOutFile;
 
     int fN;
     int fIndex;
@@ -50,14 +51,14 @@ protected:
 
     bool fIsGood;
 
-    G2POutput* pOutput;
+    G2POutput *pOutput;
 
-    G2PAppList* fApps;
-    G2PAppList* fProcs;
-    G2PRun* pRun;
+    G2PAppList *fApps;
+    G2PAppList *fProcs;
+    G2PRun *pRun;
 
 private:
-    static G2PSim* pG2PSim;
+    static G2PSim *pG2PSim;
 
     ClassDef(G2PSim, 0)
 };

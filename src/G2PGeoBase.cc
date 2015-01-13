@@ -64,6 +64,15 @@ int G2PGeoBase::Begin()
     return (fStatus = kOK);
 }
 
+bool G2PGeoBase::IsInside(const double *V5_tr, double z_tr)
+{
+    double V3_lab[3];
+
+    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, V3_lab[0], V3_lab[1], V3_lab[2]);
+
+    return IsInside(V3_lab);
+}
+
 bool G2PGeoBase::IsInside(const double *V3)
 {
     double V3_geo[3];

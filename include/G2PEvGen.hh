@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PGun
+/* class G2PEvGen
  * Abstract base class of g2p event generator classes.
  * Use function Shoot() to get reaction point kinematics.
  * Shoot() is a pure virtual method so each derived class should define its own implement.
@@ -9,24 +9,22 @@
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
+//   Nov 2014, J. Liu, Add calculation of the energy loss before the scattering.
+//   Dec 2014, C. Gu, Rewrite with new G2P geometry classes.
+//   Dec 2014, C. Gu, Merge G2PFlatGun into this class and rename this class to G2PEvGen.
 //
 
-#ifndef G2P_GUN_H
-#define G2P_GUN_H
+#ifndef G2P_EVGEN_H
+#define G2P_EVGEN_H
 
 #include "G2PProcBase.hh"
 
-using namespace std;
-
-class G2PDrift;
-
-class G2PGun : public G2PProcBase
+class G2PEvGen : public G2PProcBase
 {
 public:
-    G2PGun();
-    virtual ~G2PGun();
+    G2PEvGen();
+    virtual ~G2PEvGen();
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -42,27 +40,32 @@ public:
     void SetTargetPh(double low, double high);
     void SetDelta(double low, double high);
     void SetDelta(const char *elastic);
+    void SetCoords(const char *coords);
 
 protected:
-    virtual int Shoot(double *V51, double *V52) = 0;
-
     void SetTiltAngle();
+
     void GetReactPoint(double x, double y, double reactz, double *V5);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSMomentum;
-    double fBeamEnergy;
+    bool fUseTrans;
+
+    double fE0;
     double fParticleMass;
-    double fTargetMass;
+    double fM0;
     double fFieldRatio;
 
     bool fForceElastic;
 
     double fBeamX_lab, fBeamY_lab, fBeamZ_lab;
     double fBeamR_lab;
+
+    double fE; // Beam energy after energy loss
+    double fELoss;
+    double fTb;
 
     double fReactZLow_lab;
     double fReactZHigh_lab;
@@ -85,12 +88,10 @@ protected:
 
     double fV5tp_tr[5];
 
-    G2PDrift *pDrift;
-
 private:
-    static G2PGun *pG2PGun;
+    static G2PEvGen *pG2PEvGen;
 
-    ClassDef(G2PGun, 1)
+    ClassDef(G2PEvGen, 1)
 };
 
 #endif

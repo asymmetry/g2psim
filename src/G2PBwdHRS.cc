@@ -75,6 +75,8 @@ G2PBwdHRS::G2PBwdHRS(const char *name) : fFieldRatio(0.0), fSetting(1), frecz_la
 
 G2PBwdHRS::~G2PBwdHRS()
 {
+    delete pModel;
+
     if (pG2PBwdHRS == this)
         pG2PBwdHRS = NULL;
 }

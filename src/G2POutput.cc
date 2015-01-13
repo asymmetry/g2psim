@@ -29,8 +29,7 @@
 
 using namespace std;
 
-G2POutput::G2POutput() :
-    fNVar(0), fVar(NULL), fTree(NULL)
+G2POutput::G2POutput() : fNVar(0), fVar(NULL), fTree(NULL)
 {
     fVName.clear();
     fVariables.clear();

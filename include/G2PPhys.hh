@@ -76,16 +76,14 @@ protected:
     int fSetting;
 
     int fPID;
-
     int fZ, fA; // Define Target
     double fTargetMass;
 
     double *fPars;
     int fNPars;
 
-    double fHRSMomentum;
-
-    double fBeamEnergy;
+    double fE;
+    double fTb, fTa;
 
     double fXSreact;
     double fTHreact;

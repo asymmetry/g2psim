@@ -80,7 +80,7 @@ G2PPhys::G2PPhys()
     // Only for ROOT I/O
 }
 
-G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), fHRSMomentum(0.0), fBeamEnergy(0.0), pModel(NULL)
+G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
@@ -103,6 +103,8 @@ G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTarg
 
 G2PPhys::~G2PPhys()
 {
+    delete pModel;
+
     if (pG2PPhys == this)
         pG2PPhys = NULL;
 }
@@ -112,7 +114,7 @@ int G2PPhys::Begin()
     static const char *const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
 
     switch (fSetting) {
     case 1:
@@ -137,7 +139,7 @@ int G2PPhys::Begin()
 
     default:
         Error(here, "Cannot initialize, invalid setting.");
-        return (fStatus = kINITERROR);
+        return (fStatus = kBEGINERROR);
         break;
     }
 
@@ -157,22 +159,30 @@ int G2PPhys::Process()
 
     double V51[5], V52[5];
 
-    if (gG2PVars->FindSuffix("gun.beam.l_x") && gG2PVars->FindSuffix("gun.react.x")
-            && gG2PVars->FindSuffix("gun.beam.l_t") && gG2PVars->FindSuffix("gun.react.t")
-            && gG2PVars->FindSuffix("gun.beam.l_y") && gG2PVars->FindSuffix("gun.react.y")
-            && gG2PVars->FindSuffix("gun.beam.l_p") && gG2PVars->FindSuffix("gun.react.p")
-            && gG2PVars->FindSuffix("gun.beam.l_z") && gG2PVars->FindSuffix("gun.react.d")) {
-        V51[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
-        V51[1] = gG2PVars->FindSuffix("gun.beam.l_t")->GetValue();
-        V51[2] = gG2PVars->FindSuffix("gun.beam.l_y")->GetValue();
-        V51[3] = gG2PVars->FindSuffix("gun.beam.l_p")->GetValue();
-        V51[4] = gG2PVars->FindSuffix("gun.beam.l_z")->GetValue();
+    if (gG2PVars->FindSuffix("phys.e"))
+        fE = gG2PVars->FindSuffix("phys.e")->GetValue();
 
-        V52[0] = gG2PVars->FindSuffix("gun.react.x")->GetValue();
-        V52[1] = gG2PVars->FindSuffix("gun.react.t")->GetValue();
-        V52[2] = gG2PVars->FindSuffix("gun.react.y")->GetValue();
-        V52[3] = gG2PVars->FindSuffix("gun.react.p")->GetValue();
-        V52[4] = gG2PVars->FindSuffix("gun.react.d")->GetValue();
+    if (gG2PVars->FindSuffix("phys.tb") && gG2PVars->FindSuffix("phys.ta")) {
+        fTb = gG2PVars->FindSuffix("phys.tb")->GetValue();
+        fTa = gG2PVars->FindSuffix("phys.ta")->GetValue();
+    }
+
+    if (gG2PVars->FindSuffix("gen.beam.l_x") && gG2PVars->FindSuffix("gen.react.x")
+            && gG2PVars->FindSuffix("gen.beam.l_t") && gG2PVars->FindSuffix("gen.react.t")
+            && gG2PVars->FindSuffix("gen.beam.l_y") && gG2PVars->FindSuffix("gen.react.y")
+            && gG2PVars->FindSuffix("gen.beam.l_p") && gG2PVars->FindSuffix("gen.react.p")
+            && gG2PVars->FindSuffix("gen.beam.l_z") && gG2PVars->FindSuffix("gen.react.d")) {
+        V51[0] = gG2PVars->FindSuffix("gen.beam.l_x")->GetValue();
+        V51[1] = gG2PVars->FindSuffix("gen.beam.l_t")->GetValue();
+        V51[2] = gG2PVars->FindSuffix("gen.beam.l_y")->GetValue();
+        V51[3] = gG2PVars->FindSuffix("gen.beam.l_p")->GetValue();
+        V51[4] = gG2PVars->FindSuffix("gen.beam.l_z")->GetValue();
+
+        V52[0] = gG2PVars->FindSuffix("gen.react.x")->GetValue();
+        V52[1] = gG2PVars->FindSuffix("gen.react.t")->GetValue();
+        V52[2] = gG2PVars->FindSuffix("gen.react.y")->GetValue();
+        V52[3] = gG2PVars->FindSuffix("gen.react.p")->GetValue();
+        V52[4] = gG2PVars->FindSuffix("gen.react.d")->GetValue();
 
         fXSreact = CalXS(V51, V52, fTHreact);
     } else
@@ -209,6 +219,10 @@ int G2PPhys::Process()
 
 void G2PPhys::Clear(Option_t *option)
 {
+    fE = 0;
+    fTb = 0;
+    fTa = 0;
+
     fTHreact = 0.0;
     fXSreact = 0.0;
     fTHrec = 0.0;
@@ -236,7 +250,7 @@ double G2PPhys::CalXS(const double *V5lab, const double *V5tr, double &scatangle
 
     scatangle = acos(Eb[0] * Ef[0] + Eb[1] * Ef[1] + Eb[2] * Ef[2]);
 
-    double Ebval = fBeamEnergy;
+    double Ebval = fE;
     double Efval = (1 + V5tr[4]) * fHRSMomentum;
 
     if (fDebug > 2)
@@ -247,30 +261,30 @@ double G2PPhys::CalXS(const double *V5lab, const double *V5tr, double &scatangle
 
 int G2PPhys::Configure(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
+
+    if (G2PProcBase::Configure(mode) != 0)
+        return -1;
 
     ConfDef confs[] = {
         {"run.particle.id", "Particle ID", kINT, &fPID},
         {"run.target.z", "Target Z", kINT, &fZ},
         {"run.target.a", "Target A", kINT, &fA},
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
-        {"run.e0", "Beam Energy", kDOUBLE, &fBeamEnergy},
         {0}
     };
-
-    G2PAppBase::Configure(mode);
 
     return ConfigureFromList(confs, mode);
 }
 
 int G2PPhys::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup)
+    if (mode == kDEFINE && fDefined)
         return 0;
 
-    fIsSetup = (mode == kDEFINE);
+    if (G2PProcBase::DefineVariables(mode) != 0)
+        return -1;
 
     VarDef vars[] = {
         {"react.angle", "Real scattering angle", kDOUBLE, &fTHreact},

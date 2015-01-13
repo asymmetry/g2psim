@@ -24,14 +24,13 @@
 
 #include "G2PAppList.hh"
 #include "G2PBPM.hh"
-#include "G2PDBBwd.hh"
-#include "G2PFPData.hh"
+#include "G2PBwdDB.hh"
+#include "G2PBwdHRS.hh"
+#include "G2PData.hh"
+#include "G2PEvGen.hh"
 #include "G2PField.hh"
-#include "G2PFlatGun.hh"
+#include "G2PFwdHRS.hh"
 #include "G2PGlobals.hh"
-#include "G2PGun.hh"
-#include "G2PHRSBwd.hh"
-#include "G2PHRSFwd.hh"
 #include "G2PPhys.hh"
 #include "G2PRun.hh"
 #include "G2PSim.hh"
@@ -55,8 +54,8 @@ int main(int argc, char **argv)
     int fField = 1;
     char fGun[300] = "flat";
     map<string, int> fGunType;
-    fGunType["flat"] = 1;
-    fGunType["sieve"] = 2;
+    fGunType["trans"] = 1;
+    fGunType["lab"] = 2;
     char fHRS[300] = "484816";
     char fPhys[300] = "pbosted";
 
@@ -150,33 +149,26 @@ int main(int argc, char **argv)
         run->SetFieldRatio(0.0);
 
     if (fGunType.count(fGun) > 0) {
-        switch (fGunType[fGun]) {
-        case 1: {
-            G2PGun *gun = new G2PFlatGun("trans");
-            gG2PApps->Add(gun);
-            break;
-        }
+        G2PEvGen *gun = new G2PEvGen();
 
-        case 2: {
-            G2PGun *gun = new G2PFlatGun("lab");
-            gG2PApps->Add(gun);
-            break;
-        }
-        }
+        if (fGunType[fGun] == 2)
+            gun->SetCoords("lab");
+
+        gG2PApps->Add(gun);
     } else {
-        G2PFPData *gun = new G2PFPData(fGun);
+        G2PData *gun = new G2PData(fGun);
         gG2PApps->Add(gun);
     }
 
     if (strcmp(fHRS, "off") != 0) {
-        G2PHRSFwd *fwd = new G2PHRSFwd(fHRS);
+        G2PFwdHRS *fwd = new G2PFwdHRS(fHRS);
         gG2PApps->Add(fwd);
 
         if (fDB) {
-            G2PDBBwd *db = new G2PDBBwd("db_L.vdc.dat");
+            G2PBwdDB *db = new G2PBwdDB("db_L.vdc.dat");
             gG2PApps->Add(db);
         } else {
-            G2PHRSBwd *bwd = new G2PHRSBwd(fHRS);
+            G2PBwdHRS *bwd = new G2PBwdHRS(fHRS);
             gG2PApps->Add(bwd);
         }
     }

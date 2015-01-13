@@ -38,6 +38,8 @@ G2PGeoSub::~G2PGeoSub()
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next()))
         fSubGeos->Remove(aobj);
+
+    delete fSubGeos;
 }
 
 bool G2PGeoSub::IsInside(const double *V3)

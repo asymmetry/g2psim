@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PHRSFwd
+/* class G2PFwdHRS
  * It simulates the movement of the scatted particles in the spectrometers.
  * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5tg_tr, fV5react_lab (register in gG2PVars).
@@ -9,24 +9,23 @@
 // History:
 //   Apr 2013, C. Gu, First public version.
 //   Oct 2013, J. Liu, Add Energy loss and Multiple scattering.
+//   Jan 2015, C. Gu, Rewrite with geometry classes.
 //
 
-#ifndef G2P_HRSFWD_H
-#define G2P_HRSFWD_H
+#ifndef G2P_FWDHRS_H
+#define G2P_FWDHRS_H
 
 #include "G2PProcBase.hh"
 
-class G2PDrift;
-class G2PGeoSieve;
+class G2PSieve;
 class HRSTransBase;
 
-class G2PHRSFwd : public G2PProcBase
+class G2PFwdHRS : public G2PProcBase
 {
 public:
-    G2PHRSFwd(const char *name);
-    virtual ~G2PHRSFwd();
+    G2PFwdHRS(const char *name);
+    virtual ~G2PFwdHRS();
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -35,14 +34,10 @@ public:
 
     // Sets
     void SetSieve(const char *opt);
+    void SetVDCRes(double x, double t, double y, double p);
 
 protected:
-    G2PHRSFwd(); // Only for ROOT I/O
-
-    void RunType10(double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // production target
-    void RunType20(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // carbon target, without LHe
-    void RunType21(double thickness, double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // carbon target, with LHe
-    void RunType31(double *V5react_tr, double &z_tr, double *V5troj_tr, double &dlentot, double &elosstot); // pure LHe
+    G2PFwdHRS(); // Only for ROOT I/O
 
     bool Forward(const double *V5tp_tr, double *V5fp_tr);
 
@@ -52,18 +47,21 @@ protected:
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    int fRunType;
-    double fHRSMomentum;
-
-    int fEndPlane;
-
     int fSetting;
 
     bool fSieveOn;
     int fHoleID;
 
+    int fEndPlane;
+
+    double fELoss;
+    double fTa;
+
+    double fVDCRes[4];
+
     double fV5react_lab[5];
     double fV5react_tr[5];
+    double freactz_tr;
 
     double fV5sieve_tr[5];
     double fV5tpproj_tr[5];
@@ -71,14 +69,13 @@ protected:
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 
-    G2PDrift *pDrift;
-    G2PGeoSieve *pSieve;
+    G2PSieve *pSieve;
     HRSTransBase *pModel;
 
 private:
-    static G2PHRSFwd *pG2PHRSFwd;
+    static G2PFwdHRS *pG2PFwdHRS;
 
-    ClassDef(G2PHRSFwd, 1)
+    ClassDef(G2PFwdHRS, 1)
 };
 
 #endif

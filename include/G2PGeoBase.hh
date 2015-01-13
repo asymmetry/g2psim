@@ -28,6 +28,7 @@ public:
 
     virtual int Begin();
 
+    virtual bool IsInside(const double *V5_tr, double z_tr);
     virtual bool IsInside(const double *V3);
 
     // Gets

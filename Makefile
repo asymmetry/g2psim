@@ -15,7 +15,7 @@ EXECFILE    := G2PSim
 LIBFILE     := libG2PSim.so
 LIBNAME     := G2PSim
 USERDICT    := $(LIBNAME)_Dict
-VERSION     := 1.7.2
+VERSION     := 1.8.0
 
 ########################################################################
 SRCDIR      := src
