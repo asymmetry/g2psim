@@ -10,6 +10,7 @@
 //   Jan 2013, C. Gu, First public version.
 //   May 2013, C. Gu, Add G2PProcBase classes, G2PRunBase is more general.
 //   Sep 2013, C. Gu, Combine G2PRunBase and G2PRun to be the new run manager.
+//   Nov 2014, J. Liu, Add target type and field type.
 //
 
 #include <cstdlib>
@@ -27,8 +28,12 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
+#include "G2PDrift.hh"
+#include "G2PField.hh"
 #include "G2PGlobals.hh"
 #include "G2PRand.hh"
+#include "G2PSieve.hh"
+#include "G2PTarget.hh"
 #include "G2PVarDef.hh"
 
 #include "G2PRun.hh"
@@ -53,16 +58,19 @@ G2PRun::G2PRun() : fConfigFile(NULL)
 
     fConfig.clear();
     fConfig["run.debuglevel"] = 0;
-    fConfig["run.type"] = 10;
+    fConfig["run.seed"] = 0;
     fConfig["run.e0"] = 2.25327;
     fConfig["run.particle.id"] = 11;
     fConfig["run.particle.mass"] = 0.51099892811e-3;
     fConfig["run.particle.charge"] = -1 * e;
+    fConfig["run.target.type"] = 10;
     fConfig["run.target.z"] = 1;
     fConfig["run.target.a"] = 1;
     fConfig["run.target.mass"] = 1.008 * 0.931494028;
+    fConfig["run.target.production.pf"] = 0.5;
     fConfig["run.hrs.angle"] = 5.767 * kDEG;
     fConfig["run.hrs.p0"] = 2.24949;
+    fConfig["field.type"] = 10;
     fConfig["field.ratio"] = 0.0;
 
     fConfigIsSet.clear();
@@ -89,8 +97,32 @@ int G2PRun::Begin()
             return -1;
     }
 
-    if (fConfigIsSet.find("run.seed") == fConfigIsSet.end())
-        SetSeed(0);
+    // Set random seed
+    G2PRun::StaticSetSeed((int)(fConfig["run.seed"]));
+
+    // Set target
+    if (gG2PApps->Find("G2PTarget") == NULL) {
+        G2PTarget *target = new G2PTarget();
+        gG2PApps->Add(target);
+    }
+
+    // Set sieve
+    if (gG2PApps->Find("G2PSieve") == NULL) {
+        G2PSieve *sieve = new G2PSieve();
+        gG2PApps->Add(sieve);
+    }
+
+    // Set field
+    if (gG2PApps->Find("G2PField") == NULL) {
+        G2PField *field = new G2PField();
+        gG2PApps->Add(field);
+    }
+
+    // Set Drift
+    if (gG2PApps->Find("G2PDrift") == NULL) {
+        G2PDrift *drift = new G2PDrift();
+        gG2PApps->Add(drift);
+    }
 
     return 0;
 }
@@ -256,22 +288,38 @@ void G2PRun::SetDebugLevel(int n)
     fConfigIsSet.insert("run.debuglevel");
 }
 
-void G2PRun::SetRunType(const char *type)
+void G2PRun::SetSeed(unsigned n)
+{
+    fConfig["run.seed"] = (double) n;
+
+    fConfigIsSet.insert("run.seed");
+}
+
+void G2PRun::SetTargetType(const char *type)
 {
     map<string, int> tempmap;
     tempmap["production"] = 10;
+    tempmap["prod"] = 10;
     tempmap["optics"] = 20;
+    tempmap["optics_C40"] = 20;
+    tempmap["optics20"] = 20;
+    tempmap["optics_C40He"] = 21;
     tempmap["optics21"] = 21;
+    tempmap["optics_C125"] = 22;
     tempmap["optics22"] = 22;
+    tempmap["optics_C125He"] = 23;
     tempmap["optics23"] = 23;
-    tempmap["empty"] = 31;
+    tempmap["dummy"] = 30;
+    tempmap["dummy_nocap"] = 31;
+    tempmap["dummy31"] = 31;
+    tempmap["empty"] = 40;
 
     if (tempmap.count(type) > 0)
-        fConfig["run.type"] = (double) tempmap[type];
+        fConfig["run.target.type"] = (double) tempmap[type];
     else
-        fConfig["run.type"] = (double) 10;
+        fConfig["run.target.type"] = (double) 10;
 
-    fConfigIsSet.insert("run.type");
+    fConfigIsSet.insert("run.target.type");
 }
 
 void G2PRun::SetParticle(int id)
@@ -336,6 +384,13 @@ void G2PRun::SetTargetMass(double M)
     fConfigIsSet.insert("run.target.mass");
 }
 
+void G2PRun::SetTargetPF(double pf)
+{
+    fConfig["run.target.production.pf"] = pf;
+
+    fConfigIsSet.insert("run.target.production.pf");
+}
+
 void G2PRun::SetHRSAngle(double angle)
 {
     fConfig["run.hrs.angle"] = angle;
@@ -350,19 +405,28 @@ void G2PRun::SetHRSMomentum(double P0)
     fConfigIsSet.insert("run.hrs.p0");
 }
 
+void G2PRun::SetFieldType(const char *type)
+{
+    map<string, int> tempmap;
+    tempmap["transverse"] = 10;
+    tempmap["trans"] = 10;
+    tempmap["longitudinal"] = 11;
+    tempmap["long"] = 11;
+    tempmap["gep"] = 20;
+
+    if (tempmap.count(type) > 0)
+        fConfig["field.type"] = (double) tempmap[type];
+    else
+        fConfig["field.type"] = (double) 10;
+
+    fConfigIsSet.insert("field.type");
+}
+
 void G2PRun::SetFieldRatio(double ratio)
 {
     fConfig["field.ratio"] = ratio;
 
     fConfigIsSet.insert("field.ratio");
-}
-
-void G2PRun::SetSeed(unsigned n)
-{
-    fConfig["run.seed"] = (double) n;
-    G2PRun::StaticSetSeed(n);
-
-    fConfigIsSet.insert("run.seed");
 }
 
 int G2PRun::ParseConfigFile()
