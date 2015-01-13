@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PHRSBwd
+/* class G2PBwdHRS
  * It simulates the reconstruction of g2p kinematics.
  * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5bpm_lab, fV5fp_tr (register in gG2PVars).
@@ -11,22 +11,20 @@
 //   Apr 2014, C. Gu, New effective bpm fitting.
 //
 
-#ifndef G2P_HRSBWD_H
-#define G2P_HRSBWD_H
+#ifndef G2P_BWDHRS_H
+#define G2P_BWDHRS_H
 
 #include "G2PProcBase.hh"
 
-class G2PDrift;
-class G2PGeoSieve;
+class G2PSieve;
 class HRSTransBase;
 
-class G2PHRSBwd : public G2PProcBase
+class G2PBwdHRS : public G2PProcBase
 {
 public:
-    G2PHRSBwd(const char *name);
-    virtual ~G2PHRSBwd();
+    G2PBwdHRS(const char *name);
+    virtual ~G2PBwdHRS();
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -39,7 +37,7 @@ public:
     void SetRecZ(double z);
 
 protected:
-    G2PHRSBwd(); // Only for ROOT I/O
+    G2PBwdHRS(); // Only for ROOT I/O
 
     double GetEffBPM(int axis);
 
@@ -49,7 +47,6 @@ protected:
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSMomentum;
     double fFieldRatio;
 
     int fSetting;
@@ -68,14 +65,13 @@ protected:
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
 
-    G2PDrift *pDrift;
-    G2PGeoSieve *pSieve;
+    G2PSieve *pSieve;
     HRSTransBase *pModel;
 
 private:
-    static G2PHRSBwd *pG2PHRSBwd;
+    static G2PBwdHRS *pG2PBwdHRS;
 
-    ClassDef(G2PHRSBwd, 1)
+    ClassDef(G2PBwdHRS, 1)
 };
 
 #endif

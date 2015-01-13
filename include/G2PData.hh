@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PFPData
+/* class G2PData
  * It loads real data to the simulation.
  */
 
@@ -9,8 +9,8 @@
 //   Sep 2013, C. Gu, Rewrite G2PDataGun as a standalone G2PProcBase class.
 //
 
-#ifndef G2P_FPDATA_H
-#define G2P_FPDATA_H
+#ifndef G2P_DATA_H
+#define G2P_DATA_H
 
 #include <queue>
 
@@ -18,18 +18,18 @@
 
 using namespace std;
 
-class G2PFPData : public G2PProcBase
+class G2PData : public G2PProcBase
 {
 public:
-    G2PFPData(const char *filename);
-    virtual ~G2PFPData();
+    G2PData(const char *filename);
+    virtual ~G2PData();
 
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
 
 protected:
-    G2PFPData(); // Only for ROOT I/O
+    G2PData(); // Only for ROOT I/O
 
     int LoadData();
 
@@ -50,9 +50,9 @@ protected:
     double fV5fp_rot[5];
 
 private:
-    static G2PFPData *pG2PFPData;
+    static G2PData *pG2PData;
 
-    ClassDef(G2PFPData, 1)
+    ClassDef(G2PData, 1)
 };
 
 #endif

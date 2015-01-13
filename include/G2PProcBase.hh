@@ -30,7 +30,6 @@ public:
         kREADY = 0, kDONE, kSTOP
     };
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process() = 0;
 
@@ -42,8 +41,6 @@ public:
 
 protected:
     G2PProcBase(); // No instance allowed for this class
-
-    int ArrayCopy(double *out, const double *in, int length);
 
     virtual double Drift(const char *dir, const double *x, const double *p, double zf, double *xout, double *pout); // HCS
     virtual double Drift(const char *dir, const double *V5_tr, double z_tr, double zf_tr, double *V5out_tr); // TCS
@@ -60,6 +57,7 @@ protected:
     // Global variable functions
     virtual int DefineVariables(EMode mode = kDEFINE);
     int DefineVarsFromList(const VarDef *list, EMode mode = kDEFINE) const;
+    int DefineVarsFromList(const char *prefix, const VarDef *list, EMode mode = kDEFINE) const;
     virtual int RemoveVariables();
 
     EStage fStage;

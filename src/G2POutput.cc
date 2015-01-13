@@ -45,9 +45,9 @@ G2POutput::~G2POutput()
         delete [] fVar;
 }
 
-int G2POutput::Init()
+int G2POutput::Begin()
 {
-    static const char *const here = "Init()";
+    static const char *const here = "Begin()";
 
     if (!gG2PVars) {
         Error(here, "Cannot initialize, no global vars.");

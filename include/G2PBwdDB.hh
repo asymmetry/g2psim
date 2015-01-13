@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PDBBwd
+/* class G2PBwdDB
  * Use the analyzer database to reconstruct target variables.
  * Several functions is developed from J. Huang's HRS optics class.
  */
@@ -13,8 +13,8 @@
 //   Apr 2014, C. Gu, Apply effective bpm fitting.
 //
 
-#ifndef G2P_DBBWD_H
-#define G2P_DBBWD_H
+#ifndef G2P_BWDDB_H
+#define G2P_BWDDB_H
 
 #include <vector>
 
@@ -22,16 +22,14 @@
 
 using namespace std;
 
-class G2PDrift;
-class G2PGeoSieve;
+class G2PSieve;
 
-class G2PDBBwd : public G2PProcBase
+class G2PBwdDB : public G2PProcBase
 {
 public:
-    G2PDBBwd(const char *name);
-    virtual ~G2PDBBwd();
+    G2PBwdDB(const char *name);
+    virtual ~G2PBwdDB();
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -44,7 +42,7 @@ public:
     void SetRecZ(double z);
 
 protected:
-    G2PDBBwd(); // Only for ROOT I/O
+    G2PBwdDB(); // Only for ROOT I/O
 
     double GetEffBPM(int axis);
 
@@ -54,7 +52,6 @@ protected:
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fHRSMomentum;
     double fFieldRatio;
 
     double fFitPars[2][3];
@@ -71,8 +68,7 @@ protected:
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
 
-    G2PDrift *pDrift;
-    G2PGeoSieve *pSieve;
+    G2PSieve *pSieve;
 
 private:
 
@@ -118,9 +114,9 @@ private:
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
-    static G2PDBBwd *pG2PDBBwd;
+    static G2PBwdDB *pG2PBwdDB;
 
-    ClassDef(G2PDBBwd, 1)
+    ClassDef(G2PBwdDB, 1)
 };
 
 #endif

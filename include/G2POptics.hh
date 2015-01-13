@@ -12,11 +12,13 @@
 #define G2P_OPTICS_H
 
 #include <queue>
+#include <vector>
 
 #include "G2PProcBase.hh"
 
-class G2PDrift;
-class G2PGeoSieve;
+using namespace std;
+
+class G2PSieve;
 
 class G2POptics : public G2PProcBase
 {
@@ -24,7 +26,6 @@ public:
     G2POptics(const char *filename);
     virtual ~G2POptics();
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -34,13 +35,13 @@ public:
     // Sets
     void SetHRSMomentum(int n, double *value);
     void SetTiltAngle(int n, double *value);
-    void SetReactZ(int n, double *value);
+    void SetFoilZ(int n, double *value);
     void SetEnergyLoss(int n, double *value);
 
 protected:
     G2POptics(); // Only for ROOT I/O
 
-    void Drift(double *ang, double *pos);
+    void CalPos(double *ang, double *pos);
     double Distance(double *V2a, double *V2b);
 
     int LoadData();
@@ -58,17 +59,17 @@ protected:
 
     queue<sData> fData;
 
-    double fHRSMomentum;
-    double fBeamEnergy;
-    double fTiltAngle;
     double fTargetMass;
-    double fEnergyLoss;
+
+    double fE0;
+    double fTiltAngle;
+    double fELoss;
 
     int fNFoil;
-    vector<double> fHRSP0;
-    vector<double> fReactZ_lab;
+    vector<double> fHRSMomentumV;
+    vector<double> fFoilZV;
     vector<double> fTiltAngleV;
-    vector<double> fELoss;
+    vector<double> fELossV;
 
     int fHoleID;
 
@@ -82,8 +83,7 @@ protected:
 
     double fV5fp_det[5];
 
-    G2PDrift *pDrift;
-    G2PGeoSieve *pSieve;
+    G2PSieve *pSieve;
 
 private:
     static G2POptics *pG2POptics;

@@ -30,7 +30,7 @@ public:
     G2POutput();
     ~G2POutput();
 
-    int Init();
+    int Begin();
     int Process();
     int End();
 

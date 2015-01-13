@@ -15,14 +15,13 @@
 //   Apr 2013, C. Gu, Add Pengjia's fitting result.
 //   Jul 2013, C. Gu, Treat optics (no field) case specially.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
+//   Jan 2015, C. Gu, Use new Drift() function in G2PProcBase.
 //
 
 #ifndef G2P_BPM_H
 #define G2P_BPM_H
 
 #include "G2PProcBase.hh"
-
-class G2PDrift;
 
 class G2PBPM : public G2PProcBase
 {
@@ -32,7 +31,6 @@ public:
 
     typedef void (G2PBPM::*pfGetBPM_)(const double *, double *, double *);
 
-    virtual int Init();
     virtual int Begin();
     virtual int Process();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -43,9 +41,11 @@ public:
     void SetBPMRes(double a, double b);
 
 protected:
-    void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void SetBPMPos();
+
     void BPM2Lab(const double *V5_bpm, double *V5_lab);
 
+    void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
     void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
     void GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
     void GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
@@ -56,13 +56,11 @@ protected:
 
     void GetBPMAB(const double *V5beam_lab, float *xout);
 
-    void SetBPMPos();
-
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
-    double fBeamEnergy;
+    double fE0;
     double fFieldRatio;
 
     double fBPMAX, fBPMAY;
@@ -75,8 +73,6 @@ protected:
     double fV5bpm_lab[5];
     double fV2bpma_bpm[2];
     double fV2bpmb_bpm[2];
-
-    G2PDrift *pDrift;
 
     pfGetBPM_ pfGetBPM;
 

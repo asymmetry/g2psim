@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PTargetFwd
+/* class G2PFwdTarget
  * It simulates the movement of the scatted particles only in the target field without energy loss.
  * Input variables: fV5tp_tr, fV5react_lab (register in gG2PVars).
  */
@@ -21,76 +21,52 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
-#include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
-#include "G2PGeoSieve.hh"
-#include "G2PVar.hh"
+#include "G2PSieve.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
-#include "G2PTargetFwd.hh"
+#include "G2PFwdTarget.hh"
 
 using namespace std;
 
-G2PTargetFwd *G2PTargetFwd::pG2PTargetFwd = NULL;
+G2PFwdTarget *G2PFwdTarget::pG2PFwdTarget = NULL;
 
-G2PTargetFwd::G2PTargetFwd() : fHRSMomentum(0.0), fSieveOn(false), fHoleID(-1), pDrift(NULL), pSieve(NULL)
+G2PFwdTarget::G2PFwdTarget() : fSieveOn(false), fHoleID(-1), pSieve(NULL)
 {
-    if (pG2PTargetFwd) {
-        Error("G2PTargetFwd()", "Only one instance of G2PTargetFwd allowed.");
+    if (pG2PFwdTarget) {
+        Error("G2PFwdTarget()", "Only one instance of G2PFwdTarget allowed.");
         MakeZombie();
         return;
     }
 
-    pG2PTargetFwd = this;
+    pG2PFwdTarget = this;
 
     fPriority = 3;
 
     Clear();
 }
 
-G2PTargetFwd::~G2PTargetFwd()
+G2PFwdTarget::~G2PFwdTarget()
 {
-    if (pG2PTargetFwd == this)
-        pG2PTargetFwd = NULL;
+    if (pG2PFwdTarget == this)
+        pG2PFwdTarget = NULL;
 }
 
-int G2PTargetFwd::Init()
-{
-    //static const char* const here = "Init()";
-
-    if (G2PProcBase::Init() != 0)
-        return fStatus;
-
-    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
-
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
-
-    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
-
-    if (!pSieve) {
-        pSieve = new G2PGeoSieve();
-        gG2PApps->Add(pSieve);
-    }
-
-    return (fStatus = kOK);
-}
-
-int G2PTargetFwd::Begin()
+int G2PFwdTarget::Begin()
 {
     //static const char* const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
+
+    pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
     return (fStatus = kOK);
 }
 
-int G2PTargetFwd::Process()
+int G2PFwdTarget::Process()
 {
     static const char *const here = "Process()";
 
@@ -109,35 +85,29 @@ int G2PTargetFwd::Process()
     fV5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
     fV5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
 
-    double x_tr, y_tr, z_tr;
+    freactz_tr = gG2PVars->FindSuffix("react.z")->GetValue();
 
-    HCS2TCS(fV5react_lab[0], fV5react_lab[2], fV5react_lab[4], x_tr, y_tr, z_tr);
-
-    double t_lab, p_lab;
-    TCS2HCS(fV5react_tr[1], fV5react_tr[3], t_lab, p_lab);
     double pp = fHRSMomentum * (1 + fV5react_tr[4]);
     double x[3] = {fV5react_lab[0], fV5react_lab[2], fV5react_lab[4]};
-    double p[3] = {pp * sin(t_lab) *cos(p_lab), pp * sin(t_lab) *sin(p_lab), pp * cos(t_lab)};
+    double p[3] = {pp * sin(fV5react_lab[1]) *cos(fV5react_lab[3]), pp * sin(fV5react_lab[1]) *sin(fV5react_lab[3]), pp * cos(fV5react_lab[1])};
 
     // Local dump front face
-    pDrift->Drift(x, p, 640.0e-3, x, p); // along z direction in lab coordinate
+    Drift("forward", x, p, 640.0e-3, x, p); // along z direction in lab coordinate
 
     if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3))
         return -1;
-
-    if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3))
+    else if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3))
         return -1;
 
     // Local dump back face
-    pDrift->Drift(x, p, 790.0e-3, x, p);
+    Drift("forward", x, p, 790.0e-3, x, p);
 
     if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3))
         return -1;
-
-    if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3))
+    else if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3))
         return -1;
 
-    pDrift->Drift(fV5react_tr, z_tr, fHRSMomentum, fHRSAngle, pSieve->GetZ(), fV5sieve_tr);
+    Drift("forward", fV5react_tr, freactz_tr, pSieve->GetZ(), fV5sieve_tr);
 
     if (fDebug > 1)
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
@@ -147,10 +117,7 @@ int G2PTargetFwd::Process()
             return -1;
     }
 
-    Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
-    fV5tpproj_tr[1] = fV5sieve_tr[1];
-    fV5tpproj_tr[3] = fV5sieve_tr[3];
-    fV5tpproj_tr[4] = fV5sieve_tr[4];
+    Project(fV5sieve_tr, pSieve->GetZ(), 0.0, fV5tpproj_tr);
 
     if (fDebug > 1)
         Info(here, "tpproj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpproj_tr[0], fV5tpproj_tr[1], fV5tpproj_tr[2], fV5tpproj_tr[3], fV5tpproj_tr[4]);
@@ -158,8 +125,10 @@ int G2PTargetFwd::Process()
     return 0;
 }
 
-void G2PTargetFwd::Clear(Option_t *option)
+void G2PFwdTarget::Clear(Option_t *option)
 {
+    freactz_tr = 0;
+
     memset(fV5react_lab, 0, sizeof(fV5react_lab));
     memset(fV5react_tr, 0, sizeof(fV5react_tr));
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
@@ -168,7 +137,7 @@ void G2PTargetFwd::Clear(Option_t *option)
     G2PProcBase::Clear(option);
 }
 
-void G2PTargetFwd::SetSieve(const char *opt)
+void G2PFwdTarget::SetSieve(const char *opt)
 {
     TString str(opt);
 
@@ -181,27 +150,13 @@ void G2PTargetFwd::SetSieve(const char *opt)
     }
 }
 
-int G2PTargetFwd::Configure(EMode mode)
+int G2PFwdTarget::DefineVariables(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if (mode == kDEFINE && fDefined)
         return 0;
 
-    ConfDef confs[] = {
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
-        {0}
-    };
-
-    G2PAppBase::Configure(mode);
-
-    return ConfigureFromList(confs, mode);
-}
-
-int G2PTargetFwd::DefineVariables(EMode mode)
-{
-    if (mode == kDEFINE && fIsSetup)
-        return 0;
-
-    fIsSetup = (mode == kDEFINE);
+    if (G2PProcBase::DefineVariables(mode) != 0)
+        return -1;
 
     VarDef vars[] = {
         {"id", "Hole ID", kINT, &fHoleID},
@@ -221,11 +176,11 @@ int G2PTargetFwd::DefineVariables(EMode mode)
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PTargetFwd::MakePrefix()
+void G2PFwdTarget::MakePrefix()
 {
     const char *base = "fwd";
 
     G2PAppBase::MakePrefix(base);
 }
 
-ClassImp(G2PTargetFwd)
+ClassImp(G2PFwdTarget)

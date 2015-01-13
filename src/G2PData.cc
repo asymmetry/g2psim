@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PFPData
+/* class G2PData
  * It loads real data to the simulation.
  */
 
@@ -22,57 +22,56 @@
 #include "G2PAppList.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
+#include "G2PVarDef.hh"
 
-#include "G2PFPData.hh"
+#include "G2PData.hh"
 
 using namespace std;
 
-G2PFPData *G2PFPData::pG2PFPData = NULL;
+G2PData *G2PData::pG2PData = NULL;
 
-G2PFPData::G2PFPData()
+G2PData::G2PData()
 {
     // Only for ROOT I/O
 }
 
-G2PFPData::G2PFPData(const char *filename) : fDataFile(filename)
+G2PData::G2PData(const char *filename) : fDataFile(filename)
 {
-    if (pG2PFPData) {
-        Error("G2PFPData()", "Only one instance of G2PFPData allowed.");
+    if (pG2PData) {
+        Error("G2PData()", "Only one instance of G2PData allowed.");
         MakeZombie();
         return;
     }
 
-    pG2PFPData = this;
+    pG2PData = this;
 
     fPriority = 1;
 
     Clear();
 }
 
-G2PFPData::~G2PFPData()
+G2PData::~G2PData()
 {
-    if (pG2PFPData == this)
-        pG2PFPData = NULL;
-
-    Clear();
+    if (pG2PData == this)
+        pG2PData = NULL;
 }
 
-int G2PFPData::Begin()
+int G2PData::Begin()
 {
     static const char *const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
 
     if (LoadData() != 0) {
         Error(here, "Cannot read data.");
-        return (fStatus = kINITERROR);
+        return (fStatus = kBEGINERROR);
     }
 
     return (fStatus = kOK);
 }
 
-int G2PFPData::Process()
+int G2PData::Process()
 {
     static const char *const here = "Process()";
 
@@ -108,7 +107,7 @@ int G2PFPData::Process()
     return 0;
 }
 
-void G2PFPData::Clear(Option_t *option)
+void G2PData::Clear(Option_t *option)
 {
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
@@ -117,7 +116,7 @@ void G2PFPData::Clear(Option_t *option)
     G2PProcBase::Clear(option);
 }
 
-int G2PFPData::LoadData()
+int G2PData::LoadData()
 {
     FILE *fp;
 
@@ -140,12 +139,13 @@ int G2PFPData::LoadData()
         return -1;
 }
 
-int G2PFPData::DefineVariables(EMode mode)
+int G2PData::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup)
+    if (mode == kDEFINE && fDefined)
         return 0;
 
-    fIsSetup = (mode == kDEFINE);
+    if (G2PProcBase::DefineVariables(mode) != 0)
+        return -1;
 
     VarDef vars[] = {
         {"fp.x", "FP X", kDOUBLE, &fV5fp_tr[0]},
@@ -167,11 +167,11 @@ int G2PFPData::DefineVariables(EMode mode)
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PFPData::MakePrefix()
+void G2PData::MakePrefix()
 {
     const char *base = "data";
 
     G2PAppBase::MakePrefix(base);
 }
 
-ClassImp(G2PFPData)
+ClassImp(G2PData)

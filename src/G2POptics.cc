@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cmath>
 #include <queue>
+#include <vector>
 
 #include "TROOT.h"
 #include "TError.h"
@@ -19,10 +20,9 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
-#include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
-#include "G2PGeoSieve.hh"
+#include "G2PSieve.hh"
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
@@ -35,12 +35,12 @@ static double kPHI = (sqrt(5.0) - 1.0) / 2.0;
 
 G2POptics *G2POptics::pG2POptics = NULL;
 
-G2POptics::G2POptics() : fDataFile(NULL)
+G2POptics::G2POptics()
 {
     // Only for ROOT I/O
 }
 
-G2POptics::G2POptics(const char *filename) : fDataFile(filename), fHRSMomentum(0.0), fBeamEnergy(0.0), fTargetMass(0.0), fEnergyLoss(0.0), fNFoil(1), fHoleID(-1), pDrift(NULL), pSieve(NULL)
+G2POptics::G2POptics(const char *filename) : fDataFile(filename), fTargetMass(0.0), fE0(0.0), fTiltAngle(0.0), fELoss(0.0), fNFoil(1), fHoleID(-1), pSieve(NULL)
 {
     if (pG2POptics) {
         Error("G2POptics()", "Only one instance of G2POptics allowed.");
@@ -52,14 +52,14 @@ G2POptics::G2POptics(const char *filename) : fDataFile(filename), fHRSMomentum(0
 
     fPriority = 1;
 
-    fHRSP0.clear();
-    fHRSP0.push_back(0.0);
-    fReactZ_lab.clear();
-    fReactZ_lab.push_back(0.0);
+    fHRSMomentumV.clear();
+    fHRSMomentumV.push_back(0.0);
+    fFoilZV.clear();
+    fFoilZV.push_back(0.0);
     fTiltAngleV.clear();
     fTiltAngleV.push_back(0.0);
-    fELoss.clear();
-    fELoss.push_back(0.0);
+    fELossV.clear();
+    fELossV.push_back(0.0);
 
     Clear();
 }
@@ -70,40 +70,18 @@ G2POptics::~G2POptics()
         pG2POptics = NULL;
 }
 
-int G2POptics::Init()
-{
-    //static const char* const here = "Init()";
-
-    if (G2PProcBase::Init() != 0)
-        return fStatus;
-
-    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
-
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
-
-    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
-
-    if (!pSieve) {
-        pSieve = new G2PGeoSieve();
-        gG2PApps->Add(pSieve);
-    }
-
-    return (fStatus = kOK);
-}
-
 int G2POptics::Begin()
 {
     static const char *const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
+
+    pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
     if (LoadData() != 0) {
         Error(here, "Cannot read data.");
-        return (fStatus = kINITERROR);
+        return (fStatus = kBEGINERROR);
     }
 
     return (fStatus = kOK);
@@ -124,21 +102,25 @@ int G2POptics::Process()
         Info(here, "%04d %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", tempdata.ind, tempdata.xf, tempdata.tf, tempdata.yf, tempdata.pf, tempdata.eb, tempdata.xb, tempdata.yb);
 
     fHoleID = tempdata.ind;
-    fBeamEnergy = tempdata.eb;
-    fV3bpm_lab[0] = tempdata.xb;
-    fV3bpm_lab[1] = tempdata.yb;
-    fV5fp_det[0] = tempdata.xf;
-    fV5fp_det[1] = tempdata.tf;
-    fV5fp_det[2] = tempdata.yf;
-    fV5fp_det[3] = tempdata.pf;
     int kineID = fHoleID / (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
     int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
     res = res % (pSieve->GetNRow() * pSieve->GetNCol());
-    fHRSMomentum = fHRSP0[kineID];
+
+    fE0 = tempdata.eb;
+
+    fV3bpm_lab[0] = tempdata.xb;
+    fV3bpm_lab[1] = tempdata.yb;
+
+    fV5fp_det[0] = tempdata.xf;
+    fV5fp_det[1] = tempdata.tf;
+    fV5fp_det[2] = tempdata.yf;
+    fV5fp_det[3] = tempdata.pf;
+
+    fHRSMomentum = fHRSMomentumV[kineID];
     fTiltAngle = fTiltAngleV[kineID * fNFoil + foilID];
-    fEnergyLoss = fELoss[foilID];
-    fV3bpm_lab[2] = fReactZ_lab[foilID];
+    fELoss = fELossV[foilID];
+    fV3bpm_lab[2] = fFoilZV[foilID];
 
     if (fDebug > 1)
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e", fV3bpm_lab[0], fV3bpm_lab[1], fV3bpm_lab[2]);
@@ -162,7 +144,7 @@ int G2POptics::Process()
 
     double pos[2];
     double dlast;
-    Drift(ang, pos);
+    CalPos(ang, pos);
     dlast = Distance(pos, V3siv_tr);
 
     while (dlast > 1e-5) {
@@ -181,9 +163,9 @@ int G2POptics::Process()
         testr[1] = ang[1];
 
         double dl, dr;
-        Drift(testl, pos);
+        CalPos(testl, pos);
         dl = Distance(pos, V3siv_tr);
-        Drift(testr, pos);
+        CalPos(testr, pos);
         dr = Distance(pos, V3siv_tr);
 
         while (fabs(right[0] - left[0]) > 0.7e-5) {
@@ -192,14 +174,14 @@ int G2POptics::Process()
                 testr[0] = testl[0];
                 dr = dl;
                 testl[0] = right[0] - kPHI * (right[0] - left[0]);
-                Drift(testl, pos);
+                CalPos(testl, pos);
                 dl = Distance(pos, V3siv_tr);
             } else {
                 left[0] = testl[0];
                 testl[0] = testr[0];
                 dl = dr;
                 testr[0] = left[0] + kPHI * (right[0] - left[0]);
-                Drift(testr, pos);
+                CalPos(testr, pos);
                 dr = Distance(pos, V3siv_tr);
             }
         }
@@ -217,9 +199,9 @@ int G2POptics::Process()
         testr[0] = ang[0];
         testr[1] = left[1] + kPHI * (right[1] - left[1]);
 
-        Drift(testl, pos);
+        CalPos(testl, pos);
         dl = Distance(pos, V3siv_tr);
-        Drift(testr, pos);
+        CalPos(testr, pos);
         dr = Distance(pos, V3siv_tr);
 
         while (fabs(right[1] - left[1]) > 0.7e-5) {
@@ -228,31 +210,28 @@ int G2POptics::Process()
                 testr[1] = testl[1];
                 dr = dl;
                 testl[1] = right[1] - kPHI * (right[1] - left[1]);
-                Drift(testl, pos);
+                CalPos(testl, pos);
                 dl = Distance(pos, V3siv_tr);
             } else {
                 left[1] = testl[1];
                 testl[1] = testr[1];
                 dl = dr;
                 testr[1] = left[1] + kPHI * (right[1] - left[1]);
-                Drift(testr, pos);
+                CalPos(testr, pos);
                 dr = Distance(pos, V3siv_tr);
             }
         }
 
         ang[1] = (right[1] + left[1]) / 2;
 
-        Drift(ang, pos);
+        CalPos(ang, pos);
         dlast = Distance(pos, V3siv_tr);
     }
 
     if (fDebug > 1)
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
 
-    Project(fV5sieve_tr[0], fV5sieve_tr[2], pSieve->GetZ(), 0.0, fV5sieve_tr[1], fV5sieve_tr[3], fV5tpproj_tr[0], fV5tpproj_tr[2]);
-    fV5tpproj_tr[1] = fV5sieve_tr[1];
-    fV5tpproj_tr[3] = fV5sieve_tr[3];
-    fV5tpproj_tr[4] = fV5sieve_tr[4];
+    Project(fV5sieve_tr, pSieve->GetZ(), 0.0, fV5tpproj_tr);
 
     if (fDebug > 1)
         Info(here, "tpproj_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpproj_tr[0], fV5tpproj_tr[1], fV5tpproj_tr[2], fV5tpproj_tr[3], fV5tpproj_tr[4]);
@@ -278,10 +257,10 @@ void G2POptics::Clear(Option_t *option)
 
 void G2POptics::SetHRSMomentum(int n, double *value)
 {
-    fHRSP0.clear();
+    fHRSMomentumV.clear();
 
     for (int i = 0; i < n; i++)
-        fHRSP0.push_back(value[i]);
+        fHRSMomentumV.push_back(value[i]);
 }
 
 void G2POptics::SetTiltAngle(int n, double *value)
@@ -292,27 +271,27 @@ void G2POptics::SetTiltAngle(int n, double *value)
         fTiltAngleV.push_back(value[i]);
 }
 
-void G2POptics::SetReactZ(int n, double *value)
+void G2POptics::SetFoilZ(int n, double *value)
 {
     fNFoil = n;
 
-    fReactZ_lab.clear();
+    fFoilZV.clear();
 
     for (int i = 0; i < n; i++)
-        fReactZ_lab.push_back(value[i]);
+        fFoilZV.push_back(value[i]);
 }
 
 void G2POptics::SetEnergyLoss(int n, double *value)
 {
     fNFoil = n;
 
-    fELoss.clear();
+    fELossV.clear();
 
     for (int i = 0; i < n; i++)
-        fELoss.push_back(value[i]);
+        fELossV.push_back(value[i]);
 }
 
-void G2POptics::Drift(double *ang, double *pos)
+void G2POptics::CalPos(double *ang, double *pos)
 {
     double V3pd_tr[3] = {tan(ang[0]), tan(ang[1]), 1.0};
 
@@ -323,8 +302,8 @@ void G2POptics::Drift(double *ang, double *pos)
     double V3ed_lab[3] = {0, tan(fTiltAngle), 1.0};
 
     double cosscatangle = (V3ed_lab[0] * V3pd_lab[0] + V3ed_lab[1] * V3pd_lab[1] + V3ed_lab[2] * V3pd_lab[2]) / (sqrt(V3ed_lab[0] * V3ed_lab[0] + V3ed_lab[1] * V3ed_lab[1] + V3ed_lab[2] * V3ed_lab[2]) * sqrt(V3pd_lab[0] * V3pd_lab[0] + V3pd_lab[1] * V3pd_lab[1] + V3pd_lab[2] * V3pd_lab[2]));
-    double scatmom = (fTargetMass * fBeamEnergy) / (fTargetMass + fBeamEnergy - fBeamEnergy * cosscatangle);
-    double delta = (scatmom - fHRSMomentum - fEnergyLoss) / fHRSMomentum;
+    double scatmom = (fTargetMass * fE0) / (fTargetMass + fE0 - fE0 * cosscatangle);
+    double delta = (scatmom - fHRSMomentum - fELoss) / fHRSMomentum;
 
     fV5react_tr[0] = fV3bpm_tr[0];
     fV5react_tr[1] = ang[0];
@@ -332,7 +311,7 @@ void G2POptics::Drift(double *ang, double *pos)
     fV5react_tr[3] = ang[1];
     fV5react_tr[4] = delta;
 
-    pDrift->Drift(fV5react_tr, fV3bpm_tr[2], fHRSMomentum, fHRSAngle, pSieve->GetZ(), fV5sieve_tr);
+    Drift("forward", fV5react_tr, fV3bpm_tr[2], pSieve->GetZ(), fV5sieve_tr);
 
     pos[0] = fV5sieve_tr[0];
     pos[1] = fV5sieve_tr[2];
@@ -369,29 +348,31 @@ int G2POptics::LoadData()
 
 int G2POptics::Configure(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
+
+    if (G2PProcBase::Configure(mode) != 0)
+        return -1;
 
     ConfDef confs[] = {
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {0}
     };
 
-    G2PAppBase::Configure(mode);
-
     return ConfigureFromList(confs, mode);
 }
 
 int G2POptics::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup)
+    if (mode == kDEFINE && fDefined)
         return 0;
 
-    fIsSetup = (mode == kDEFINE);
+    if (G2PProcBase::DefineVariables(mode) != 0)
+        return -1;
 
     VarDef vars[] = {
         {"id", "Hole ID", kINT, &fHoleID},
-        {"energy", "Beam Energy", kDOUBLE, &fBeamEnergy},
+        {"energy", "Beam Energy", kDOUBLE, &fE0},
         {"bpm.l_x", "BPM X (lab)", kDOUBLE, &fV3bpm_lab[0]},
         {"bpm.l_y", "BPM Y (lab)", kDOUBLE, &fV3bpm_lab[1]},
         {"bpm.l_z", "BPM Z (lab)", kDOUBLE, &fV3bpm_lab[2]},

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PHRSBwd
+/* class G2PBwdHRS
  * It simulates the reconstruction of g2p kinematics.
  * G2PDrift, G2PHRS and G2PGeoSieve are used in this class.
  * Input variables: fV5bpm_lab, fV5fp_tr (register in gG2PVars).
@@ -24,46 +24,43 @@
 #include "G2PTrans400016/G2PTrans400016.hh"
 #include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
-#include "G2PTrans484816R00/G2PTrans484816R00.hh"
 #include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
-#include "G2PDrift.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
-#include "G2PGeoSieve.hh"
+#include "G2PSieve.hh"
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
-#include "G2PHRSBwd.hh"
+#include "G2PBwdHRS.hh"
 
 using namespace std;
 
-G2PHRSBwd *G2PHRSBwd::pG2PHRSBwd = NULL;
+G2PBwdHRS *G2PBwdHRS::pG2PBwdHRS = NULL;
 
-G2PHRSBwd::G2PHRSBwd()
+G2PBwdHRS::G2PBwdHRS()
 {
     //Only for ROOT I/O
 }
 
-G2PHRSBwd::G2PHRSBwd(const char *name) : fHRSMomentum(0.0), fFieldRatio(0.0), fSetting(1), frecz_lab(0.0), pDrift(NULL), pSieve(NULL), pModel(NULL)
+G2PBwdHRS::G2PBwdHRS(const char *name) : fFieldRatio(0.0), fSetting(1), frecz_lab(0.0), pSieve(NULL), pModel(NULL)
 {
-    if (pG2PHRSBwd) {
-        Error("G2PHRSBwd()", "Only one instance of G2PHRSBwd allowed.");
+    if (pG2PBwdHRS) {
+        Error("G2PBwdHRS()", "Only one instance of G2PBwdHRS allowed.");
         MakeZombie();
         return;
     }
 
-    pG2PHRSBwd = this;
+    pG2PBwdHRS = this;
 
     map<string, int> model_map;
     model_map["484816"] = 1;
     model_map["403216"] = 2;
     model_map["400016"] = 3;
     model_map["484816OLD"] = 11;
-    model_map["484816R00"] = 12;
     model_map["400016OLD"] = 21;
 
     fSetting = model_map[name];
@@ -76,42 +73,20 @@ G2PHRSBwd::G2PHRSBwd(const char *name) : fHRSMomentum(0.0), fFieldRatio(0.0), fS
     Clear();
 }
 
-G2PHRSBwd::~G2PHRSBwd()
+G2PBwdHRS::~G2PBwdHRS()
 {
-    if (pG2PHRSBwd == this)
-        pG2PHRSBwd = NULL;
+    if (pG2PBwdHRS == this)
+        pG2PBwdHRS = NULL;
 }
 
-int G2PHRSBwd::Init()
-{
-    //static const char* const here = "Init()";
-
-    if (G2PProcBase::Init() != 0)
-        return fStatus;
-
-    pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
-
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
-
-    pSieve = static_cast<G2PGeoSieve *>(gG2PApps->Find("G2PGeoSieve"));
-
-    if (!pSieve) {
-        pSieve = new G2PGeoSieve();
-        gG2PApps->Add(pSieve);
-    }
-
-    return (fStatus = kOK);
-}
-
-int G2PHRSBwd::Begin()
+int G2PBwdHRS::Begin()
 {
     static const char *const here = "Begin()";
 
     if (G2PProcBase::Begin() != 0)
-        return fStatus;
+        return (fStatus = kBEGINERROR);
+
+    pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
     switch (fSetting) {
     case 1:
@@ -119,9 +94,9 @@ int G2PHRSBwd::Begin()
         break;
 
     case 2:
+        pModel = new G2PTrans484816(); // FIXME: should be 403216 here
+        break;
 
-    //pModel = new G2PTrans403216();
-    //break;
     case 3:
         pModel = new G2PTrans400016();
         break;
@@ -130,24 +105,20 @@ int G2PHRSBwd::Begin()
         pModel = new G2PTrans484816OLD();
         break;
 
-    case 12:
-        pModel = new G2PTrans484816R00();
-        break;
-
     case 21:
         pModel = new G2PTrans400016OLD();
         break;
 
     default:
-        Error(here, "Cannot initialize, invalid setting.");
-        return (fStatus = kINITERROR);
+        Error(here, "Invalid setting.");
+        return (fStatus = kBEGINERROR);
         break;
     }
 
     return (fStatus = kOK);
 }
 
-int G2PHRSBwd::Process()
+int G2PBwdHRS::Process()
 {
     static const char *const here = "Process()";
 
@@ -165,8 +136,7 @@ int G2PHRSBwd::Process()
     fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
     fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
 
-    HCS2TCS(fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4], fV5bpm_tr[0], fV5bpm_tr[2], fV5bpm_tr[4]);
-    HCS2TCS(fV5bpm_lab[1], fV5bpm_lab[3], fV5bpm_tr[1], fV5bpm_tr[3]);
+    HCS2TCS(fV5bpm_lab, fV5bpm_tr, fV5bpm_tr[4]);
 
     fV5fp_tr[4] = fV5bpm_tr[0];
 
@@ -188,33 +158,23 @@ int G2PHRSBwd::Process()
     if (fDebug > 1)
         Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpsnake_tr[0], fV5tpsnake_tr[1], fV5tpsnake_tr[2], fV5tpsnake_tr[3], fV5tpsnake_tr[4]);
 
-    Project(fV5tpsnake_tr[0], fV5tpsnake_tr[2], 0.0, pSieve->GetZ(), fV5tpsnake_tr[1], fV5tpsnake_tr[3], fV5sieveproj_tr[0], fV5sieveproj_tr[2]);
-    fV5sieveproj_tr[1] = fV5tpsnake_tr[1];
-    fV5sieveproj_tr[3] = fV5tpsnake_tr[3];
-    fV5sieveproj_tr[4] = fV5tpsnake_tr[4];
+    Project(fV5tpsnake_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
 
     if (fDebug > 1)
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
 
-    pDrift->Drift(fV5sieveproj_tr, pSieve->GetZ(), fHRSMomentum, fHRSAngle, 0.0, fV5tprec_tr);
-    TCS2HCS(fV5tprec_tr[0], fV5tprec_tr[2], 0.0, fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]);
-    TCS2HCS(fV5tprec_tr[1], fV5tprec_tr[3], fV5tprec_lab[1], fV5tprec_lab[3]);
+    Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
+    TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
 
     if (fabs(frecz_lab) > 1.0e-5) {
-        double x[3] = {fV5tprec_lab[0], fV5tprec_lab[2], fV5tprec_lab[4]};
-        double p[3] = {fHRSMomentum *(1 + fV5tprec_tr[4]) *sin(fV5tprec_lab[1]) *cos(fV5tprec_lab[3]),
-                       fHRSMomentum *(1 + fV5tprec_tr[4]) *sin(fV5tprec_lab[1]) *sin(fV5tprec_lab[3]),
-                       fHRSMomentum *(1 + fV5tprec_tr[4]) *cos(fV5tprec_lab[1])
-                      };
-        pDrift->Drift(x, p, frecz_lab, x, p);
         double z_tr;
-        fV5tprec_lab[0] = x[0];
-        fV5tprec_lab[1] = acos(p[2] / (fHRSMomentum * (1 + fV5tprec_tr[4])));
-        fV5tprec_lab[2] = x[1];
-        fV5tprec_lab[3] = atan2(p[1], p[0]);
-        fV5tprec_lab[4] = x[2];
-        HCS2TCS(x[0], x[1], x[2], fV5tprec_tr[0], fV5tprec_tr[2], z_tr);
-        HCS2TCS(fV5tprec_lab[1], fV5tprec_lab[3], fV5tprec_tr[1], fV5tprec_tr[3]);
+
+        if (fV5tprec_lab[4] < frecz_lab)
+            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+        else
+            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+
+        TCS2HCS(fV5tprec_tr, z_tr, fV5tprec_lab);
     }
 
     if (fDebug > 1)
@@ -223,7 +183,7 @@ int G2PHRSBwd::Process()
     return 0;
 }
 
-void G2PHRSBwd::Clear(Option_t *option)
+void G2PBwdHRS::Clear(Option_t *option)
 {
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
@@ -236,7 +196,7 @@ void G2PHRSBwd::Clear(Option_t *option)
     G2PProcBase::Clear(option);
 }
 
-void G2PHRSBwd::SetParsX(const double *pars)
+void G2PBwdHRS::SetParsX(const double *pars)
 {
     fFitPars[0][0] = pars[0];
     fFitPars[0][1] = pars[1];
@@ -247,7 +207,7 @@ void G2PHRSBwd::SetParsX(const double *pars)
     fConfigIsSet.insert((unsigned long) &fFitPars[0][2]);
 }
 
-void G2PHRSBwd::SetParsY(const double *pars)
+void G2PBwdHRS::SetParsY(const double *pars)
 {
     fFitPars[1][0] = pars[0];
     fFitPars[1][1] = pars[1];
@@ -258,14 +218,14 @@ void G2PHRSBwd::SetParsY(const double *pars)
     fConfigIsSet.insert((unsigned long) &fFitPars[1][2]);
 }
 
-void G2PHRSBwd::SetRecZ(double z)
+void G2PBwdHRS::SetRecZ(double z)
 {
     frecz_lab = z;
 
     fConfigIsSet.insert((unsigned long) &frecz_lab);
 }
 
-double G2PHRSBwd::GetEffBPM(int axis)
+double G2PBwdHRS::GetEffBPM(int axis)
 {
     static const char *const here = "GetEffBPM()";
 
@@ -299,7 +259,7 @@ double G2PHRSBwd::GetEffBPM(int axis)
     return effbpm_tr;
 }
 
-bool G2PHRSBwd::Backward(const double *V5fp_tr, double *V5tp_tr)
+bool G2PBwdHRS::Backward(const double *V5fp_tr, double *V5tp_tr)
 {
     static const char *const here = "Backward()";
 
@@ -341,13 +301,15 @@ bool G2PHRSBwd::Backward(const double *V5fp_tr, double *V5tp_tr)
     return isgood;
 }
 
-int G2PHRSBwd::Configure(EMode mode)
+int G2PBwdHRS::Configure(EMode mode)
 {
-    if ((mode == kREAD || mode == kTWOWAY) && fIsInit)
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
 
+    if (G2PProcBase::Configure(mode) != 0)
+        return -1;
+
     ConfDef confs[] = {
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"fit.x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
         {"fit.x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
@@ -359,17 +321,16 @@ int G2PHRSBwd::Configure(EMode mode)
         {0}
     };
 
-    G2PAppBase::Configure(mode);
-
     return ConfigureFromList(confs, mode);
 }
 
-int G2PHRSBwd::DefineVariables(EMode mode)
+int G2PBwdHRS::DefineVariables(EMode mode)
 {
-    if (mode == kDEFINE && fIsSetup)
+    if (mode == kDEFINE && fDefined)
         return 0;
 
-    fIsSetup = (mode == kDEFINE);
+    if (G2PProcBase::DefineVariables(mode) != 0)
+        return -1;
 
     VarDef vars[] = {
         {"tp.snake.x", "SNAKE rec to Target Plane X", kDOUBLE, &fV5tpsnake_tr[0]},
@@ -398,11 +359,11 @@ int G2PHRSBwd::DefineVariables(EMode mode)
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PHRSBwd::MakePrefix()
+void G2PBwdHRS::MakePrefix()
 {
     const char *base = "bwd";
 
     G2PAppBase::MakePrefix(base);
 }
 
-ClassImp(G2PHRSBwd)
+ClassImp(G2PBwdHRS)

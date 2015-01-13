@@ -41,26 +41,21 @@ G2PProcBase::~G2PProcBase()
     // Nothing to do
 }
 
-int G2PProcBase::Init()
+int G2PProcBase::Begin()
 {
-    //static const char* const here = "Init()";
+    //static const char* const here = "Begin()";
 
-    if (G2PAppBase::Init() != 0)
-        return (fStatus = kINITERROR);
+    if (G2PAppBase::Begin() != 0)
+        return (fStatus = kBEGINERROR);
 
     pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
-
-    if (!pDrift) {
-        pDrift = new G2PDrift();
-        gG2PApps->Add(pDrift);
-    }
 
     if (DefineVariables(kDEFINE) != 0)
         fDefined = true;
     else
         fDefined = false;
 
-    return (fStatus = fDefined ? kOK : kINITERROR);
+    return (fStatus = (fDefined ? kOK : kBEGINERROR));
 }
 
 G2PProcBase::EStage G2PProcBase::GetStage()
@@ -71,17 +66,6 @@ G2PProcBase::EStage G2PProcBase::GetStage()
 void G2PProcBase::SetStage(EStage stage)
 {
     fStage = stage;
-}
-
-int G2PProcBase::ArrayCopy(double *out, const double *in, int length)
-{
-    if (!(out && in))
-        return -1;
-
-    for (int i = 0; i < length; i++)
-        out[i] = in[i];
-
-    return 0;
 }
 
 double G2PProcBase::Drift(const char *dir, const double *x, const double *p, double zf, double *xout, double *pout)
@@ -326,6 +310,11 @@ int G2PProcBase::DefineVariables(EMode mode)
 
 int G2PProcBase::DefineVarsFromList(const VarDef *list, EMode mode) const
 {
+    return DefineVarsFromList(fPrefix, list, mode);
+}
+
+int G2PProcBase::DefineVarsFromList(const char *prefix, const VarDef *list, EMode mode) const
+{
     // Add or delete global variables in "list" to the global list
 
     static const char *const here = "DefineVarsFromList()";
@@ -336,12 +325,12 @@ int G2PProcBase::DefineVarsFromList(const VarDef *list, EMode mode) const
     }
 
     if (mode == kDEFINE)
-        gG2PVars->DefineVariables(list, fPrefix);
+        gG2PVars->DefineVariables(list, prefix);
     else if (mode == kDELETE) {
         const VarDef *item;
 
         while ((item = list++) && item->name)
-            gG2PVars->RemoveName(Form("%s%s", fPrefix, item->name));
+            gG2PVars->RemoveName(Form("%s%s", prefix, item->name));
     } else
         return -1;
 
