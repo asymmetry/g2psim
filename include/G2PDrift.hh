@@ -50,7 +50,6 @@ public:
 
     typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, Condition &, double *, double *);
 
-    virtual int Init();
     virtual int Begin();
 
     virtual double Drift(const char *dir, const double *x, const double *p, Condition &stop, double *xout, double *pout);

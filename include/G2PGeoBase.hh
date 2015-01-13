@@ -5,7 +5,7 @@
  * It provides fundamental functions like rotation.
  * No instance allowed for this class.
  * The rotation matrix is defined with Euler angle in Z-X'-Z" convention.
- * G2PDrift class uses TouchBoundary() to determine whether stop drifting or not.
+ * G2PDrift class uses IsInside() to determine whether stop drifting or not.
  */
 
 // History:
@@ -17,6 +17,8 @@
 
 #include "G2PAppBase.hh"
 
+class G2PMaterial;
+
 class G2PGeoBase : public G2PAppBase
 {
 public:
@@ -26,15 +28,15 @@ public:
 
     virtual int Begin();
 
-    virtual bool TouchBoundary(const double *V3);
-    virtual bool TouchBoundary(double x, double y, double z);
+    virtual bool IsInside(const double *V3);
 
     // Gets
-    bool UseTrans();
+    G2PMaterial *GetMaterial();
 
     // Sets
     void SetOrigin(double x, double y, double z);
     void SetEulerAngle(double alpha, double beta, double gamma);
+    void SetMaterial(G2PMaterial *mat);
 
 protected:
     G2PGeoBase(); // No instance allowed for this class
@@ -51,11 +53,9 @@ protected:
     void Geo2LabNoR(const double *V3_geo, double *V3_lab);
     void Geo2LabNoTNoR(const double *V3_geo, double *V3_lab);
 
-    virtual bool TouchBoundaryGeo(double x, double y, double z) = 0; // true boundary is defined here
+    virtual bool IsInside(double x, double y, double z) = 0;
 
     virtual void MakePrefix();
-
-    bool fUseTrans; // flag indicates whether defined in transport coords
 
     bool fTranslation;
     double fOrigin[3];
@@ -63,6 +63,8 @@ protected:
     bool fRotation;
     double fEulerAngle[3];
     double fRotationMatrix[2][3][3];
+
+    G2PMaterial *pMaterial;
 
     pfX2X_ pfLab2Geo;
     pfX2X_ pfGeo2Lab;

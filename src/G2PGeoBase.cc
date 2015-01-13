@@ -5,7 +5,7 @@
  * It provides fundamental functions like rotation.
  * No instance allowed for this class.
  * The rotation matrix is defined with Euler angle in Z-X'-Z" convention.
- * G2PDrift class uses TouchBoundary() to determine whether stop drifting or not.
+ * G2PDrift class uses IsInside() to determine whether stop drifting or not.
  */
 
 // History:
@@ -24,7 +24,7 @@
 
 #include "G2PGeoBase.hh"
 
-G2PGeoBase::G2PGeoBase() : fUseTrans(false), fTranslation(false), fRotation(false), pfLab2Geo(NULL), pfGeo2Lab(NULL)
+G2PGeoBase::G2PGeoBase() : fTranslation(false), fRotation(false), pMaterial(NULL), pfLab2Geo(NULL), pfGeo2Lab(NULL)
 {
     memset(fOrigin, 0, sizeof(fOrigin));
     memset(fEulerAngle, 0, sizeof(fEulerAngle));
@@ -64,32 +64,18 @@ int G2PGeoBase::Begin()
     return (fStatus = kOK);
 }
 
-bool G2PGeoBase::TouchBoundary(const double *V3)
+bool G2PGeoBase::IsInside(const double *V3)
 {
-    bool result = false;
-
-    if (fUseTrans) {
-        double V5_tr[5], z_tr;
-        HCS2TCS(V3[0], V3[1], V3[2], V5_tr[0], V5_tr[2], z_tr);
-        result = TouchBoundary(V5_tr[0], V5_tr[2], z_tr);
-    } else
-        result = TouchBoundary(V3[0], V3[1], V3[2]);
-
-    return result;
-}
-
-bool G2PGeoBase::TouchBoundary(double x, double y, double z)
-{
-    double V3_lab[3] = {x, y, z};
     double V3_geo[3];
 
-    (this->*pfLab2Geo)(V3_lab, V3_geo);
-    return TouchBoundaryGeo(V3_geo[0], V3_geo[1], V3_geo[2]);
+    (this->*pfLab2Geo)(V3, V3_geo);
+
+    return IsInside(V3_geo[0], V3_geo[1], V3_geo[2]);
 }
 
-bool G2PGeoBase::UseTrans()
+G2PMaterial *G2PGeoBase::GetMaterial()
 {
-    return fUseTrans;
+    return pMaterial;
 }
 
 void G2PGeoBase::SetOrigin(double x, double y, double z)
@@ -114,6 +100,11 @@ void G2PGeoBase::SetEulerAngle(double alpha, double beta, double gamma)
     fConfigIsSet.insert((unsigned long) &fEulerAngle[0]);
     fConfigIsSet.insert((unsigned long) &fEulerAngle[1]);
     fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
+}
+
+void G2PGeoBase::SetMaterial(G2PMaterial *mat)
+{
+    pMaterial = mat;
 }
 
 void G2PGeoBase::SetGeoPosition()

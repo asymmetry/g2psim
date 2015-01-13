@@ -1,14 +1,12 @@
 // -*- C++ -*-
 
 /* class G2PSieve
- * Defines sieve slits for both arms.
- * Derived from G2PGeoBase so G2PDrift can use it as boundary.
- * Use transport coordinate system in this class.
+ * This file defines a class G2PSieve.
+ * It defines geometry of the sieve slit.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
-//   Nov 2014, C. Gu, Rewrite it with G2PGeoPlane class.
 //
 
 #include <cstdlib>
@@ -21,7 +19,6 @@
 #include "TObject.h"
 
 #include "G2PAppBase.hh"
-#include "G2PGeoPlane.hh"
 
 #include "G2PSieve.hh"
 
@@ -29,7 +26,7 @@ using namespace std;
 
 G2PSieve *G2PSieve::pG2PSieve = NULL;
 
-G2PSieve::G2PSieve() : fHRSAngle(0), fNRow(7), fNCol(7), fNLargerHole(0), fDHole(0), fDLargerHole(0), fThreshold(0)
+G2PSieve::G2PSieve() : fNRow(7), fNCol(7), fNLargerHole(0), fDHole(0), fDLargerHole(0), fThreshold(0)
 {
     if (pG2PSieve) {
         Error("G2PSieve()", "Only one instance of G2PSieve allowed.");
@@ -43,8 +40,6 @@ G2PSieve::G2PSieve() : fHRSAngle(0), fNRow(7), fNCol(7), fNLargerHole(0), fDHole
     fX.clear();
     fY.clear();
     fLargerHole.clear();
-
-    fUseTrans = true;
 }
 
 G2PSieve::~G2PSieve()
@@ -57,7 +52,7 @@ int G2PSieve::Begin()
 {
     //static const char* const here = "Begin()";
 
-    if (G2PGeoPlane::Begin() != 0)
+    if (G2PAppBase::Begin() != 0)
         return (fStatus = kBEGINERROR);
 
     fNRow = 7;
@@ -69,7 +64,7 @@ int G2PSieve::Begin()
     fLargerHole.clear();
 
     if (fHRSAngle > 0) { // left arm
-        SetOrigin(0.0, 0.0, 799.60e-3);
+        fZ = 799.60e-3;
 
         const double kSIEVEX[7] = { -3 * 13.3096e-3, -2 * 13.3096e-3, -1 * 13.3096e-3, 0.0, 1 * 13.3096e-3, 2 * 13.3096e-3, 3 * 13.3096e-3};
         const double kSIEVEY[7] = {3 * 6.1214e-3, 2 * 6.1214e-3, 1 * 6.1214e-3, 0.0, -1 * 4.7752e-3, -2 * 4.7752e-3, -3 * 4.7752e-3};
@@ -84,7 +79,7 @@ int G2PSieve::Begin()
         for (int i = 0; i < fNLargerHole; i++)
             fLargerHole.push_back(kLARGERHOLE[i]);
     } else { // right arm
-        SetOrigin(0.0, 0.0, 799.46e-3);
+        fZ = 799.46e-3;
 
         const double kSIEVEX[7] = { -3 * 13.3096e-3, -2 * 13.3096e-3, -1 * 13.3096e-3, 0.0, 1 * 13.3096e-3, 2 * 13.3096e-3, 3 * 13.3096e-3};
         const double kSIEVEY[7] = { -3 * 6.1214e-3, -2 * 6.1214e-3, -1 * 6.1214e-3, 0.0, 1 * 4.7752e-3, 2 * 4.7752e-3, 3 * 4.7752e-3};
@@ -109,14 +104,6 @@ int G2PSieve::Begin()
     return (fStatus = kOK);
 }
 
-bool G2PSieve::CanPass(double *V3)
-{
-    int temp;
-    double V5[5] = {V3[0], 0, V3[1], 0, V3[2]};
-
-    return CanPass(V5, temp);
-}
-
 bool G2PSieve::CanPass(double *V5, int &id)
 {
     id = -1;
@@ -131,8 +118,8 @@ bool G2PSieve::CanPass(double *V5, int &id)
         int col = i / fNRow;
         int row = i % fNRow;
 
-        double dx = V5[0] - fX[row] - fOrigin[0];
-        double dy = V5[2] - fY[col] - fOrigin[1];
+        double dx = V5[0] - fX[row] - fXOffset;
+        double dy = V5[2] - fY[col] - fYOffset;
         double distance = sqrt(dx * dx + dy * dy);
 
         if (distance < dhole / 2.0) {
@@ -147,6 +134,16 @@ bool G2PSieve::CanPass(double *V5, int &id)
     return true;
 }
 
+void G2PSieve::GetPos(int index, double *V3)
+{
+    int col = index / fNRow;
+    int row = index % fNRow;
+
+    V3[0] = fXOffset + fX[row];
+    V3[1] = fYOffset + fY[col];
+    V3[2] = fZ;
+}
+
 int G2PSieve::GetNRow()
 {
     return fNRow;
@@ -159,17 +156,14 @@ int G2PSieve::GetNCol()
 
 double G2PSieve::GetZ()
 {
-    return fOrigin[2];
+    return fZ;
 }
 
-void G2PSieve::GetPos(int index, double *V3)
+void G2PSieve::MakePrefix()
 {
-    int col = index / fNRow;
-    int row = index % fNRow;
+    const char *base = "sieve";
 
-    V3[0] = fOrigin[0] + fX[row];
-    V3[1] = fOrigin[1] + fY[col];
-    V3[2] = fOrigin[2];
+    G2PAppBase::MakePrefix(base);
 }
 
 ClassImp(G2PSieve)

@@ -22,7 +22,8 @@ public:
     G2PGeoSub(G2PGeoBase *geo);
     virtual ~G2PGeoSub();
 
-    virtual bool TouchBoundary(double x, double y, double z);
+    virtual bool IsInside(const double *V3);
+    virtual void Substract(G2PGeoBase *geo);
 
     // Gets
 
@@ -30,6 +31,8 @@ public:
 
 protected:
     G2PGeoSub(); // Only for ROOT I/O
+
+    virtual bool IsInside(double x, double y, double z);
 
     G2PGeoBase *fMinuend;
 

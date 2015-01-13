@@ -40,19 +40,31 @@ G2PGeoSub::~G2PGeoSub()
         fSubGeos->Remove(aobj);
 }
 
-bool G2PGeoSub::TouchBoundary(double x, double y, double z)
+bool G2PGeoSub::IsInside(const double *V3)
 {
     bool result = false;
 
-    if (fMinuend->TouchBoundary(x, y, z)) result = true;
+    if (fMinuend->IsInside(V3)) result = true;
 
     TIter next(fSubGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
-        if (!geo->TouchBoundary(x, y, z)) result = true;
+        if (!geo->IsInside(V3)) result = true;
     }
 
     return result;
+}
+
+void G2PGeoSub::Substract(G2PGeoBase *geo)
+{
+    fSubGeos->Add(geo);
+}
+
+bool G2PGeoSub::IsInside(double x, double y, double z)
+{
+    // Nothing to do
+
+    return true;
 }
 
 ClassImp(G2PGeoSub)

@@ -33,7 +33,7 @@ public:
     virtual ~G2PAppBase();
 
     enum EStatus {
-        kOK = 0, kINITERROR, kBEGINERROR
+        kOK = 0, kNOTBEGIN, kBEGINERROR
     };
 
     enum EMode {
@@ -41,7 +41,6 @@ public:
     };
 
     // General processes
-    virtual int Init();
     virtual int Begin();
     virtual int End();
     virtual void Clear(Option_t * /*option*/ = "");
@@ -77,6 +76,7 @@ protected:
     // Configure functions
     virtual int Configure(EMode mode = kTWOWAY);
     int ConfigureFromList(const ConfDef *list, EMode mode = kTWOWAY);
+    int ConfigureFromList(const char *prefix, const ConfDef *list, EMode mode = kTWOWAY);
 
     // Make Prefix
     virtual void MakePrefix() = 0;

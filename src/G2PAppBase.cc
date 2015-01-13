@@ -43,7 +43,7 @@ static const double kRP[4] = { -7.435500e-04, -2.130200e-03, +1.195000e-03, +0.0
 
 G2PRand *G2PAppBase::pRand = G2PRand::GetInstance();
 
-G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kOK), fConfigured(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
+G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTBEGIN), fConfigured(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
 {
     fConfigIsSet.clear();
 }
@@ -56,27 +56,17 @@ G2PAppBase::~G2PAppBase()
     fConfigIsSet.clear();
 }
 
-int G2PAppBase::Init()
-{
-    static const char *const here = "Init()";
-
-    if (fDebug > 1)
-        Info(here, "Initializing ...");
-
-    if (IsZombie())
-        return (fStatus = kINITERROR);
-
-    MakePrefix();
-
-    return (fStatus = kOK);
-}
-
 int G2PAppBase::Begin()
 {
     static const char *const here = "Begin()";
 
     if (fDebug > 1)
         Info(here, "Beginning ...");
+
+    if (IsZombie())
+        return (fStatus = kBEGINERROR);
+
+    MakePrefix();
 
     if (Configure(kTWOWAY) == 0)
         fConfigured = true;
@@ -441,6 +431,11 @@ int G2PAppBase::Configure(EMode mode)
 
 int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
 {
+    return ConfigureFromList(fPrefix, list, mode);
+}
+
+int G2PAppBase::ConfigureFromList(const char *prefix, const ConfDef *list, EMode mode)
+{
     // Load configurations in the list from run manager
 
     static const char *const here = "LoadConfigFile()";
@@ -456,9 +451,9 @@ int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
         while (item->name) {
             if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end()) {
                 if (mode == kTWOWAY)
-                    gG2PRun->SetConfig(item, fPrefix);
+                    gG2PRun->SetConfig(item, prefix);
             } else {
-                if (gG2PRun->GetConfig(item, fPrefix))
+                if (gG2PRun->GetConfig(item, prefix))
                     fConfigIsSet.insert((unsigned long) item->var);
             }
 
@@ -466,7 +461,7 @@ int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
         }
     } else if (mode == kWRITE) {
         while (item->name) {
-            gG2PRun->SetConfig(item, fPrefix);
+            gG2PRun->SetConfig(item, prefix);
             item++;
         }
     } else

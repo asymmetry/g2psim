@@ -12,15 +12,14 @@
 #ifndef G2P_GEOTUBE_H
 #define G2P_GEOTUBE_H
 
-#include "G2PGeoSolid.hh"
+#include "G2PGeoBase.hh"
 
-class G2PGeoTube : public G2PGeoSolid
+class G2PGeoTube : public G2PGeoBase
 {
 public:
     G2PGeoTube(double rin, double rout, double length);
+    G2PGeoTube(double rin, double rout, double length, double phi0, double dphi);
     virtual ~G2PGeoTube();
-
-    bool IsInside(double *V3);
 
     // Gets
 
@@ -29,8 +28,13 @@ public:
 protected:
     G2PGeoTube(); // Only for ROOT I/O
 
+    bool IsInside(double x, double y, double z);
+
     double fRin, fRout;
     double fLength;
+
+    bool fUsePhi;
+    double fPhi0, fDPhi;
 
 private:
     ClassDef(G2PGeoTube, 1)

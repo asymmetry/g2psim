@@ -72,7 +72,7 @@ bool Condition::operator()(const double *x)
         return (((x[0] * fSinAng + x[2] * fCosAng) > fZf)^fSign);
 
     case 3:
-        return pGeo->TouchBoundary(x);
+        return pGeo->IsInside(x);
     }
 
     return true;
@@ -102,29 +102,14 @@ G2PDrift::~G2PDrift()
         pG2PDrift = NULL;
 }
 
-int G2PDrift::Init()
-{
-    //static const char* const here = "Init()";
-
-    if (G2PAppBase::Init() != 0)
-        return (fStatus = kINITERROR);
-
-    pField = static_cast<G2PField *>(gG2PApps->Find("G2PField"));
-
-    if (!pField) {
-        pField = new G2PField();
-        gG2PApps->Add(pField);
-    }
-
-    return (fStatus = kOK);
-}
-
 int G2PDrift::Begin()
 {
     //static const char* const here = "Begin()";
 
     if (G2PAppBase::Begin() != 0)
         return (fStatus = kBEGINERROR);
+
+    pField = static_cast<G2PField *>(gG2PApps->Find("G2PField"));
 
     if (fFieldRatio > 1e-4)
         pfDriftHCS = &G2PDrift::DriftHCS;

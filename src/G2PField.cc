@@ -12,7 +12,6 @@
 // History:
 //   Mar 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Put HallB field map into G2PField.
-//   Nov 2014, C. Gu, Rewrite it with G2PGeoBase.
 //
 // TODO: Rewrite it as a base class.
 //
@@ -32,9 +31,7 @@
 #include "TTree.h"
 
 #include "G2PAppBase.hh"
-#include "G2PGeoBase.hh"
 #include "G2PGlobals.hh"
-#include "G2PVarDef.hh"
 
 #include "G2PField.hh"
 
@@ -67,7 +64,8 @@ static void GetHallBField(const double *pos, double *field)
 
 G2PField *G2PField::pG2PField = NULL;
 
-G2PField::G2PField() : fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRatio(0.0), pfGeo2LabField(NULL)
+G2PField::G2PField() :
+    fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(0.0)
 {
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");
@@ -77,6 +75,9 @@ G2PField::G2PField() : fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMa
 
     pG2PField = this;
 
+    memset(fOrigin, 0, sizeof(fOrigin));
+    memset(fEulerAngle, 0, sizeof(fEulerAngle));
+    memset(fRotationMatrix, 0, sizeof(fRotationMatrix));
     fBField.clear();
 
     fMapFile = "hallbfield.map";
@@ -99,12 +100,12 @@ G2PField::~G2PField()
         pG2PField = NULL;
 }
 
-int G2PField::Init()
+int G2PField::Begin()
 {
-    //static const char* const here = "Init()";
+    static const char *const here = "Begin()";
 
-    if (G2PGeoBase::Init() != 0)
-        return (fStatus = kINITERROR);
+    if (G2PAppBase::Begin() != 0)
+        return (fStatus = kBEGINERROR);
 
     nZ = int((fZMax - fZMin) / fZStep + 1e-8) + 1;
     nR = int((fRMax - fRMin) / fRStep + 1e-8) + 1;
@@ -118,21 +119,6 @@ int G2PField::Init()
             fBField[i][j].resize(5, 0.0);
     }
 
-    return (fStatus = kOK);
-}
-
-int G2PField::Begin()
-{
-    static const char *const here = "Begin()";
-
-    if (G2PGeoBase::Begin() != 0)
-        return (fStatus = kBEGINERROR);
-
-    if (fRotation)
-        pfGeo2LabField = &G2PField::Geo2LabNoT;
-    else
-        pfGeo2LabField = &G2PField::Geo2LabNoTNoR;
-
     EStatus status = kBEGINERROR;
 
     if (ReadMap() == 0)
@@ -141,6 +127,8 @@ int G2PField::Begin()
         status = kOK;
     else
         Error(here, "Cannot create field map.");
+
+    SetRotationMatrix();
 
     return (fStatus = status);
 }
@@ -151,15 +139,26 @@ void G2PField::GetField(const double *x, double *b)
 
     double pos[3], field[3];
 
-    (this->*pfLab2Geo)(x, pos);
+    TransLab2Field(x, pos);
     Interpolate(pos, field, 2);
-    (this->*pfGeo2LabField)(field, b);
+    TransField2Lab(field, b);
     b[0] *= fRatio;
     b[1] *= fRatio;
     b[2] *= fRatio;
 
     if (fDebug > 4)
         Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
+}
+
+void G2PField::SetOrigin(double x, double y, double z)
+{
+    fOrigin[0] = x;
+    fOrigin[1] = y;
+    fOrigin[2] = z;
+
+    fConfigIsSet.insert((unsigned long) &fOrigin[0]);
+    fConfigIsSet.insert((unsigned long) &fOrigin[1]);
+    fConfigIsSet.insert((unsigned long) &fOrigin[2]);
 }
 
 void G2PField::SetZRange(double zmin, double zmax)
@@ -192,6 +191,58 @@ void G2PField::SetRStep(double stepr)
     fRStep = stepr;
 
     fConfigIsSet.insert((unsigned long) &fRStep);
+}
+
+void G2PField::SetEulerAngle(double alpha, double beta, double gamma)
+{
+    // The Euler angle is defined using Z-X'-Z" convention
+
+    fEulerAngle[0] = alpha;
+    fEulerAngle[1] = beta;
+    fEulerAngle[2] = gamma;
+
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[0]);
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[1]);
+    fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
+}
+
+void G2PField::SetRotationMatrix()
+{
+    // The Euler angle is defined using Z-X'-Z" convention
+
+    if ((fabs(fEulerAngle[0]) < 1e-5) && (fabs(fEulerAngle[1]) < 1e-5) && (fabs(fEulerAngle[2]) < 1e-5))
+        fRotation = false;
+    else {
+        double s1 = sin(fEulerAngle[0]);
+        double c1 = cos(fEulerAngle[0]);
+        double s2 = sin(fEulerAngle[1]);
+        double c2 = cos(fEulerAngle[1]);
+        double s3 = sin(fEulerAngle[2]);
+        double c3 = cos(fEulerAngle[2]);
+
+        fRotationMatrix[0][0][0] = c1 * c3 - c2 * s1 * s3;
+        fRotationMatrix[0][1][0] = -c1 * s3 - c2 * s1 * c3;
+        fRotationMatrix[0][2][0] = s2 * s1;
+        fRotationMatrix[0][0][1] = s1 * c3 + c2 * c1 * s3;
+        fRotationMatrix[0][1][1] = -s1 * s3 + c2 * c1 * c3;
+        fRotationMatrix[0][2][1] = -s2 * c1;
+        fRotationMatrix[0][0][2] = s2 * s3;
+        fRotationMatrix[0][1][2] = s2 * c3;
+        fRotationMatrix[0][2][2] = c2;
+
+        // inverse matrix
+        fRotationMatrix[1][0][0] = c1 * c3 - c2 * s1 * s3;
+        fRotationMatrix[1][0][1] = -c1 * s3 - c2 * c3 * s1;
+        fRotationMatrix[1][0][2] = s1 * s2;
+        fRotationMatrix[1][1][0] = c3 * s1 + c1 * c2 * s3;
+        fRotationMatrix[1][1][1] = c1 * c2 * c3 - s1 * s3;
+        fRotationMatrix[1][1][2] = -c1 * s2;
+        fRotationMatrix[1][2][0] = s2 * s3;
+        fRotationMatrix[1][2][1] = c3 * s2;
+        fRotationMatrix[1][2][2] = c2;
+
+        fRotation = true;
+    }
 }
 
 int G2PField::ReadMap()
@@ -398,14 +449,26 @@ int G2PField::Interpolate(const double *pos, double *b, int order)
     return 0;
 }
 
-bool G2PField::TouchBoundaryGeo(double x, double y, double z)
+void G2PField::TransLab2Field(const double *x, double *xout)
 {
-    // Default does nothing
+    double temp[3] = {x[0], x[1], x[2]};
 
-    if ((z > fZMax) || (z < fZMax) || (x * x + y * y > fRMax) || (x * x + y * y < fRMin))
-        return true;
+    for (int i = 0; i < 3; i++) temp[i] -= fOrigin[i];
 
-    return false;
+    if (fRotation) {
+        for (int i = 0; i < 3; i++) xout[i] = fRotationMatrix[0][i][0] * temp[0] + fRotationMatrix[0][i][1] * temp[1] + fRotationMatrix[0][i][2] * temp[2];
+    } else {
+        for (int i = 0; i < 3; i++) xout[i] = temp[i];
+    }
+}
+
+void G2PField::TransField2Lab(const double *b, double *bout)
+{
+    if (fRotation) {
+        for (int i = 0; i < 3; i++) bout[i] = fRotationMatrix[1][i][0] * b[0] + fRotationMatrix[1][i][1] * b[1] + fRotationMatrix[1][i][2] * b[2];
+    } else {
+        for (int i = 0; i < 3; i++) bout[i] = b[i];
+    }
 }
 
 #ifdef DEBUGWITHROOT
@@ -454,7 +517,7 @@ int G2PField::Configure(EMode mode)
     if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
         return 0;
 
-    if (G2PGeoBase::Configure(mode) != 0)
+    if (G2PAppBase::Configure(mode) != 0)
         return -1;
 
     ConfDef confs[] = {
