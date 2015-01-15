@@ -81,11 +81,11 @@ int G2PBPM::Process()
     if (fDebug > 2)
         Info(here, " ");
 
-    fV5beam_lab[0] = gG2PVars->FindSuffix("gun.beam.l_x")->GetValue();
-    fV5beam_lab[1] = gG2PVars->FindSuffix("gun.beam.l_t")->GetValue();
-    fV5beam_lab[2] = gG2PVars->FindSuffix("gun.beam.l_y")->GetValue();
-    fV5beam_lab[3] = gG2PVars->FindSuffix("gun.beam.l_p")->GetValue();
-    fV5beam_lab[4] = gG2PVars->FindSuffix("gun.beam.l_z")->GetValue();
+    fV5beam_lab[0] = gG2PVars->FindSuffix("gen.beam.l_x")->GetValue();
+    fV5beam_lab[1] = gG2PVars->FindSuffix("gen.beam.l_t")->GetValue();
+    fV5beam_lab[2] = gG2PVars->FindSuffix("gen.beam.l_y")->GetValue();
+    fV5beam_lab[3] = gG2PVars->FindSuffix("gen.beam.l_p")->GetValue();
+    fV5beam_lab[4] = gG2PVars->FindSuffix("gen.beam.l_z")->GetValue();
 
     double V4[4];
     GetBPM(fV5beam_lab, fV5bpm_bpm, V4);
@@ -102,7 +102,7 @@ int G2PBPM::Process()
     return 0;
 }
 
-void G2PBPM::Clear(Option_t *option)
+void G2PBPM::Clear(Option_t *opt)
 {
     memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
@@ -110,7 +110,7 @@ void G2PBPM::Clear(Option_t *option)
     memset(fV2bpma_bpm, 0, sizeof(fV2bpma_bpm));
     memset(fV2bpmb_bpm, 0, sizeof(fV2bpmb_bpm));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PBPM::SetBPMRes(double a, double b)

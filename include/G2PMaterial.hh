@@ -20,11 +20,10 @@
 class G2PMaterial : public G2PAppBase
 {
 public:
-    G2PMaterial(const char *name); // Read parameters from configuration file
     G2PMaterial(const char *name, double z, double a, double x0, double density, double ion, double c);
     virtual ~G2PMaterial();
 
-    virtual int Begin();
+    virtual void Print(Option_t *opt = "") const;
 
     virtual double EnergyLoss(double E, double l);
     virtual double MultiScattering(double E, double l);
@@ -42,7 +41,7 @@ protected:
     double Ionization(double E, double l);
     double FluctIonization(double E, double meanloss);
     double ExterBremsstrahlung(double E, double l);
-    virtual int Configure(EMode mode = kTWOWAY);
+
     virtual void MakePrefix();
 
     const char *fName;

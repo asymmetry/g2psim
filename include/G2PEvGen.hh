@@ -27,7 +27,7 @@ public:
 
     virtual int Begin();
     virtual int Process();
-    virtual void Clear(Option_t * /*option*/ = "");
+    virtual void Clear(Option_t *opt = "");
 
     // Gets
 

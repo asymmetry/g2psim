@@ -73,7 +73,7 @@ int G2PAppBase::Begin()
     else
         fConfigured = false;
 
-    return (fStatus = fConfigured ? kOK : kBEGINERROR);
+    return (fStatus = (fConfigured ? kOK : kBEGINERROR));
 }
 
 int G2PAppBase::End()
@@ -83,7 +83,7 @@ int G2PAppBase::End()
     return (Configure(kWRITE));
 }
 
-void G2PAppBase::Clear(Option_t *option)
+void G2PAppBase::Clear(Option_t *opt)
 {
     // Default does nothing
 

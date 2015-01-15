@@ -125,7 +125,7 @@ int G2PFwdTarget::Process()
     return 0;
 }
 
-void G2PFwdTarget::Clear(Option_t *option)
+void G2PFwdTarget::Clear(Option_t *opt)
 {
     freactz_tr = 0;
 
@@ -134,7 +134,7 @@ void G2PFwdTarget::Clear(Option_t *option)
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PFwdTarget::SetSieve(const char *opt)

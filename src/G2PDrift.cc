@@ -34,18 +34,19 @@
 using namespace std;
 
 static const double kLLimit = 2.0;
+static const double kTOLERANCE = 1.0e-8;
 
 static const double c = 2.99792458e8;
 static const double e = 1.60217656535e-19;
 static const double kGEV = 1.0e9 * e / c / c;
 static const double kOneSixth = 1.0 / 6.0;
 
-Condition::Condition(int zi, int zf) : fType(1), fZi(zi), fZf(zf), fSinAng(0), fCosAng(1), pGeo(NULL)
+Condition::Condition(double zi, double zf) : fType(1), fZi(zi), fZf(zf), fSinAng(0), fCosAng(1), pGeo(NULL)
 {
     fSign = (fZi > fZf) ? true : false;
 }
 
-Condition::Condition(int zi_tr, int zf_tr, int angle) : fType(2), fZi(zi_tr), fZf(zf_tr), pGeo(NULL)
+Condition::Condition(double zi_tr, double zf_tr, double angle) : fType(2), fZi(zi_tr), fZf(zf_tr), pGeo(NULL)
 {
     fSign = (fZi > fZf) ? true : false;
     fSinAng = sin(angle);
@@ -72,7 +73,7 @@ bool Condition::operator()(const double *x)
         return (((x[0] * fSinAng + x[2] * fCosAng) > fZf)^fSign);
 
     case 3:
-        return pGeo->IsInside(x);
+        return (!pGeo->IsInside(x));
     }
 
     return true;
@@ -127,7 +128,7 @@ double G2PDrift::Drift(const char *dir, const double *x, const double *p, Condit
     double pin[3] = {p[0], p[1], p[2]};
     double result;
 
-    if (dir[0] == 'b') {
+    if ((dir[0] == 'b') || (dir[0] == 'B')) {
         pin[0] *= -1;
         pin[1] *= -1;
         pin[2] *= -1;
@@ -204,7 +205,7 @@ double G2PDrift::DriftHCS(const double *x, const double *p, Condition &stop, dou
         }
 
         if (l < kLLimit) {
-            while ((dt > dtlimit) && (l < kLLimit)) {
+            while (((dt > dtlimit) || (!stop(xf))) && (l < kLLimit)) {
                 if (stop(xf)) {
                     l = l - fVelocity * dt;
                     dt /= 2.0;
@@ -235,18 +236,16 @@ double G2PDrift::DriftHCSNF(const double *x, const double *p, Condition &stop, d
     double xi[3] = {x[0], x[1], x[2]};
     double xf[3] = {x[0], x[1], x[2]};
 
-    double zf = xi[2];
-    double stepz = fStep;
+    double zf = xi[2] + kTOLERANCE; // FIXME: may be an issue
+    double stepz = 0;
+
+    if (p[2] > 0)
+        stepz = fStep;
+    else
+        stepz = -fStep;
 
     if (!stop(xf)) {
-        while (!stop(xf)) {
-            zf += stepz;
-            xf[0] = xi[0] + (zf - xi[2]) * p[0] / p[2];
-            xf[1] = xi[1] + (zf - xi[2]) * p[1] / p[2];
-            xf[2] = zf;
-        }
-
-        while (stepz > fStepLimit) {
+        while ((fabs(stepz) > fStepLimit) || (!stop(xf))) {
             if (stop(xf)) {
                 zf -= stepz;
                 stepz /= 2.0;
@@ -261,7 +260,7 @@ double G2PDrift::DriftHCSNF(const double *x, const double *p, Condition &stop, d
 
     xout[0] = xi[0] + (zf - xi[2]) * p[0] / p[2];
     xout[1] = xi[1] + (zf - xi[2]) * p[1] / p[2];
-    xout[2] = xi[2];
+    xout[2] = zf;
 
     pout[0] = p[0];
     pout[1] = p[1];

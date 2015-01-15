@@ -25,8 +25,8 @@ class G2PGeoBase;
 class Condition
 {
 public:
-    Condition(int zi, int zf);
-    Condition(int zi_tr, int zf_tr, int angle);
+    Condition(double zi, double zf);
+    Condition(double zi_tr, double zf_tr, double angle);
     Condition(G2PGeoBase *geo);
     ~Condition();
 

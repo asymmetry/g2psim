@@ -154,21 +154,21 @@ int G2PFwdHRS::Process()
         V5troj[i] = fV5react_tr[i];
 
     TIter next(gG2PGeos);
-    double P = fHRSMomentum;
+    double E = fHRSMomentum;
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
         if (geo->IsInside(V5troj, ztroj)) {
-            l = Drift("Forward", V5troj, ztroj, geo, V5troj, ztroj);
+            l = Drift("forward", V5troj, ztroj, geo, V5troj, ztroj);
             G2PMaterial *mat = geo->GetMaterial();
 
             if (mat != NULL) {
-                eloss = mat->EnergyLoss(P, l);
+                eloss = mat->EnergyLoss(E, l);
                 V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
                 fELoss += eloss;
-                P -= eloss;
+                E -= eloss;
                 fTa += l / (mat->GetRadLen() / mat->GetDensity());
 
-                angle = mat->MultiScattering(P, l);
+                angle = mat->MultiScattering(E, l);
                 rot = pRand->Uniform(0, 2 * kPI);
                 V5troj[1] += angle * cos(rot);
                 V5troj[3] += angle * sin(rot);
@@ -181,14 +181,14 @@ int G2PFwdHRS::Process()
     // Local dump front face
     double x[3];
 
-    Drift("Forward", V5troj, ztroj, 640.0e-3, V5troj, ztroj);
+    Drift("forward", V5troj, ztroj, 640.0e-3, V5troj, ztroj);
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
 
     if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3) || (x[1] < -43.0e-3) || (x[1] > 50.0e-3))
         return -1;
 
     // Local dump back face
-    Drift("Forward", V5troj, ztroj, 790.0e-3, V5troj, ztroj);
+    Drift("forward", V5troj, ztroj, 790.0e-3, V5troj, ztroj);
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
 
     if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3) || (x[1] < -53.0e-3) || (x[1] > 58.0e-3))
@@ -196,42 +196,42 @@ int G2PFwdHRS::Process()
 
     // Sieve plane
     static G2PMaterial He("He", 2, 4.0026, 94.32, 0.00016, 41.8, 11.139393);
-    l = Drift("Forward", V5troj, ztroj, pSieve->GetZ(), fV5sieve_tr);
-    eloss = He.EnergyLoss(P, l);
+    l = Drift("forward", V5troj, ztroj, pSieve->GetZ(), fV5sieve_tr);
+    eloss = He.EnergyLoss(E, l);
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
-    P -= eloss;
+    E -= eloss;
     fTa += l / (He.GetRadLen() / He.GetDensity());
 
-    angle = He.MultiScattering(P, l);
+    angle = He.MultiScattering(E, l);
     rot = pRand->Uniform(0, 2 * kPI);
     V5troj[1] += angle * cos(rot);
     V5troj[3] += angle * sin(rot);
 
     // He bag
     l = (170.9e-2 - pSieve->GetZ()) / cos(fV5sieve_tr[1]);
-    eloss = He.EnergyLoss(P, l);
+    eloss = He.EnergyLoss(E, l);
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
-    P -= eloss;
+    E -= eloss;
     fTa += l / (He.GetRadLen() / He.GetDensity());
 
     // HRS entrance
     static G2PMaterial Kapton("Kapton", 5.02, 9.80, 40.56, 1.42, 79.6, 3.3497);
     l = 0.0254e-2 / cos(fV5sieve_tr[1]);
-    eloss = Kapton.EnergyLoss(P, l);
+    eloss = Kapton.EnergyLoss(E, l);
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
-    P -= eloss;
+    E -= eloss;
     fTa += l / (Kapton.GetRadLen() / Kapton.GetDensity());
 
     // HRS exit
     static G2PMaterial Ti("Ti", 22, 47.867, 16.16, 4.54, 230.0, 4.4450);
     l = 0.01016e-2;
-    eloss = Ti.EnergyLoss(P, l);
+    eloss = Ti.EnergyLoss(E, l);
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
-    P -= eloss;
+    E -= eloss;
     fTa += l / (Ti.GetRadLen() / Ti.GetDensity());
 
     if (fDebug > 2)
@@ -241,7 +241,7 @@ int G2PFwdHRS::Process()
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
 
     if (fSieveOn) {
-        if (pSieve->CanPass(fV5sieve_tr, fHoleID))
+        if (!pSieve->CanPass(fV5sieve_tr, fHoleID))
             return -1;
     }
 
@@ -262,7 +262,7 @@ int G2PFwdHRS::Process()
     return 0;
 }
 
-void G2PFwdHRS::Clear(Option_t *option)
+void G2PFwdHRS::Clear(Option_t *opt)
 {
     fHoleID = -1;
     fELoss = 0;
@@ -276,7 +276,7 @@ void G2PFwdHRS::Clear(Option_t *option)
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PFwdHRS::SetSieve(const char *opt)
@@ -366,9 +366,9 @@ int G2PFwdHRS::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"vdc.res.x", "VDC Resolution X", kDOUBLE, &fVDCRes[0]},
-        {"vdc.res.t", "VDC Resolution T", kDOUBLE, &fVDCRes[0]},
-        {"vdc.res.y", "VDC Resolution Y", kDOUBLE, &fVDCRes[0]},
-        {"vdc.res.p", "VDC Resolution P", kDOUBLE, &fVDCRes[0]},
+        {"vdc.res.t", "VDC Resolution T", kDOUBLE, &fVDCRes[1]},
+        {"vdc.res.y", "VDC Resolution Y", kDOUBLE, &fVDCRes[2]},
+        {"vdc.res.p", "VDC Resolution P", kDOUBLE, &fVDCRes[3]},
         {0}
     };
 
@@ -384,16 +384,17 @@ int G2PFwdHRS::DefineVariables(EMode mode)
         return -1;
 
     VarDef gvars[] = {
-        {"elossa", "Energy Loss after Scattering", kDOUBLE, &fELoss},
+        {"eloss.a", "Energy Loss after Scattering", kDOUBLE, &fELoss},
         {"ta", "Relative Thickness after Scattering", kDOUBLE, &fTa},
+        {0}
     };
 
-    if (DefineVarsFromList("phys", gvars, mode) != 0)
+    if (DefineVarsFromList("phys.", gvars, mode) != 0)
         return -1;
 
     VarDef vars[] = {
-        {"id", "Hole ID", kINT, &fHoleID},
-        {"fEndPlane", "End Plane Pass ID", kINT, &fEndPlane},
+        {"id.hole", "Hole ID", kINT, &fHoleID},
+        {"id.plane", "End Plane Pass ID", kINT, &fEndPlane},
         {"sieve.x", "Sieve X", kDOUBLE, &fV5sieve_tr[0]},
         {"sieve.t", "Sieve T", kDOUBLE, &fV5sieve_tr[1]},
         {"sieve.y", "Sieve Y", kDOUBLE, &fV5sieve_tr[2]},

@@ -127,16 +127,19 @@ int G2PEvGen::Process()
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
         if (geo->IsInside(x)) {
-            double l = Drift("Backward", x, p, geo, x, p);
+            double l = Drift("backward", x, p, geo, x, p);
             G2PMaterial *mat = geo->GetMaterial();
-            double eloss = mat->EnergyLoss(fE, l);
-            fELoss += eloss;
 
-            for (int i = 0; i < 3; i++)
-                p[i] *= (fE - eloss) / fE;
+            if (mat != NULL) {
+                double eloss = mat->EnergyLoss(fE, l);
+                fELoss += eloss;
 
-            fE -= eloss;
-            fTb += l / (mat->GetRadLen() / mat->GetDensity());
+                for (int i = 0; i < 3; i++)
+                    p[i] *= (fE - eloss) / fE;
+
+                fE -= eloss;
+                fTb += l / (mat->GetRadLen() / mat->GetDensity());
+            }
 
             next.Reset();
         }
@@ -147,7 +150,10 @@ int G2PEvGen::Process()
     double eloss = Be.EnergyLoss(fE, 0.0381e-2); // Be window 0.0381cm
     fELoss += eloss;
     fE -= eloss;
-    fTb += 0.0381 / (Be.GetRadLen() / Be.GetDensity());
+    fTb += 0.0381e-2 / (Be.GetRadLen() / Be.GetDensity());
+
+    if (fDebug > 2)
+        Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTb);
 
     if (fForceElastic) { // calculate elastic scattering momentum
         double Pi[3] = {sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), cos(fV5beam_lab[1])};
@@ -171,7 +177,7 @@ int G2PEvGen::Process()
     return 0;
 }
 
-void G2PEvGen::Clear(Option_t *option)
+void G2PEvGen::Clear(Option_t *opt)
 {
     fE = 0;
     fELoss = 0;
@@ -184,7 +190,7 @@ void G2PEvGen::Clear(Option_t *option)
     memset(fV5react_lab, 0, sizeof(fV5react_lab));
     memset(fV5tp_tr, 0, sizeof(fV5tp_tr));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PEvGen::SetBeamPos(double x, double y, double z)
@@ -375,11 +381,12 @@ int G2PEvGen::DefineVariables(EMode mode)
 
     VarDef gvars[] = {
         {"e", "Beam Energy after Energy Loss", kDOUBLE, &fE},
-        {"elossb", "Energy Loss before Scattering", kDOUBLE, &fELoss},
+        {"eloss.b", "Energy Loss before Scattering", kDOUBLE, &fELoss},
         {"tb", "Relative Thickness before Scattering", kDOUBLE, &fTb},
+        {0}
     };
 
-    if (DefineVarsFromList("phys", gvars, mode) != 0)
+    if (DefineVarsFromList("phys.", gvars, mode) != 0)
         return -1;
 
     VarDef vars[] = {

@@ -43,7 +43,7 @@ public:
     // General processes
     virtual int Begin();
     virtual int End();
-    virtual void Clear(Option_t * /*option*/ = "");
+    virtual void Clear(Option_t *opt = "");
 
     // Gets
     EStatus Status() const;

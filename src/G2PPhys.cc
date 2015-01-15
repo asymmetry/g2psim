@@ -217,7 +217,7 @@ int G2PPhys::Process()
     return 0;
 }
 
-void G2PPhys::Clear(Option_t *option)
+void G2PPhys::Clear(Option_t *opt)
 {
     fE = 0;
     fTb = 0;
@@ -228,7 +228,7 @@ void G2PPhys::Clear(Option_t *option)
     fTHrec = 0.0;
     fXSrec = 0.0;
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PPhys::SetPars(double *array, int n)

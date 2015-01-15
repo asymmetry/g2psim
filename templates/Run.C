@@ -5,9 +5,6 @@
  * To do this, some include paths should be set by rootlogon.C.
  */
 
-// History:
-//   Jan 2013, C. Gu, First public version.
-//   Apr 2014, C. Gu, No more history for this file.
 //
 
 #include <cstdlib>
@@ -40,9 +37,11 @@ int Run()
     ///////////////////////////////////////////////////////////////////////////
     G2PRun *run = new G2PRun();
     run->SetConfigFile("sim.cfg");
-    run->SetBeamEnergy(2.25327);
+
+    run->SetBeamEnergy(2.253);
     run->SetHRSAngle(5.767 * kDEG);
-    run->SetHRSMomentum(2.24949);
+    run->SetHRSMomentum(2.249);
+
     //run->SetTargetType("production");
     run->SetTargetType("optics"); // 40 mil carbon, no LHe
     //run->SetTargetType("optics_C40He"); // 40 mil carbon, with LHe
@@ -51,14 +50,17 @@ int Run()
     //run->SetTargetType("dummy");
     //run->SetTargetType("dummy_nocap"); // without end cap
     //run->SetTargetType("empty");
+
     run->SetTarget(6, 12);
     run->SetTargetMass(12.0107 * kU);
+
     run->SetFieldType("trans");
     //run->SetFieldType("longitudinal");
     //run->SetFieldType("gep");
+
     //run->SetFieldRatio(0.0);
-    //run->SetFieldRatio(0.5);
-    run->SetFieldRatio(1.0);
+    run->SetFieldRatio(0.5);
+    //run->SetFieldRatio(1.0);
 
     ///////////////////////////////////////////////////////////////////////////
     // field
@@ -73,16 +75,16 @@ int Run()
     // event generator
     ///////////////////////////////////////////////////////////////////////////
     G2PEvGen *gun = new G2PEvGen();
-    //G2PData* gun = new G2PFPData("data.dat");
+    //G2PData* gun = new G2PData("data.dat");
 
-    //gun->SetBeamPos(-3.623e-3, 0.0); // 2.253GeV, 0.0T, 6deg
-    //gun->SetBeamPos(0.501e-3, 0.921e-3); // 2.254GeV, 0.0T, 90deg
-    //gun->SetBeamPos(-3.897e-3, 0.016e-3, -13.6271e-3); // 2.254GeV, 2.5T, 90deg
-    //gun->SetBeamPos(-4.249e-3, 6.619e-3); // 2.254GeV, 2.5T, 90deg
-    //gun->SetBeamPos(0.4622e-3, -3.295e-3, -12.5476e-3); // 2.254GeV, 5.0T, 0deg
-    //gun->SetBeamPos(0.09625e-3, -2.801e-3, -12.5476e-3); // 2.254GeV, 5.0T, 0deg
-    //gun->SetBeamPos(2.594e-3, -6.961e-3); // 1.158GeV, 2.5T, 0deg
     gun->SetBeamPos(0, 0, 0);
+    //gun->SetBeamPos(-3.6e-3,  0.0e-3, -13.6271e-3); // 2.253GeV, 0.0T, 6deg
+    //gun->SetBeamPos( 0.5e-3,  0.9e-3, -13.6271e-3); // 2.253GeV, 0.0T, 90deg
+    //gun->SetBeamPos(-3.9e-3,  0.0e-3, -13.6271e-3); // 2.253GeV, 2.5T, 90deg
+    //gun->SetBeamPos(-4.2e-3,  6.6e-3, -13.6271e-3); // 2.253GeV, 2.5T, 90deg
+    //gun->SetBeamPos( 2.6e-3, -7.0e-3, -13.6271e-3); // 1.158GeV, 2.5T, 90deg
+    //gun->SetBeamPos( 0.5e-3, -3.3e-3, -12.5476e-3); // 2.253GeV, 5.0T, 0deg
+    //gun->SetBeamPos( 0.1e-3, -2.8e-3, -12.5476e-3); // 2.253GeV, 5.0T, 90deg
 
     //gun->SetTiltAngle(0, 0);
 
@@ -90,52 +92,54 @@ int Run()
     gun->SetReactZ(-14.1350e-3, -13.1191e-3); // 40mil C12
     //gun->SetReactZ(-14.1350e-3, -10.9601e-3); // 125mil C12
     //gun->SetReactZ(-14.1350e-3, 14.1350e-3); // production
-    //gun->SetReactZ(-14.1350e-3, -14.1340e-3); // eloss
+    //gun->SetReactZ(-14.1350e-3, -14.1350e-3); // eloss
 
     //gun->SetRasterSize(15.0e-3); // production
     gun->SetRasterSize(0.5e-3); // optics
 
-    //gun->SetTargetTh(-100.0e-3, 10.0e-3); // 2.254GeV, 2.5T, 90deg
-    //gun->SetTargetPh(-20.0e-3, 30.0e-3); // 2.254GeV, 2.5T, 90deg
-    //gun->SetTargetTh(-160.0e-3, -50.0e-3); // 1.158GeV, 2.5T, 90deg
-    //gun->SetTargetPh(-28.0e-3, 22.0e-3); // 1.158GeV, 2.5T, 90deg
-    //gun->SetTargetTh(-60.0e-3, 60.0e-3); // 2.254GeV, 5.0T, 0deg
-    //gun->SetTargetPh(-30.0e-3, 30.0e-3); // 2.254GeV, 5.0T, 0deg
-    gun->SetTargetTh(-60.0e-3, 60.0e-3); // 2.254GeV, 5.0T, 0deg
-    gun->SetTargetPh(-30.0e-3, 30.0e-3); // 2.254GeV, 5.0T, 0deg
-    //gun->SetTargetTh(-120.0e-3, 120.0e-3);
-    //gun->SetTargetPh(-60.0e-3, 60.0e-3);
+    //gun->SetTargetTh(-120.0e-3,  120.0e-3);
+    //gun->SetTargetPh( -60.0e-3,   60.0e-3);
+    gun->SetTargetTh(-100.0e-3,   10.0e-3); // 2.253GeV, 2.5T, 90deg
+    gun->SetTargetPh(-20.0e-3,   30.0e-3);  // 2.253GeV, 2.5T, 90deg
+    //gun->SetTargetTh(-160.0e-3,  -50.0e-3); // 1.158GeV, 2.5T, 90deg
+    //gun->SetTargetPh( -28.0e-3,   22.0e-3); // 1.158GeV, 2.5T, 90deg
+    //gun->SetTargetTh( -60.0e-3,   60.0e-3); // 2.253GeV, 5.0T, 0deg
+    //gun->SetTargetPh( -30.0e-3,   30.0e-3); // 2.253GeV, 5.0T, 0deg
+    //gun->SetTargetTh(-160.0e-3,  -50.0e-3); // 2.253GeV, 5.0T, 90deg
+    //gun->SetTargetPh( -30.0e-3,   30.0e-3); // 2.253GeV, 5.0T, 90deg
 
     //gun->SetDelta(-0.04, 0.04); // normal
     gun->SetDelta("elastic"); // optics
-    //gun->SetDelta(-0.8, 1.0); // effectiv bpm
+    //gun->SetDelta(-0.8, 1.0); // effective bpm
+
     gG2PApps->Add(gun);
 
     ///////////////////////////////////////////////////////////////////////////
     // BPM
     ///////////////////////////////////////////////////////////////////////////
-    //G2PBPM* bpm = new G2PBPM();
-    //bpm->SetBPMRes(0, 0);
+    G2PBPM *bpm = new G2PBPM();
+    bpm->SetBPMRes(0, 0);
     //bpm->SetBPMRes(0.2e-3, 0.4e-3);
-    //gG2PApps->Add(bpm);
+    gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////
-    // special commands
+    // major processes
     ///////////////////////////////////////////////////////////////////////////
     G2PFwdHRS *fwd = new G2PFwdHRS("400016");
     fwd->SetSieve("in");
     //G2PFwdTarget* fwd = new G2PFwdTarget();
     gG2PApps->Add(fwd);
-    //double parsx[3] = {0.029138, 3.042666, -4.636526}; // 2.5T, 90deg
-    //double parsy[3] = {-0.129347, 0.285027, -14.7605}; // 2.5T, 90deg
-    double parsx[3] = { -0.0842026, -0.570111, 168.994}; // 5.0T, 0deg
-    double parsy[3] = {0.21068, -0.536721, -159.269}; // 5.0T, 0deg
+    double parsx[3] = { 0.029138,  3.042666, -4.63653}; // 2.5T, 90deg
+    double parsy[3] = { -0.129347,  0.285027, -14.7605}; // 2.5T, 90deg
+    //double parsx[3] = {-0.084203, -0.570111,  168.994}; // 5.0T, 0deg
+    //double parsy[3] = { 0.210680, -0.536721, -159.269}; // 5.0T, 0deg
     G2PBwdHRS *bwd = new G2PBwdHRS("400016");
     //G2PBwdDB* bwd = new G2PBwdDB();
-    bwd->SetParsX(parsx);
-    bwd->SetParsY(parsy);
-    //bwd->SetRecZ(-12.5476e-3); // 125mil C12
+    //bwd->SetParsX(parsx);
+    //bwd->SetParsY(parsy);
+    bwd->SetRecZ(0.0); // production
     bwd->SetRecZ(-13.6271e-3); // 40mil C12
+    //bwd->SetRecZ(-12.5476e-3); // 125mil C12
     gG2PApps->Add(bwd);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -153,11 +157,13 @@ int Run()
     run->SetDebugLevel(1);
     run->SetSeed(1);
     //int N = 1;
-    //int N = 6550;
-    //int N = 20000;
-    int N = 200000;
+    //int N = 10;
+    //int N = 100;
+    //int N = 1000;
+    //int N = 10000;
+    int N = 100000;
     sim->SetNEvent(N);
-    sim->SetOutFile("test_sim3.root");
+    sim->SetOutFile("test_sim.root");
 
     clock_t start = clock();
     sim->Run();

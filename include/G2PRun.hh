@@ -38,9 +38,9 @@ public:
 
     virtual int Begin();
     virtual int End();
-    virtual void Clear(Option_t * /*option*/ = "");
+    virtual void Clear(Option_t *opt = "");
 
-    virtual void Print(Option_t * /*option*/ = "") const;
+    virtual void Print(Option_t *opt = "") const;
 
     int GetConfig(const ConfDef *item, const char *prefix);
     int SetConfig(const ConfDef *item, const char *prefix);

@@ -61,7 +61,7 @@ int G2PTarget::Begin()
     if (G2PAppBase::Begin() != 0)
         return (fStatus = kBEGINERROR);
 
-    // Define Material
+    // Define Materials
     G2PMaterial *C = new G2PMaterial("C", 6, 12.0107, 42.7, 2.0, 78.0, 2.9925);
     G2PMaterial *Al = new G2PMaterial("Al", 13, 26.9815, 24.01, 2.70, 166.0, 4.2395);
     G2PMaterial *LHe = new G2PMaterial("LHe", 2, 4.0026, 94.32, 0.145, 41.8, 4.36875);
@@ -84,6 +84,7 @@ int G2PTarget::Begin()
     fMats->Add(PCTFE);
     fMats->Add(target);
 
+    // Define Geometries
     double min = -1.0e-8;
     double target_r = 13.6144e-3; // 0.536"
     double target_l = 28.2702e-3; // 1.113"
@@ -99,9 +100,9 @@ int G2PTarget::Begin()
     double nose_r = 21.0058e-3; // 0.827"
     double nose_window_thick = 0.1016e-3; // 4mil
     double shield_4k_r = 38.1e-3; // 1.5"
-    double shield_4k_thick = 0.0381; // 1.5mil
+    double shield_4k_thick = 0.0381e-3; // 1.5mil
     double shield_LN2_r = 419.1e-3; // 16.5"
-    double shield_LN2_thick = 0.0381; // 1.5mil
+    double shield_LN2_thick = 0.0381e-3; // 1.5mil
     double chamber_r = 479.425e-3; // 18.875"
     double chamber_h = 1.3589; // 53.5"
     double window_beam_thick;
@@ -143,10 +144,11 @@ int G2PTarget::Begin()
     cap_d->SetOrigin(0, 0, (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
 
-    G2PGeoBase *temp = new G2PGeoTube(min, nose_r, chamber_h);
-    temp->SetEulerAngle(0.0, -90.0 * kDEG, 0.0); // vertical
-    G2PGeoSub *nose = new G2PGeoSub(temp);
-    nose->Substract(empty);
+    G2PGeoBase *nose_temp1 = new G2PGeoTube(min, nose_r, chamber_h);
+    nose_temp1->SetEulerAngle(0.0, -90.0 * kDEG, 0.0); // vertical
+    G2PGeoBase *nose_temp2 = new G2PGeoTube(min, target_r + cell_thick, target_l);
+    G2PGeoSub *nose = new G2PGeoSub(nose_temp1);
+    nose->Substract(nose_temp2);
     nose->SetMaterial(LHe);
 
     G2PGeoBase *window_nose = new G2PGeoTube(nose_r, nose_r + nose_window_thick, chamber_h);
@@ -223,12 +225,25 @@ int G2PTarget::Begin()
     fGeos->Add(window_chamber_u);
     fGeos->Add(window_chamber_d);
 
-    TIter next(fGeos);
+    TIter mat_iter(fMats);
 
-    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
+    while (G2PMaterial *mat = static_cast<G2PMaterial *>(mat_iter())) {
+        gG2PApps->Add(mat);
+
+        if (mat->Begin() != 0)
+            return (fStatus = kBEGINERROR);
+    }
+
+    TIter geo_iter(fGeos);
+
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
+        gG2PApps->Add(geo);
+
         if (geo->Begin() != 0)
             return (fStatus = kBEGINERROR);
     }
+
+    gG2PGeos = fGeos;
 
     return (fStatus = kOK);
 }

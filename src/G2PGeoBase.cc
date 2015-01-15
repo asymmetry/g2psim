@@ -221,8 +221,11 @@ void G2PGeoBase::Geo2LabNoTNoR(const double *V3_geo, double *V3_lab)
 
 void G2PGeoBase::MakePrefix()
 {
-    // G2PGeoBase class do not need prefix
-    // This empty function only fulfill the requirement of the abstract class G2PAppBase
+    // G2PGeoBase classes do not need prefix
+
+    const char *base = "";
+
+    G2PAppBase::MakePrefix(base);
 }
 
 ClassImp(G2PGeoBase)

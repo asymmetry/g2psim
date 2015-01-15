@@ -146,7 +146,7 @@ void G2PField::GetField(const double *x, double *b)
     b[1] *= fRatio;
     b[2] *= fRatio;
 
-    if (fDebug > 4)
+    if (fDebug > 9)
         Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
@@ -297,7 +297,7 @@ int G2PField::ReadMap()
             fBField[indexR][indexZ][3] = tempBr;
             fBField[indexR][indexZ][4] = tempB;
 
-            if (fDebug > 4)
+            if (fDebug > 9)
                 Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", tempZ, tempR, tempBz, tempBr, tempB);
 
             count++;
@@ -343,7 +343,7 @@ int G2PField::CreateMap()
 
             fprintf(fp, "%8.3f %8.3f\t%e\t%e\t%e\n", x[2] / kCM, x[0] / kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
 
-            if (fDebug > 4)
+            if (fDebug > 9)
                 Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e", x[2] / kCM, x[0] / kCM, fBField[i][j][2], fBField[i][j][3], fBField[i][j][4]);
         }
     }

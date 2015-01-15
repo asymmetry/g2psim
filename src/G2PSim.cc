@@ -116,15 +116,13 @@ int G2PSim::Begin()
     static const char *const here = "Begin()";
 
     // Set run manager
-    pRun = gG2PRun;
-
-    if (pRun == NULL)
+    if ((pRun = gG2PRun) == NULL)
         Error((here), "No run manager found.");
     else if (pRun->Begin() != 0)
         return -1;
 
     ConfDef debug = {"run.debuglevel", "Debug Level", kINT, &fDebug};
-    fDebug = pRun->GetConfig(&debug, "");
+    pRun->GetConfig(&debug, "");
 
     if (fDebug > 0)
         Info(here, "Starting run ......");

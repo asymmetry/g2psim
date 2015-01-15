@@ -20,6 +20,7 @@
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
+#include "TClass.h"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -71,15 +72,8 @@ G2PMaterial::G2PMaterial()
     // Only for ROOT I/O
 }
 
-G2PMaterial::G2PMaterial(const char *name) : fName(name)
-{
-    // Nothing to do
-}
-
 G2PMaterial::G2PMaterial(const char *name, double z, double a, double x0, double density, double ion, double c) : fName(name), fZ(z), fA(a), fMass(0), fDensity(density), fX0(x0), fIon(ion), fC(c)
 {
-    // If use this constructor, no need to call the Begin() function
-
     fB = b_func(fZ);
 }
 
@@ -88,14 +82,9 @@ G2PMaterial::~G2PMaterial()
     // Nothing to do
 }
 
-int G2PMaterial::Begin()
+void G2PMaterial::Print(Option_t *opt) const
 {
-    if (G2PAppBase::Begin() != 0)
-        return (fStatus = kBEGINERROR);
-
-    fB = b_func(fZ);
-
-    return (fStatus = kOK);
+    printf("OBJ: %s\t%s\n", IsA()->GetName(), fName);
 }
 
 double G2PMaterial::EnergyLoss(double E, double l)
@@ -382,7 +371,7 @@ double G2PMaterial::InterBremsstrahlung(double E, double angle)
     double msq = 2.6112e-7; // mass electron squared (GeV^2)
     // This is the equivalent radiator used for internal bremsstrahlung.
     double nu = (alpha / (bval * 3.141592627)) * (log(qsq / msq) - 1);
-    double  cut, Ekin, prob, prob_sample, sample;
+    double cut, Ekin, prob, prob_sample, sample;
 
     // Initialization of lower limit of bremsstrahlung (1 keV)
     cut = 1e-6;
@@ -405,8 +394,8 @@ double G2PMaterial::InterBremsstrahlung(double E, double angle)
 
 double G2PMaterial::ExterBremsstrahlung(double E, double l)
 {
-    //  taken from gener_cone MC, modified by R.M
-    //  modified by Jie Liu, Nov 25 2014
+    // Taken from gener_cone MC, modified by R.M
+    // Modified by Jie Liu, Nov 25 2014
 
     // L.Van Hoorebeke, University of Gent, e-mail: Luc.VanHoorebeke@UGent.be, luc@inwfsun1.rug.ac.be
     // This function generates external bremsstrahlung in the target
@@ -425,8 +414,7 @@ double G2PMaterial::ExterBremsstrahlung(double E, double l)
     bt = l * fDensity / fX0 * fB;
 
     // Calculation of probability to have bremsstrahlung effect above 1 keV
-    prob = 1. - pow(cut / Ekin, bt) - bt / (bt + 1.) * (1. - pow(cut / Ekin, bt + 1.))
-           + 0.75 * bt / (2. + bt) * (1. - pow(cut / Ekin, bt + 2.));
+    prob = 1. - pow(cut / Ekin, bt) - bt / (bt + 1.) * (1. - pow(cut / Ekin, bt + 1.)) + 0.75 * bt / (2. + bt) * (1. - pow(cut / Ekin, bt + 2.));
     prob = prob / (1. - bt * Euler + bt * bt / 2.*(Euler * Euler + 3.1415926 * 3.1415926 / 6.)); /* Gamma function */
 
     prob_sample = pRand->Uniform();
@@ -449,28 +437,6 @@ double G2PMaterial::ExterBremsstrahlung(double E, double l)
     } while (sample > ref);
 
     return xtry;
-}
-
-int G2PMaterial::Configure(EMode mode)
-{
-    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
-        return 0;
-
-    if (G2PAppBase::Configure(mode) != 0)
-        return -1;
-
-    ConfDef confs[] = {
-        {"z", "Z", kINT, &fZ},
-        {"a", "A", kINT, &fA},
-        {"mass", "Mass", kDOUBLE, &fMass},
-        {"density", "Density", kDOUBLE, &fDensity},
-        {"radlen", "Radiation Length", kDOUBLE, &fX0},
-        {"ionization", "ionizationexec", kDOUBLE, &fIon},
-        {"correction", "density correction", kDOUBLE, &fC},
-        {0}
-    };
-
-    return ConfigureFromList(confs, mode);
 }
 
 void G2PMaterial::MakePrefix()

@@ -50,7 +50,7 @@ int G2PProcBase::Begin()
 
     pDrift = static_cast<G2PDrift *>(gG2PApps->Find("G2PDrift"));
 
-    if (DefineVariables(kDEFINE) != 0)
+    if (DefineVariables(kDEFINE) == 0)
         fDefined = true;
     else
         fDefined = false;
@@ -95,27 +95,22 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
 
     double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
 
-    double x[3] = {0};
-    double p[3] = {0};
-    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
-    double theta, phi;
-    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double V5_lab[5];
+    TCS2HCS(V5_tr, z_tr, V5_lab);
+    double x[3] = {V5_lab[0], V5_lab[2], V5_lab[4]};
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
-    p[0] = pp * sin(theta) * cos(phi);
-    p[1] = pp * sin(theta) * sin(phi);
-    p[2] = pp * cos(theta);
+    double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
     Condition stop(z_tr, zf_tr, fHRSAngle);
 
-    double xout[3] = {0};
-    double pout[3] = {0};
+    double xout[3] = {0.0, 0.0, 0.0};
+    double pout[3] = {0.0, 0.0, 0.0};
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
-    theta = acos(pout[2] / pp);
-    phi = atan2(pout[1], pout[0]);
-    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
     double temp;
+    HCS2TCS(acos(pout[2] / pp), atan2(pout[1], pout[0]), V5out_tr[1], V5out_tr[3]);
     HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], temp);
+    V5out_tr[4] = V5save_tr[4];
 
     if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zf_tr);
@@ -131,26 +126,21 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
 
     double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
 
-    double x[3] = {0};
-    double p[3] = {0};
-    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
-    double theta, phi;
-    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double V5_lab[5];
+    TCS2HCS(V5_tr, z_tr, V5_lab);
+    double x[3] = {V5_lab[0], V5_lab[2], V5_lab[4]};
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
-    p[0] = pp * sin(theta) * cos(phi);
-    p[1] = pp * sin(theta) * sin(phi);
-    p[2] = pp * cos(theta);
+    double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
     Condition stop(x[2], zf_lab);
 
-    double xout[3] = {0};
-    double pout[3] = {0};
+    double xout[3] = {0.0, 0.0, 0.0};
+    double pout[3] = {0.0, 0.0, 0.0};
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
-    theta = acos(pout[2] / pp);
-    phi = atan2(pout[1], pout[0]);
-    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
+    HCS2TCS(acos(pout[2] / pp), atan2(pout[1], pout[0]), V5out_tr[1], V5out_tr[3]);
     HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], zout_tr);
+    V5out_tr[4] = V5save_tr[4];
 
     if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
@@ -185,26 +175,21 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, G2P
 
     double V5save_tr[5] = {V5_tr[0], V5_tr[1], V5_tr[2], V5_tr[3], V5_tr[4]};
 
-    double x[3] = {0};
-    double p[3] = {0};
-    TCS2HCS(V5_tr[0], V5_tr[2], z_tr, x[0], x[1], x[2]);
-    double theta, phi;
-    TCS2HCS(V5_tr[1], V5_tr[3], theta, phi);
+    double V5_lab[5];
+    TCS2HCS(V5_tr, z_tr, V5_lab);
+    double x[3] = {V5_lab[0], V5_lab[2], V5_lab[4]};
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
-    p[0] = pp * sin(theta) * cos(phi);
-    p[1] = pp * sin(theta) * sin(phi);
-    p[2] = pp * cos(theta);
+    double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
     Condition stop(geo);
 
-    double xout[3] = {0};
-    double pout[3] = {0};
+    double xout[3] = {0.0, 0.0, 0.0};
+    double pout[3] = {0.0, 0.0, 0.0};
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
-    theta = acos(pout[2] / pp);
-    phi = atan2(pout[1], pout[0]);
-    HCS2TCS(theta, phi, V5out_tr[1], V5out_tr[3]);
+    HCS2TCS(acos(pout[2] / pp), atan2(pout[1], pout[0]), V5out_tr[1], V5out_tr[3]);
     HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], zout_tr);
+    V5out_tr[4] = V5save_tr[4];
 
     if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);

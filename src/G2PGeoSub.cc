@@ -36,22 +36,44 @@ G2PGeoSub::~G2PGeoSub()
 {
     TIter next(fSubGeos);
 
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next()))
+    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
         fSubGeos->Remove(aobj);
+        aobj->Delete();
+    }
 
+    delete fMinuend;
     delete fSubGeos;
+}
+
+int G2PGeoSub::Begin()
+{
+    if (G2PAppBase::Begin() != 0)
+        return (fStatus = kBEGINERROR);
+
+    fMinuend->Begin();
+
+    TIter geo_iter(fSubGeos);
+
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
+        if (geo->Begin() != 0)
+            return (fStatus = kBEGINERROR);
+    }
+
+    return (fStatus = kOK);
 }
 
 bool G2PGeoSub::IsInside(const double *V3)
 {
     bool result = false;
 
-    if (fMinuend->IsInside(V3)) result = true;
+    if (fMinuend->IsInside(V3))
+        result = true;
 
     TIter next(fSubGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
-        if (!geo->IsInside(V3)) result = true;
+        if (geo->IsInside(V3))
+            result = false;
     }
 
     return result;

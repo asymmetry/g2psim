@@ -185,7 +185,7 @@ int G2PBwdHRS::Process()
     return 0;
 }
 
-void G2PBwdHRS::Clear(Option_t *option)
+void G2PBwdHRS::Clear(Option_t *opt)
 {
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
@@ -195,7 +195,7 @@ void G2PBwdHRS::Clear(Option_t *option)
     memset(fV5tprec_tr, 0, sizeof(fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof(fV5tprec_lab));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2PBwdHRS::SetParsX(const double *pars)

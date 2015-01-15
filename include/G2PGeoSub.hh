@@ -22,6 +22,8 @@ public:
     G2PGeoSub(G2PGeoBase *geo);
     virtual ~G2PGeoSub();
 
+    virtual int Begin();
+
     virtual bool IsInside(const double *V3);
     virtual void Substract(G2PGeoBase *geo);
 

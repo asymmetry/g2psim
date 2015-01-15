@@ -135,7 +135,7 @@ int G2PRun::End()
     return 0;
 }
 
-void G2PRun::Clear(Option_t *option)
+void G2PRun::Clear(Option_t *opt)
 {
     fConfig.clear();
     fConfigIsSet.clear();
@@ -143,7 +143,7 @@ void G2PRun::Clear(Option_t *option)
     return;
 }
 
-void G2PRun::Print(Option_t *option) const
+void G2PRun::Print(Option_t *opt) const
 {
     static const char *const here = "Print()";
 

@@ -107,13 +107,13 @@ int G2PData::Process()
     return 0;
 }
 
-void G2PData::Clear(Option_t *option)
+void G2PData::Clear(Option_t *opt)
 {
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 int G2PData::LoadData()

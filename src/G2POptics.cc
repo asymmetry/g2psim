@@ -241,7 +241,7 @@ int G2POptics::Process()
     return 0;
 }
 
-void G2POptics::Clear(Option_t *option)
+void G2POptics::Clear(Option_t *opt)
 {
     fHoleID = -1;
 
@@ -252,7 +252,7 @@ void G2POptics::Clear(Option_t *option)
     memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));
     memset(fV5fp_det, 0, sizeof(fV5fp_det));
 
-    G2PProcBase::Clear(option);
+    G2PProcBase::Clear(opt);
 }
 
 void G2POptics::SetHRSMomentum(int n, double *value)
