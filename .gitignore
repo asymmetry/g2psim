@@ -5,16 +5,17 @@
 
 # Compiled Dynamic libraries
 *.so
+*.so.*
 *.dylib
+*.dylib.*
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+*.a.*
 
 *.d
-*.so.*
-*.a.*
 
 obj.*
 
@@ -23,13 +24,12 @@ obj.*
 plots/
 scripts/
 *.bak
-*.root
-*.png
 *.dat
+*.png
 *.map
+*.root
 
 G2PSim
-/Run.C
-update.sh
-gitrm.sh
-/*.cfg
+*.C
+!rootlogon.C
+*.cfg
