@@ -8,7 +8,7 @@ Run.C is a root script written for debug and test. It can be used directly in RO
 Main.cc is written with supports of a simple set of command-line parameters as well as a fully functional configuration file. It is compiled to an executable.
 
 ### Authors:
-Chao Gu (contact), Min Huang, Jie Liu and Jixie Zhang
+Chao Gu (contact), Min Huang, Jie Liu, Jixie Zhang
 
 ### Versions:
 * Main program: 1.8.0
@@ -16,7 +16,7 @@ Chao Gu (contact), Min Huang, Jie Liu and Jixie Zhang
 * G2PPhys package: 1.5.0
 
 ### History:
-* v1.8, 01/15/2015, 49d1682
+* v1.8, 01/15/2015, 514a1ce
   * Add geometry classes
 
 * v1.7, 11/12/2013, 0235332
@@ -50,6 +50,7 @@ Chao Gu (contact), Min Huang, Jie Liu and Jixie Zhang
 ### Acknowledge:
 * Authors of [ROOT](https://root.cern.ch).
 * O. Hansen et al. for [Hall A analyzer](http://hallaweb.jlab.org/podd/index.html).
+* J. Zhang for HRSMC and TestSNAKE package.
 * J. Huang et al. for HRS Optics Optimize package.
 * X. Zheng et al. for SAMC package.
 * M. Friedman for electron elastic cross sections fits of 1H, 4He and 14N.
