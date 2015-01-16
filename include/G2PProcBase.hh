@@ -52,6 +52,8 @@ protected:
     virtual double Project(const double *V5_tr, double z_tr, double zf_tr, double *V5out_tr); // TCS
     virtual double Project(double x, double y, double z, double zf, double t, double p, double &xout, double &yout);
 
+    virtual double InterBremsstrahlung(double E, double angle);
+
     virtual int Configure(EMode mode = kTWOWAY);
 
     // Global variable functions

@@ -26,6 +26,8 @@
 #include "G2PDrift.hh"
 #include "G2PGeoBase.hh"
 #include "G2PGlobals.hh"
+#include "G2PMaterial.hh"
+#include "G2PRand.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
@@ -161,8 +163,10 @@ double G2PProcBase::Drift(const char *dir, const double *x, const double *p, G2P
 
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
-    if (fDebug > 2)
+    if (fDebug > 2) {
+        Info(here, "%s", geo->GetMaterial() ? geo->GetMaterial()->GetName() : "vacuum");
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", xsave[0], xsave[1], xsave[2], psave[0], psave[1], psave[2], xout[0], xout[1], xout[2], pout[0], pout[1], pout[2]);
+    }
 
     return result;
 }
@@ -191,8 +195,10 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, G2P
     HCS2TCS(xout[0], xout[1], xout[2], V5out_tr[0], V5out_tr[2], zout_tr);
     V5out_tr[4] = V5save_tr[4];
 
-    if (fDebug > 2)
+    if (fDebug > 2) {
+        Info(here, "%s", geo->GetMaterial() ? geo->GetMaterial()->GetName() : "vacuum");
         Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
+    }
 
     return result;
 }
@@ -267,6 +273,47 @@ double G2PProcBase::Project(double x, double y, double z, double zout, double t,
     double dz = zout - z;
 
     return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+double G2PProcBase:: InterBremsstrahlung(double E, double angle)
+{
+    // Take from gener_cone MC, modified by R.M
+    // Modified by Jie Liu, Nov 25 2014
+
+    // L.Van Hoorebeke, University of Gent, e-mail: Luc.VanHoorebeke@UGent.be
+    // This function generates internal radiation the distribution used
+    // contains multiple emission effects
+    // k: electron momentum (GeV)
+    // nu: equivalent radiator length in units radiation length
+    //
+    //     this is actually half the equivalent radiator length
+    //     because 1/2 placed before and 1/2 placed after proton
+
+    static double kMe = 0.510998918e-3; // GeV
+
+    double qsq = 2 * E * E * (1 - cos(angle));
+    double alpha = (1. / 137.);
+    double bval = 4. / 3.;
+    double msq = 2.6112e-7; // mass electron squared (GeV^2)
+    // This is the equivalent radiator used for internal bremsstrahlung.
+    double nu = (alpha / (bval * 3.141592627)) * (log(qsq / msq) - 1);
+    double cut, Ekin, prob, prob_sample, sample;
+
+    // Initialization of lower limit of bremsstrahlung (1 keV)
+    cut = 1e-6;
+    Ekin = E - kMe;
+
+    // Calculation of probability to have internal radiation effect above 1 keV. *
+    prob = 1. - pow(cut / Ekin, nu);
+    prob_sample = pRand->Uniform();  // Random sampling
+
+    if (prob_sample > prob)
+        return 0.;
+
+    // bremsstrahlung has taken place! Generate photon energy
+    sample = pRand->Uniform();
+
+    return Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
 }
 
 int G2PProcBase::Configure(EMode mode)

@@ -132,29 +132,39 @@ int G2PFwdHRS::Process()
     if (fDebug > 2)
         Info(here, " ");
 
-    fV5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
-    fV5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
-    fV5react_lab[2] = gG2PVars->FindSuffix("react.l_y")->GetValue();
-    fV5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
-    fV5react_lab[4] = gG2PVars->FindSuffix("react.l_z")->GetValue();
+    if (gG2PVars->FindSuffix("beam.l_x") && gG2PVars->FindSuffix("react.l_x") && gG2PVars->FindSuffix("react.x") && gG2PVars->FindSuffix("react.z")) {
+        fV5beam_lab[1] = gG2PVars->FindSuffix("beam.l_t")->GetValue();
+        fV5beam_lab[3] = gG2PVars->FindSuffix("beam.l_p")->GetValue();
 
-    fV5react_tr[0] = gG2PVars->FindSuffix("react.x")->GetValue();
-    fV5react_tr[1] = gG2PVars->FindSuffix("react.t")->GetValue();
-    fV5react_tr[2] = gG2PVars->FindSuffix("react.y")->GetValue();
-    fV5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
-    fV5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
+        fV5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
+        fV5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
 
-    freactz_tr = gG2PVars->FindSuffix("react.z")->GetValue();
+        fV5react_tr[0] = gG2PVars->FindSuffix("react.x")->GetValue();
+        fV5react_tr[1] = gG2PVars->FindSuffix("react.t")->GetValue();
+        fV5react_tr[2] = gG2PVars->FindSuffix("react.y")->GetValue();
+        fV5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
+        fV5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
 
-    double V5troj[5];
+        freactz_tr = gG2PVars->FindSuffix("react.z")->GetValue();
+    }
+
+    double V5troj[5] = {fV5react_tr[0], fV5react_tr[1], fV5react_tr[2], fV5react_tr[3], fV5react_tr[4]};
     double ztroj = freactz_tr;
-    double l, eloss, angle, rot;
 
-    for (int i = 0; i < 5; i++)
-        V5troj[i] = fV5react_tr[i];
+    double l, eloss, angle, rot;
+    double E = (1 + fV5react_tr[4]) * fHRSMomentum;
+
+    // Calculate Internal Bremsstrahlung
+    double Pi[3] = {sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), cos(fV5beam_lab[1])};
+    double Pf[3] = {sin(fV5react_lab[1]) *cos(fV5react_lab[3]), sin(fV5react_lab[1]) *sin(fV5react_lab[3]), cos(fV5react_lab[1])};
+    double cosang = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
+
+    double scatangle = acos(cosang);
+    eloss = InterBremsstrahlung(E, scatangle);
+    fELoss += eloss;
+    E -= eloss;
 
     TIter next(gG2PGeos);
-    double E = fHRSMomentum;
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
         if (geo->IsInside(V5troj, ztroj)) {
@@ -205,8 +215,8 @@ int G2PFwdHRS::Process()
 
     angle = He.MultiScattering(E, l);
     rot = pRand->Uniform(0, 2 * kPI);
-    V5troj[1] += angle * cos(rot);
-    V5troj[3] += angle * sin(rot);
+    fV5sieve_tr[1] += angle * cos(rot);
+    fV5sieve_tr[3] += angle * sin(rot);
 
     // He bag
     l = (170.9e-2 - pSieve->GetZ()) / cos(fV5sieve_tr[1]);
@@ -269,6 +279,7 @@ void G2PFwdHRS::Clear(Option_t *opt)
     fTa = 0;
     freactz_tr = 0;
 
+    memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
     memset(fV5react_lab, 0, sizeof(fV5react_lab));
     memset(fV5react_tr, 0, sizeof(fV5react_tr));
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));

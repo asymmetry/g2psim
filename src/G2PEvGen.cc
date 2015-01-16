@@ -122,16 +122,17 @@ int G2PEvGen::Process()
     double x[3] = {fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4]};
     double p[3] = {fE0 * sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), fE0 * sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), fE0 * cos(fV5beam_lab[1])};
 
+    double l, eloss;
     TIter next(gG2PGeos);
     fE = fE0;
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
         if (geo->IsInside(x)) {
-            double l = Drift("backward", x, p, geo, x, p);
+            l = Drift("backward", x, p, geo, x, p);
             G2PMaterial *mat = geo->GetMaterial();
 
             if (mat != NULL) {
-                double eloss = mat->EnergyLoss(fE, l);
+                eloss = mat->EnergyLoss(fE, l);
                 fELoss += eloss;
 
                 for (int i = 0; i < 3; i++)
@@ -147,24 +148,39 @@ int G2PEvGen::Process()
 
     // Additional energy loss (Be window in this case)
     static G2PMaterial Be("Be", 4, 9.0122, 65.19, 1.85, 63.7, 2.7847);
-    double eloss = Be.EnergyLoss(fE, 0.0381e-2); // Be window 0.0381cm
+    eloss = Be.EnergyLoss(fE, 0.0381e-2); // Be window 0.0381cm
     fELoss += eloss;
     fE -= eloss;
     fTb += 0.0381e-2 / (Be.GetRadLen() / Be.GetDensity());
 
+    // Calculate Internal Bremsstrahlung
+    double Pi[3] = {sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), cos(fV5beam_lab[1])};
+    double Pf[3] = {sin(fV5react_lab[1]) *cos(fV5react_lab[3]), sin(fV5react_lab[1]) *sin(fV5react_lab[3]), cos(fV5react_lab[1])};
+    double cosang = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
+
+    double scatangle = acos(cosang);
+    eloss = InterBremsstrahlung(fE, scatangle);
+    fELoss += eloss;
+    fE -= eloss;
+
     if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTb);
 
-    if (fForceElastic) { // calculate elastic scattering momentum
-        double Pi[3] = {sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), cos(fV5beam_lab[1])};
-        double Pf[3] = {sin(fV5react_lab[1]) *cos(fV5react_lab[3]), sin(fV5react_lab[1]) *sin(fV5react_lab[3]), cos(fV5react_lab[1])};
-        double cosang = Pi[0] * Pf[0] + Pi[1] * Pf[1] + Pi[2] * Pf[2];
-        double m = fParticleMass;
-        double P = sqrt(fE * fE - m * m);
-        double scatmom = (P * fM0 / (fE + fM0 - P * cosang)) * (((fE + fM0) * sqrt(1 - (m / fM0) * (m / fM0) * (1 - cosang * cosang)) + (fE + (m / fM0) * m) * cosang) / (fE + fM0 + P * cosang));
-        fV5react_tr[4] = scatmom / fHRSMomentum - 1;
-    } else
-        fV5react_tr[4] = pRand->Uniform(fDeltaLow, fDeltaHigh);
+    // calculate elastic scattering momentum
+    double m = fParticleMass;
+    double P = sqrt(fE * fE - m * m);
+    double scatmom = (P * fM0 / (fE + fM0 - P * cosang)) * (((fE + fM0) * sqrt(1 - (m / fM0) * (m / fM0) * (1 - cosang * cosang)) + (fE + (m / fM0) * m) * cosang) / (fE + fM0 + P * cosang));
+    double elasticd = scatmom / fHRSMomentum - 1;
+
+    if (fForceElastic)
+        fV5react_tr[4] = elasticd;
+    else { // no larger than elastic momentum
+        double tempd = pRand->Uniform(fDeltaLow, fDeltaHigh);
+
+        if (tempd > elasticd)
+            return -1;
+        else fV5react_tr[4] = tempd;
+    }
 
     if (freactz_tr < 0.0)
         Drift("forward", fV5react_tr, freactz_tr, 0.0, fV5tp_tr); // Drift to target plane (z_tr = 0)

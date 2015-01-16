@@ -82,11 +82,6 @@ G2PMaterial::~G2PMaterial()
     // Nothing to do
 }
 
-void G2PMaterial::Print(Option_t *opt) const
-{
-    printf("OBJ: %s\t%s\n", IsA()->GetName(), fName);
-}
-
 double G2PMaterial::EnergyLoss(double E, double l)
 {
     double EMeV = E * 1000; // MeV
@@ -127,6 +122,11 @@ double G2PMaterial::MultiScattering(double E, double l)
         return pRand->Gaus(0, ltheta0); // rad
 
     return 0.0;
+}
+
+const char *G2PMaterial::GetName()
+{
+    return fName;
 }
 
 double G2PMaterial::GetRadLen()
@@ -349,47 +349,6 @@ double G2PMaterial::FluctIonization(double E, double meanloss)
     }
 
     return losstot;
-}
-
-double G2PMaterial::InterBremsstrahlung(double E, double angle)
-{
-    // Take from gener_cone MC, modified by R.M
-    // Modified by Jie Liu, Nov 25 2014
-
-    // L.Van Hoorebeke, University of Gent, e-mail: Luc.VanHoorebeke@UGent.be
-    // This function generates internal radiation the distribution used
-    // contains multiple emission effects
-    // k: electron momentum (GeV)
-    // nu: equivalent radiator length in units radiation length
-    //
-    //     this is actually half the equivalent radiator length
-    //     because 1/2 placed before and 1/2 placed after proton
-
-    double qsq = 2 * E * E * (1 - cos(angle));
-    double alpha = (1. / 137.);
-    double bval = 4. / 3.;
-    double msq = 2.6112e-7; // mass electron squared (GeV^2)
-    // This is the equivalent radiator used for internal bremsstrahlung.
-    double nu = (alpha / (bval * 3.141592627)) * (log(qsq / msq) - 1);
-    double cut, Ekin, prob, prob_sample, sample;
-
-    // Initialization of lower limit of bremsstrahlung (1 keV)
-    cut = 1e-6;
-
-    Ekin = E - kMe;
-
-    // Calculation of probability to have internal radiation effect above 1 keV. *
-    prob = 1. - pow(cut / Ekin, nu);
-
-    prob_sample = pRand->Uniform();  // Random sampling
-
-    if (prob_sample > prob)
-        return 0.;
-
-    // bremsstrahlung has taken place! Generate photon energy
-    sample = pRand->Uniform();
-
-    return Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
 }
 
 double G2PMaterial::ExterBremsstrahlung(double E, double l)
