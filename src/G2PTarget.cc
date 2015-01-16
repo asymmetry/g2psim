@@ -144,11 +144,8 @@ int G2PTarget::Begin()
     cap_d->SetOrigin(0, 0, (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
 
-    G2PGeoBase *nose_temp1 = new G2PGeoTube(min, nose_r, chamber_h);
-    nose_temp1->SetEulerAngle(0.0, -90.0 * kDEG, 0.0); // vertical
-    G2PGeoBase *nose_temp2 = new G2PGeoTube(min, target_r + cell_thick, target_l);
-    G2PGeoSub *nose = new G2PGeoSub(nose_temp1);
-    nose->Substract(nose_temp2);
+    G2PGeoSub *nose = new G2PGeoSub(new G2PGeoTube(min, nose_r, chamber_h));
+    nose->SetEulerAngle(0.0, -90.0 * kDEG, 0.0); // vertical
     nose->SetMaterial(LHe);
 
     G2PGeoBase *window_nose = new G2PGeoTube(nose_r, nose_r + nose_window_thick, chamber_h);
@@ -179,6 +176,7 @@ int G2PTarget::Begin()
     window_chamber_d->SetEulerAngle(0.0, -90.0 * kDEG, 0.0);
     window_chamber_d->SetMaterial(Al);
 
+    // Add target geometries to fGeos
     switch (fTargetType) {
     case 10: // production target
         fGeos->Add(production);
@@ -215,6 +213,12 @@ int G2PTarget::Begin()
         fGeos->Add(empty);
     }
 
+    // Subtract target geometries from nose
+    TIter sub_iter(fGeos);
+
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(sub_iter()))
+        nose->Subtract(geo);
+
     fGeos->Add(nose);
     fGeos->Add(window_nose);
     fGeos->Add(vacuum_4k);
@@ -239,8 +243,12 @@ int G2PTarget::Begin()
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
         gG2PApps->Add(geo);
 
-        if (geo->Begin() != 0)
-            return (fStatus = kBEGINERROR);
+        if (!geo->IsInit()) {
+            geo->SetDebugLevel(fDebug);
+
+            if (geo->Begin() != 0)
+                return (fStatus = kBEGINERROR);
+        }
     }
 
     gG2PGeos = fGeos;

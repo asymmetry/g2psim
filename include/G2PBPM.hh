@@ -45,16 +45,15 @@ protected:
 
     void BPM2Lab(const double *V5_bpm, double *V5_lab);
 
-    void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
-    void GetBPMO(const double *V5beam_lab, double *V5bpm_bpm, double *V4);
+    void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
 
-    void GetBPMAB(const double *V5beam_lab, float *xout);
+    void GetBPMAB(const double *V5beam_lab, double *V4bpmab_bpm);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -71,8 +70,10 @@ protected:
     double fV5beam_lab[5];
     double fV5bpm_bpm[5];
     double fV5bpm_lab[5];
-    double fV2bpma_bpm[2];
-    double fV2bpmb_bpm[2];
+    double fV5bpm_tr[5];
+    double fbpmz_tr;
+
+    double fV4bpmab_bpm[4];
 
     pfGetBPM_ pfGetBPM;
 

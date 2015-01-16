@@ -127,18 +127,19 @@ int G2PBwdHRS::Process()
     if (fDebug > 2)
         Info(here, " ");
 
-    fV5bpm_lab[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
-    fV5bpm_lab[1] = gG2PVars->FindSuffix("bpm.l_t")->GetValue();
-    fV5bpm_lab[2] = gG2PVars->FindSuffix("bpm.l_y")->GetValue();
-    fV5bpm_lab[3] = gG2PVars->FindSuffix("bpm.l_p")->GetValue();
-    fV5bpm_lab[4] = gG2PVars->FindSuffix("bpm.l_z")->GetValue();
+    if (gG2PVars->FindSuffix("bpm.x") && gG2PVars->FindSuffix("fp.x")) {
+        fV5bpm_tr[0] = gG2PVars->FindSuffix("bpm.x")->GetValue();
+        fV5bpm_tr[1] = gG2PVars->FindSuffix("bpm.t")->GetValue();
+        fV5bpm_tr[2] = gG2PVars->FindSuffix("bpm.y")->GetValue();
+        fV5bpm_tr[3] = gG2PVars->FindSuffix("bpm.p")->GetValue();
+        fV5bpm_tr[4] = gG2PVars->FindSuffix("bpm.z")->GetValue();
 
-    fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
-    fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
-    fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
-    fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
-
-    HCS2TCS(fV5bpm_lab, fV5bpm_tr, fV5bpm_tr[4]);
+        fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
+        fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
+        fV5fp_tr[2] = gG2PVars->FindSuffix("fp.y")->GetValue();
+        fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
+    } else
+        return -1;
 
     fV5fp_tr[4] = fV5bpm_tr[0];
 
@@ -187,7 +188,6 @@ int G2PBwdHRS::Process()
 
 void G2PBwdHRS::Clear(Option_t *opt)
 {
-    memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5tpsnake_tr, 0, sizeof(fV5tpsnake_tr));

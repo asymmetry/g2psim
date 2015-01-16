@@ -73,41 +73,36 @@ int G2PFwdTarget::Process()
     if (fDebug > 2)
         Info(here, " ");
 
-    fV5react_lab[0] = gG2PVars->FindSuffix("react.l_x")->GetValue();
-    fV5react_lab[1] = gG2PVars->FindSuffix("react.l_t")->GetValue();
-    fV5react_lab[2] = gG2PVars->FindSuffix("react.l_y")->GetValue();
-    fV5react_lab[3] = gG2PVars->FindSuffix("react.l_p")->GetValue();
-    fV5react_lab[4] = gG2PVars->FindSuffix("react.l_z")->GetValue();
+    if (gG2PVars->FindSuffix("react.x") && gG2PVars->FindSuffix("react.z")) {
+        fV5react_tr[0] = gG2PVars->FindSuffix("react.x")->GetValue();
+        fV5react_tr[1] = gG2PVars->FindSuffix("react.t")->GetValue();
+        fV5react_tr[2] = gG2PVars->FindSuffix("react.y")->GetValue();
+        fV5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
+        fV5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
 
-    fV5react_tr[0] = gG2PVars->FindSuffix("react.x")->GetValue();
-    fV5react_tr[1] = gG2PVars->FindSuffix("react.t")->GetValue();
-    fV5react_tr[2] = gG2PVars->FindSuffix("react.y")->GetValue();
-    fV5react_tr[3] = gG2PVars->FindSuffix("react.p")->GetValue();
-    fV5react_tr[4] = gG2PVars->FindSuffix("react.d")->GetValue();
+        freactz_tr = gG2PVars->FindSuffix("react.z")->GetValue();
+    }
 
-    freactz_tr = gG2PVars->FindSuffix("react.z")->GetValue();
-
-    double pp = fHRSMomentum * (1 + fV5react_tr[4]);
-    double x[3] = {fV5react_lab[0], fV5react_lab[2], fV5react_lab[4]};
-    double p[3] = {pp * sin(fV5react_lab[1]) *cos(fV5react_lab[3]), pp * sin(fV5react_lab[1]) *sin(fV5react_lab[3]), pp * cos(fV5react_lab[1])};
+    double V5troj[5] = {fV5react_tr[0], fV5react_tr[1], fV5react_tr[2], fV5react_tr[3], fV5react_tr[4]};
+    double ztroj = freactz_tr;
 
     // Local dump front face
-    Drift("forward", x, p, 640.0e-3, x, p); // along z direction in lab coordinate
+    double x[3];
 
-    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3))
-        return -1;
-    else if ((x[1] < -43.0e-3) || (x[1] > 50.0e-3))
+    Drift("forward", V5troj, ztroj, 640.0e-3, V5troj, ztroj);
+    TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
+
+    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3) || (x[1] < -43.0e-3) || (x[1] > 50.0e-3))
         return -1;
 
     // Local dump back face
-    Drift("forward", x, p, 790.0e-3, x, p);
+    Drift("forward", V5troj, ztroj, 790.0e-3, V5troj, ztroj);
+    TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
 
-    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3))
-        return -1;
-    else if ((x[1] < -53.0e-3) || (x[1] > 58.0e-3))
+    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3) || (x[1] < -53.0e-3) || (x[1] > 58.0e-3))
         return -1;
 
-    Drift("forward", fV5react_tr, freactz_tr, pSieve->GetZ(), fV5sieve_tr);
+    Drift("forward", V5troj, ztroj, pSieve->GetZ(), fV5sieve_tr);
 
     if (fDebug > 1)
         Info(here, "sieve_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieve_tr[0], fV5sieve_tr[1], fV5sieve_tr[2], fV5sieve_tr[3], fV5sieve_tr[4]);
@@ -129,7 +124,6 @@ void G2PFwdTarget::Clear(Option_t *opt)
 {
     freactz_tr = 0;
 
-    memset(fV5react_lab, 0, sizeof(fV5react_lab));
     memset(fV5react_tr, 0, sizeof(fV5react_tr));
     memset(fV5sieve_tr, 0, sizeof(fV5sieve_tr));
     memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));

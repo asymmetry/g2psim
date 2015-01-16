@@ -32,12 +32,12 @@ public:
     virtual bool IsInside(const double *V3);
 
     // Gets
-    G2PMaterial *GetMaterial();
+    virtual G2PMaterial *GetMaterial();
 
     // Sets
-    void SetOrigin(double x, double y, double z);
-    void SetEulerAngle(double alpha, double beta, double gamma);
-    void SetMaterial(G2PMaterial *mat);
+    virtual void SetOrigin(double x, double y, double z);
+    virtual void SetEulerAngle(double alpha, double beta, double gamma);
+    virtual void SetMaterial(G2PMaterial *mat);
 
 protected:
     G2PGeoBase(); // No instance allowed for this class

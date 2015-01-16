@@ -59,6 +59,8 @@ protected:
 
     double fVDCRes[4];
 
+    double fV5beam_lab[5];
+
     double fV5react_lab[5];
     double fV5react_tr[5];
     double freactz_tr;

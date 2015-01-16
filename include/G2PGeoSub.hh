@@ -25,11 +25,13 @@ public:
     virtual int Begin();
 
     virtual bool IsInside(const double *V3);
-    virtual void Substract(G2PGeoBase *geo);
+    virtual void Subtract(G2PGeoBase *geo);
 
     // Gets
 
     // Sets
+    virtual void SetOrigin(double x, double y, double z);
+    virtual void SetEulerAngle(double alpha, double beta, double gamma);
 
 protected:
     G2PGeoSub(); // Only for ROOT I/O

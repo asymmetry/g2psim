@@ -55,8 +55,12 @@ int G2PGeoSub::Begin()
     TIter geo_iter(fSubGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
-        if (geo->Begin() != 0)
-            return (fStatus = kBEGINERROR);
+        if (!geo->IsInit()) {
+            geo->SetDebugLevel(fDebug);
+
+            if (geo->Begin() != 0)
+                return (fStatus = kBEGINERROR);
+        }
     }
 
     return (fStatus = kOK);
@@ -79,9 +83,19 @@ bool G2PGeoSub::IsInside(const double *V3)
     return result;
 }
 
-void G2PGeoSub::Substract(G2PGeoBase *geo)
+void G2PGeoSub::Subtract(G2PGeoBase *geo)
 {
     fSubGeos->Add(geo);
+}
+
+void G2PGeoSub::SetOrigin(double x, double y, double z)
+{
+    fMinuend->SetOrigin(x, y, z);
+}
+
+void G2PGeoSub::SetEulerAngle(double alpha, double beta, double gamma)
+{
+    fMinuend->SetEulerAngle(alpha, beta, gamma);
 }
 
 bool G2PGeoSub::IsInside(double x, double y, double z)

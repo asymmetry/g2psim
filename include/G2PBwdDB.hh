@@ -57,7 +57,6 @@ protected:
     double fFitPars[2][3];
     double frecz_lab;
 
-    double fV5bpm_lab[5];
     double fV5bpm_tr[5];
 
     double fV5fp_tr[5];

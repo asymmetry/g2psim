@@ -167,32 +167,24 @@ int G2PPhys::Process()
         fTa = gG2PVars->FindSuffix("phys.ta")->GetValue();
     }
 
-    if (gG2PVars->FindSuffix("gen.beam.l_x") && gG2PVars->FindSuffix("gen.react.x")
-            && gG2PVars->FindSuffix("gen.beam.l_t") && gG2PVars->FindSuffix("gen.react.t")
-            && gG2PVars->FindSuffix("gen.beam.l_y") && gG2PVars->FindSuffix("gen.react.y")
-            && gG2PVars->FindSuffix("gen.beam.l_p") && gG2PVars->FindSuffix("gen.react.p")
-            && gG2PVars->FindSuffix("gen.beam.l_z") && gG2PVars->FindSuffix("gen.react.d")) {
-        V51[0] = gG2PVars->FindSuffix("gen.beam.l_x")->GetValue();
-        V51[1] = gG2PVars->FindSuffix("gen.beam.l_t")->GetValue();
-        V51[2] = gG2PVars->FindSuffix("gen.beam.l_y")->GetValue();
-        V51[3] = gG2PVars->FindSuffix("gen.beam.l_p")->GetValue();
-        V51[4] = gG2PVars->FindSuffix("gen.beam.l_z")->GetValue();
+    if (gG2PVars->FindSuffix("beam.l_x") && gG2PVars->FindSuffix("react.x")) {
+        V51[0] = gG2PVars->FindSuffix("beam.l_x")->GetValue();
+        V51[1] = gG2PVars->FindSuffix("beam.l_t")->GetValue();
+        V51[2] = gG2PVars->FindSuffix("beam.l_y")->GetValue();
+        V51[3] = gG2PVars->FindSuffix("beam.l_p")->GetValue();
+        V51[4] = gG2PVars->FindSuffix("beam.l_z")->GetValue();
 
-        V52[0] = gG2PVars->FindSuffix("gen.react.x")->GetValue();
-        V52[1] = gG2PVars->FindSuffix("gen.react.t")->GetValue();
-        V52[2] = gG2PVars->FindSuffix("gen.react.y")->GetValue();
-        V52[3] = gG2PVars->FindSuffix("gen.react.p")->GetValue();
-        V52[4] = gG2PVars->FindSuffix("gen.react.d")->GetValue();
+        V52[0] = gG2PVars->FindSuffix("react.x")->GetValue();
+        V52[1] = gG2PVars->FindSuffix("react.t")->GetValue();
+        V52[2] = gG2PVars->FindSuffix("react.y")->GetValue();
+        V52[3] = gG2PVars->FindSuffix("react.p")->GetValue();
+        V52[4] = gG2PVars->FindSuffix("react.d")->GetValue();
 
         fXSreact = CalXS(V51, V52, fTHreact);
     } else
         fXSreact = 0;
 
-    if (gG2PVars->FindSuffix("bpm.l_x") && gG2PVars->FindSuffix("tp.rec.x")
-            && gG2PVars->FindSuffix("bpm.l_t") && gG2PVars->FindSuffix("tp.rec.t")
-            && gG2PVars->FindSuffix("bpm.l_y") && gG2PVars->FindSuffix("tp.rec.y")
-            && gG2PVars->FindSuffix("bpm.l_p") && gG2PVars->FindSuffix("tp.rec.p")
-            && gG2PVars->FindSuffix("bpm.l_z") && gG2PVars->FindSuffix("tp.rec.d")) {
+    if (gG2PVars->FindSuffix("bpm.l_x") && gG2PVars->FindSuffix("tp.rec.x")) {
         V51[0] = gG2PVars->FindSuffix("bpm.l_x")->GetValue();
         V51[1] = gG2PVars->FindSuffix("bpm.l_t")->GetValue();
         V51[2] = gG2PVars->FindSuffix("bpm.l_y")->GetValue();
