@@ -138,50 +138,50 @@ void G2PBPM::SetBPMPos()
     if (fabs(fFieldRatio - 0.5) < 1e-4) {
         if (fabs(fE0 - 2.254) < 0.2) {
             orbit = 5;
-            fBPMAX = 0.743197468425e-3;
-            fBPMAY = -97.9439291505e-3;
-            fBPMAZ = -940.46966234e-3;
-            fBPMBX = 1.04489437383e-3;
-            fBPMBY = -69.5218412795e-3;
-            fBPMBZ = -676.469580767e-3;
+            fBPMAX = 0.7e-3;
+            fBPMAY = -98e-3;
+            fBPMAZ = -955.9e-3;
+            fBPMBX = 1e-3;
+            fBPMBY = -69.5e-3;
+            fBPMBZ = -691.9e-3;
             pfGetBPM = &G2PBPM::GetBPM5;
         } else if (fabs(fE0 - 1.706) < 0.2) {
             orbit = 4;
-            fBPMAX = 0.334417934854e-3;
-            fBPMAY = -130.742151697e-3;
-            fBPMAZ = -943.969646821e-3;
-            fBPMBX = 0.436195607141e-3;
-            fBPMBY = -93.1201715402e-3;
-            fBPMBZ = -681.069555637e-3;
+            fBPMAX = 0.3e-3;
+            fBPMAY = -130.8e-3;
+            fBPMAZ = -959.4e-3;
+            fBPMBX = 0.4e-3;
+            fBPMBY = -93.1e-3;
+            fBPMBZ = -696.5e-3;
             pfGetBPM = &G2PBPM::GetBPM4;
         } else if (fabs(fE0 - 1.159) < 0.2) {
             orbit = 1;
-            fBPMAX = 1.04109622687e-3;
-            fBPMAY = -196.201718795e-3;
-            fBPMAZ = -948.669889999e-3;
-            fBPMBX = 1.24268316845e-3;
-            fBPMBY = -143.579627734e-3;
-            fBPMBZ = -688.370604604e-3;
+            fBPMAX = 1e-3;
+            fBPMAY = -196.1e-3;
+            fBPMAZ = -964.1e-3;
+            fBPMBX = 1.2e-3;
+            fBPMBY = -143.4e-3;
+            fBPMBZ = -703.8e-3;
             pfGetBPM = &G2PBPM::GetBPM1;
         }
     } else if (fabs(fFieldRatio - 1.0) < 1e-4) {
         if (fabs(fE0 - 2.254) < 0.2) {
             orbit = 7;
-            fBPMAX = 0.138592400799e-3;
-            fBPMAY = -79.962134626e-3;
-            fBPMAZ = -939.76959472e-3;
-            fBPMBX = 0.442605162088e-3;
-            fBPMBY = -55.6342835205e-3;
-            fBPMBZ = -675.269596904e-3;
+            fBPMAX = 0.1e-3;
+            fBPMAY = -80e-3;
+            fBPMAZ = -955.2e-3;
+            fBPMBX = 0.4e-3;
+            fBPMBY = -55.6e-3;
+            fBPMBZ = -690.7e-3;
             pfGetBPM = &G2PBPM::GetBPM7;
         } else if (fabs(fE0 - 3.355) < 0.2) {
             orbit = 9;
-            fBPMAX = 0.0609719900963e-3;
-            fBPMAY = -53.5499078644e-3;
-            fBPMAZ = -939.169701771e-3;
-            fBPMBX = 0.662453421257e-3;
-            fBPMBY = -37.0276045709e-3;
-            fBPMBZ = -674.16965108e-3;
+            fBPMAX = 0;
+            fBPMAY = -53.6e-3;
+            fBPMAZ = -954.6e-3;
+            fBPMBX = 0.6e-3;
+            fBPMBY = -37e-3;
+            fBPMBZ = -689.6e-3;
             pfGetBPM = &G2PBPM::GetBPM9;
         }
     } else {
