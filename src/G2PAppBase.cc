@@ -416,6 +416,23 @@ void G2PAppBase::DCS2FCS(const double *V5_det, double *V5_fp)
         Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_det[0], V5_det[1], V5_det[2], V5_det[3], V5_fp[0], V5_fp[1], V5_fp[2], V5_fp[3]);
 }
 
+void G2PAppBase::BPM2HCS(const double *V5_bpm, double *V5_lab)
+{
+    static const char *const here = "BPM2HCS()";
+
+    V5_lab[0] = V5_bpm[0];
+    V5_lab[2] = V5_bpm[2];
+    V5_lab[4] = V5_bpm[4];
+
+    double p[3] = {tan(V5_bpm[3]), tan(V5_bpm[1]), 1.0};
+    double pp = sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+    V5_lab[1] = acos(1.0 / pp);
+    V5_lab[3] = atan2(p[1], p[0]);
+
+    if (fDebug > 3)
+        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_bpm[0], V5_bpm[1], V5_bpm[2], V5_bpm[3], V5_lab[0], V5_lab[1], V5_lab[2], V5_lab[3]);
+}
+
 int G2PAppBase::Configure(EMode mode)
 {
     if ((mode == kREAD || mode == kTWOWAY) && fConfigured)

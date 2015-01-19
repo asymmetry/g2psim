@@ -45,7 +45,10 @@ protected:
 
     queue<sData> fData;
 
+    double fV5bpm_bpm[5];
     double fV5bpm_lab[5];
+    double fV5bpm_tr[5];
+    double fbpmz_tr;
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 

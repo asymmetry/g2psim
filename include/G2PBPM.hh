@@ -6,7 +6,6 @@
  * Orbits are defined in G2PBPMTrans.
  *
  * Variables ending with "_bpm" are defined in a special coordinates.
- * BPM2Lab() will transform it to lab coordinates.
  * In output, these variables are labeled as "b_".
  */
 
@@ -42,8 +41,6 @@ public:
 
 protected:
     void SetBPMPos();
-
-    void BPM2Lab(const double *V5_bpm, double *V5_lab);
 
     void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);

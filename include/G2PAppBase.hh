@@ -73,6 +73,8 @@ protected:
     virtual void FCS2DCS(const double *V5_fp, double *V5_det);
     virtual void DCS2FCS(const double *V5_det, double *V5_fp);
 
+    virtual void BPM2HCS(const double *V5_bpm, double *V5_lab);
+
     // Configure functions
     virtual int Configure(EMode mode = kTWOWAY);
     int ConfigureFromList(const ConfDef *list, EMode mode = kTWOWAY);

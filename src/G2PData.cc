@@ -84,11 +84,11 @@ int G2PData::Process()
         return -1;
 
     tempdata = fData.front();
-    fV5bpm_lab[0] = tempdata.xb;
-    fV5bpm_lab[1] = tempdata.tb;
-    fV5bpm_lab[2] = tempdata.yb;
-    fV5bpm_lab[3] = tempdata.pb;
-    fV5bpm_lab[4] = tempdata.zb;
+    fV5bpm_bpm[0] = tempdata.xb;
+    fV5bpm_bpm[1] = tempdata.tb;
+    fV5bpm_bpm[2] = tempdata.yb;
+    fV5bpm_bpm[3] = tempdata.pb;
+    fV5bpm_bpm[4] = tempdata.zb;
     fV5fp_tr[0] = tempdata.xf;
     fV5fp_tr[1] = atan(tempdata.tf);
     fV5fp_tr[2] = tempdata.yf;
@@ -96,6 +96,9 @@ int G2PData::Process()
     fV5fp_tr[4] = 0.0;
 
     TRCS2FCS(fV5fp_tr, fV5fp_rot);
+
+    BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
+    HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
 
     if (fDebug > 1) {
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
@@ -109,7 +112,11 @@ int G2PData::Process()
 
 void G2PData::Clear(Option_t *opt)
 {
+    fbpmz_tr = 0;
+
+    memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
+    memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
@@ -156,11 +163,21 @@ int G2PData::DefineVariables(EMode mode)
         {"fp.r_t", "FP T (FCS)", kDOUBLE, &fV5fp_rot[1]},
         {"fp.r_y", "FP Y (FCS)", kDOUBLE, &fV5fp_rot[2]},
         {"fp.r_p", "FP P (FCS)", kDOUBLE, &fV5fp_rot[3]},
-        {"bpm.l_x", "BPM X (lab)", kDOUBLE, &fV5bpm_lab[0]},
+        {"bpm.b_x", "BPM X (bpm)", kDOUBLE, &fV5bpm_bpm[0]},
+        {"bpm.b_t", "BPM T (bpm)", kDOUBLE, &fV5bpm_bpm[1]},
+        {"bpm.b_y", "BPM Y (bpm)", kDOUBLE, &fV5bpm_bpm[2]},
+        {"bpm.b_p", "BPM P (bpm)", kDOUBLE, &fV5bpm_bpm[3]},
+        {"bpm.b_z", "BPM Z (bpm)", kDOUBLE, &fV5bpm_bpm[4]},
+        {"bpm.l_x", "BPM X (bpm)", kDOUBLE, &fV5bpm_lab[0]},
         {"bpm.l_t", "BPM T (lab)", kDOUBLE, &fV5bpm_lab[1]},
         {"bpm.l_y", "BPM Y (lab)", kDOUBLE, &fV5bpm_lab[2]},
         {"bpm.l_p", "BPM P (lab)", kDOUBLE, &fV5bpm_lab[3]},
         {"bpm.l_z", "BPM Z (lab)", kDOUBLE, &fV5bpm_lab[4]},
+        {"bpm.x", "BPM X", kDOUBLE, &fV5bpm_tr[0]},
+        {"bpm.t", "BPM T", kDOUBLE, &fV5bpm_tr[1]},
+        {"bpm.y", "BPM Y", kDOUBLE, &fV5bpm_tr[2]},
+        {"bpm.p", "BPM P", kDOUBLE, &fV5bpm_tr[3]},
+        {"bpm.z", "BPM Z", kDOUBLE, &fbpmz_tr},
         {0}
     };
 

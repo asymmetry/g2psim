@@ -6,7 +6,6 @@
  * Orbits are defined in G2PBPMTrans.
  *
  * Variables ending with "_bpm" are defined in a special coordinates.
- * BPM2Lab() will transform it to lab coordinates.
  * In output, these variables are labeled as "b_".
  */
 
@@ -90,7 +89,7 @@ int G2PBPM::Process()
 
     GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
 
-    BPM2Lab(fV5bpm_bpm, fV5bpm_lab);
+    BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
     HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
 
     if (fDebug > 1)
@@ -192,23 +191,6 @@ void G2PBPM::SetBPMPos()
 
     if (fDebug > 0)
         Info(here, "Using orbit %d.", orbit);
-}
-
-void G2PBPM::BPM2Lab(const double *V5_bpm, double *V5_lab)
-{
-    static const char *const here = "BPM2Lab()";
-
-    V5_lab[0] = V5_bpm[0];
-    V5_lab[2] = V5_bpm[2];
-    V5_lab[4] = V5_bpm[4];
-
-    double p[3] = {tan(V5_bpm[3]), tan(V5_bpm[1]), 1.0};
-    double pp = sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
-    V5_lab[1] = acos(1.0 / pp);
-    V5_lab[3] = atan2(p[1], p[0]);
-
-    if (fDebug > 3)
-        Info(here, "%10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e", V5_bpm[0], V5_bpm[1], V5_bpm[2], V5_bpm[3], V5_lab[0], V5_lab[1], V5_lab[2], V5_lab[3]);
 }
 
 void G2PBPM::GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
@@ -353,11 +335,11 @@ int G2PBPM::DefineVariables(EMode mode)
         return -1;
 
     VarDef vars[] = {
-        {"b_x", "BPM X", kDOUBLE, &fV5bpm_bpm[0]},
-        {"b_t", "BPM T", kDOUBLE, &fV5bpm_bpm[1]},
-        {"b_y", "BPM Y", kDOUBLE, &fV5bpm_bpm[2]},
-        {"b_p", "BPM P", kDOUBLE, &fV5bpm_bpm[3]},
-        {"b_z", "BPM Z", kDOUBLE, &fV5bpm_bpm[4]},
+        {"b_x", "BPM X (bpm)", kDOUBLE, &fV5bpm_bpm[0]},
+        {"b_t", "BPM T (bpm)", kDOUBLE, &fV5bpm_bpm[1]},
+        {"b_y", "BPM Y (bpm)", kDOUBLE, &fV5bpm_bpm[2]},
+        {"b_p", "BPM P (bpm)", kDOUBLE, &fV5bpm_bpm[3]},
+        {"b_z", "BPM Z (bpm)", kDOUBLE, &fV5bpm_bpm[4]},
         {"l_x", "BPM X (lab)", kDOUBLE, &fV5bpm_lab[0]},
         {"l_t", "BPM T (lab)", kDOUBLE, &fV5bpm_lab[1]},
         {"l_y", "BPM Y (lab)", kDOUBLE, &fV5bpm_lab[2]},
