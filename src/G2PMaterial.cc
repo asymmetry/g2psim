@@ -124,7 +124,7 @@ double G2PMaterial::MultiScattering(double E, double l)
     return 0.0;
 }
 
-const char *G2PMaterial::GetName()
+const char *G2PMaterial::GetName() const
 {
     return fName;
 }

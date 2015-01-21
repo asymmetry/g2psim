@@ -29,7 +29,7 @@ public:
     // Sets
 
     // Gets
-    const char *GetName();
+    const char *GetName() const;
     double GetRadLen();
     double GetDensity();
 

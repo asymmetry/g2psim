@@ -54,7 +54,7 @@ protected:
     bool fUseTrans;
 
     double fE0;
-    double fParticleMass;
+    double fm;
     double fM0;
     double fFieldRatio;
 

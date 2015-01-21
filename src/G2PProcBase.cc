@@ -300,7 +300,7 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
     double cut, Ekin, prob, prob_sample, sample;
 
     // Initialization of lower limit of bremsstrahlung (1 keV)
-    cut = 1e-3;
+    cut = 1e-6;
     Ekin = E - kMe;
 
     // Calculation of probability to have internal radiation effect above 1 keV. *

@@ -40,7 +40,7 @@ protected:
 
     typedef struct {
         int ind;
-        double xb, tb, yb, pb, zb, xf, tf, yf, pf;
+        double xf, tf, yf, pf, eb, xb, tb, yb, pb;
     } sData;
 
     queue<sData> fData;
@@ -49,6 +49,8 @@ protected:
     double fV5bpm_lab[5];
     double fV5bpm_tr[5];
     double fbpmz_tr;
+
+    double fV5fp_det[5];
     double fV5fp_tr[5];
     double fV5fp_rot[5];
 

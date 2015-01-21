@@ -40,7 +40,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PEvGen *G2PEvGen::pG2PEvGen = NULL;
 
-G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fParticleMass(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0)
+G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0)
 {
     if (pG2PEvGen) {
         Error("G2PEvGen()", "Only one instance of G2PEvGen allowed.");
@@ -167,9 +167,8 @@ int G2PEvGen::Process()
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTb);
 
     // calculate elastic scattering momentum
-    double m = fParticleMass;
-    double P = sqrt(fE * fE - m * m);
-    double scatmom = (P * fM0 / (fE + fM0 - P * cosang)) * (((fE + fM0) * sqrt(1 - (m / fM0) * (m / fM0) * (1 - cosang * cosang)) + (fE + (m / fM0) * m) * cosang) / (fE + fM0 + P * cosang));
+    double P = sqrt(fE * fE - fm * fm);
+    double scatmom = (P * fM0 / (fE + fM0 - P * cosang)) * (((fE + fM0) * sqrt(1 - (fm / fM0) * (fm / fM0) * (1 - cosang * cosang)) + (fE + (fm / fM0) * fm) * cosang) / (fE + fM0 + P * cosang));
     double elasticd = scatmom / fHRSMomentum - 1;
 
     if (fForceElastic)
@@ -364,7 +363,7 @@ int G2PEvGen::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
-        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fParticleMass},
+        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
         {"run.target.mass", "Target Mass", kDOUBLE, &fM0},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"beam.l_x", "Beam X", kDOUBLE, &fBeamX_lab},

@@ -84,17 +84,20 @@ int G2PData::Process()
         return -1;
 
     tempdata = fData.front();
-    fV5bpm_bpm[0] = tempdata.xb;
-    fV5bpm_bpm[1] = tempdata.tb;
-    fV5bpm_bpm[2] = tempdata.yb;
-    fV5bpm_bpm[3] = tempdata.pb;
-    fV5bpm_bpm[4] = tempdata.zb;
-    fV5fp_tr[0] = tempdata.xf;
-    fV5fp_tr[1] = atan(tempdata.tf);
-    fV5fp_tr[2] = tempdata.yf;
-    fV5fp_tr[3] = atan(tempdata.pf);
-    fV5fp_tr[4] = 0.0;
 
+    fV5bpm_bpm[0] = tempdata.xb / 1000.0;
+    fV5bpm_bpm[1] = tempdata.tb;
+    fV5bpm_bpm[2] = tempdata.yb / 1000.0;
+    fV5bpm_bpm[3] = tempdata.pb;
+    fV5bpm_bpm[4] = 0.0;
+
+    fV5fp_det[0] = tempdata.xf;
+    fV5fp_det[1] = atan(tempdata.tf);
+    fV5fp_det[2] = tempdata.yf;
+    fV5fp_det[3] = atan(tempdata.pf);
+    fV5fp_det[4] = 0.0;
+
+    DCS2TRCS(fV5fp_det, fV5fp_tr);
     TRCS2FCS(fV5fp_tr, fV5fp_rot);
 
     BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
@@ -117,6 +120,7 @@ void G2PData::Clear(Option_t *opt)
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
+    memset(fV5fp_det, 0, sizeof(fV5fp_det));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
 
@@ -131,11 +135,11 @@ int G2PData::LoadData()
         return -1;
 
     sData temp;
-    fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
+    fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xf, &temp.tf, &temp.yf, &temp.pf, &temp.eb, &temp.xb, &temp.tb, &temp.yb, &temp.pb);
 
     while (!feof(fp)) {
         fData.push(temp);
-        fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xb, &temp.tb, &temp.yb, &temp.pb, &temp.zb, &temp.xf, &temp.tf, &temp.yf, &temp.pf);
+        fscanf(fp, "%d%lf%lf%lf%lf%lf%lf%lf%lf%lf", &temp.ind, &temp.xf, &temp.tf, &temp.yf, &temp.pf, &temp.eb, &temp.xb, &temp.tb, &temp.yb, &temp.pb);
     }
 
     fclose(fp);

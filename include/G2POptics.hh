@@ -34,7 +34,6 @@ public:
 
     // Sets
     void SetHRSMomentum(int n, double *value);
-    void SetTiltAngle(int n, double *value);
     void SetFoilZ(int n, double *value);
     void SetEnergyLoss(int n, double *value);
 
@@ -54,27 +53,27 @@ protected:
 
     typedef struct {
         int ind;
-        double xf, tf, yf, pf, eb, xb, yb;
+        double xf, tf, yf, pf, eb, xb, tb, yb, pb;
     } sData;
 
     queue<sData> fData;
 
-    double fTargetMass;
-
     double fE0;
-    double fTiltAngle;
+    double fm;
+    double fM0;
     double fELoss;
 
     int fNFoil;
     vector<double> fHRSMomentumV;
     vector<double> fFoilZV;
-    vector<double> fTiltAngleV;
     vector<double> fELossV;
 
     int fHoleID;
 
-    double fV3bpm_lab[3];
-    double fV3bpm_tr[3];
+    double fV5bpm_bpm[5];
+    double fV5bpm_lab[5];
+    double fV5bpm_tr[5];
+    double fbpmz_tr;
 
     double fV5react_tr[5];
 
@@ -82,6 +81,8 @@ protected:
     double fV5tpproj_tr[5];
 
     double fV5fp_det[5];
+    double fV5fp_tr[5];
+    double fV5fp_rot[5];
 
     G2PSieve *pSieve;
 
