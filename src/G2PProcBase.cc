@@ -300,7 +300,7 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
     double cut, Ekin, prob, prob_sample, sample;
 
     // Initialization of lower limit of bremsstrahlung (1 keV)
-    cut = 1e-6;
+    cut = 1e-3;
     Ekin = E - kMe;
 
     // Calculation of probability to have internal radiation effect above 1 keV. *
@@ -313,7 +313,15 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
     // bremsstrahlung has taken place! Generate photon energy
     sample = pRand->Uniform();
 
-    return Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
+    double result = Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
+
+    if (result > (E - 2 * kMe))
+        result = E - 2 * kMe;
+
+    if ((result < 0) || (E < 2 * kMe))
+        result = 0;
+
+    return result;
 }
 
 int G2PProcBase::Configure(EMode mode)

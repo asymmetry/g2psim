@@ -93,10 +93,10 @@ double G2PMaterial::EnergyLoss(double E, double l)
     result += Ionization(EMeV, lcm);
     result += ExterBremsstrahlung(EMeV, lcm);
 
-    if (result > (E - kMe))
-        result = E - kMe;
+    if (result > (E - 2 * kMe))
+        result = E - 2 * kMe;
 
-    if (result < 0)
+    if ((result < 0) || (E < 2 * kMe))
         result = 0;
 
     if (result > 0)
