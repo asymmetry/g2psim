@@ -139,7 +139,7 @@ int G2PEvGen::Process()
                     p[i] *= (fE - eloss) / fE;
 
                 fE -= eloss;
-                fTb += l / (mat->GetRadLen() / mat->GetDensity());
+                fTb += (l * 100) / (mat->GetRadLen() / mat->GetDensity());
             }
 
             next.Reset();
@@ -151,7 +151,7 @@ int G2PEvGen::Process()
     eloss = Be.EnergyLoss(fE, 0.0381e-2); // Be window 0.0381cm
     fELoss += eloss;
     fE -= eloss;
-    fTb += 0.0381e-2 / (Be.GetRadLen() / Be.GetDensity());
+    fTb += 0.0381 / (Be.GetRadLen() / Be.GetDensity());
 
     // Calculate Internal Bremsstrahlung
     double Pi[3] = {sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), cos(fV5beam_lab[1])};

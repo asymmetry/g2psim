@@ -176,7 +176,7 @@ int G2PFwdHRS::Process()
                 V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
                 fELoss += eloss;
                 E -= eloss;
-                fTa += l / (mat->GetRadLen() / mat->GetDensity());
+                fTa += (l * 100) / (mat->GetRadLen() / mat->GetDensity());
 
                 angle = mat->MultiScattering(E, l);
                 rot = pRand->Uniform(0, 2 * kPI);
@@ -211,7 +211,7 @@ int G2PFwdHRS::Process()
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
     E -= eloss;
-    fTa += l / (He.GetRadLen() / He.GetDensity());
+    fTa += (l * 100) / (He.GetRadLen() / He.GetDensity());
 
     angle = He.MultiScattering(E, l);
     rot = pRand->Uniform(0, 2 * kPI);
@@ -224,7 +224,7 @@ int G2PFwdHRS::Process()
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
     E -= eloss;
-    fTa += l / (He.GetRadLen() / He.GetDensity());
+    fTa += (l * 100) / (He.GetRadLen() / He.GetDensity());
 
     // HRS entrance
     static G2PMaterial Kapton("Kapton", 5.02, 9.80, 40.56, 1.42, 79.6, 3.3497);
@@ -233,7 +233,7 @@ int G2PFwdHRS::Process()
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
     E -= eloss;
-    fTa += l / (Kapton.GetRadLen() / Kapton.GetDensity());
+    fTa += (l * 100) / (Kapton.GetRadLen() / Kapton.GetDensity());
 
     // HRS exit
     static G2PMaterial Ti("Ti", 22, 47.867, 16.16, 4.54, 230.0, 4.4450);
@@ -242,7 +242,7 @@ int G2PFwdHRS::Process()
     fV5sieve_tr[4] = fV5sieve_tr[4] - eloss / fHRSMomentum;
     fELoss += eloss;
     E -= eloss;
-    fTa += l / (Ti.GetRadLen() / Ti.GetDensity());
+    fTa += (l * 100) / (Ti.GetRadLen() / Ti.GetDensity());
 
     if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTa);
