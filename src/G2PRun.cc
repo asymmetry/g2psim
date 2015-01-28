@@ -23,6 +23,7 @@
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
+#include "TTree.h"
 
 #include "libconfig.h"
 
@@ -82,6 +83,9 @@ G2PRun::~G2PRun()
 {
     Clear();
 
+    if (fConfigTree)
+        delete fConfigTree;
+
     if (pG2PRun == this)
         pG2PRun = NULL;
 
@@ -124,6 +128,8 @@ int G2PRun::Begin()
         gG2PApps->Add(drift);
     }
 
+    fConfigTree = new TTree("config", "G2PSim Configuration Tree");
+
     return 0;
 }
 
@@ -132,6 +138,8 @@ int G2PRun::End()
     if (fConfig["run.debuglevel"] > 1)
         Print();
 
+    Save();
+
     return 0;
 }
 
@@ -139,6 +147,36 @@ void G2PRun::Clear(Option_t *opt)
 {
     fConfig.clear();
     fConfigIsSet.clear();
+
+    return;
+}
+
+void G2PRun::Save() const
+{
+    static const char *const here = "Save()";
+
+    Info(here, "Writing configuration to the rootfile ...");
+
+    map<string, double>::const_iterator it = fConfig.begin();
+    double *config = new double[fConfig.size()];
+    int i = 0;
+
+    while (it != fConfig.end()) {
+        config[i] = it->second;
+
+        if (fConfigTree)
+            fConfigTree->Branch(it->first.c_str(), &config[i], Form("%s/D", it->first.c_str()));
+
+        i++;
+        it++;
+    }
+
+    if (fConfigTree) {
+        fConfigTree->Fill();
+        fConfigTree->Write();
+    }
+
+    delete[] config;
 
     return;
 }

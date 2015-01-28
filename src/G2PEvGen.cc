@@ -131,7 +131,7 @@ int G2PEvGen::Process()
             l = Drift("backward", x, p, geo, x, p);
             G2PMaterial *mat = geo->GetMaterial();
 
-            if (mat != NULL) {
+            if (mat) {
                 eloss = mat->EnergyLoss(fE, l);
                 fELoss += eloss;
 

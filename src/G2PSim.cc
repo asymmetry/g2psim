@@ -115,6 +115,9 @@ int G2PSim::Begin()
 {
     static const char *const here = "Begin()";
 
+    fFile = new TFile(fOutFile, "RECREATE");
+    fFile->cd();
+
     // Set run manager
     if ((pRun = gG2PRun) == NULL)
         Error((here), "No run manager found.");
@@ -154,9 +157,6 @@ int G2PSim::Begin()
     gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
     gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
 
-    fFile = new TFile(fOutFile, "RECREATE");
-    fFile->cd();
-
     pOutput = new G2POutput();
 
     if (pOutput->Begin() != 0)
@@ -183,6 +183,9 @@ int G2PSim::End()
         Info(here, "Cleaning ......");
 
     pOutput->End();
+
+    fFile->Purge();
+    fFile->Save();
     fFile->Close();
 
     if (fDebug > 0)

@@ -28,6 +28,7 @@
 
 using namespace std;
 
+class TTree;
 class G2PRand;
 
 class G2PRun : public TObject
@@ -40,6 +41,7 @@ public:
     virtual int End();
     virtual void Clear(Option_t *opt = "");
 
+    virtual void Save() const;
     virtual void Print(Option_t *opt = "") const;
 
     int GetConfig(const ConfDef *item, const char *prefix);
@@ -69,6 +71,8 @@ protected:
 
     map<string, double> fConfig;
     set<string> fConfigIsSet;
+
+    TTree *fConfigTree;
 
 private:
     // Random number generator

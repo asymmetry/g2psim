@@ -171,7 +171,7 @@ int G2PFwdHRS::Process()
             l = Drift("forward", V5troj, ztroj, geo, V5troj, ztroj);
             G2PMaterial *mat = geo->GetMaterial();
 
-            if (mat != NULL) {
+            if (mat) {
                 eloss = mat->EnergyLoss(E, l);
                 V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
                 fELoss += eloss;

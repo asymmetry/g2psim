@@ -53,7 +53,7 @@ int G2POutput::Begin()
         return -1;
     }
 
-    fTree = new TTree("T", "G2PSim Output DST");
+    fTree = new TTree("T", "G2PSim Output Tree");
 
     fNVar = 0;
     TIter next(gG2PVars);
@@ -85,7 +85,7 @@ int G2POutput::Process()
             fVar[i] = pvar->GetValue();
     }
 
-    if (fTree != 0)
+    if (fTree)
         fTree->Fill();
 
     return 0;
@@ -93,10 +93,15 @@ int G2POutput::Process()
 
 int G2POutput::End()
 {
-    if (fTree != 0)
+    if (fTree)
         fTree->Write();
 
     return 0;
+}
+
+TTree *G2POutput::GetTree() const
+{
+    return fTree;
 }
 
 int G2POutput::Attach()

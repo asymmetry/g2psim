@@ -34,15 +34,7 @@ public:
     int Process();
     int End();
 
-    bool TreeDefined() const
-    {
-        return fTree != 0;
-    }
-
-    TTree *GetTree() const
-    {
-        return fTree;
-    }
+    TTree *GetTree() const;
 
 protected:
     int Attach();
