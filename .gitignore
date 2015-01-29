@@ -31,6 +31,7 @@ scripts/
 *.root
 
 G2PSim
-*.C
+/*.C
+/*.cfg
+/*.def
 !rootlogon.C
-*.cfg

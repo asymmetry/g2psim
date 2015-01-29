@@ -16,7 +16,7 @@ Chao Gu (contact), Min Huang, Jie Liu, Jixie Zhang
 * G2PPhys package: 1.5.0
 
 ### History:
-* v1.8, 01/15/2015, 514a1ce
+* v1.8, 01/29/2015, 7f25161
   * Add geometry classes
 
 * v1.7, 11/12/2013, 0235332
