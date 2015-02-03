@@ -32,6 +32,7 @@
 #pragma link C++ class G2PFwdTarget+;
 #pragma link C++ class G2POptics+;
 #pragma link C++ class G2PPhys+;
+#pragma link C++ class G2PRec+;
 #pragma link C++ class G2PRun+;
 #pragma link C++ class G2POutput+;
 #pragma link C++ class G2PSim+;

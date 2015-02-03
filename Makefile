@@ -11,11 +11,12 @@ USER        := $(shell whoami)
 MYHOST      := $(shell hostname -s)
 
 ########################################################################
-EXECFILE    := G2PSim
+EXECFILE    := g2psim
+RECEXECFILE := g2prec
 LIBFILE     := libG2PSim.so
-LIBNAME     := G2PSim
-USERDICT    := $(LIBNAME)_Dict
-VERSION     := 1.8.0
+LIBNAME     := g2psim
+USERDICT    := $(LIBNAME)_dict
+VERSION     := 1.9.0
 
 ########################################################################
 SRCDIR      := src
@@ -82,6 +83,15 @@ INCDIRS     += -I$(LIBCONFIG)/include
 SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
 else
 $(error $$LIBCONFIG environment variable not defined)
+endif
+
+ifdef ANALYZER
+ANADIRS     := $(wildcard $(addprefix $(ANALYZER)/, src hana_decode hana_scaler))
+ANACXXFLAGS := $(addprefix -I, $(ANADIRS))
+ANALIBS     := -L$(ANALYZER) -lHallA -ldc -lscaler
+else
+ANACXXFLAGS :=
+ANALIBS     :=
 endif
 
 CFLAGS      += $(INCDIRS)
@@ -182,6 +192,16 @@ $(OBJDIR)/Main.o: Main.cc
 	@$(CXX) -c $< -o $@  $(CXXFLAGS)
 
 ########################################################################
+g2prec: dir $(OBJS) $(OBJDIR)/Rec.o $(OBJDIR)/$(USERDICT).o
+	@$(LD) $(LDFLAGS) -o $(RECEXECFILE) $(OBJDIR)/Rec.o $(OBJS)\
+           $(OBJDIR)/$(USERDICT).o $(LIBS) $(OTHERLIBS) $(ANALIBS)
+	@echo "Linking $(RECEXECFILE) ...... done!"
+
+$(OBJDIR)/Rec.o: Rec.cc
+	@echo Compiling $< ......
+	@$(CXX) -c $< -o $@  $(CXXFLAGS) $(ANACXXFLAGS)
+
+########################################################################
 lib: dir $(OBJS) $(OBJDIR)/$(USERDICT).o
 	@for model in $(MODELLIST); do \
 		if [ -d $$model ]; then \
@@ -199,9 +219,9 @@ script:
 	@if [ ! -e "sim.cfg" ] ; then cp -pr "templates/sim.cfg" "sim.cfg" ; \
 	echo "Generate sim.cfg ...... done!"; fi
 
-$(USERDICT).cxx: $(HEADERS) $(LIBNAME)_LinkDef.h
-		@echo "Generating dictionary $(USERDICT).cxx ......"
-		@$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
+$(USERDICT).cxx: $(HEADERS) $(LIBNAME)_linkdef.h
+	@echo "Generating dictionary $(USERDICT).cxx ......"
+	@$(ROOTSYS)/bin/rootcint -f $@ -c $(INCDIRS) $^
 
 $(OBJDIR)/$(USERDICT).o: $(USERDICT).cxx
 	@echo Compiling $< ......
@@ -247,7 +267,8 @@ dir:
 clean: dir
 	@rm -f $(OBJDIR)/*
 	@rm -f $(USERDICT).cxx $(USERDICT).h
-	@rm -f $(EXECFILE) $(LIBFILE) $(LIBFILE).$(VERSION)
+	@rm -f $(EXECFILE) $(RECEXECFILE)
+	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean

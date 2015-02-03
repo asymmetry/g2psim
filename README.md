@@ -16,6 +16,10 @@ Chao Gu (contact), Min Huang, Jie Liu, Jixie Zhang
 * G2PPhys package: 1.5.0
 
 ### History:
+* v1.9, 02/03/2015, HEAD
+  * Combine g2prec package with g2psim
+  * Add some useful scripts in templates
+
 * v1.8, 01/29/2015, 7f25161
   * Add geometry classes
 

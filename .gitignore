@@ -21,6 +21,7 @@
 obj.*
 
 *_Dict.*
+*_dict.*
 
 plots/
 scripts/
@@ -31,6 +32,9 @@ scripts/
 *.root
 
 G2PSim
+g2psim
+G2PRec
+g2prec
 /*.C
 /*.cfg
 /*.def
