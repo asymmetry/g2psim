@@ -380,7 +380,7 @@ double G2PBwdDB::GetEffBPM(int axis)
         if (axis == 0)
             effbpm_tr = xbpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * ybpm_tr) / p) / 1000;
         else if (axis == 1)
-            effbpm_tr = ybpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * xbpm_tr) / p) / 1000;
+            effbpm_tr = ybpm_tr - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * xbpm_tr) / p) / 1000;
     }
 
     if (fDebug > 2)
@@ -465,11 +465,11 @@ int G2PBwdDB::DefineVariables(EMode mode)
         return -1;
 
     VarDef vars[] = {
-        {"tp.mat.x", "MATRIX rec to Target Plane X", kDOUBLE, &fV5tpmat_tr[0]},
-        {"tp.mat.t", "MATRIX rec to Target Plane T", kDOUBLE, &fV5tpmat_tr[1]},
-        {"tp.mat.y", "MATRIX rec to Target Plane Y", kDOUBLE, &fV5tpmat_tr[2]},
-        {"tp.mat.p", "MATRIX rec to Target Plane P", kDOUBLE, &fV5tpmat_tr[3]},
-        {"tp.mat.d", "MATRIX rec to Target Plane D", kDOUBLE, &fV5tpmat_tr[4]},
+        {"tp.mat.x", "Matrix Rec to Target Plane X", kDOUBLE, &fV5tpmat_tr[0]},
+        {"tp.mat.t", "Matrix Rec to Target Plane T", kDOUBLE, &fV5tpmat_tr[1]},
+        {"tp.mat.y", "Matrix Rec to Target Plane Y", kDOUBLE, &fV5tpmat_tr[2]},
+        {"tp.mat.p", "Matrix Rec to Target Plane P", kDOUBLE, &fV5tpmat_tr[3]},
+        {"tp.mat.d", "Matrix Rec to Target Plane D", kDOUBLE, &fV5tpmat_tr[4]},
         {"sieve.proj.x", "Project to Sieve X", kDOUBLE, &fV5sieveproj_tr[0]},
         {"sieve.proj.t", "Project to Sieve T", kDOUBLE, &fV5sieveproj_tr[1]},
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},

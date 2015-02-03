@@ -335,11 +335,11 @@ int G2PBwdHRS::DefineVariables(EMode mode)
         return -1;
 
     VarDef vars[] = {
-        {"tp.snake.x", "SNAKE rec to Target Plane X", kDOUBLE, &fV5tpsnake_tr[0]},
-        {"tp.snake.t", "SNAKE rec to Target Plane T", kDOUBLE, &fV5tpsnake_tr[1]},
-        {"tp.snake.y", "SNAKE rec to Target Plane Y", kDOUBLE, &fV5tpsnake_tr[2]},
-        {"tp.snake.p", "SNAKE rec to Target Plane P", kDOUBLE, &fV5tpsnake_tr[3]},
-        {"tp.snake.d", "SNAKE rec to Target Plane D", kDOUBLE, &fV5tpsnake_tr[4]},
+        {"tp.snake.x", "SNAKE Rec to Target Plane X", kDOUBLE, &fV5tpsnake_tr[0]},
+        {"tp.snake.t", "SNAKE Rec to Target Plane T", kDOUBLE, &fV5tpsnake_tr[1]},
+        {"tp.snake.y", "SNAKE Rec to Target Plane Y", kDOUBLE, &fV5tpsnake_tr[2]},
+        {"tp.snake.p", "SNAKE Rec to Target Plane P", kDOUBLE, &fV5tpsnake_tr[3]},
+        {"tp.snake.d", "SNAKE Rec to Target Plane D", kDOUBLE, &fV5tpsnake_tr[4]},
         {"sieve.proj.x", "Project to Sieve X", kDOUBLE, &fV5sieveproj_tr[0]},
         {"sieve.proj.t", "Project to Sieve T", kDOUBLE, &fV5sieveproj_tr[1]},
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
