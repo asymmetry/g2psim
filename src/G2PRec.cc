@@ -29,10 +29,6 @@
 
 #include "G2PRec.hh"
 
-using namespace std;
-
-static const double kDEG = 3.14159265358979323846 / 180.0;
-
 G2PRec *G2PRec::pG2PRec = NULL;
 
 G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrP(0.0), fExtTgtCorrD(1e36), pSieve(NULL)

@@ -79,8 +79,10 @@ DEPS        := $(subst .o,.d,$(OBJS))
 SYSLIBS     := -lstdc++ -lgfortran
 
 ifdef LIBCONFIG
-INCDIRS     += -I$(LIBCONFIG)/include
-SYSLIBS     += -L$(LIBCONFIG)/lib -lconfig
+    ifneq ($(LIBCONFIG),/usr)
+        INCDIRS += -I$(LIBCONFIG)/include
+    endif
+    SYSLIBS += -L$(LIBCONFIG)/lib -lconfig
 else
 $(error $$LIBCONFIG environment variable not defined)
 endif
