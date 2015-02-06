@@ -4,11 +4,11 @@
  * Class for P. Bosted model.
  * Unit is ub/MeV-sr.
  * Valid for all W<3 GeV and all Q2<10 GeV2.
- * 
+ *
  * Radiative correction parameters:
  * Tb: total radiative length before scattering in radiation length;
  * Ta: total radiative length after scattering in radiation length;
- * 
+ *
  * How to set parameters:
  * If set 2 parameters with SetPars(pars,2), then pars[0]->Tb, pars[1]->Ta;
  * Other uses will be considered as invalid.
@@ -18,7 +18,9 @@
 //   Mar 2013, C. Gu, First public version.
 //
 
+#include <cstdlib>
 #include <cstdio>
+#include <cmath>
 #include <vector>
 
 #include "G2PPhysBase.hh"
@@ -28,7 +30,7 @@
 using namespace std;
 
 extern "C" {
-void bosted_(double* Z, double* A, double* Ei, double* Ep, double* ang, double* xs, double *Tb, double *Ta);
+    void bosted_(double *Z, double *A, double *Ei, double *Ep, double *ang, double *xs, double *Tb, double *Ta);
 }
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
@@ -45,7 +47,7 @@ static double PBosted(int Z, int A, double Ei, double Ef, double theta, double T
 }
 
 G2PPhysPB::G2PPhysPB() :
-fTb(0.0), fTa(0.0)
+    fTb(0.0), fTa(0.0)
 {
     // Nothing to do
 }
@@ -55,17 +57,19 @@ G2PPhysPB::~G2PPhysPB()
     // Nothing to do
 }
 
-void G2PPhysPB::SetPars(double* array, int n)
+void G2PPhysPB::SetPars(double *array, int n)
 {
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
     case 0:
         break;
+
     case 2:
         fTb = fPars[0];
         fTa = fPars[1];
         break;
+
     default:
         printf("Error: G2PPhysPB::SetPars(): Invalid number of pars.\n");
         break;

@@ -30,6 +30,7 @@
 //   Apr 2014, C. Gu, Add H1 form factors from J. Arrington.(Thanks to M. Cummings)
 //
 
+#include <cstdlib>
 #include <cstdio>
 #include <cmath>
 #include <vector>
@@ -44,7 +45,7 @@
 using namespace std;
 
 extern "C" {
-void carbon_(double* Ei, double* ang, double* xs);
+    void carbon_(double *Ei, double *ang, double *xs);
 }
 
 static const double kPi = 3.1415926535897932384626;
@@ -54,22 +55,22 @@ static const double kAlpha = 1 / 137.035999679;
 static const double kC = 299792458;
 static const double kQe = 1.602176565e-19;
 static const double kHbar = 1.054571726e-34;
-static const double kFm = kHbar*kC / 1e-15 / 1e9 / kQe;
+static const double kFm = kHbar * kC / 1e-15 / 1e9 / kQe;
 
 static const double kIntegralMin = 0.0;
 static const double kIntegralMax = 10.0;
 static double kRho0GE_He4, kRho0GE_N14, kRho0GM_N14;
 
-static double rhoGE_He4(double x, void* data)
+static double rhoGE_He4(double x, void *data)
 {
     // Three-parameter Fermi model
 
     return 4 * kPi * x * x * (1 + 0.445 * x * x / 1.016) / (1 + exp((x - 1.008) / 0.327));
 }
 
-static double funcGE_He4(double x, void* data)
+static double funcGE_He4(double x, void *data)
 {
-    double qfm = *(double*) data;
+    double qfm = *(double *) data;
     return kRho0GE_He4 * rhoGE_He4(x, NULL) * sin(qfm * x) / (qfm * x);
 }
 
@@ -95,20 +96,20 @@ static double Carbon(double Ei, double theta)
     return XS;
 }
 
-static double rhoGE_N14(double x, void* data)
+static double rhoGE_N14(double x, void *data)
 {
     // Harmonic-oscillator model
 
     return 4 * kPi * x * x * (1 + 1.234 * x * x / 3.0976) * exp(-x * x / 3.0976);
 }
 
-static double funcGE_N14(double x, void* data)
+static double funcGE_N14(double x, void *data)
 {
-    double qfm = *(double*) data;
+    double qfm = *(double *) data;
     return kRho0GE_N14 * rhoGE_N14(x, NULL) * sin(qfm * x) / (qfm * x);
 }
 
-static double rhoGM_N14(double x, void* data)
+static double rhoGM_N14(double x, void *data)
 {
     // Harmonic-oscillator model
 
@@ -122,9 +123,9 @@ static double rhoGM_N14(double x, void* data)
     return 4 * kPi * x * x * (1 + 1.244582 * x * x / 2.8503) * exp(-x * x / 2.8503);
 }
 
-static double funcGM_N14(double x, void* data)
+static double funcGM_N14(double x, void *data)
 {
-    double qfm = *(double*) data;
+    double qfm = *(double *) data;
     return kRho0GM_N14 * rhoGM_N14(x, NULL) * sin(qfm * x) / (qfm * x);
 }
 
@@ -170,7 +171,7 @@ static double FF_All(int Z, double Q2)
             XA = 0; // fm
     }
 
-    FF = 1.0 - XALPHA / (2.0 * (2. + 3. * XALPHA)) * Q2FM * XA*XA;
+    FF = 1.0 - XALPHA / (2.0 * (2. + 3. * XALPHA)) * Q2FM * XA * XA;
     FF = FF * exp(-(Q2FM * XA * XA) / 4.0);
 
     if (FF < 1.0e-6) FF = 1.0e-6;
@@ -195,16 +196,18 @@ G2PPhysEl::~G2PPhysEl()
     // Nothing to do
 }
 
-void G2PPhysEl::SetPars(double* array, int n)
+void G2PPhysEl::SetPars(double *array, int n)
 {
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
     case 0:
         break;
+
     case 1:
         fSetting = int(fPars[0]);
         break;
+
     default:
         printf("Error: G2PPhysEl::SetPars(): Invalid number of pars.\n");
         break;
@@ -213,13 +216,16 @@ void G2PPhysEl::SetPars(double* array, int n)
 
 double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
 {
-    if ((fZ == 1)&&(fA == 1)) return GetXS_H1(Ei, theta);
-    if ((fZ == 2)&&(fA == 4)) return GetXS_He4(Ei, theta);
-    if ((fZ == 6)&&(fA == 12)) {
+    if ((fZ == 1) && (fA == 1)) return GetXS_H1(Ei, theta);
+
+    if ((fZ == 2) && (fA == 4)) return GetXS_He4(Ei, theta);
+
+    if ((fZ == 6) && (fA == 12)) {
         if (fSetting == 2) return GetXS_All(Ei, theta);
         else return Carbon(Ei, theta);
     }
-    if ((fZ == 7)&&(fA == 14)) return GetXS_N14(Ei, theta);
+
+    if ((fZ == 7) && (fA == 14)) return GetXS_N14(Ei, theta);
 
     return GetXS_All(Ei, theta);
 }
@@ -262,26 +268,28 @@ double G2PPhysEl::GetXS_H1(double Ei, double theta)
         GE = 1 / (1 + 3.366 * Q2 / (1 - 0.189 * Q2 / (1 - 1.263 * Q2 / (1 + 1.351 * Q2 / (1 - 0.301 * Q2)))));
         GM = 2.79292 / (1 + 3.205 * Q2 / (1 - 0.318 * Q2 / (1 - 1.228 * Q2 / (1 + 5.619 * Q2 / (1 - 1.116 * Q2)))));
         break;
+
     case 3:
         // J. Arrington and I. Sick, Phys. Rev. C 76(2007)035201
         // With Two-Photon-Exchange correction
         GE = 1 / (1 + 3.478 * Q2 / (1 - 0.140 * Q2 / (1 - 1.311 * Q2 / (1 + 1.128 * Q2 / (1 - 0.233 * Q2)))));
         GM = 2.79292 / (1 + 3.224 * Q2 / (1 - 0.313 * Q2 / (1 - 0.868 * Q2 / (1 + 4.278 * Q2 / (1 - 1.102 * Q2)))));
         break;
+
     case 1:
     default:
         // S. Venkat, J. Arrington, G. A. Miller and X. Zhan, Phys. Rev. C, 83(2011)015203
         // With Two-Photon-Exchange correction
         double x1 = tau;
-        double x2 = x1*tau;
-        double x3 = x2*tau;
-        double x4 = x3*tau;
-        double x5 = x4*tau;
+        double x2 = x1 * tau;
+        double x3 = x2 * tau;
+        double x4 = x3 * tau;
+        double x5 = x4 * tau;
         GE = (1.0 + 2.90966 * x1 - 1.11542229 * x2 + 3.866171e-2 * x3) / (1 + 14.5187212 * x1 + 40.88333 * x2 + 99.999998 * x3 + 4.579e-5 * x4 + 10.3580447 * x5);
         GM = 2.792782 * (1.0 - 1.43573 * x1 + 1.19052066 * x2 + 2.5455841e-1 * x3) / (1 + 9.70703681 * x1 + 3.7357e-4 * x2 + 6.0e-8 * x3 + 9.9527277 * x4 + 12.7977739 * x5);
     }
 
-    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
+    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei) * (eP / Ei) * (2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau) * (GE * GE + tau * GM * GM));
 
     return sigma * kFm * kFm * 1e4; // microbarn
 }
@@ -300,7 +308,7 @@ double G2PPhysEl::GetXS_He4(double Ei, double theta)
     double GE = GE_He4(Q2);
     double GM = 0.0;
 
-    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
+    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei) * (eP / Ei) * (2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau) * (GE * GE + tau * GM * GM));
 
     return sigma * kFm * kFm * 1e4; // microbarn
 }
@@ -319,7 +327,7 @@ double G2PPhysEl::GetXS_N14(double Ei, double theta)
     double GE = GE_N14(Q2);
     double GM = GM_N14(Q2);
 
-    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei)*(eP / Ei)*(2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau)*(GE * GE + tau * GM * GM));
+    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei) * (eP / Ei) * (2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau) * (GE * GE + tau * GM * GM));
 
     return sigma * kFm * kFm * 1e4; // microbarn
 }
@@ -327,7 +335,7 @@ double G2PPhysEl::GetXS_N14(double Ei, double theta)
 double G2PPhysEl::GetXS_All(double Ei, double theta)
 {
     double Recoil = 1.0 / (1.0 + Ei / fTargetMass * (1. - cos(theta)));
-    double Ef = Recoil*Ei;
+    double Ef = Recoil * Ei;
     double Q2 = 2. * fTargetMass * (Ei - Ef);
 
     // Calculated cross sections are often written in units of hbar2c2/GeV2
@@ -339,5 +347,5 @@ double G2PPhysEl::GetXS_All(double Ei, double theta)
 
     double FF = FF_All(fZ, Q2);
 
-    return Recoil * Mott * FF*FF; // microbarn
+    return Recoil * Mott * FF * FF; // microbarn
 }

@@ -5,10 +5,10 @@
  * Unit is ub/MeV-sr.
  * The cross-section is calculated per nucleon. (Notice the difference with EPC model)
  * Photoproduction of pion/nucleons in DIS region.
- * 
+ *
  * Parameters:
  * fRadLen: radiation length of the target, include both external and internal contribution.
- * 
+ *
  * How to set parameters:
  * If set 1 parameters with SetPars(pars,1), then pars[0]->fRadLen;
  * Other uses will be considered as invalid.
@@ -18,9 +18,10 @@
 //   Apr 2013, C. Gu, First public version.
 //
 
+#include <cstdlib>
 #include <cstdio>
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include "G2PPhysBase.hh"
 
@@ -29,7 +30,7 @@
 using namespace std;
 
 extern "C" {
-void wiser_(int* Z, int* N, int* PART, double* Ei, double* Ep, double* ang, double* radlen, double* xs);
+    void wiser_(int *Z, int *N, int *PART, double *Ei, double *Ep, double *ang, double *radlen, double *xs);
 }
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
@@ -45,7 +46,7 @@ static double WISER(int Z, int A, int PART, double Ei, double Ef, double theta, 
 }
 
 G2PPhysWISER::G2PPhysWISER() :
-fRadLen(0.0)
+    fRadLen(0.0)
 {
     // Nothing to do
 }
@@ -55,16 +56,18 @@ G2PPhysWISER::~G2PPhysWISER()
     // Nothing to do
 }
 
-void G2PPhysWISER::SetPars(double* array, int n)
+void G2PPhysWISER::SetPars(double *array, int n)
 {
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
     case 0:
         break;
+
     case 1:
         fRadLen = fPars[0];
         break;
+
     default:
         printf("Error: G2PPhysWISER::SetPars(): Invalid number of pars.\n");
         break;
@@ -77,22 +80,28 @@ double G2PPhysWISER::GetXS(double Ei, double Pf, double theta)
         printf("Error: G2PPhysWISER::GetXS(): Must give radiation lenth.\n");
         return -1;
     }
+
     switch (fPID) {
     case 211: // pi+
         return WISER(fZ, fA, 1, Ei, Pf, theta, fRadLen);
         break;
+
     case -211: // pi-
         return WISER(fZ, fA, 2, Ei, Pf, theta, fRadLen);
         break;
+
     case 321: // k+
         return WISER(fZ, fA, 3, Ei, Pf, theta, fRadLen);
         break;
+
     case -321: // k-
         return WISER(fZ, fA, 4, Ei, Pf, theta, fRadLen);
         break;
+
     case 2212: // p
         return WISER(fZ, fA, 5, Ei, Pf, theta, fRadLen);
         break;
+
     default:
         return -1;
         break;

@@ -11,8 +11,8 @@
 //   Sep 2013, C. Gu, Since G2PRun will take care of the configuration files, make it simpler here.
 //
 
-#include <cstdio>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #include <getopt.h>
 #include <map>

@@ -32,6 +32,7 @@
 
 #include "G2PAppBase.hh"
 #include "G2PGlobals.hh"
+#include "G2PVarDef.hh"
 
 #include "G2PField.hh"
 

@@ -18,6 +18,7 @@
 #include "TList.h"
 
 #include "G2PAppBase.hh"
+
 #include "G2PAppList.hh"
 
 G2PAppList::G2PAppList()

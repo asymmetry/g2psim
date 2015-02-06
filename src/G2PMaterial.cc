@@ -23,10 +23,9 @@
 #include "TClass.h"
 
 #include "G2PAppBase.hh"
-#include "G2PAppList.hh"
-#include "G2PMaterial.hh"
 #include "G2PRand.hh"
-#include "G2PVarDef.hh"
+
+#include "G2PMaterial.hh"
 
 using namespace std;
 

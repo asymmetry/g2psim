@@ -5,10 +5,10 @@
  * Unit is ub/MeV-sr.
  * The cross section is calculated per nuclei. (Notice the difference with WISER model)
  * This model considers 2 situations: single pion production and multiple pion production.
- * 
+ *
  * How to set parameters:
  * If set 1 parameters with SetPars(pars,1), then pars[0]=0 means to calculate
- *   single pion production only, default is multiple pion production; 
+ *   single pion production only, default is multiple pion production;
  * Other uses will be considered as invalid.
  */
 
@@ -17,9 +17,10 @@
 //   Apr 2014, C. Gu, Updated with multiple pion production
 //
 
+#include <cstdlib>
 #include <cstdio>
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include "G2PPhysBase.hh"
 
@@ -28,7 +29,7 @@
 using namespace std;
 
 extern "C" {
-void epc_(int* PART, int* Z, int* N, double* Ei, double* Pf, double* ang, double* xs, int* mpi);
+    void epc_(int *PART, int *Z, int *N, double *Ei, double *Pf, double *ang, double *xs, int *mpi);
 }
 
 static const double kDEG = 3.14159265358979323846 / 180.0;
@@ -56,17 +57,20 @@ G2PPhysEPC::~G2PPhysEPC()
     // Nothing to do
 }
 
-void G2PPhysEPC::SetPars(double* array, int n)
+void G2PPhysEPC::SetPars(double *array, int n)
 {
     G2PPhysBase::SetPars(array, n);
 
     switch (n) {
     case 0:
         break;
+
     case 1:
         if (fPars[0] > 0.5) fMPI = 1;
         else fMPI = 0;
+
         break;
+
     default:
         printf("Error: G2PPhysEPC::SetPars(): Invalid number of pars.\n");
         break;
@@ -83,6 +87,7 @@ double G2PPhysEPC::GetXS(double Ei, double Pf, double theta)
     case 2112: // n
         return EPC(fPID, fZ, fA, Ei, Pf, theta, fMPI);
         break;
+
     default:
         return -1;
         break;

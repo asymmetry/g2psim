@@ -26,6 +26,7 @@
 #include "TObject.h"
 
 #include "G2PAppBase.hh"
+#include "G2PAppList.hh"
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
 #include "G2PRand.hh"

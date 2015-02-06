@@ -13,9 +13,10 @@
 //   Jan 2015, C. Gu, Move this file back to the g2psim package.
 //
 
-#include <cstdio>
 #include <cstdlib>
+#include <cstdio>
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <ctype.h>
 #include <getopt.h>

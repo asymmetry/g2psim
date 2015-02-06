@@ -84,7 +84,7 @@ DEPS        := $(subst .o,.d,$(OBJS))
 ###############################################################################
 # Libraries
 LIBS        := $(foreach mod,$(MODELLIST),$(join -L -l,$(mod) $(mod)))
-SYSLIBS     := -lstdc++ -lgfortran
+SYSLIBS     := -lstdc++ -lm -lgfortran
 LIBS        += $(SYSLIBS)
 
 # ROOT

@@ -24,6 +24,7 @@
 #include "G2PGlobals.hh"
 #include "G2PProcBase.hh"
 #include "G2PSieve.hh"
+#include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
