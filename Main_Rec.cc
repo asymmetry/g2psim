@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* g2prec.cc
+/* RecMain.cc
  * Main function of the reconstruction program.
  * It parses command line parameters use getopt (GNU C Library).
  */

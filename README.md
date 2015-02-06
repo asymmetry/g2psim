@@ -11,9 +11,9 @@ Main.cc is written with supports of a simple set of command-line parameters as w
 Chao Gu (contact), Min Huang, Jie Liu, Jixie Zhang
 
 ### Versions:
-* Main program: 1.8.0
-* HRSTrans package: 1.3.2
-* G2PPhys package: 1.5.0
+* Main program: 1.9.0
+* HRSTrans package: 1.4.2
+* G2PPhys package: 1.6.0
 
 ### History:
 * v1.9, 02/03/2015, HEAD

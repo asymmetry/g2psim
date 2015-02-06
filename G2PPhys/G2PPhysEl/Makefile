@@ -1,42 +1,44 @@
-########################################################################
+###############################################################################
 #   This Makefile shows how to compile all C++, C and Fortran
 #   files found in $(SRCDIR) directory.
 #   Linking is done with g++. Need to have $ROOTSYS defined
-########################################################################
+###############################################################################
 
-########################################################################
+###############################################################################
+# System Info
 MYOS        := $(shell uname)
 ARCH        := $(shell uname -m)
-USER        := $(shell whoami)
-MYHOST      := $(shell hostname -s)
+SHELL       := /bin/sh
 
-########################################################################
+###############################################################################
+# Project Info (only objs)
 SRCDIR      := .
 INCDIR      := ..
 OBJDIR      := obj.$(ARCH)
 
-########################################################################
-# Compiler
+INCDIRS     := $(INCDIR)
+
+###############################################################################
+# Compilers
 AR          := ar
 CC          := gcc
 CXX         := g++
-FF          := gfortran
+FC          := gfortran
 LD          := g++
 
-########################################################################
+###############################################################################
 # Flags
 ifeq ($(ARCH),i686)
     MODE    := -m32
 else
     MODE    := -m64
 endif
-INCDIRS     := $(patsubst %,-I%,$(subst :, ,$(INCDIR)))
-CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS) 
-CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 $(MODE) $(INCDIRS)
+INCFLAGS    := $(addprefix -I,$(INCDIRS))
+CFLAGS      := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) $(INCFLAGS)
+CXXFLAGS    := -Wall -fPIC -Wno-unused-variable -O3 -g $(MODE) $(INCFLAGS)
 FFLAGS      := -Wall -fPIC -Wno-unused-variable -Wno-intrinsic-shadow \
-               -Wno-unused-label -fno-align-commons -O3 $(MODE) $(INCDIRS)
-ifeq ($(MYOS),Darwin) 
-#in Darwin, do not use -fno-leading-underscore
+               -Wno-unused-label -fno-align-commons -O3 -g $(MODE) $(INCFLAGS)
+ifeq ($(MYOS),Darwin) #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
                -funroll-all-loops -fdollar-ok -ffixed-line-length-none \
                -fno-range-check
@@ -45,163 +47,150 @@ else
                -fno-automatic -fbounds-check -funroll-all-loops \
                -fdollar-ok -ffixed-line-length-none -fno-range-check
 endif
-GPPFLAGS    := -MM
-LDFLAGS     := -O3 $(MODE)
+CPPFLAGS    :=
+LDFLAGS     := -O3 -g $(MODE)
 
-########################################################################
-# Generate obj file list
+###############################################################################
+# Generate file lists
+# source files
 FSOURCES    := $(wildcard $(SRCDIR)/*.[Ff])
 CSOURCES    := $(wildcard $(SRCDIR)/*.[Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][Cc])
 CSOURCES    += $(wildcard $(SRCDIR)/*.[Cc][XxPp][XxPp])
 SOURCES     := $(FSOURCES) $(CSOURCES)
-# add .o to all the source files
-OBJS        := $(addsuffix .o, $(basename $(SOURCES)))
-OBJS        := $(patsubst  $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
+
+# header files
+HEADERS     := $(wildcard $(INCDIR)/*.[Hh])
+HEADERS     += $(wildcard $(INCDIR)/*.[Hh][Hh])
+
+# obj and dep files
+OBJS        := $(addsuffix .o,$(basename $(SOURCES)))
+OBJS        := $(patsubst $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
 DEPS        := $(subst .o,.d,$(OBJS))
 
-########################################################################
-# Libs
-SYSLIBS     := -lstdc++ -lgfortran
+###############################################################################
+# Libraries
 
-########################################################################
-# ROOT configure
-ROOTCFLAGS  := $(shell root-config --cflags)
-ROOTLIBS    := $(shell root-config --libs)
-ROOTGLIBS   := $(shell root-config --glibs) -lMinuit
+###############################################################################
+# Pre-defined commands
+define make-dependency-cc
+echo "Making dependency for file $< ......"
+set -e; [ -d $(OBJDIR) ] || mkdir -p $(OBJDIR); \
+$(CC) -MM $(CPPFLAGS) $(CFLAGS) $< > $@.$$$$; \
+sed 's,\($*\)\.o[ :]*,$(OBJDIR)/\1.o $@ : ,g' < $@.$$$$ > $@; \
+rm -f $@.$$$$
+endef
 
-CXXFLAGS    += $(ROOTCFLAGS) 
-LIBS        := $(SYSLIBS) $(ROOTLIBS)
-GLIBS       := $(SYSLIBS) $(ROOTGLIBS)
+define make-dependency-cxx
+echo "Making dependency for file $< ......"
+set -e; [ -d $(OBJDIR) ] || mkdir -p $(OBJDIR); \
+$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< > $@.$$$$; \
+sed 's,\($*\)\.o[ :]*,$(OBJDIR)/\1.o $@ : ,g' < $@.$$$$ > $@; \
+rm -f $@.$$$$
+endef
 
-########################################################################
-# You can specify the .SUFFIXES
-.SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
-.PHONY: all clean test
+define compile-cc
+echo "Compiling $< ......"
+$(CC) $(CFLAGS) -c $< -o $@
+endef
+
+define compile-cxx
+echo "Compiling $< ......"
+$(CXX) $(CXXFLAGS) -c $< -o $@
+endef
+
+define compile-fc
+echo "Compiling $< ......"
+set -e; [ -d $(OBJDIR) ] || mkdir -p $(OBJDIR); \
+$(FC) $(FFLAGS) -c $< -o $@
+endef
+
+###############################################################################
+# Targets
 VPATH       := $(SRCDIR)
 
-########################################################################
-all: obj
+.SUFFIXES:
+.SUFFIXES: .c .C .cc .CC .cpp .cxx .f .F
+.SUFFIXES: .h .hh .H .HH
+.SUFFIXES: .o .d
 
-########################################################################
-# Make the $(TARGET).d file and include it.
-$(OBJDIR)/%.d: %.c 
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(CC) $(GPPFLAGS) $(CFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+.PHONY: all
+.PHONY: clean distclean
+.PHONY: test help env
 
-$(OBJDIR)/%.d: %.C 
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+###############################################################################
+all: $(OBJS)
+
+###############################################################################
+# Make dependencies
+$(OBJDIR)/%.d: %.c
+	@$(make-dependency-cc)
+
+$(OBJDIR)/%.d: %.C
+	@$(make-dependency-cxx)
 
 $(OBJDIR)/%.d: %.cc
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+	@$(make-dependency-cxx)
 
 $(OBJDIR)/%.d: %.CC
-	set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
-	@echo Making dependency for file $< ......
+	@$(make-dependency-cxx)
 
-$(OBJDIR)/%.d: %.cpp 
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
+$(OBJDIR)/%.d: %.cpp
+	@$(make-dependency-cxx)
 
 $(OBJDIR)/%.d: %.cxx
-	@echo Making dependency for file $< ......
-	@set -e; \
-	$(CXX) $(GPPFLAGS) $(CXXFLAGS) $< | \
-	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-	[ -s $@ ] || rm -f $@
-
-#$(OBJDIR)/%.d: %.f
-#	@echo Making dependency for file $< ......
-#	@set -e; \
-#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-#	[ -s $@ ] || rm -f $@
-
-#$(OBJDIR)/%.d: %.F
-#	@echo Making dependency for file $< ......
-#	@set -e; \
-#	$(FF) -cpp $(GPPFLAGS) $(FFLAGS) $< | \
-#	sed 's!$*\.o!$(OBJDIR)/& $@!' > $@; \
-#	[ -s $@ ] || rm -f $@
+	@$(make-dependency-cxx)
 
 ifneq ($(DEPS),)
--include $(DEPS)
+    sinclude $(DEPS)
 endif
 
-########################################################################
-obj: dir $(OBJS)
-
-########################################################################
+###############################################################################
+# Compile source files
 $(OBJDIR)/%.o: %.c
-	@echo Compiling $< ......
-	@$(CC) -c $< -o $@  $(CFLAGS)
+	@$(compile-cc)
 
 $(OBJDIR)/%.o: %.C
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(compile-cxx)
 
 $(OBJDIR)/%.o: %.cc
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(compile-cxx)
 
 $(OBJDIR)/%.o: %.CC
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(compile-cxx)
 
 $(OBJDIR)/%.o: %.cpp
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(compile-cxx)
 
 $(OBJDIR)/%.o: %.cxx
-	@echo Compiling $< ......
-	@$(CXX) -c $< -o $@  $(CXXFLAGS)
+	@$(compile-cxx)
 
 $(OBJDIR)/%.o: %.f
-	@echo Compiling $< ......
-	@$(FF) -c $< -o $@  $(FFLAGS)
+	@$(compile-fc)
 
 $(OBJDIR)/%.o: %.F
-	@echo Compiling $< ......
-	@$(FF) -c $< -o $@  $(FFLAGS)
+	@$(compile-fc)
 
-dir:
-	@if [ ! -d $(OBJDIR) ] ; then mkdir -p $(OBJDIR) ;fi
-
-########################################################################
-clean: dir
+###############################################################################
+# Clean
+clean:
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#
 
+distclean: clean
+
 test:
-	@echo \\MYOS\:$(MYOS) \\ARCH\:$(ARCH)
-	@echo \\CFLAGS\:$(CFLAGS)	
-	@echo \\CXXFLAGS\:$(CXXFLAGS)        
-	@echo \\FFLAGS\:$(FFLAGS)
-	@echo \\LDFLAGS\:$(LDFLAGS)
-	@echo \\SYSLIBS\:$(SYSLIBS)
-	@echo \\fsources\: $(FSOURCES)	
-	@echo \\sources\: $(SOURCES)	
-	@echo \\objs\: $(OBJS)	
-	@echo \\dependencies: \$(DEPS)
+	@echo "MYOS:     $(ARCH) $(MYOS)"
+	@echo "CFLAGS:   $(CFLAGS)"
+	@echo "CXXFLAGS: $(CXXFLAGS)"
+	@echo "FFLAGS:   $(FFLAGS)"
+	@echo "LDFLAGS:  $(LDFLAGS)"
+	@echo "CSOURCES: $(CSOURCES)"
+	@echo "FSOURCES: $(FSOURCES)"
+	@echo "HEADERS:  $(HEADERS)"
+	@echo "OBJS:     $(OBJS)"
+	@echo "DEPS:     $(DEPS)"
 
 help: test
 
 env: test
-
