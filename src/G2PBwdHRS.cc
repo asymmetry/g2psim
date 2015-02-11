@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 #include <map>
 
 #include "TROOT.h"
@@ -75,7 +76,10 @@ G2PBwdHRS::G2PBwdHRS(const char *name) : fFieldRatio(0.0), fSetting(1), frecz_la
 
 G2PBwdHRS::~G2PBwdHRS()
 {
-    delete pModel;
+    if (pModel) {
+        delete pModel;
+        pModel = NULL;
+    }
 
     if (pG2PBwdHRS == this)
         pG2PBwdHRS = NULL;

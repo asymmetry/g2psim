@@ -128,12 +128,12 @@ const char *G2PMaterial::GetName() const
     return fName;
 }
 
-double G2PMaterial::GetRadLen()
+double G2PMaterial::GetRadLen() const
 {
     return fX0;
 }
 
-double G2PMaterial::GetDensity()
+double G2PMaterial::GetDensity() const
 {
     return fDensity;
 }

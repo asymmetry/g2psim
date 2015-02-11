@@ -14,11 +14,8 @@
 
 #include "TObject.h"
 
-class TFile;
-
 class G2PAppList;
 class G2POutput;
-class G2PRun;
 
 class G2PSim : public TObject
 {
@@ -41,21 +38,16 @@ protected:
     int Process();
     bool IsAllDone(G2PAppList *procs);
 
-    TFile *fFile;
     const char *fOutFile;
 
     int fN;
     int fIndex;
-
     int fDebug;
-
     bool fIsGood;
 
     G2POutput *pOutput;
 
-    G2PAppList *fApps;
     G2PAppList *fProcs;
-    G2PRun *pRun;
 
 private:
     static G2PSim *pG2PSim;

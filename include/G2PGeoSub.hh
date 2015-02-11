@@ -23,6 +23,7 @@ public:
     virtual ~G2PGeoSub();
 
     virtual int Begin();
+    virtual int End();
 
     virtual bool IsInside(const double *V3);
     virtual void Subtract(G2PGeoBase *geo);

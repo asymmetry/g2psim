@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -28,6 +29,7 @@
 #include "TError.h"
 #include "TObject.h"
 #include "TFile.h"
+#include "TString.h"
 #include "TTree.h"
 
 #include "G2PAppBase.hh"
@@ -65,8 +67,7 @@ static void GetHallBField(const double *pos, double *field)
 
 G2PField *G2PField::pG2PField = NULL;
 
-G2PField::G2PField() :
-    fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(0.0)
+G2PField::G2PField() : fMapFile(NULL), fZMin(0.0), fZMax(2.99), fRMin(0.0), fRMax(2.99), fZStep(0.01), fRStep(0.01), nZ(0), nR(0), fRotation(false), fRatio(0.0)
 {
     if (pG2PField) {
         Error("G2PField()", "Only one instance of G2PField allowed.");
@@ -86,17 +87,6 @@ G2PField::G2PField() :
 
 G2PField::~G2PField()
 {
-    typedef vector<vector<vector<double> > >::size_type size_t;
-
-    for (size_t i = 0; i < fBField.size(); i++) {
-        for (size_t j = 0; j < fBField.size(); j++)
-            fBField[i][j].clear();
-
-        fBField[i].clear();
-    }
-
-    fBField.clear();
-
     if (pG2PField == this)
         pG2PField = NULL;
 }
@@ -132,6 +122,22 @@ int G2PField::Begin()
     SetRotationMatrix();
 
     return (fStatus = status);
+}
+
+int G2PField::End()
+{
+    typedef vector<vector<vector<double> > >::size_type size_t;
+
+    for (size_t i = 0; i < fBField.size(); i++) {
+        for (size_t j = 0; j < fBField.size(); j++)
+            fBField[i][j].clear();
+
+        fBField[i].clear();
+    }
+
+    fBField.clear();
+
+    return (G2PAppBase::End());
 }
 
 void G2PField::GetField(const double *x, double *b)

@@ -53,6 +53,7 @@ public:
 
     // Sets
     void SetDebugLevel(int level);
+    void SetPriority(int priority);
 
 protected:
     G2PAppBase(); // No instance allowed for this class

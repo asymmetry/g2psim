@@ -23,6 +23,7 @@ public:
     virtual ~G2PTarget();
 
     virtual int Begin();
+    virtual int End();
 
 protected:
     virtual int Configure(EMode mode = kTWOWAY);

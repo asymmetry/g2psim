@@ -17,11 +17,11 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
-#include "TString.h"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -280,7 +280,7 @@ void G2PEvGen::SetDelta(const char *elastic)
 
 void G2PEvGen::SetCoords(const char *coords)
 {
-    TString s = coords;
+    string s = coords;
 
     if (s == "lab")
         fUseTrans = false;

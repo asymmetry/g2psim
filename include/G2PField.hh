@@ -32,6 +32,7 @@ public:
     virtual ~G2PField();
 
     virtual int Begin();
+    virtual int End();
 
     virtual void GetField(const double *x, double *b);
 

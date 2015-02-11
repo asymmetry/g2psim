@@ -81,11 +81,6 @@ G2PRun::G2PRun() : fConfigFile(NULL)
 
 G2PRun::~G2PRun()
 {
-    Clear();
-
-    if (fConfigTree)
-        delete fConfigTree;
-
     if (pG2PRun == this)
         pG2PRun = NULL;
 
@@ -128,8 +123,6 @@ int G2PRun::Begin()
         gG2PApps->Add(drift);
     }
 
-    fConfigTree = new TTree("config", "G2PSim Configuration Tree");
-
     return 0;
 }
 
@@ -138,47 +131,7 @@ int G2PRun::End()
     if (fConfig["run.debuglevel"] > 1)
         Print();
 
-    Save();
-
     return 0;
-}
-
-void G2PRun::Clear(Option_t *opt)
-{
-    fConfig.clear();
-    fConfigIsSet.clear();
-
-    return;
-}
-
-void G2PRun::Save() const
-{
-    static const char *const here = "Save()";
-
-    Info(here, "Writing configuration to the rootfile ...");
-
-    map<string, double>::const_iterator it = fConfig.begin();
-    double *config = new double[fConfig.size()];
-    int i = 0;
-
-    while (it != fConfig.end()) {
-        config[i] = it->second;
-
-        if (fConfigTree)
-            fConfigTree->Branch(it->first.c_str(), &config[i], Form("%s/D", it->first.c_str()));
-
-        i++;
-        it++;
-    }
-
-    if (fConfigTree) {
-        fConfigTree->Fill();
-        fConfigTree->Write();
-    }
-
-    delete[] config;
-
-    return;
 }
 
 void G2PRun::Print(Option_t *opt) const
@@ -312,6 +265,26 @@ int G2PRun::SetConfig(const ConfDef *item, const char *prefix)
     }
 
     return 1;
+}
+
+int G2PRun::GetConfigList(ConfDef *&conf) const
+{
+    map<string, double>::size_type n = fConfig.size();
+
+    ConfDef *result = new ConfDef[n];
+    int i = 0;
+
+    for (map<string, double>::const_iterator it = fConfig.begin(); it != fConfig.end(); ++it) {
+        result[i].desc = it->first.c_str();
+        result[i].name = it->first.c_str();
+        result[i].type = kDOUBLE;
+        result[i].var = (void *) new double(it->second);
+        i++;
+    }
+
+    conf = result;
+
+    return ((int) n);
 }
 
 void G2PRun::SetConfigFile(const char *file)

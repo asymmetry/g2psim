@@ -19,6 +19,7 @@
 #include <cstring>
 #include <map>
 #include <set>
+#include <sstream>
 
 #include "TObject.h"
 
@@ -28,7 +29,6 @@
 
 using namespace std;
 
-class TTree;
 class G2PRand;
 
 class G2PRun : public TObject
@@ -39,13 +39,14 @@ public:
 
     virtual int Begin();
     virtual int End();
-    virtual void Clear(Option_t *opt = "");
 
-    virtual void Save() const;
     virtual void Print(Option_t *opt = "") const;
 
     int GetConfig(const ConfDef *item, const char *prefix);
     int SetConfig(const ConfDef *item, const char *prefix);
+
+    //Gets
+    int GetConfigList(ConfDef *&conf)const;
 
     //Sets
     void SetConfigFile(const char *file);
@@ -71,8 +72,6 @@ protected:
 
     map<string, double> fConfig;
     set<string> fConfigIsSet;
-
-    TTree *fConfigTree;
 
 private:
     // Random number generator

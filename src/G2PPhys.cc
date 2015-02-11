@@ -103,7 +103,10 @@ G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTarg
 
 G2PPhys::~G2PPhys()
 {
-    delete pModel;
+    if (pModel) {
+        delete pModel;
+        pModel = NULL;
+    }
 
     if (pG2PPhys == this)
         pG2PPhys = NULL;

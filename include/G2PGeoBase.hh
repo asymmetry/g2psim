@@ -32,7 +32,7 @@ public:
     virtual bool IsInside(const double *V3);
 
     // Gets
-    virtual G2PMaterial *GetMaterial();
+    virtual G2PMaterial *GetMaterial() const;
 
     // Sets
     virtual void SetOrigin(double x, double y, double z);

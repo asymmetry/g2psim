@@ -21,23 +21,27 @@
 
 using namespace std;
 
+class TFile;
+class TMacro;
 class TTree;
 class G2PVar;
 
 class G2POutput : public TObject
 {
 public:
-    G2POutput();
+    G2POutput(const char *filename);
     ~G2POutput();
 
     int Begin();
     int Process();
     int End();
 
-    TTree *GetTree() const;
-
 protected:
+    G2POutput(); // Only for ROOT I/O
     int Attach();
+
+    const char *fFileName;
+    TFile *fFile;
 
     int fNVar;
     double *fVar;
@@ -45,6 +49,7 @@ protected:
     vector<G2PVar *> fVariables;
 
     TTree *fTree;
+    TMacro *fConfig;
 
 private:
     ClassDef(G2POutput, 1)

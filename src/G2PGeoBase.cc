@@ -82,7 +82,7 @@ bool G2PGeoBase::IsInside(const double *V3)
     return IsInside(V3_geo[0], V3_geo[1], V3_geo[2]);
 }
 
-G2PMaterial *G2PGeoBase::GetMaterial()
+G2PMaterial *G2PGeoBase::GetMaterial() const
 {
     return pMaterial;
 }

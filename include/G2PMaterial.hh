@@ -26,12 +26,12 @@ public:
     virtual double EnergyLoss(double E, double l);
     virtual double MultiScattering(double E, double l);
 
-    // Sets
-
     // Gets
     const char *GetName() const;
-    double GetRadLen();
-    double GetDensity();
+    double GetRadLen() const;
+    double GetDensity() const;
+
+    // Sets
 
 protected:
     G2PMaterial(); // Only for ROOT I/O

@@ -41,15 +41,19 @@ G2PTarget::~G2PTarget()
     TIter mat_iter(fMats);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(mat_iter())) {
-        fMats->Remove(aobj);
-        aobj->Delete();
+        if (aobj != NULL) {
+            fMats->Remove(aobj);
+            aobj->Delete();
+        }
     }
 
     TIter geo_iter(fGeos);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(geo_iter())) {
-        fGeos->Remove(aobj);
-        aobj->Delete();
+        if (aobj != NULL) {
+            fGeos->Remove(aobj);
+            aobj->Delete();
+        }
     }
 
     delete fMats;
@@ -243,17 +247,31 @@ int G2PTarget::Begin()
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
         gG2PApps->Add(geo);
 
-        if (!geo->IsInit()) {
-            geo->SetDebugLevel(fDebug);
-
+        if (!geo->IsInit())
             if (geo->Begin() != 0)
                 return (fStatus = kBEGINERROR);
-        }
     }
 
     gG2PGeos = fGeos;
 
     return (fStatus = kOK);
+}
+
+int G2PTarget::End()
+{
+    TIter mat_iter(fMats);
+
+    while (G2PMaterial *mat = static_cast<G2PMaterial *>(mat_iter()))
+        if (mat->End() != 0)
+            return -1;
+
+    TIter geo_iter(fGeos);
+
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter()))
+        if (geo->End() != 0)
+            return -1;
+
+    return (G2PAppBase::End());
 }
 
 int G2PTarget::Configure(EMode mode)

@@ -35,6 +35,76 @@ G2PVarList::~G2PVarList()
     Clear();
 }
 
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const bool &var)
+{
+    return DefineByType(name, descript, &var, kBOOL);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const char &var)
+{
+    return DefineByType(name, descript, &var, kCHAR);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const int &var)
+{
+    return DefineByType(name, descript, &var, kINT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const long &var)
+{
+    return DefineByType(name, descript, &var, kLONG);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const short &var)
+{
+    return DefineByType(name, descript, &var, kSHORT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const float &var)
+{
+    return DefineByType(name, descript, &var, kFLOAT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const double &var)
+{
+    return DefineByType(name, descript, &var, kDOUBLE);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const bool *var)
+{
+    return DefineByType(name, descript, var, kBOOL);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const char *var)
+{
+    return DefineByType(name, descript, var, kCHAR);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const int *var)
+{
+    return DefineByType(name, descript, var, kINT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const long *var)
+{
+    return DefineByType(name, descript, var, kLONG);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const short *var)
+{
+    return DefineByType(name, descript, var, kSHORT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const float *var)
+{
+    return DefineByType(name, descript, var, kFLOAT);
+}
+
+G2PVar *G2PVarList::Define(const char *name, const char *descript, const double *var)
+{
+    return DefineByType(name, descript, var, kDOUBLE);
+}
+
 G2PVar *G2PVarList::DefineByType(const char *name, const char *descript, const void *var, VarType type)
 {
     // Define a variable in the list with given type

@@ -17,7 +17,6 @@
 #include "TError.h"
 #include "TObject.h"
 #include "TClass.h"
-#include "TFile.h"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -38,7 +37,7 @@ G2PVarList *gG2PVars = new G2PVarList();
 
 G2PSim *G2PSim::pG2PSim = NULL;
 
-G2PSim::G2PSim() : fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fApps(NULL), fProcs(NULL), pRun(NULL)
+G2PSim::G2PSim() : fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fProcs(NULL)
 {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
@@ -51,11 +50,13 @@ G2PSim::G2PSim() : fFile(NULL), fOutFile(NULL), fN(50000), fIndex(1), fDebug(1),
 
 G2PSim::~G2PSim()
 {
-    TIter next(fApps);
+    TIter next(gG2PApps);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
-        fApps->Remove(aobj);
-        aobj->Delete();
+        if (aobj != NULL) {
+            gG2PApps->Remove(aobj);
+            aobj->Delete();
+        }
     }
 
     delete gG2PApps;
@@ -115,49 +116,42 @@ int G2PSim::Begin()
 {
     static const char *const here = "Begin()";
 
-    fFile = new TFile(fOutFile, "RECREATE");
-    fFile->cd();
-
     // Set run manager
-    if ((pRun = gG2PRun) == NULL)
+    if (gG2PRun == NULL)
         Error((here), "No run manager found.");
-    else if (pRun->Begin() != 0)
+    else if (gG2PRun->Begin() != 0)
         return -1;
 
     ConfDef debug = {"run.debuglevel", "Debug Level", kINT, &fDebug};
-    pRun->GetConfig(&debug, "");
+    gG2PRun->GetConfig(&debug, "");
 
     if (fDebug > 0)
         Info(here, "Starting run ......");
 
     // Set tools
-    fApps = gG2PApps;
-    TIter next(fApps);
+    TIter next(gG2PApps);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
         if (aobj->IsZombie()) {
-            fApps->Remove(aobj);
+            gG2PApps->Remove(aobj);
             continue;
         }
 
-        if (!aobj->IsInit()) {
-            aobj->SetDebugLevel(fDebug);
-
+        if (!aobj->IsInit())
             if (aobj->Begin() != 0)
                 return -1;
-        }
     }
 
-    fProcs = fApps->FindList("G2PProcBase");
+    fProcs = gG2PApps->FindList("G2PProcBase");
 
     if (fDebug > 0)
-        pRun->Print();
+        gG2PRun->Print();
 
     // Set output manager
     gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
     gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
 
-    pOutput = new G2POutput();
+    pOutput = new G2POutput(fOutFile);
 
     if (pOutput->Begin() != 0)
         return -1;
@@ -172,21 +166,17 @@ int G2PSim::End()
 {
     static const char *const here = "End()";
 
-    TIter next(fApps);
+    if (fDebug > 0)
+        Info(here, "Cleaning ......");
+
+    TIter next(gG2PApps);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next()))
         aobj->End();
 
-    pRun->End();
-
-    if (fDebug > 0)
-        Info(here, "Cleaning ......");
-
     pOutput->End();
 
-    fFile->Purge();
-    fFile->Save();
-    fFile->Close();
+    gG2PRun->End();
 
     if (fDebug > 0)
         Info(here, "Run finished!");

@@ -15,12 +15,12 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 #include <map>
 
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
-#include "TString.h"
 
 #include "HRSTransBase.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
@@ -82,6 +82,11 @@ G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(1), fSieveOn(false), fHoleID(-
 
 G2PFwdHRS::~G2PFwdHRS()
 {
+    if (pModel) {
+        delete pModel;
+        pModel = NULL;
+    }
+
     if (pG2PFwdHRS == this)
         pG2PFwdHRS = NULL;
 }
@@ -292,7 +297,7 @@ void G2PFwdHRS::Clear(Option_t *opt)
 
 void G2PFwdHRS::SetSieve(const char *opt)
 {
-    TString str(opt);
+    string str = opt;
 
     if (str == "in") {
         fSieveOn = true;

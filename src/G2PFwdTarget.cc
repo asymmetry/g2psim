@@ -12,12 +12,12 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <cstring>
 #include <map>
 
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
-#include "TString.h"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -134,7 +134,7 @@ void G2PFwdTarget::Clear(Option_t *opt)
 
 void G2PFwdTarget::SetSieve(const char *opt)
 {
-    TString str(opt);
+    string str = opt;
 
     if (str == "in") {
         fSieveOn = true;

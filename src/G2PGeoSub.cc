@@ -24,7 +24,7 @@
 
 G2PGeoSub::G2PGeoSub()
 {
-    // Nothing to do
+    // Only for ROOT I/O
 }
 
 G2PGeoSub::G2PGeoSub(G2PGeoBase *geo) : fMinuend(geo)
@@ -37,8 +37,10 @@ G2PGeoSub::~G2PGeoSub()
     TIter next(fSubGeos);
 
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
-        fSubGeos->Remove(aobj);
-        aobj->Delete();
+        if (aobj != NULL) {
+            fSubGeos->Remove(aobj);
+            aobj->Delete();
+        }
     }
 
     delete fMinuend;
@@ -55,15 +57,25 @@ int G2PGeoSub::Begin()
     TIter geo_iter(fSubGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
-        if (!geo->IsInit()) {
-            geo->SetDebugLevel(fDebug);
-
+        if (!geo->IsInit())
             if (geo->Begin() != 0)
                 return (fStatus = kBEGINERROR);
-        }
     }
 
     return (fStatus = kOK);
+}
+
+int G2PGeoSub::End()
+{
+    fMinuend->End();
+
+    TIter geo_iter(fSubGeos);
+
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter()))
+        if (geo->End() != 0)
+            return -1;
+
+    return (G2PGeoBase::End());
 }
 
 bool G2PGeoSub::IsInside(const double *V3)

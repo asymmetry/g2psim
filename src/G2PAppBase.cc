@@ -60,9 +60,6 @@ int G2PAppBase::Begin()
 {
     static const char *const here = "Begin()";
 
-    if (fDebug > 1)
-        Info(here, "Beginning ...");
-
     if (IsZombie())
         return (fStatus = kBEGINERROR);
 
@@ -72,6 +69,9 @@ int G2PAppBase::Begin()
         fConfigured = true;
     else
         fConfigured = false;
+
+    if (fDebug > 1)
+        Info(here, "Beginning ...");
 
     return (fStatus = (fConfigured ? kOK : kBEGINERROR));
 }
@@ -113,6 +113,11 @@ int G2PAppBase::GetPriority() const
 void G2PAppBase::SetDebugLevel(int level)
 {
     fDebug = level;
+}
+
+void G2PAppBase::SetPriority(int priority)
+{
+    fPriority = priority;
 }
 
 void G2PAppBase::TCS2HCS(const double *V5_tr, double z_tr, double *V5_lab)
@@ -439,6 +444,7 @@ int G2PAppBase::Configure(EMode mode)
         return 0;
 
     ConfDef confs[] = {
+        {"run.debuglevel", "Debug Level", kINT, &fDebug},
         {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {0}
     };

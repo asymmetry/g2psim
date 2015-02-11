@@ -14,13 +14,18 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
+#include "TFile.h"
+#include "TMacro.h"
 #include "TTree.h"
 
 #include "G2PGlobals.hh"
+#include "G2PRun.hh"
 #include "G2PVar.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
@@ -29,7 +34,12 @@
 
 using namespace std;
 
-G2POutput::G2POutput() : fNVar(0), fVar(NULL), fTree(NULL)
+G2POutput::G2POutput()
+{
+    // Only for ROOT I/O
+}
+
+G2POutput::G2POutput(const char *filename) : fFileName(filename), fFile(NULL), fNVar(0), fVar(NULL), fTree(NULL), fConfig(NULL)
 {
     fVName.clear();
     fVariables.clear();
@@ -53,6 +63,7 @@ int G2POutput::Begin()
         return -1;
     }
 
+    fFile = new TFile(fFileName, "RECREATE");
     fTree = new TTree("T", "G2PSim Output Tree");
 
     fNVar = 0;
@@ -85,23 +96,40 @@ int G2POutput::Process()
             fVar[i] = pvar->GetValue();
     }
 
-    if (fTree)
-        fTree->Fill();
+    fTree->Fill();
 
     return 0;
 }
 
 int G2POutput::End()
 {
-    if (fTree)
-        fTree->Write();
+    fTree->Write();
+
+    fConfig = new TMacro("config");
+
+    ConfDef *conf = NULL;
+    int n = gG2PRun->GetConfigList(conf);
+
+    fConfig->AddLine("{");
+
+    for (int i = 0; i < n; i++) {
+        ostringstream ostr; // String stream has a better output format
+        ostr << conf[i].name << " = " << *((double *)conf[i].var);
+        fConfig->AddLine(Form("cout << \"%s\" << endl;", ostr.str().c_str()));
+        delete((double *) conf[i].var);
+    }
+
+    fConfig->AddLine("}");
+
+    delete[] conf;
+
+    fConfig->Write();
+
+    fFile->Purge();
+    fFile->Save();
+    fFile->Close();
 
     return 0;
-}
-
-TTree *G2POutput::GetTree() const
-{
-    return fTree;
 }
 
 int G2POutput::Attach()
