@@ -11,7 +11,7 @@
 //   Feb 2013, C. Gu, Change algorithm to Nystrom-Runge-Kutta method.
 //   Mar 2013, C. Gu, Add flexible step length and boundary check.
 //   Oct 2013, J. Liu, Add drift function to stop at a cylinder boundary.
-//   Dec 2014, C. Gu, Merge Drift() functions into one. The stop condition is set by Condition class.
+//   Dec 2014, C. Gu, Merge Drift() functions into one. The stop condition is set by G2PDriftCondition class.
 //
 
 #include <cstdlib>
@@ -41,29 +41,29 @@ static const double e = 1.60217656535e-19;
 static const double kGEV = 1.0e9 * e / c / c;
 static const double kOneSixth = 1.0 / 6.0;
 
-Condition::Condition(double zi, double zf) : fType(1), fZi(zi), fZf(zf), fSinAng(0), fCosAng(1), pGeo(NULL)
+G2PDriftCondition::G2PDriftCondition(double zi, double zf) : fType(1), fZi(zi), fZf(zf), fSinAng(0), fCosAng(1), pGeo(NULL)
 {
     fSign = (fZi > fZf) ? true : false;
 }
 
-Condition::Condition(double zi_tr, double zf_tr, double angle) : fType(2), fZi(zi_tr), fZf(zf_tr), pGeo(NULL)
+G2PDriftCondition::G2PDriftCondition(double zi_tr, double zf_tr, double angle) : fType(2), fZi(zi_tr), fZf(zf_tr), pGeo(NULL)
 {
     fSign = (fZi > fZf) ? true : false;
     fSinAng = sin(angle);
     fCosAng = cos(angle);
 }
 
-Condition::Condition(G2PGeoBase *geo) : fType(3), fZi(0), fZf(0), fSinAng(0), fCosAng(1), pGeo(geo)
+G2PDriftCondition::G2PDriftCondition(G2PGeoBase *geo) : fType(3), fZi(0), fZf(0), fSinAng(0), fCosAng(1), pGeo(geo)
 {
     // Nothing to do
 }
 
-Condition::~Condition()
+G2PDriftCondition::~G2PDriftCondition()
 {
     // Nothing to do
 }
 
-bool Condition::operator()(const double *x)
+bool G2PDriftCondition::operator()(const double *x)
 {
     switch (fType) {
     case 1:
@@ -120,7 +120,7 @@ int G2PDrift::Begin()
     return (fStatus = kOK);
 }
 
-double G2PDrift::Drift(const char *dir, const double *x, const double *p, Condition &stop, double *xout, double *pout)
+double G2PDrift::Drift(const char *dir, const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout)
 {
     // Drift in lab coordinate
 
@@ -162,7 +162,7 @@ void G2PDrift::SetErrLimit(double lo, double hi)
     fConfigIsSet.insert((unsigned long) &fErrHiLimit);
 }
 
-double G2PDrift::DriftHCS(const double *x, const double *p, Condition &stop, double *xout, double *pout)
+double G2PDrift::DriftHCS(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout)
 {
     // Drift in lab coordinate
 
@@ -231,7 +231,7 @@ double G2PDrift::DriftHCS(const double *x, const double *p, Condition &stop, dou
     return l;
 }
 
-double G2PDrift::DriftHCSNF(const double *x, const double *p, Condition &stop, double *xout, double *pout)
+double G2PDrift::DriftHCSNF(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout)
 {
     double xi[3] = {x[0], x[1], x[2]};
     double xf[3] = {x[0], x[1], x[2]};
@@ -410,8 +410,8 @@ int G2PDrift::Configure(EMode mode)
         {"run.particle.mass", "Particle Mass", kDOUBLE, &fM0},
         {"run.particle.charge", "Particle Charge", kDOUBLE, &fQ},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"step", "Particle Charge", kDOUBLE, &fStep},
-        {"step.limit", "Particle Charge", kDOUBLE, &fStepLimit},
+        {"step", "Step Size", kDOUBLE, &fStep},
+        {"step.limit", "Step Size Limit", kDOUBLE, &fStepLimit},
         {"error.low", "Lower limit", kDOUBLE, &fErrLoLimit},
         {"error.high", "Upper Limit", kDOUBLE, &fErrHiLimit},
         {0}

@@ -20,6 +20,7 @@
 #pragma link C++ class G2PGeoBase+;
 #pragma link C++ class G2PGeoSub+;
 #pragma link C++ class G2PGeoTube+;
+#pragma link C++ class G2PDriftCondition+;
 #pragma link C++ class G2PDrift+;
 #pragma link C++ class G2PTarget+;
 #pragma link C++ class G2PProcBase+;

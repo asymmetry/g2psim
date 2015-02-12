@@ -79,7 +79,7 @@ double G2PProcBase::Drift(const char *dir, const double *x, const double *p, dou
     double xsave[3] = {x[0], x[1], x[2]};
     double psave[3] = {p[0], p[1], p[2]};
 
-    Condition stop(x[2], zf);
+    G2PDriftCondition stop(x[2], zf);
 
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
@@ -103,7 +103,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
     double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
-    Condition stop(z_tr, zf_tr, fHRSAngle);
+    G2PDriftCondition stop(z_tr, zf_tr, fHRSAngle);
 
     double xout[3] = {0.0, 0.0, 0.0};
     double pout[3] = {0.0, 0.0, 0.0};
@@ -134,7 +134,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
     double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
-    Condition stop(x[2], zf_lab);
+    G2PDriftCondition stop(x[2], zf_lab);
 
     double xout[3] = {0.0, 0.0, 0.0};
     double pout[3] = {0.0, 0.0, 0.0};
@@ -159,7 +159,7 @@ double G2PProcBase::Drift(const char *dir, const double *x, const double *p, G2P
     double xsave[3] = {x[0], x[1], x[2]};
     double psave[3] = {p[0], p[1], p[2]};
 
-    Condition stop(geo);
+    G2PDriftCondition stop(geo);
 
     double result = pDrift->Drift(dir, x, p, stop, xout, pout);
 
@@ -185,7 +185,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, G2P
     double pp = (1 + V5_tr[4]) * fHRSMomentum;
     double p[3] = {pp * sin(V5_lab[1]) *cos(V5_lab[3]), pp * sin(V5_lab[1]) *sin(V5_lab[3]), pp * cos(V5_lab[1])};
 
-    Condition stop(geo);
+    G2PDriftCondition stop(geo);
 
     double xout[3] = {0.0, 0.0, 0.0};
     double pout[3] = {0.0, 0.0, 0.0};

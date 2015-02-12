@@ -11,7 +11,7 @@
 //   Feb 2013, C. Gu, Change algorithm to Nystrom-Runge-Kutta method.
 //   Mar 2013, C. Gu, Add flexible step length and boundary check.
 //   Oct 2013, J. Liu, Add drift function to stop at a cylinder boundary.
-//   Dec 2014, C. Gu, Merge Drift() functions into one. The stop condition is set by Condition class.
+//   Dec 2014, C. Gu, Merge Drift() functions into one. The stop condition is set by G2PDriftCondition class.
 //
 
 #ifndef G2P_DRIFT_H
@@ -22,13 +22,13 @@
 class G2PField;
 class G2PGeoBase;
 
-class Condition
+class G2PDriftCondition
 {
 public:
-    Condition(double zi, double zf);
-    Condition(double zi_tr, double zf_tr, double angle);
-    Condition(G2PGeoBase *geo);
-    ~Condition();
+    G2PDriftCondition(double zi, double zf);
+    G2PDriftCondition(double zi_tr, double zf_tr, double angle);
+    G2PDriftCondition(G2PGeoBase *geo);
+    ~G2PDriftCondition();
 
     bool operator()(const double *x);
 
@@ -48,11 +48,11 @@ public:
     G2PDrift();
     virtual ~G2PDrift();
 
-    typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, Condition &, double *, double *);
+    typedef double (G2PDrift::*pfDriftHCS_)(const double *, const double *, G2PDriftCondition &, double *, double *);
 
     virtual int Begin();
 
-    virtual double Drift(const char *dir, const double *x, const double *p, Condition &stop, double *xout, double *pout);
+    virtual double Drift(const char *dir, const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);
 
     // Gets
 
@@ -61,8 +61,8 @@ public:
     void SetErrLimit(double lo, double hi);
 
 protected:
-    double DriftHCS(const double *x, const double *p, Condition &stop, double *xout, double *pout);
-    double DriftHCSNF(const double *x, const double *p, Condition &stop, double *xout, double *pout);
+    double DriftHCS(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);
+    double DriftHCSNF(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);
 
     void NystromRK4(const double *x, const double *dxdt, double step, double *xo, double *err);
     double DistChord();
