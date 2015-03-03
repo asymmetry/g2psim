@@ -115,7 +115,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
     V5out_tr[4] = V5save_tr[4];
 
     if (fDebug > 2)
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zf_tr);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zf_tr, V5out_tr[4]);
 
     return result;
 }
@@ -145,7 +145,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, dou
     V5out_tr[4] = V5save_tr[4];
 
     if (fDebug > 2)
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr, V5out_tr[4]);
 
     return result;
 }
@@ -197,7 +197,7 @@ double G2PProcBase::Drift(const char *dir, const double *V5_tr, double z_tr, G2P
 
     if (fDebug > 2) {
         Info(here, "%s", geo->GetMaterial() ? geo->GetMaterial()->GetName() : "vacuum");
-        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr);
+        Info(here, "%10.3e %10.3e %10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e %10.3e", V5save_tr[0], V5save_tr[1], V5save_tr[2], V5save_tr[3], z_tr, V5out_tr[0], V5out_tr[1], V5out_tr[2], V5out_tr[3], zout_tr, V5out_tr[4]);
     }
 
     return result;

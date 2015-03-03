@@ -245,33 +245,38 @@ double G2PDrift::DriftHCSNF(const double *x, const double *p, G2PDriftCondition 
     else
         stepz = -fStep;
 
+    double l = 0.0;
+
     if (!stop(xf)) {
-        while ((fabs(stepz) > fStepLimit) || (!stop(xf))) {
+        while (((fabs(stepz) > fStepLimit) || (!stop(xf))) && (l < kLLimit)) {
             if (stop(xf)) {
                 zf -= stepz;
                 stepz /= 2.0;
             }
 
             zf += stepz;
+
             xf[0] = xi[0] + (zf - xi[2]) * p[0] / p[2];
             xf[1] = xi[1] + (zf - xi[2]) * p[1] / p[2];
             xf[2] = zf;
+
+            double dx = xf[0] - xi[0];
+            double dy = xf[1] - xi[1];
+            double dz = xf[2] - xi[2];
+
+            l = sqrt(dx * dx + dy * dy + dz * dz);
         }
     }
 
-    xout[0] = xi[0] + (zf - xi[2]) * p[0] / p[2];
-    xout[1] = xi[1] + (zf - xi[2]) * p[1] / p[2];
-    xout[2] = zf;
+    xout[0] = xf[0];
+    xout[1] = xf[1];
+    xout[2] = xf[2];
 
     pout[0] = p[0];
     pout[1] = p[1];
     pout[2] = p[2];
 
-    double dx = xout[0] - xi[0];
-    double dy = xout[1] - xi[1];
-    double dz = xout[2] - xi[2];
-
-    return sqrt(dx * dx + dy * dy + dz * dz);
+    return l;
 }
 
 void G2PDrift::NystromRK4(const double *x, const double *dxdt, double step, double *xo, double *err)
