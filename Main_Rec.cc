@@ -30,7 +30,7 @@
 #include "TFile.h"
 #include "TSystem.h"
 #include "TTree.h"
-
+#include "TChain.h"
 #include "THaEvent.h"
 
 #include "G2PAppBase.hh"
@@ -48,6 +48,7 @@ using namespace std;
 int fRun = 0;
 int fGEP = 0;
 int fDebug = 1;
+int fSeparate = 0;
 
 const char *DBDIR = "./recdb";
 const char *ROOTDIR = ".";
@@ -67,6 +68,7 @@ G2PRec *fRec = NULL;
 
 int Begin();
 int Process();
+int Process_separate();
 void Clear();
 void Usage(int argc, char **argv);
 
@@ -79,12 +81,13 @@ int main(int argc, char **argv)
             {"dbdir", required_argument, 0, 'd'},
             {"help", no_argument, 0, 'h'},
             {"rootdir", required_argument, 0, 'r'},
+            {"separate", no_argument, 0, 's'},
             {0, 0, 0, 0}
         };
 
         int option_index = 0;
 
-        c = getopt_long(argc, argv, "d:hr:", long_options, &option_index);
+        c = getopt_long(argc, argv, "d:hr:s", long_options, &option_index);
 
         if (c == -1) break;
 
@@ -102,6 +105,10 @@ int main(int argc, char **argv)
 
         case 'r':
             ROOTDIR = Form("%s", optarg);
+            break;
+            
+        case 's':
+            fSeparate = 1;
             break;
 
         case '?':
@@ -164,7 +171,8 @@ int main(int argc, char **argv)
     if (fDebug > 0)
         Info("Main()", "Ready to go!");
 
-    Process();
+    if(fSeparate) Process_separate();
+    else Process();
 
     next.Reset();
 
@@ -457,6 +465,157 @@ int Process()
     return 0;
 }
 
+int Process_separate()
+{
+    static const char *const here = "Main::Process_separate()";
+    const char *arm = "R";
+    if (fRun < 20000) arm = "L";
+    else if (fRun < 40000) arm = "R";
+    const char *optfilename=Form("%s/kin/optics_%d.root", ROOTDIR, fRun);
+    
+    TChain *t=new TChain("T");
+    t->Add(Form("%s/g2p_%d*.root",ROOTDIR,fRun));
+    t->AddFriend("T",Form("%s/kin/bpm_%d.root",ROOTDIR,fRun));
+    
+    TFile *newf=new TFile(optfilename, "RECREATE");
+    TTree *newt=new TTree("T","optics");
+    
+    THaEvent *event = new THaEvent();
+    t->SetBranchAddress("Event_Branch", &event);
+    
+    if (fGEP == 0) {
+        if (t->FindBranch(Form("%srb.tgt_m13_x", arm))) {
+            t->SetBranchAddress(Form("%srb.tgt_m13_x", arm), &fV5bpm_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgt_m13_theta", arm), &fV5bpm_bpm[1]);
+            t->SetBranchAddress(Form("%srb.tgt_m13_y", arm), &fV5bpm_bpm[2]);
+            t->SetBranchAddress(Form("%srb.tgt_m13_phi", arm), &fV5bpm_bpm[3]);
+            t->SetBranchAddress(Form("%srb.tgtave_m13_x", arm), &fV5bpmave_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgtave_m13_y", arm), &fV5bpmave_bpm[2]);
+            frecz_lab = -13.6271e-3;
+        } else if (t->FindBranch(Form("%srb.tgt_m12_x", arm))) {
+            t->SetBranchAddress(Form("%srb.tgt_m12_x", arm), &fV5bpm_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgt_m12_theta", arm), &fV5bpm_bpm[1]);
+            t->SetBranchAddress(Form("%srb.tgt_m12_y", arm), &fV5bpm_bpm[2]);
+            t->SetBranchAddress(Form("%srb.tgt_m12_phi", arm), &fV5bpm_bpm[3]);
+            t->SetBranchAddress(Form("%srb.tgtave_m12_x", arm), &fV5bpmave_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgtave_m12_y", arm), &fV5bpmave_bpm[2]);
+            frecz_lab = -12.5476e-3;
+        } else if (t->FindBranch(Form("%srb.tgt_m10_x", arm))) {
+            t->SetBranchAddress(Form("%srb.tgt_m10_x", arm), &fV5bpm_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgt_m10_theta", arm), &fV5bpm_bpm[1]);
+            t->SetBranchAddress(Form("%srb.tgt_m10_y", arm), &fV5bpm_bpm[2]);
+            t->SetBranchAddress(Form("%srb.tgt_m10_phi", arm), &fV5bpm_bpm[3]);
+            t->SetBranchAddress(Form("%srb.tgtave_m10_x", arm), &fV5bpmave_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgtave_m10_y", arm), &fV5bpmave_bpm[2]);
+            frecz_lab = -10.81e-3;
+        } else {
+            t->SetBranchAddress(Form("%srb.tgt_0_x", arm), &fV5bpm_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgt_0_theta", arm), &fV5bpm_bpm[1]);
+            t->SetBranchAddress(Form("%srb.tgt_0_y", arm), &fV5bpm_bpm[2]);
+            t->SetBranchAddress(Form("%srb.tgt_0_phi", arm), &fV5bpm_bpm[3]);
+            t->SetBranchAddress(Form("%srb.tgtave_0_x", arm), &fV5bpmave_bpm[0]);
+            t->SetBranchAddress(Form("%srb.tgtave_0_y", arm), &fV5bpmave_bpm[2]);
+            frecz_lab = 0.0;
+        }
+        
+        t->SetBranchAddress(Form("%srb.bpmavail", arm), &fbpmavail);
+    } else if (fGEP == 1)
+        fbpmavail = 1;
+        
+    t->SetBranchAddress(Form("%s.gold.x", arm), &fV5tpmat_tr[0]);
+    t->SetBranchAddress(Form("%s.gold.th", arm), &fV5tpmat_tr[1]);
+    t->SetBranchAddress(Form("%s.gold.y", arm), &fV5tpmat_tr[2]);
+    t->SetBranchAddress(Form("%s.gold.ph", arm), &fV5tpmat_tr[3]);
+    t->SetBranchAddress(Form("%s.gold.dp", arm), &fV5tpmat_tr[4]);
+    
+    TList newBranch;
+
+    newBranch.Add(newt->Branch(Form("%s.rec.x", arm), &fV5rec_tr[0], Form("%s.rec.x/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.th", arm), &fV5rec_tr[1], Form("%s.rec.th/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.y", arm), &fV5rec_tr[2], Form("%s.rec.y/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.ph", arm), &fV5rec_tr[3], Form("%s.rec.ph/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.dp", arm), &fV5rec_tr[4], Form("%s.rec.dp/D", arm)));
+    
+    newBranch.Add(newt->Branch(Form("%s.rec.l_x", arm), &fV5rec_lab[0], Form("%s.rec.l_x/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.l_th", arm), &fV5rec_lab[1], Form("%s.rec.l_th/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.l_y", arm), &fV5rec_lab[2], Form("%s.rec.l_y/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.l_ph", arm), &fV5rec_lab[3], Form("%s.rec.l_ph/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.rec.l_z", arm), &fV5rec_lab[4], Form("%s.rec.l_z/D", arm)));
+
+#ifdef DEBUG
+    newBranch.Add(newt->Branch(Form("%s.corr.x", arm), &fV5tpcorr_tr[0], Form("%s.corr.x/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.corr.th", arm), &fV5tpcorr_tr[1], Form("%s.corr.th/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.corr.y", arm), &fV5tpcorr_tr[2], Form("%s.corr.y/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.corr.ph", arm), &fV5tpcorr_tr[3], Form("%s.corr.ph/D", arm)));
+    newBranch.Add(newt->Branch(Form("%s.corr.dp", arm), &fV5tpcorr_tr[4], Form("%s.corr.dp/D", arm)));
+#endif    
+
+    int N = t->GetEntries();
+    int evnum;
+    TIter next(&newBranch);
+
+    for (int i = 0; i < N; i++) {
+        t->GetEntry(i);
+        evnum = Int_t(event->GetHeader()->GetEvtNum());
+        
+        if (fDebug > 1)
+            Info(here, "Processing event %d ......", evnum);
+        else if ((i % 10000 == 0) && (i != 0))
+            Info(here, "%d events Processed ......", i);
+
+        if ((fbpmavail < 0.5) || (fV5tpmat_tr[0] > 1.0e8) || (fV5tpmat_tr[1] > 1.0e8) || (fV5tpmat_tr[2] > 1.0e8) || (fV5tpmat_tr[3] > 1.0e8) || (fV5tpmat_tr[4] > 1.0e8)) {
+            for (int i = 0; i < 5; i++) {
+                fV5rec_tr[i] = 1e+38;
+                fV5rec_lab[i] = 1e+38;
+#ifdef DEBUG
+                fV5tpcorr_tr[i] = 1e+38;
+#endif
+            }
+        } else {
+            fV5bpm_bpm[0] /= 1000.0;
+            fV5bpm_bpm[2] /= 1000.0;
+            fV5bpm_bpm[4] = frecz_lab;
+            fV5bpmave_bpm[0] /= 1000.0;
+            fV5bpmave_bpm[2] /= 1000.0;
+
+            fRec->Process();
+
+            if (gG2PVars->FindSuffix("rec.x") && gG2PVars->FindSuffix("rec.l_x")
+#ifdef DEBUG
+                    && gG2PVars->FindSuffix("tp.corr.x")
+#endif             
+               ) {
+                fV5rec_tr[0] = gG2PVars->FindSuffix("rec.x")->GetValue();
+                fV5rec_tr[1] = tan(gG2PVars->FindSuffix("rec.t")->GetValue());
+                fV5rec_tr[2] = gG2PVars->FindSuffix("rec.y")->GetValue();
+                fV5rec_tr[3] = tan(gG2PVars->FindSuffix("rec.p")->GetValue());
+                fV5rec_tr[4] = gG2PVars->FindSuffix("rec.d")->GetValue();
+                
+                fV5rec_lab[0] = gG2PVars->FindSuffix("rec.l_x")->GetValue();
+                fV5rec_lab[1] = gG2PVars->FindSuffix("rec.l_t")->GetValue();
+                fV5rec_lab[2] = gG2PVars->FindSuffix("rec.l_y")->GetValue();
+                fV5rec_lab[3] = gG2PVars->FindSuffix("rec.l_p")->GetValue();
+                fV5rec_lab[4] = gG2PVars->FindSuffix("rec.l_z")->GetValue();
+#ifdef DEBUG
+                fV5tpcorr_tr[0] = gG2PVars->FindSuffix("tp.corr.x")->GetValue();
+                fV5tpcorr_tr[1] = tan(gG2PVars->FindSuffix("tp.corr.t")->GetValue());
+                fV5tpcorr_tr[2] = gG2PVars->FindSuffix("tp.corr.y")->GetValue();
+                fV5tpcorr_tr[3] = tan(gG2PVars->FindSuffix("tp.corr.p")->GetValue());
+                fV5tpcorr_tr[4] = gG2PVars->FindSuffix("tp,corr.d")->GetValue();
+#endif
+            } else
+                return -1;
+        }
+
+        next.Reset();
+
+        newt->Fill();
+    }
+    newt->Write("", TObject::kOverwrite);
+    newf->Close();
+    return 0;
+}
+
 void Clear()
 {
     fbpmavail = 0;
@@ -471,5 +630,7 @@ void Usage(int argc, char **argv)
     printf("usage: %s [options] RunNumber \n", argv[0]);
     printf("  -d, --dbdir=$PWD/recdb         Set db directory\n");
     printf("  -h, --help                     Print this small usage guide\n");
+    printf("  -s, --separate                 Separate insert the optics information\n");
     printf("  -r, --rootdir=$PWD             Set db directory\n");
+    
 }
