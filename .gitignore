@@ -1,0 +1,41 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.so.*
+*.dylib
+*.dylib.*
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.a.*
+
+*.d
+*.pyc
+
+obj.*
+
+*_Dict.*
+*_dict.*
+
+plots/
+scripts/
+*.bak
+*.dat
+*.png
+*.map
+*.root
+
+G2PSim
+g2psim
+G2PRec
+g2prec
+/*.C
+/*.cfg
+/*.def
+!rootlogon.C
