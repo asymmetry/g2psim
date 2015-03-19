@@ -316,10 +316,10 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
 
     double result = Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
 
-    if (result > (E - 2 * kMe))
-        result = E - 2 * kMe;
+    if (result > (E - 200 * kMe))
+        result = E - 200 * kMe;
 
-    if ((result < 0) || (E < 2 * kMe))
+    if ((result < 0) || (E < 200 * kMe))
         result = 0;
 
     return result;
