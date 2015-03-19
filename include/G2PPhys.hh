@@ -68,7 +68,7 @@ protected:
     G2PPhys(); // Only for ROOT I/O
 
     double CalXS(const double *V5lab, const double *V5tr, double &scatangle);
-
+    double TDiLog( double x);
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
@@ -78,9 +78,11 @@ protected:
     int fPID;
     int fZ, fA; // Define Target
     double fTargetMass;
-
+    double fParticleMass;
     double *fPars;
     int fNPars;
+
+    double fHRSMomentum;
 
     double fE;
     double fTb, fTa;

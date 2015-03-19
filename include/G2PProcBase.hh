@@ -67,6 +67,7 @@ protected:
     bool fDefined;
 
     double fHRSMomentum;
+    double fTargetMass;
 
     G2PDrift *pDrift;
 
