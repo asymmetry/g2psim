@@ -291,7 +291,7 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
 
     static double kMe = 0.510998918e-3; // GeV
     double kMt = fTargetMass;
-    double Eel = E / (1 + (E/kMt)*(1-cos(angle));
+    double Eel = E / (1 + (E/kMt)*(1-cos(angle)));
     double qsq = 2 * E * Eel * (1 - cos(angle));
     double alpha = (1. / 137.);
     double bval = 4. / 3.;
