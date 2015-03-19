@@ -33,7 +33,9 @@ protected:
     int fTargetType;
 
     double fPF;
-
+    double fTgOffsetX;
+    double fTgOffsetY;
+    double fTgOffsetZ;
     G2PAppList *fMats;
     G2PAppList *fGeos;
 
