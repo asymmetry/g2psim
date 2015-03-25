@@ -34,6 +34,7 @@ public:
 protected:
     void GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr);
     void ExtTgtCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr);
+    void TgtYCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr);
 
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
@@ -45,16 +46,14 @@ protected:
     double frecz_lab;
 
     double fExtTgtCorrT;
-    double fExtTgtCorrP;
     double fExtTgtCorrD;
+
+    double fTgtYCorrD;
 
     double fFitPars[2][3];
 
     double fV5bpm_bpm[5];
     double fV5bpm_tr[5];
-
-    double fV5bpmave_bpm[5];
-    double fV5bpmave_tr[5];
 
     double fV5tpmat_tr[5];
     double fV5tpcorr_tr[5];

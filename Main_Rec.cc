@@ -41,7 +41,7 @@
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
-//#define DEBUG
+#define DEBUG
 
 using namespace std;
 
@@ -55,7 +55,6 @@ const char *ROOTDIR = ".";
 
 int fbpmavail = 0;
 float fV5bpm_bpm[5];
-float fV5bpmave_bpm[5];
 
 double fV5tpmat_tr[5];
 double fV5tpcorr_tr[5];
@@ -283,8 +282,6 @@ int Begin()
         {"bpm.b_y", "BPM Y", kFLOAT, &fV5bpm_bpm[2]},
         {"bpm.b_p", "BPM P", kFLOAT, &fV5bpm_bpm[3]},
         {"bpm.b_z", "BPM Z", kFLOAT, &fV5bpm_bpm[4]},
-        {"bpm.ave.b_x", "Average BPM X", kFLOAT, &fV5bpmave_bpm[0]},
-        {"bpm.ave.b_y", "Average BPM Y", kFLOAT, &fV5bpmave_bpm[2]},
         {"tp.mat.x", "Matrix Rec to Target Plane X", kDOUBLE, &fV5tpmat_tr[0]},
         {"tp.mat.t", "Matrix Rec to Target Plane T", kDOUBLE, &fV5tpmat_tr[1]},
         {"tp.mat.y", "Matrix Rec to Target Plane Y", kDOUBLE, &fV5tpmat_tr[2]},
@@ -329,32 +326,24 @@ int Process()
                 t->SetBranchAddress(Form("%srb.tgt_m13_theta", arm), &fV5bpm_bpm[1]);
                 t->SetBranchAddress(Form("%srb.tgt_m13_y", arm), &fV5bpm_bpm[2]);
                 t->SetBranchAddress(Form("%srb.tgt_m13_phi", arm), &fV5bpm_bpm[3]);
-                t->SetBranchAddress(Form("%srb.tgtave_m13_x", arm), &fV5bpmave_bpm[0]);
-                t->SetBranchAddress(Form("%srb.tgtave_m13_y", arm), &fV5bpmave_bpm[2]);
                 frecz_lab = -13.6271e-3;
             } else if (t->FindBranch(Form("%srb.tgt_m12_x", arm))) {
                 t->SetBranchAddress(Form("%srb.tgt_m12_x", arm), &fV5bpm_bpm[0]);
                 t->SetBranchAddress(Form("%srb.tgt_m12_theta", arm), &fV5bpm_bpm[1]);
                 t->SetBranchAddress(Form("%srb.tgt_m12_y", arm), &fV5bpm_bpm[2]);
                 t->SetBranchAddress(Form("%srb.tgt_m12_phi", arm), &fV5bpm_bpm[3]);
-                t->SetBranchAddress(Form("%srb.tgtave_m12_x", arm), &fV5bpmave_bpm[0]);
-                t->SetBranchAddress(Form("%srb.tgtave_m12_y", arm), &fV5bpmave_bpm[2]);
                 frecz_lab = -12.5476e-3;
             } else if (t->FindBranch(Form("%srb.tgt_m10_x", arm))) {
                 t->SetBranchAddress(Form("%srb.tgt_m10_x", arm), &fV5bpm_bpm[0]);
                 t->SetBranchAddress(Form("%srb.tgt_m10_theta", arm), &fV5bpm_bpm[1]);
                 t->SetBranchAddress(Form("%srb.tgt_m10_y", arm), &fV5bpm_bpm[2]);
                 t->SetBranchAddress(Form("%srb.tgt_m10_phi", arm), &fV5bpm_bpm[3]);
-                t->SetBranchAddress(Form("%srb.tgtave_m10_x", arm), &fV5bpmave_bpm[0]);
-                t->SetBranchAddress(Form("%srb.tgtave_m10_y", arm), &fV5bpmave_bpm[2]);
                 frecz_lab = -10.81e-3;
             } else {
                 t->SetBranchAddress(Form("%srb.tgt_0_x", arm), &fV5bpm_bpm[0]);
                 t->SetBranchAddress(Form("%srb.tgt_0_theta", arm), &fV5bpm_bpm[1]);
                 t->SetBranchAddress(Form("%srb.tgt_0_y", arm), &fV5bpm_bpm[2]);
                 t->SetBranchAddress(Form("%srb.tgt_0_phi", arm), &fV5bpm_bpm[3]);
-                t->SetBranchAddress(Form("%srb.tgtave_0_x", arm), &fV5bpmave_bpm[0]);
-                t->SetBranchAddress(Form("%srb.tgtave_0_y", arm), &fV5bpmave_bpm[2]);
                 frecz_lab = 0.0;
             }
 
@@ -415,8 +404,6 @@ int Process()
                 fV5bpm_bpm[0] /= 1000.0;
                 fV5bpm_bpm[2] /= 1000.0;
                 fV5bpm_bpm[4] = frecz_lab;
-                fV5bpmave_bpm[0] /= 1000.0;
-                fV5bpmave_bpm[2] /= 1000.0;
 
                 fRec->Process();
 
@@ -491,32 +478,24 @@ int Process_separate()
             t->SetBranchAddress(Form("%srb.tgt_m13_theta", arm), &fV5bpm_bpm[1]);
             t->SetBranchAddress(Form("%srb.tgt_m13_y", arm), &fV5bpm_bpm[2]);
             t->SetBranchAddress(Form("%srb.tgt_m13_phi", arm), &fV5bpm_bpm[3]);
-            t->SetBranchAddress(Form("%srb.tgtave_m13_x", arm), &fV5bpmave_bpm[0]);
-            t->SetBranchAddress(Form("%srb.tgtave_m13_y", arm), &fV5bpmave_bpm[2]);
             frecz_lab = -13.6271e-3;
         } else if (t->FindBranch(Form("%srb.tgt_m12_x", arm))) {
             t->SetBranchAddress(Form("%srb.tgt_m12_x", arm), &fV5bpm_bpm[0]);
             t->SetBranchAddress(Form("%srb.tgt_m12_theta", arm), &fV5bpm_bpm[1]);
             t->SetBranchAddress(Form("%srb.tgt_m12_y", arm), &fV5bpm_bpm[2]);
             t->SetBranchAddress(Form("%srb.tgt_m12_phi", arm), &fV5bpm_bpm[3]);
-            t->SetBranchAddress(Form("%srb.tgtave_m12_x", arm), &fV5bpmave_bpm[0]);
-            t->SetBranchAddress(Form("%srb.tgtave_m12_y", arm), &fV5bpmave_bpm[2]);
             frecz_lab = -12.5476e-3;
         } else if (t->FindBranch(Form("%srb.tgt_m10_x", arm))) {
             t->SetBranchAddress(Form("%srb.tgt_m10_x", arm), &fV5bpm_bpm[0]);
             t->SetBranchAddress(Form("%srb.tgt_m10_theta", arm), &fV5bpm_bpm[1]);
             t->SetBranchAddress(Form("%srb.tgt_m10_y", arm), &fV5bpm_bpm[2]);
             t->SetBranchAddress(Form("%srb.tgt_m10_phi", arm), &fV5bpm_bpm[3]);
-            t->SetBranchAddress(Form("%srb.tgtave_m10_x", arm), &fV5bpmave_bpm[0]);
-            t->SetBranchAddress(Form("%srb.tgtave_m10_y", arm), &fV5bpmave_bpm[2]);
             frecz_lab = -10.81e-3;
         } else {
             t->SetBranchAddress(Form("%srb.tgt_0_x", arm), &fV5bpm_bpm[0]);
             t->SetBranchAddress(Form("%srb.tgt_0_theta", arm), &fV5bpm_bpm[1]);
             t->SetBranchAddress(Form("%srb.tgt_0_y", arm), &fV5bpm_bpm[2]);
             t->SetBranchAddress(Form("%srb.tgt_0_phi", arm), &fV5bpm_bpm[3]);
-            t->SetBranchAddress(Form("%srb.tgtave_0_x", arm), &fV5bpmave_bpm[0]);
-            t->SetBranchAddress(Form("%srb.tgtave_0_y", arm), &fV5bpmave_bpm[2]);
             frecz_lab = 0.0;
         }
 
@@ -577,8 +556,6 @@ int Process_separate()
             fV5bpm_bpm[0] /= 1000.0;
             fV5bpm_bpm[2] /= 1000.0;
             fV5bpm_bpm[4] = frecz_lab;
-            fV5bpmave_bpm[0] /= 1000.0;
-            fV5bpmave_bpm[2] /= 1000.0;
 
             fRec->Process();
 
@@ -624,7 +601,6 @@ void Clear()
     fbpmavail = 0;
 
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
-    memset(fV5bpmave_bpm, 0, sizeof(fV5bpmave_bpm));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
 }
 

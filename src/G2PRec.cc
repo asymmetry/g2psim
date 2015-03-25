@@ -32,7 +32,7 @@
 
 G2PRec *G2PRec::pG2PRec = NULL;
 
-G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrP(0.0), fExtTgtCorrD(1e36), pSieve(NULL)
+G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrD(1e36), fTgtYCorrD(0.0), pSieve(NULL)
 {
     if (pG2PRec) {
         Error("G2PRec()", "Only one instance of G2PRec allowed.");
@@ -71,18 +71,12 @@ int G2PRec::Process()
 {
     static const char *const here = "Process()";
 
-    if (gG2PVars->FindSuffix("bpm.b_x") && gG2PVars->FindSuffix("bpm.ave.b_x") && gG2PVars->FindSuffix("tp.mat.x")) {
+    if (gG2PVars->FindSuffix("bpm.b_x") && gG2PVars->FindSuffix("tp.mat.x")) {
         fV5bpm_bpm[0] = gG2PVars->FindSuffix("bpm.b_x")->GetValue();
         fV5bpm_bpm[1] = gG2PVars->FindSuffix("bpm.b_t")->GetValue();
         fV5bpm_bpm[2] = gG2PVars->FindSuffix("bpm.b_y")->GetValue();
         fV5bpm_bpm[3] = gG2PVars->FindSuffix("bpm.b_p")->GetValue();
         fV5bpm_bpm[4] = gG2PVars->FindSuffix("bpm.b_z")->GetValue();
-
-        fV5bpmave_bpm[0] = gG2PVars->FindSuffix("bpm.ave.b_x")->GetValue();
-        fV5bpmave_bpm[1] = fV5bpm_bpm[1];
-        fV5bpmave_bpm[2] = gG2PVars->FindSuffix("bpm.ave.b_y")->GetValue();
-        fV5bpmave_bpm[3] = fV5bpm_bpm[3];
-        fV5bpmave_bpm[4] = fV5bpm_bpm[4];
 
         fV5tpmat_tr[0] = gG2PVars->FindSuffix("tp.mat.x")->GetValue();
         fV5tpmat_tr[1] = gG2PVars->FindSuffix("tp.mat.t")->GetValue();
@@ -94,20 +88,28 @@ int G2PRec::Process()
 
     frecz_lab = fV5bpm_bpm[4];
 
-    double V5temp[5];
-    BPM2HCS(fV5bpm_bpm, V5temp);
-    HCS2TCS(V5temp, fV5bpm_tr, fV5bpm_tr[4]);
-    BPM2HCS(fV5bpmave_bpm, V5temp);
-    HCS2TCS(V5temp, fV5bpmave_tr, fV5bpmave_tr[4]);
+    double bpm_temp[5], tp_temp[5];
+    BPM2HCS(fV5bpm_bpm, bpm_temp);
+    HCS2TCS(bpm_temp, fV5bpm_tr, fV5bpm_tr[4]);
 
-    ExtTgtCorr(fV5bpmave_tr, fV5tpmat_tr, fV5tpcorr_tr);
+    // first iteration
+    GetEffBPM(fV5tpmat_tr, fV5bpm_tr, bpm_temp);
+    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
+    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
 
-    GetEffBPM(fV5tpcorr_tr, fV5bpmave_tr, V5temp);
-    ExtTgtCorr(V5temp, fV5tpmat_tr, fV5tpcorr_tr);
+    // second iteration
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
+    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
 
-    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, V5temp);
-    fV5tpcorr_tr[0] = V5temp[0];
-    fV5tpcorr_tr[2] = V5temp[2];
+    // third iteration
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
+    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
+
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    fV5tpcorr_tr[0] = bpm_temp[0];
+    fV5tpcorr_tr[2] = bpm_temp[2];
 
     if (fDebug > 1) {
         Info(here, "bpm_bpm   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_bpm[0], fV5bpm_bpm[1], fV5bpm_bpm[2], fV5bpm_bpm[3], fV5bpm_bpm[4]);
@@ -155,8 +157,6 @@ void G2PRec::Clear(Option_t * /*option*/)
 {
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
-    memset(fV5bpmave_bpm, 0, sizeof(fV5bpmave_bpm));
-    memset(fV5bpmave_tr, 0, sizeof(fV5bpmave_tr));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
     memset(fV5tpcorr_tr, 0, sizeof(fV5tpcorr_tr));
     memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
@@ -192,8 +192,17 @@ void G2PRec::ExtTgtCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V
     V5corr_tr[0] = V5tp_tr[0];
     V5corr_tr[1] = V5tp_tr[1] + fExtTgtCorrT * V5bpm_tr[0];
     V5corr_tr[2] = V5tp_tr[2];
-    V5corr_tr[3] = V5tp_tr[3] + fExtTgtCorrP * V5bpm_tr[2];
+    V5corr_tr[3] = V5tp_tr[3];
     V5corr_tr[4] = V5tp_tr[4] + V5bpm_tr[0] / fExtTgtCorrD;
+}
+
+void G2PRec::TgtYCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
+{
+    V5corr_tr[0] = V5tp_tr[0];
+    V5corr_tr[1] = V5tp_tr[1];
+    V5corr_tr[2] = V5tp_tr[2];
+    V5corr_tr[3] = V5tp_tr[3];
+    V5corr_tr[4] = V5tp_tr[4] + fTgtYCorrD * V5bpm_tr[2];
 }
 
 int G2PRec::Configure(EMode mode)
@@ -213,9 +222,9 @@ int G2PRec::Configure(EMode mode)
         {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
         {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
         {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"corr.t", "Extended Target Correction T", kDOUBLE, &fExtTgtCorrT},
-        {"corr.p", "Extended Target Correction P", kDOUBLE, &fExtTgtCorrP},
-        {"corr.d", "Extended Target Correction D", kDOUBLE, &fExtTgtCorrD},
+        {"extcorr.t", "Extended Target Correction T", kDOUBLE, &fExtTgtCorrT},
+        {"extcorr.d", "Extended Target Correction D", kDOUBLE, &fExtTgtCorrD},
+        {"tgycorr.d", "Target Y Correction D", kDOUBLE, &fTgtYCorrD},
         {0}
     };
 
