@@ -27,10 +27,11 @@
 #include "TROOT.h"
 #include "TError.h"
 #include "TObject.h"
+#include "TChain.h"
 #include "TFile.h"
 #include "TSystem.h"
 #include "TTree.h"
-#include "TChain.h"
+
 #include "THaEvent.h"
 
 #include "G2PAppBase.hh"
@@ -41,23 +42,26 @@
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
-#define DEBUG
+//#define DEBUG
 
 using namespace std;
 
 int fRun = 0;
 int fGEP = 0;
 int fDebug = 1;
-int fSeparate = 0;
+int fNew = 0;
 
-const char *DBDIR = "./recdb";
-const char *ROOTDIR = ".";
+char DBDIR[300] = "./recdb";
+char ROOTDIR[300] = ".";
+char BPMDIR[300] = "./kin";
 
 int fbpmavail = 0;
 float fV5bpm_bpm[5];
 
 double fV5tpmat_tr[5];
-double fV5tpcorr_tr[5];
+#ifdef DEBUG
+    double fV5tpcorr_tr[5];
+#endif
 
 double frecz_lab = 0;
 double fV5rec_tr[5];
@@ -66,8 +70,8 @@ double fV5rec_lab[5];
 G2PRec *fRec = NULL;
 
 int Begin();
-int Process();
-int Process_separate();
+int Insert();
+int Create();
 void Clear();
 void Usage(int argc, char **argv);
 
@@ -77,10 +81,11 @@ int main(int argc, char **argv)
 
     while (1) {
         static struct option long_options[] = {
+            {"bpmdir", required_argument, 0, 'b'},
             {"dbdir", required_argument, 0, 'd'},
             {"help", no_argument, 0, 'h'},
             {"rootdir", required_argument, 0, 'r'},
-            {"separate", no_argument, 0, 's'},
+            {"sepfile", no_argument, 0, 's'},
             {0, 0, 0, 0}
         };
 
@@ -94,8 +99,12 @@ int main(int argc, char **argv)
         case 0:
             break;
 
+        case 'b':
+            strcpy(BPMDIR, optarg);
+            break;
+
         case 'd':
-            DBDIR = Form("%s", optarg);
+            strcpy(DBDIR, optarg);
             break;
 
         case 'h':
@@ -103,11 +112,11 @@ int main(int argc, char **argv)
             exit(0);
 
         case 'r':
-            ROOTDIR = Form("%s", optarg);
+            strcpy(ROOTDIR, optarg);
             break;
 
         case 's':
-            fSeparate = 1;
+            fNew = 1;
             break;
 
         case '?':
@@ -170,8 +179,10 @@ int main(int argc, char **argv)
     if (fDebug > 0)
         Info("Main()", "Ready to go!");
 
-    if (fSeparate) Process_separate();
-    else Process();
+    if (fNew == 0)
+        Insert();
+    else
+        Create();
 
     next.Reset();
 
@@ -299,7 +310,7 @@ int Begin()
     return 0;
 }
 
-int Process()
+int Insert()
 {
     static const char *const here = "Main::Process()";
 
@@ -393,6 +404,9 @@ int Process()
                 Info(here, "%d events Processed ......", i);
 
             if ((fbpmavail < 0.5) || (fV5tpmat_tr[0] > 1.0e8) || (fV5tpmat_tr[1] > 1.0e8) || (fV5tpmat_tr[2] > 1.0e8) || (fV5tpmat_tr[3] > 1.0e8) || (fV5tpmat_tr[4] > 1.0e8)) {
+                if (fDebug > 2)
+                    Info(here, "%1d %10.3e %10.3e %10.3e %10.3e %10.3e", fbpmavail, fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
+
                 for (int i = 0; i < 5; i++) {
                     fV5rec_tr[i] = 1e+38;
                     fV5rec_lab[i] = 1e+38;
@@ -428,7 +442,7 @@ int Process()
                     fV5tpcorr_tr[1] = tan(gG2PVars->FindSuffix("tp.corr.t")->GetValue());
                     fV5tpcorr_tr[2] = gG2PVars->FindSuffix("tp.corr.y")->GetValue();
                     fV5tpcorr_tr[3] = tan(gG2PVars->FindSuffix("tp.corr.p")->GetValue());
-                    fV5tpcorr_tr[4] = gG2PVars->FindSuffix("tp,corr.d")->GetValue();
+                    fV5tpcorr_tr[4] = gG2PVars->FindSuffix("tp.corr.d")->GetValue();
 #endif
                 } else
                     return -1;
@@ -452,21 +466,22 @@ int Process()
     return 0;
 }
 
-int Process_separate()
+int Create()
 {
-    static const char *const here = "Main::Process_separate()";
+    static const char *const here = "Main::Process()";
+
     const char *arm = "R";
 
     if (fRun < 20000) arm = "L";
     else if (fRun < 40000) arm = "R";
 
-    const char *optfilename = Form("%s/kin/optics_%d.root", ROOTDIR, fRun);
+    const char *filename = Form("%s/optics_%d.root", ROOTDIR, fRun);
 
     TChain *t = new TChain("T");
     t->Add(Form("%s/g2p_%d*.root", ROOTDIR, fRun));
-    t->AddFriend("T", Form("%s/kin/bpm_%d.root", ROOTDIR, fRun));
+    t->AddFriend("T", Form("%s/bpm_%d.root", BPMDIR, fRun));
 
-    TFile *newf = new TFile(optfilename, "RECREATE");
+    TFile *newf = new TFile(filename, "RECREATE");
     TTree *newt = new TTree("T", "optics");
 
     THaEvent *event = new THaEvent();
@@ -580,7 +595,7 @@ int Process_separate()
                 fV5tpcorr_tr[1] = tan(gG2PVars->FindSuffix("tp.corr.t")->GetValue());
                 fV5tpcorr_tr[2] = gG2PVars->FindSuffix("tp.corr.y")->GetValue();
                 fV5tpcorr_tr[3] = tan(gG2PVars->FindSuffix("tp.corr.p")->GetValue());
-                fV5tpcorr_tr[4] = gG2PVars->FindSuffix("tp,corr.d")->GetValue();
+                fV5tpcorr_tr[4] = gG2PVars->FindSuffix("tp.corr.d")->GetValue();
 #endif
             } else
                 return -1;
@@ -593,6 +608,7 @@ int Process_separate()
 
     newt->Write("", TObject::kOverwrite);
     newf->Close();
+
     return 0;
 }
 
@@ -602,14 +618,17 @@ void Clear()
 
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
+#ifdef DEBUG
+    memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
+#endif
 }
 
 void Usage(int argc, char **argv)
 {
     printf("usage: %s [options] RunNumber \n", argv[0]);
+    printf("  -b, --bpmdir=$PWD/kin          Set bpm directory, only work with -n\n");
     printf("  -d, --dbdir=$PWD/recdb         Set db directory\n");
     printf("  -h, --help                     Print this small usage guide\n");
-    printf("  -s, --separate                 Separate insert the optics information\n");
-    printf("  -r, --rootdir=$PWD             Set db directory\n");
-
+    printf("  -r, --rootdir=$PWD             Set rootfile directory\n");
+    printf("  -s, --sepfile                  Create a new rootfile for optics\n");
 }

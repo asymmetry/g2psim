@@ -86,21 +86,35 @@ int G2PRec::Process()
     } else
         return -1;
 
+    if (fDebug > 1)
+        Info(here, "bpm_bpm   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_bpm[0], fV5bpm_bpm[1], fV5bpm_bpm[2], fV5bpm_bpm[3], fV5bpm_bpm[4]);
+
     frecz_lab = fV5bpm_bpm[4];
 
     double bpm_temp[5], tp_temp[5];
     BPM2HCS(fV5bpm_bpm, bpm_temp);
     HCS2TCS(bpm_temp, fV5bpm_tr, fV5bpm_tr[4]);
 
+    if (fDebug > 1) {
+        Info(here, "bpm_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_tr[0], fV5bpm_tr[1], fV5bpm_tr[2], fV5bpm_tr[3], fV5bpm_tr[4]);
+        Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
+    }
+
     // first iteration
     GetEffBPM(fV5tpmat_tr, fV5bpm_tr, bpm_temp);
     ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
     TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
 
+    if (fDebug > 1)
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
+
     // second iteration
     GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
     ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
     TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
+
+    if (fDebug > 1)
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
     // third iteration
     GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
@@ -111,10 +125,8 @@ int G2PRec::Process()
     fV5tpcorr_tr[0] = bpm_temp[0];
     fV5tpcorr_tr[2] = bpm_temp[2];
 
-    if (fDebug > 1) {
-        Info(here, "bpm_bpm   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_bpm[0], fV5bpm_bpm[1], fV5bpm_bpm[2], fV5bpm_bpm[3], fV5bpm_bpm[4]);
+    if (fDebug > 1)
         Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
-    }
 
     Project(fV5tpcorr_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
 
@@ -183,7 +195,7 @@ void G2PRec::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5
         V5bpmeff_tr[2] = V5bpm_tr[2] - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * V5bpm_tr[0]) / p) / 1000;
     }
 
-    if (fDebug > 1)
+    if (fDebug > 2)
         Info(here, "effbpm_tr : %10.3e %10.3e", V5bpmeff_tr[0], V5bpmeff_tr[2]);
 }
 
