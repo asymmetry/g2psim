@@ -48,6 +48,7 @@ protected:
     double fExtTgtCorrT;
     double fExtTgtCorrD;
 
+    double fTgtYCorrP;
     double fTgtYCorrD;
 
     double fFitPars[2][3];

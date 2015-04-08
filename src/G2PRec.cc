@@ -32,7 +32,7 @@
 
 G2PRec *G2PRec::pG2PRec = NULL;
 
-G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrD(1e36), fTgtYCorrD(0.0), pSieve(NULL)
+G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrD(0.0), fTgtYCorrP(0.0), fTgtYCorrD(0.0), pSieve(NULL)
 {
     if (pG2PRec) {
         Error("G2PRec()", "Only one instance of G2PRec allowed.");
@@ -205,7 +205,7 @@ void G2PRec::ExtTgtCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V
     V5corr_tr[1] = V5tp_tr[1] + fExtTgtCorrT * V5bpm_tr[0];
     V5corr_tr[2] = V5tp_tr[2];
     V5corr_tr[3] = V5tp_tr[3];
-    V5corr_tr[4] = V5tp_tr[4] + V5bpm_tr[0] / fExtTgtCorrD;
+    V5corr_tr[4] = V5tp_tr[4] + fExtTgtCorrD * V5bpm_tr[0];
 }
 
 void G2PRec::TgtYCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
@@ -213,7 +213,7 @@ void G2PRec::TgtYCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5c
     V5corr_tr[0] = V5tp_tr[0];
     V5corr_tr[1] = V5tp_tr[1];
     V5corr_tr[2] = V5tp_tr[2];
-    V5corr_tr[3] = V5tp_tr[3];
+    V5corr_tr[3] = V5tp_tr[3] + fTgtYCorrP * V5bpm_tr[2];
     V5corr_tr[4] = V5tp_tr[4] + fTgtYCorrD * V5bpm_tr[2];
 }
 
@@ -236,6 +236,7 @@ int G2PRec::Configure(EMode mode)
         {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
         {"extcorr.t", "Extended Target Correction T", kDOUBLE, &fExtTgtCorrT},
         {"extcorr.d", "Extended Target Correction D", kDOUBLE, &fExtTgtCorrD},
+        {"tgycorr.p", "Target Y Correction P", kDOUBLE, &fTgtYCorrP},
         {"tgycorr.d", "Target Y Correction D", kDOUBLE, &fTgtYCorrD},
         {0}
     };
