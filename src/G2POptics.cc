@@ -57,6 +57,8 @@ G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0
     fHRSMomentumV.push_back(0.0);
     fFoilZV.clear();
     fFoilZV.push_back(0.0);
+    fM0V.clear();
+    fM0V.push_back(0.0);
     fELossV.clear();
     fELossV.push_back(0.0);
 
@@ -128,6 +130,7 @@ int G2POptics::Process()
     TRCS2FCS(fV5fp_tr, fV5fp_rot);
 
     fHRSMomentum = fHRSMomentumV[kineID];
+    fM0 = fM0V[foilID];
     fELoss = fELossV[foilID];
 
     if (fDebug > 1)
@@ -285,6 +288,16 @@ void G2POptics::SetFoilZ(int n, double *value)
         fFoilZV.push_back(value[i]);
 }
 
+void G2POptics::SetTargetMass(int n, double *value)
+{
+    fNFoil = n;
+
+    fM0V.clear();
+
+    for (int i = 0; i < n; i++)
+        fM0V.push_back(value[i]);
+}
+
 void G2POptics::SetEnergyLoss(int n, double *value)
 {
     fNFoil = n;
@@ -361,7 +374,6 @@ int G2POptics::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
-        {"run.target.mass", "Target Mass", kDOUBLE, &fM0},
         {0}
     };
 

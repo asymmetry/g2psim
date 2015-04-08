@@ -35,6 +35,7 @@ public:
     // Sets
     void SetHRSMomentum(int n, double *value);
     void SetFoilZ(int n, double *value);
+    void SetTargetMass(int n, double *value);
     void SetEnergyLoss(int n, double *value);
 
 protected:
@@ -66,6 +67,7 @@ protected:
     int fNFoil;
     vector<double> fHRSMomentumV;
     vector<double> fFoilZV;
+    vector<double> fM0V;
     vector<double> fELossV;
 
     int fHoleID;
