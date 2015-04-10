@@ -92,10 +92,10 @@ double G2PMaterial::EnergyLoss(double E, double l)
     result += Ionization(EMeV, lcm);
     result += ExterBremsstrahlung(EMeV, lcm);
 
-    if (result > (E - 2 * kMe))
-        result = E - 2 * kMe;
+    if (result > (EMeV - 200 * kMe))
+        result = EMeV - 200 * kMe;
 
-    if ((result < 0) || (E < 2 * kMe))
+    if ((result < 0) || (EMeV < 200 * kMe))
         result = 0;
 
     if (result > 0)
@@ -107,7 +107,7 @@ double G2PMaterial::EnergyLoss(double E, double l)
 double G2PMaterial::MultiScattering(double E, double l)
 {
     // Only for electron
-
+  //return 0;
     double EMeV = E * 1000; // MeV
     double thicknessr = (l * 100) * fDensity / fX0; // l: m -> cm
 

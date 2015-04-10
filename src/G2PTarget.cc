@@ -76,7 +76,7 @@ int G2PTarget::Begin()
     double target_x0 = (fPF * 0.817 + (1 - fPF) * 0.145) / (fPF * 0.817 / 40.8739 + (1 - fPF) * 0.145 / 94.32);
     double target_density = fPF * 0.817 + (1 - fPF) * 0.145;
     double target_ion = 10.0 * fPF * 0.817 * log(53.047) / 17.0305 + 2 * (1 - fPF) * 0.145 * log(41.8) / 4.0026;
-    target_ion = target_ion / (fPF * 0.817 / 17.0305 * 4.0 + (1 - fPF) * 0.145 / 4.0026);
+    target_ion = target_ion / (fPF * 0.817 / 17.0305 * 4.0 + (1 - fPF) * 0.145 / 4.0026)/target_Z;
     target_ion = exp(target_ion);
     double hnup = 28.816 * sqrt(target_density * target_Z / target_A);
     double target_cor = 2.0 * log(target_ion / hnup) + 1;
@@ -123,10 +123,10 @@ int G2PTarget::Begin()
     production->SetMaterial(target);
 
     G2PGeoBase *optics = new G2PGeoTube(min, target_r, carbon_thick);
-    optics->SetOrigin(0, 0, -(target_l - carbon_thick) / 2);
+    optics->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - carbon_thick) / 2);
     optics->SetMaterial(C);
     G2PGeoBase *optics_LHe = new G2PGeoTube(min, target_r, target_l - carbon_thick);
-    optics_LHe->SetOrigin(0, 0, carbon_thick / 2);
+    optics_LHe->SetOrigin(fTgOffsetX, fTgOffsetY,  carbon_thick / 2);
     optics_LHe->SetMaterial(LHe);
 
     G2PGeoBase *dummy = new G2PGeoTube(min, target_r, target_l - 2 * cap_thick);
@@ -142,10 +142,10 @@ int G2PTarget::Begin()
     cell->SetMaterial(PCTFE);
 
     G2PGeoBase *cap_u = new G2PGeoTube(min, target_r, cap_thick);
-    cap_u->SetOrigin(0, 0, -(target_l - cap_thick) / 2);
+    cap_u->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - cap_thick) / 2);
     cap_u->SetMaterial(Al);
     G2PGeoBase *cap_d = new G2PGeoTube(min, target_r, cap_thick);
-    cap_d->SetOrigin(0, 0, (target_l - cap_thick) / 2);
+    cap_d->SetOrigin(fTgOffsetX, fTgOffsetY,  (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
 
     G2PGeoSub *nose = new G2PGeoSub(new G2PGeoTube(min, nose_r, chamber_h));
@@ -286,6 +286,9 @@ int G2PTarget::Configure(EMode mode)
         {"run.target.type", "Run Type", kINT, &fTargetType},
         {"run.target.production.pf", "Packing Fraction", kDOUBLE, &fPF},
         {"field.type", "GEP", kINT, &fFieldType},
+        {"run.targetoffset.x", "Target offset x", kDOUBLE, &fTgOffsetX },
+        {"run.targetoffset.y", "Target offset y", kDOUBLE, &fTgOffsetY },
+        {"run.targetoffset.z", "Target offset z", kDOUBLE, &fTgOffsetZ },
         {0}
     };
 

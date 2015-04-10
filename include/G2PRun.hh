@@ -62,7 +62,7 @@ public:
     void SetHRSMomentum(double P0);
     void SetFieldType(const char *type);
     void SetFieldRatio(double ratio);
-
+    void SetTargetOffset(double x, double y, double z);
 protected:
     int ParseConfigFile();
     int ParseSetting(const char *prefix, const config_setting_t *setting);

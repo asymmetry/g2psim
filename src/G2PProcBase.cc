@@ -33,7 +33,7 @@
 
 #include "G2PProcBase.hh"
 
-G2PProcBase::G2PProcBase() : fStage(kREADY), fDefined(false), fHRSMomentum(0.0), pDrift(NULL)
+G2PProcBase::G2PProcBase() : fStage(kREADY), fDefined(false), fHRSMomentum(0.0), fTargetMass(0.0), pDrift(NULL)
 {
     // Nothing to do
 }
@@ -290,8 +290,9 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
     //     because 1/2 placed before and 1/2 placed after proton
 
     static double kMe = 0.510998918e-3; // GeV
-
-    double qsq = 2 * E * E * (1 - cos(angle));
+    double kMt = fTargetMass;
+    double Eel = E / (1 + (E/kMt)*(1-cos(angle)));
+    double qsq = 2 * E * Eel * (1 - cos(angle));
     double alpha = (1. / 137.);
     double bval = 4. / 3.;
     double msq = 2.6112e-7; // mass electron squared (GeV^2)
@@ -315,10 +316,10 @@ double G2PProcBase:: InterBremsstrahlung(double E, double angle)
 
     double result = Ekin * pow(sample * prob + pow(cut / Ekin, nu), 1. / nu);
 
-    if (result > (E - 2 * kMe))
-        result = E - 2 * kMe;
+    if (result > (E - 200 * kMe))
+        result = E - 200 * kMe;
 
-    if ((result < 0) || (E < 2 * kMe))
+    if ((result < 0) || (E < 200 * kMe))
         result = 0;
 
     return result;
@@ -334,6 +335,7 @@ int G2PProcBase::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {0}
     };
 

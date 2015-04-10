@@ -168,7 +168,7 @@ int G2PFwdHRS::Process()
     eloss = InterBremsstrahlung(E, scatangle);
     fELoss += eloss;
     E -= eloss;
-
+    V5troj[4] = V5troj[4] - eloss / fHRSMomentum;
     TIter next(gG2PGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {

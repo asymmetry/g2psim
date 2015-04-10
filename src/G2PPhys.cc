@@ -80,7 +80,7 @@ G2PPhys::G2PPhys()
     // Only for ROOT I/O
 }
 
-G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fPars(NULL), fNPars(0), pModel(NULL)
+G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fParticleMass(0.0), fPars(NULL), fNPars(0), fHRSMomentum(2.251),  pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
@@ -251,8 +251,87 @@ double G2PPhys::CalXS(const double *V5lab, const double *V5tr, double &scatangle
     if (fDebug > 2)
         Info(here, "%10.3e %10.3e %10.3e", Ebval, Efval, scatangle / kDEG);
 
-    return pModel->GetXS(Ebval, Efval, scatangle);
+    double m = fParticleMass;
+    double QQ = 2.0 * Ebval * Efval * (1- cos(scatangle));
+    double radcor = (9/28.0 - 13/6.0*log(QQ/(m * m)));
+    radcor -=  TDiLog((Efval - Ebval)/Efval);
+    // radcor =0;
+    double bornxs = pModel->GetXS(Ebval, Efval, scatangle);
+    return exp(- 0.0023234* radcor) * bornxs;
 }
+
+double G2PPhys::TDiLog( double x)
+{
+   // The DiLogarithm function
+   // Code translated by R.Brun from CERNLIB DILOG function C332
+
+   const Double_t hf  = 0.5;
+   const Double_t pi  = 3.141592627;
+   const Double_t pi2 = pi*pi;
+   const Double_t pi3 = pi2/3;
+   const Double_t pi6 = pi2/6;
+   const Double_t pi12 = pi2/12;
+   const Double_t c[20] = {0.42996693560813697, 0.40975987533077105,
+     -0.01858843665014592, 0.00145751084062268,-0.00014304184442340,
+      0.00001588415541880,-0.00000190784959387, 0.00000024195180854,
+     -0.00000003193341274, 0.00000000434545063,-0.00000000060578480,
+      0.00000000008612098,-0.00000000001244332, 0.00000000000182256,
+     -0.00000000000027007, 0.00000000000004042,-0.00000000000000610,
+      0.00000000000000093,-0.00000000000000014, 0.00000000000000002};
+
+   Double_t t,h,y,s,a,alfa,b1,b2,b0;
+
+   if (x == 1) {
+      h = pi6;
+   } else if (x == -1) {
+      h = -pi12;
+   } else {
+      t = -x;
+      if (t <= -2) {
+         y = -1/(1+t);
+         s = 1;
+         b1= log(-t);
+         b2= log(1+1/t);
+         a = -pi3+hf*(b1*b1-b2*b2);
+      } else if (t < -1) {
+         y = -1-t;
+         s = -1;
+         a = log(-t);
+         a = -pi6+a*(a+log(1+1/t));
+      } else if (t <= -0.5) {
+         y = -(1+t)/t;
+         s = 1;
+         a = log(-t);
+         a = -pi6+a*(-hf*a+log(1+t));
+      } else if (t < 0) {
+         y = -t/(1+t);
+         s = -1;
+         b1= log(1+t);
+         a = hf*b1*b1;
+      } else if (t <= 1) {
+         y = t;
+         s = 1;
+         a = 0;
+      } else {
+         y = 1/t;
+         s = -1;
+         b1= log(t);
+         a = pi6+hf*b1*b1;
+      }
+      h    = y+y-1;
+      alfa = h+h;
+      b1   = 0;
+      b2   = 0;
+      for (Int_t i=19;i>=0;i--){
+         b0 = c[i] + alfa*b1-b2;
+         b2 = b1;
+         b1 = b0;
+      }
+      h = -(s*(b0-h*b2)+a);
+   }
+   return h;
+}
+
 
 int G2PPhys::Configure(EMode mode)
 {
@@ -267,6 +346,8 @@ int G2PPhys::Configure(EMode mode)
         {"run.target.z", "Target Z", kINT, &fZ},
         {"run.target.a", "Target A", kINT, &fA},
         {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
+        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fParticleMass},
         {0}
     };
 
