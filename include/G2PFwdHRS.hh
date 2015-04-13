@@ -70,7 +70,10 @@ protected:
 
     double fV5fp_tr[5];
     double fV5fp_rot[5];
-
+    double fPlanePosX[30];
+    double fPlanePosY[30];
+    double fDumpFront[2];
+    double fDumpBack[2];
     G2PSieve *pSieve;
     HRSTransBase *pModel;
 

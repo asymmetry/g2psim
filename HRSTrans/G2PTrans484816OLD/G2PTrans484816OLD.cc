@@ -33,20 +33,20 @@ G2PTrans484816OLD::~G2PTrans484816OLD()
     // Nothing to do
 }
 
-int G2PTrans484816OLD::TransLeftHRS(double* pV5)
+int G2PTrans484816OLD::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePosY)
 {
     // Use right arm routines for left arm before left arm is ready
 
     pV5[2] *= -1.;
     pV5[3] *= -1.;
-    int fGoodParticle = TransRightHRS(pV5);
+    int fGoodParticle = TransRightHRS(pV5, PlanePosX, PlanePosY);
     pV5[2] *= -1.;
     pV5[3] *= -1.;
 
     return fGoodParticle;
 }
 
-int G2PTrans484816OLD::TransRightHRS(double* pV5)
+int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* PlanePosY)
 {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
@@ -57,30 +57,40 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5)
     // Target to Septum exit, ep7
     x_test = x_r5p65_484816old_sepex_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_sepex_(vector_jjl, ii) * m2cm;
+    PlanePosX[7] = x_test;
+    PlanePosY[7] = y_test;
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
         return 7;
 
     // Target to Q1 en ep10
     x_test = x_r5p65_484816old_q1ent_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q1ent_(vector_jjl, ii) * m2cm;
+    PlanePosX[10] = x_test;
+    PlanePosY[10] = y_test;
     if (sqrt(x_test * x_test + y_test * y_test) > 15.0)
         return 10;
 
     // Target to Q1 ex, ep13
     x_test = x_r5p65_484816old_q1ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q1ext_(vector_jjl, ii) * m2cm;
+    PlanePosX[13] = x_test;
+    PlanePosY[13] = y_test;
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
         return 13;
 
     // Target to Q2 ex, ep20
     x_test = x_r5p65_484816old_q2ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q2ext_(vector_jjl, ii) * m2cm;
+    PlanePosX[20] = x_test;
+    PlanePosY[20] = y_test;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 20;
 
     // Target to dipole entrance, ep23
     x_test = x_r5p65_484816old_den_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_den_(vector_jjl, ii) * m2cm;
+    PlanePosX[23] = x_test;
+    PlanePosY[23] = y_test;
     if ((x_test < -522.0) || (x_test>-498.1) || fabs(y_test) > 13.244)
         return 23;
 
@@ -88,6 +98,8 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5)
     // trapezoid -46.19cm < x < 46.19cm, |y| < -0.0161 * x + 12.5
     x_test = x_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
+    PlanePosX[24]= x_test;
+    PlanePosY[24] = y_test;
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
         return 24;
 
@@ -95,6 +107,8 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5)
     // circle of radius 30.0 cm
     x_test = x_r5p65_484816old_q3ent_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q3ent_(vector_jjl, ii) * m2cm;
+    PlanePosX[26] = x_test;
+    PlanePosY[26] = y_test;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 26;
 
@@ -102,6 +116,8 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5)
     // circle of radius 30.0 cm
     x_test = x_r5p65_484816old_q3ext_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_q3ext_(vector_jjl, ii) * m2cm;
+    PlanePosX[29] = x_test;
+    PlanePosY[29] = y_test;
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 29;
 
