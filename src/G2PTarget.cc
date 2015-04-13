@@ -92,6 +92,7 @@ int G2PTarget::Begin()
     double min = -1.0e-8;
     double target_r = 13.6144e-3; // 0.536"
     double target_l = 28.2702e-3; // 1.113"
+    double shorttarget_l = 12.954e-3; // 0.51"
     double cap_thick = 0.01778e-3; // 0.7mil
     double carbon_thick = 0.0;
 
@@ -122,6 +123,11 @@ int G2PTarget::Begin()
     G2PGeoBase *production = new G2PGeoTube(min, target_r, target_l - 2 * cap_thick);
     production->SetMaterial(target);
 
+    G2PGeoBase *shortproduction = new G2PGeoTube(min, target_r, shorttarget_l - 2 * cap_thick);
+    shortproduction->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - shorttarget_l) / 2);
+    shortproduction->SetMaterial(target);
+
+
     G2PGeoBase *optics = new G2PGeoTube(min, target_r, carbon_thick);
     optics->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - carbon_thick) / 2);
     optics->SetMaterial(C);
@@ -147,6 +153,10 @@ int G2PTarget::Begin()
     G2PGeoBase *cap_d = new G2PGeoTube(min, target_r, cap_thick);
     cap_d->SetOrigin(fTgOffsetX, fTgOffsetY,  (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
+
+    G2PGeoBase *cap_d_short = new G2PGeoTube(min, target_r, cap_thick);
+    cap_d_short->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l/2.0 - shorttarget_l + cap_thick/2.0));
+    cap_d_short->SetMaterial(Al);
 
     G2PGeoSub *nose = new G2PGeoSub(new G2PGeoTube(min, nose_r, chamber_h));
     nose->SetEulerAngle(0.0, -90.0 * kDEG, 0.0); // vertical
@@ -188,7 +198,12 @@ int G2PTarget::Begin()
         fGeos->Add(cap_u);
         fGeos->Add(cap_d);
         break;
-
+    case 11: // production target
+        fGeos->Add(shortproduction);
+        fGeos->Add(cell);
+        fGeos->Add(cap_u);
+        fGeos->Add(cap_d_short);
+        break;
     case 20: // optics target, 40mil carbon, no LHe
     case 22: // optics target, 125mil carbon, no LHe
         nose->SetMaterial(NULL);

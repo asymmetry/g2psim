@@ -313,6 +313,8 @@ void G2PRun::SetTargetType(const char *type)
     map<string, int> tempmap;
     tempmap["production"] = 10;
     tempmap["prod"] = 10;
+    tempmap["shortproduction"] = 11;
+    tempmap["sprod"] = 11;
     tempmap["optics"] = 20;
     tempmap["optics_C40"] = 20;
     tempmap["optics20"] = 20;
