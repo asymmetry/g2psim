@@ -32,7 +32,7 @@
 
 G2PRec *G2PRec::pG2PRec = NULL;
 
-G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fExtTgtCorrT(0.0), fExtTgtCorrD(0.0), fTgtYCorrP(0.0), fTgtYCorrD(0.0), pSieve(NULL)
+G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fTgtXCorrT(0.0), fTgtXCorrP(0.0), fTgtXCorrD(0.0), fTgtYCorrT(0.0), fTgtYCorrP(0.0), fTgtYCorrD(0.0), fConsCorrT(0.0), fConsCorrP(0.0), fConsCorrD(0.0), pSieve(NULL)
 {
     if (pG2PRec) {
         Error("G2PRec()", "Only one instance of G2PRec allowed.");
@@ -91,7 +91,7 @@ int G2PRec::Process()
 
     frecz_lab = fV5bpm_bpm[4];
 
-    double bpm_temp[5], tp_temp[5];
+    double bpm_temp[5];
     BPM2HCS(fV5bpm_bpm, bpm_temp);
     HCS2TCS(bpm_temp, fV5bpm_tr, fV5bpm_tr[4]);
 
@@ -102,24 +102,21 @@ int G2PRec::Process()
 
     // first iteration
     GetEffBPM(fV5tpmat_tr, fV5bpm_tr, bpm_temp);
-    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
-    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
 
     if (fDebug > 1)
         Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
     // second iteration
     GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
-    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
-    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
 
     if (fDebug > 1)
         Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
     // third iteration
     GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
-    ExtTgtCorr(bpm_temp, fV5tpmat_tr, tp_temp);
-    TgtYCorr(bpm_temp, tp_temp, fV5tpcorr_tr);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
 
     GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
     fV5tpcorr_tr[0] = bpm_temp[0];
@@ -199,22 +196,13 @@ void G2PRec::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5
         Info(here, "effbpm_tr : %10.3e %10.3e", V5bpmeff_tr[0], V5bpmeff_tr[2]);
 }
 
-void G2PRec::ExtTgtCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
+void G2PRec::Correct(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
 {
     V5corr_tr[0] = V5tp_tr[0];
-    V5corr_tr[1] = V5tp_tr[1] + fExtTgtCorrT * V5bpm_tr[0];
+    V5corr_tr[1] = V5tp_tr[1] + fTgtXCorrT * V5bpm_tr[0] + fTgtYCorrT * V5bpm_tr[2] + fConsCorrT;
     V5corr_tr[2] = V5tp_tr[2];
-    V5corr_tr[3] = V5tp_tr[3];
-    V5corr_tr[4] = V5tp_tr[4] + fExtTgtCorrD * V5bpm_tr[0];
-}
-
-void G2PRec::TgtYCorr(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
-{
-    V5corr_tr[0] = V5tp_tr[0];
-    V5corr_tr[1] = V5tp_tr[1];
-    V5corr_tr[2] = V5tp_tr[2];
-    V5corr_tr[3] = V5tp_tr[3] + fTgtYCorrP * V5bpm_tr[2];
-    V5corr_tr[4] = V5tp_tr[4] + fTgtYCorrD * V5bpm_tr[2];
+    V5corr_tr[3] = V5tp_tr[3] + fTgtXCorrP * V5bpm_tr[0] + fTgtYCorrP * V5bpm_tr[2] + fConsCorrP;
+    V5corr_tr[4] = V5tp_tr[4] + fTgtXCorrD * V5bpm_tr[0] + fTgtYCorrD * V5bpm_tr[2] + fConsCorrD;
 }
 
 int G2PRec::Configure(EMode mode)
@@ -234,10 +222,15 @@ int G2PRec::Configure(EMode mode)
         {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
         {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
         {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"extcorr.t", "Extended Target Correction T", kDOUBLE, &fExtTgtCorrT},
-        {"extcorr.d", "Extended Target Correction D", kDOUBLE, &fExtTgtCorrD},
+        {"tgxcorr.t", "Extended Target Correction T", kDOUBLE, &fTgtXCorrT},
+        {"tgxcorr.p", "Extended Target Correction T", kDOUBLE, &fTgtXCorrP},
+        {"tgxcorr.d", "Extended Target Correction D", kDOUBLE, &fTgtXCorrD},
+        {"tgycorr.t", "Target Y Correction T", kDOUBLE, &fTgtYCorrT},
         {"tgycorr.p", "Target Y Correction P", kDOUBLE, &fTgtYCorrP},
         {"tgycorr.d", "Target Y Correction D", kDOUBLE, &fTgtYCorrD},
+        {"concorr.t", "Const Correction T", kDOUBLE, &fConsCorrT},
+        {"concorr.p", "Const Correction P", kDOUBLE, &fConsCorrP},
+        {"concorr.d", "Const Correction D", kDOUBLE, &fConsCorrD},
         {0}
     };
 
