@@ -198,17 +198,23 @@ int G2PFwdHRS::Process()
 
     Drift("forward", V5troj, ztroj, 640.0e-3, V5troj, ztroj);
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
-
+    fDumpFront[0] = x[0];
+    fDumpFront[1] = x[1];
     if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3) || (x[1] < -43.0e-3) || (x[1] > 50.0e-3))
+      {
+        fEndPlane = -2;
         return -1;
-
+      }
     // Local dump back face
     Drift("forward", V5troj, ztroj, 790.0e-3, V5troj, ztroj);
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
-
+    fDumpBack[0] = x[0];
+    fDumpBack[1] = x[1];
     if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3) || (x[1] < -53.0e-3) || (x[1] > 58.0e-3))
+      {
+        fEndPlane = -1;
         return -1;
-
+      }
     // Sieve plane
     static G2PMaterial He("He", 2, 4.0026, 94.32, 0.00016, 41.8, 11.139393);
     l = Drift("forward", V5troj, ztroj, pSieve->GetZ(), fV5sieve_tr);
@@ -291,6 +297,10 @@ void G2PFwdHRS::Clear(Option_t *opt)
     memset(fV5tpproj_tr, 0, sizeof(fV5tpproj_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5fp_rot, 0, sizeof(fV5fp_rot));
+    memset(fPlanePosX, 0, sizeof(fPlanePosX));
+    memset(fPlanePosY, 0, sizeof(fPlanePosY));
+    memset(fDumpFront, 0, sizeof(fDumpFront));
+    memset(fDumpBack, 0, sizeof(fDumpBack));
 
     G2PProcBase::Clear(opt);
 }
@@ -337,7 +347,7 @@ bool G2PFwdHRS::Forward(const double *V5tp_tr, double *V5fp_tr)
 
     if (fHRSAngle > 0) {
         //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
-        fEndPlane = pModel->TransLeftHRS(V5);
+      fEndPlane = pModel->TransLeftHRS(V5, fPlanePosX, fPlanePosY);
 
         if (!fEndPlane)
             isgood = true;
@@ -345,7 +355,7 @@ bool G2PFwdHRS::Forward(const double *V5tp_tr, double *V5fp_tr)
         //pModel->FPCorrLeft(V5tp_tr, V5);
     } else {
         //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
-        fEndPlane = pModel->TransRightHRS(V5);
+        fEndPlane = pModel->TransRightHRS(V5, fPlanePosX, fPlanePosY);
 
         if (!fEndPlane)
             isgood = true;
@@ -429,6 +439,31 @@ int G2PFwdHRS::DefineVariables(EMode mode)
         {"fp.r_t", "Focus Plane T (rot)", kDOUBLE, &fV5fp_rot[1]},
         {"fp.r_y", "Focus Plane Y (rot)", kDOUBLE, &fV5fp_rot[2]},
         {"fp.r_p", "Focus Plane P (rot)", kDOUBLE, &fV5fp_rot[3]},
+        {"dump.en.x", "Local Dump Entrance X", kDOUBLE, &fDumpFront[0]},
+        {"dump.en.y", "Local Dump Entrance Y", kDOUBLE, &fDumpFront[1]},
+        {"dump.ex.x", "Local Dump Exit X", kDOUBLE, &fDumpBack[0]},
+        {"dump.ex.y", "Local Dump Exit Y", kDOUBLE, &fDumpBack[1]},
+        {"septum.en.x", "Sepump Entrance X", kDOUBLE, &fPlanePosX[5]},
+        {"septum.en.y", "Sepump Entrance Y", kDOUBLE, &fPlanePosY[5]},
+        {"septum.ex.x", "Sepump Exit X", kDOUBLE, &fPlanePosX[7]},
+        {"septum.ex.y", "Sepump Exit Y", kDOUBLE, &fPlanePosY[7]},
+        {"q1.en.x", "q1 Entrance X", kDOUBLE, &fPlanePosX[10]},
+        {"q1.en.y", "q1 Entrance Y", kDOUBLE, &fPlanePosY[10]},
+        {"q1.ex.x", "q1 Exit X", kDOUBLE, &fPlanePosX[13]},
+        {"q1.ex.y", "q1 Exit Y", kDOUBLE, &fPlanePosY[13]},
+        {"q2.en.x", "q2 Entrance X", kDOUBLE, &fPlanePosX[17]},
+        {"q2.en.y", "q2 Entrance Y", kDOUBLE, &fPlanePosY[17]},
+        {"q2.ex.x", "q2 Exit X", kDOUBLE, &fPlanePosX[20]},
+        {"q2.ex.y", "q2 Exit Y", kDOUBLE, &fPlanePosY[20]},
+        {"dipole.en.x", "dipole Entrance X", kDOUBLE, &fPlanePosX[23]},
+        {"dipole.en.y", "dipole Entrance Y", kDOUBLE, &fPlanePosY[23]},
+        {"dipole.ex.x", "dipole Exit X", kDOUBLE, &fPlanePosX[24]},
+        {"dipole.ex.y", "dipole Exit Y", kDOUBLE, &fPlanePosY[24]},
+        {"q3.en.x", "q3 Entrance X", kDOUBLE, &fPlanePosX[26]},
+        {"q3.en.y", "q3 Entrance Y", kDOUBLE, &fPlanePosY[26]},
+        {"q3.ex.x", "q3 Exit X", kDOUBLE, &fPlanePosX[29]},
+        {"q3.ex.y", "q3 Exit Y", kDOUBLE, &fPlanePosY[29]},
+
         {0}
     };
 

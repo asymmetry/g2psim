@@ -174,6 +174,7 @@ int G2PEvGen::Process()
     if (fForceElastic)
         fV5react_tr[4] = elasticd;
     else { 
+      
         // no larger than elastic momentum
         if( fDeltaLow > elasticd )
          	return -1;
@@ -184,6 +185,7 @@ int G2PEvGen::Process()
 	  fV5react_tr[4] = tempd;
 	}
 	/*
+	
         //need check when acceptance study
         double tempd = pRand->Uniform(fDeltaLow, fDeltaHigh);
         if (tempd > elasticd)
