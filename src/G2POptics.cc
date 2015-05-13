@@ -41,7 +41,7 @@ G2POptics::G2POptics()
     // Only for ROOT I/O
 }
 
-G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0.0), fM0(0.0), fELoss(0.0), fNFoil(1), fHoleID(-1), pSieve(NULL)
+G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0.0), fM0(0.0), fELoss(0.0), fBPMZ(0), fNFoil(1), fHoleID(-1), pSieve(NULL)
 {
     if (pG2POptics) {
         Error("G2POptics()", "Only one instance of G2POptics allowed.");
@@ -116,7 +116,7 @@ int G2POptics::Process()
     fV5bpm_bpm[1] = tempdata.tb;
     fV5bpm_bpm[2] = tempdata.yb / 1000.0;
     fV5bpm_bpm[3] = tempdata.pb;
-    fV5bpm_bpm[4] = fFoilZV[foilID];
+    fV5bpm_bpm[4] = fBPMZ;
 
     fV5fp_det[0] = tempdata.xf;
     fV5fp_det[1] = atan(tempdata.tf);
@@ -125,6 +125,25 @@ int G2POptics::Process()
     fV5fp_det[4] = 0.0;
 
     BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
+
+    if (fDebug > 1)
+        Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
+
+    fFoilZ = fFoilZV[foilID];
+
+    double x[3] = {fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4]};
+    double p[3] = {fE0 * sin(fV5bpm_lab[1]) *cos(fV5bpm_lab[3]), fE0 * sin(fV5bpm_lab[1]) *sin(fV5bpm_lab[3]), fE0 * cos(fV5bpm_lab[1])};
+
+    if (fV5bpm_lab[4] < fFoilZ)
+        Drift("forward", x, p, fFoilZ, x, p);
+    else if (fV5bpm_lab[4] > fFoilZ)
+        Drift("backward", x, p, fFoilZ, x, p);
+
+    fV5bpm_lab[0] = x[0];
+    fV5bpm_lab[1] = acos(p[2] / fE0);
+    fV5bpm_lab[2] = x[1];
+    fV5bpm_lab[3] = atan2(p[1], p[0]);
+    fV5bpm_lab[4] = x[2];
 
     DCS2TRCS(fV5fp_det, fV5fp_tr);
     TRCS2FCS(fV5fp_tr, fV5fp_rot);
@@ -255,6 +274,7 @@ int G2POptics::Process()
 void G2POptics::Clear(Option_t *opt)
 {
     fHoleID = -1;
+    fFoilZ = 0;
     fbpmz_tr = 0;
 
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
@@ -276,6 +296,11 @@ void G2POptics::SetHRSMomentum(int n, double *value)
 
     for (int i = 0; i < n; i++)
         fHRSMomentumV.push_back(value[i]);
+}
+
+void G2POptics::SetBPMZ(double value)
+{
+    fBPMZ = value;
 }
 
 void G2POptics::SetFoilZ(int n, double *value)
