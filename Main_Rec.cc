@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
     ConfDef debug = {"run.debuglevel", "Debug Level", kINT, &fDebug};
     gG2PRun->GetConfig(&debug, "");
-    ConfDef gep = {"run.gep", "GEP Flag", kINT, &fGEP};
+    ConfDef gep = {"gep", "GEP Flag", kINT, &fGEP};
     gG2PRun->GetConfig(&gep, "");
 
     fRec = new G2PRec();
@@ -359,8 +359,25 @@ int Insert()
             }
 
             t->SetBranchAddress(Form("%srb.bpmavail", arm), &fbpmavail);
-        } else if (fGEP == 1)
+        } else if (fGEP == 1){
             fbpmavail = 1;
+            ConfDef bpmx = {"bpm.x", "GEP tilt x", kFLOAT, &fV5bpm_bpm[0]};
+            ConfDef bpmtheta = {"bpm.th", "GEP tilt theta", kFLOAT, &fV5bpm_bpm[1]};
+            ConfDef bpmy = {"bpm.y", "GEP tilt y", kFLOAT, &fV5bpm_bpm[2]};
+            ConfDef bpmphi = {"bpm.ph", "GEP tilt phi", kFLOAT, &fV5bpm_bpm[3]};
+            gG2PRun->GetConfig(&bpmx, "");
+            gG2PRun->GetConfig(&bpmtheta, "");
+            gG2PRun->GetConfig(&bpmy, "");
+            gG2PRun->GetConfig(&bpmphi, "");
+            fV5bpm_bpm[0]/=1000.;
+            fV5bpm_bpm[1]/=1000.;
+            fV5bpm_bpm[2]/=1000.;
+            fV5bpm_bpm[3]/=1000.;
+            printf("tgt x %f mm\n",fV5bpm_bpm[0]);
+            printf("tgt y %f mm\n",fV5bpm_bpm[2]);
+            printf("tgt theta %f rad\n",fV5bpm_bpm[1]);
+            printf("tgt phi %f rad\n",fV5bpm_bpm[3]);
+        }
 
         t->SetBranchAddress(Form("%s.gold.x", arm), &fV5tpmat_tr[0]);
         t->SetBranchAddress(Form("%s.gold.th", arm), &fV5tpmat_tr[1]);
@@ -415,8 +432,10 @@ int Insert()
 #endif
                 }
             } else {
-                fV5bpm_bpm[0] /= 1000.0;
-                fV5bpm_bpm[2] /= 1000.0;
+                if (fGEP == 0){
+                    fV5bpm_bpm[0] /= 1000.0;
+                    fV5bpm_bpm[2] /= 1000.0;
+                }
                 fV5bpm_bpm[4] = frecz_lab;
 
                 fRec->Process();
@@ -515,8 +534,25 @@ int Create()
         }
 
         t->SetBranchAddress(Form("%srb.bpmavail", arm), &fbpmavail);
-    } else if (fGEP == 1)
+    } else if (fGEP == 1){
         fbpmavail = 1;
+        ConfDef bpmx = {"bpm.x", "GEP tilt x", kFLOAT, &fV5bpm_bpm[0]};
+        ConfDef bpmtheta = {"bpm.th", "GEP tilt theta", kFLOAT, &fV5bpm_bpm[1]};
+        ConfDef bpmy = {"bpm.y", "GEP tilt y", kFLOAT, &fV5bpm_bpm[2]};
+        ConfDef bpmphi = {"bpm.ph", "GEP tilt phi", kFLOAT, &fV5bpm_bpm[3]};
+        gG2PRun->GetConfig(&bpmx, "");
+        gG2PRun->GetConfig(&bpmtheta, "");
+        gG2PRun->GetConfig(&bpmy, "");
+        gG2PRun->GetConfig(&bpmphi, "");
+        fV5bpm_bpm[0]/=1000.;
+        fV5bpm_bpm[1]/=1000.;
+        fV5bpm_bpm[2]/=1000.;
+        fV5bpm_bpm[3]/=1000.;
+        printf("tgt x %f mm\n",fV5bpm_bpm[0]);
+        printf("tgt y %f mm\n",fV5bpm_bpm[2]);
+        printf("tgt theta %f rad\n",fV5bpm_bpm[1]);
+        printf("tgt phi %f rad\n",fV5bpm_bpm[3]);
+    }
 
     t->SetBranchAddress(Form("%s.gold.x", arm), &fV5tpmat_tr[0]);
     t->SetBranchAddress(Form("%s.gold.th", arm), &fV5tpmat_tr[1]);
@@ -568,8 +604,10 @@ int Create()
 #endif
             }
         } else {
-            fV5bpm_bpm[0] /= 1000.0;
-            fV5bpm_bpm[2] /= 1000.0;
+            if (fGEP == 0){
+                fV5bpm_bpm[0] /= 1000.0;
+                fV5bpm_bpm[2] /= 1000.0;
+            }
             fV5bpm_bpm[4] = frecz_lab;
 
             fRec->Process();
