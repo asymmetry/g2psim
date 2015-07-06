@@ -51,10 +51,10 @@ int G2PTrans484816::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     // Target to Septum exit ep7
     x_test = x_l5p77_sex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_sex(vector_jjl, ii) * m2cm;
-    PlanePosX[7] = x_test;
-    PlanePosY[7] = y_test;
+    PlanePosX[9] = x_test;
+    PlanePosY[9] = y_test;
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
-        return 7;
+        return 9;
 
     // Target to Q1 entrance ep10
     x_test = x_l5p77_q1en(vector_jjl, ii) * m2cm;
@@ -68,10 +68,10 @@ int G2PTrans484816::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     x_test = x_l5p77_q1ex(vector_jjl, ii) * m2cm;
     y_test = y_l5p77_q1ex(vector_jjl, ii) * m2cm;
     PlanePosX[13] = x_test;
-    PlanePosY[13] = y_test;
+    PlanePosY[13] = y_test;   
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
-        return 13;
-
+       return 13;
+    
     // Target to Q2 exit ep20
     // 30 deg wrt y, elliptical collimator
     x_test = x_l5p77_q2ex(vector_jjl, ii) * m2mm;

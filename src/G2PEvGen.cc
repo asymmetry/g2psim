@@ -40,7 +40,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PEvGen *G2PEvGen::pG2PEvGen = NULL;
 
-G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamR_lab(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0)
+G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamSlowRx_lab(0.0), fBeamSlowRy_lab(0.0),fBeamFastRx_lab(0.0), fBeamFastRy_lab(0.0),fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0)
 {
     if (pG2PEvGen) {
         Error("G2PEvGen()", "Only one instance of G2PEvGen allowed.");
@@ -81,15 +81,21 @@ int G2PEvGen::Process()
 
     double X_lab, Y_lab;
 
-    if (fBeamR_lab > 1e-5) {
+    if (fBeamSlowRx_lab > 1e-5||fBeamSlowRy_lab > 1e-5) {
         do {
-            X_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
-            Y_lab = pRand->Uniform(-fBeamR_lab, fBeamR_lab);
-        } while (X_lab * X_lab + Y_lab * Y_lab > fBeamR_lab * fBeamR_lab);
+            X_lab = pRand->Uniform(-fBeamSlowRx_lab, fBeamSlowRx_lab);
+            Y_lab = pRand->Uniform(-fBeamSlowRy_lab, fBeamSlowRy_lab);
+        } while (X_lab * X_lab/fBeamSlowRx_lab/fBeamSlowRx_lab + Y_lab * Y_lab/fBeamSlowRy_lab/fBeamSlowRy_lab >1.0);
     } else {
         X_lab = 0.0;
         Y_lab = 0.0;
     }
+    if (fBeamFastRx_lab > 1e-5||fBeamFastRy_lab > 1e-5) {
+     
+      X_lab += pRand->Uniform(-fBeamFastRx_lab, fBeamFastRx_lab);
+      Y_lab += pRand->Uniform(-fBeamFastRy_lab, fBeamFastRy_lab);
+    }
+
 
     X_lab += fBeamX_lab;
     Y_lab += fBeamY_lab;
@@ -174,7 +180,7 @@ int G2PEvGen::Process()
     if (fForceElastic)
         fV5react_tr[4] = elasticd;
     else { 
-      
+      /*
         // no larger than elastic momentum
         if( fDeltaLow > elasticd )
          	return -1;
@@ -184,14 +190,15 @@ int G2PEvGen::Process()
 	  tempd = pRand->Uniform(fDeltaLow, tempd);
 	  fV5react_tr[4] = tempd;
 	}
-	/*
 	
+	*/
+
         //need check when acceptance study
         double tempd = pRand->Uniform(fDeltaLow, fDeltaHigh);
         if (tempd > elasticd)
    	  return -1;
         else fV5react_tr[4] = tempd;
-	*/
+
 
     }
 
@@ -251,13 +258,21 @@ void G2PEvGen::SetReactZ(double low, double high)
     fConfigIsSet.insert((unsigned long) &fReactZHigh_lab);
 }
 
-void G2PEvGen::SetRasterSize(double val)
+void G2PEvGen::SetSlowRasterSize(double sizex, double sizey)
 {
-    fBeamR_lab = val;
-
-    fConfigIsSet.insert((unsigned long) &fBeamR_lab);
+    fBeamSlowRx_lab = sizex;
+    fBeamSlowRy_lab = sizey;
+    fConfigIsSet.insert((unsigned long) &fBeamSlowRx_lab);
+    fConfigIsSet.insert((unsigned long) &fBeamSlowRy_lab);
 }
 
+void G2PEvGen::SetFastRasterSize(double sizex, double sizey)
+{
+    fBeamFastRx_lab = sizex;
+    fBeamFastRy_lab = sizey;
+    fConfigIsSet.insert((unsigned long) &fBeamFastRx_lab);
+    fConfigIsSet.insert((unsigned long) &fBeamFastRy_lab);
+}
 void G2PEvGen::SetTargetTh(double low, double high)
 {
     fTargetThLow_tr = low;
@@ -385,7 +400,10 @@ int G2PEvGen::Configure(EMode mode)
         {"beam.l_z", "Beam Z (set by BPM)", kDOUBLE, &fBeamZ_lab},
         {"beam.tilt.t", "Beam Tilt Angle Theta", kDOUBLE, &fTiltTheta_bpm},
         {"beam.tilt.p", "Beam Tilt Angle Phi", kDOUBLE, &fTiltPhi_bpm},
-        {"raster.size", "Raster Size", kDOUBLE, &fBeamR_lab},
+        {"slowraster.sizex", "Slow Raster Size X", kDOUBLE, &fBeamSlowRx_lab},
+        {"slowraster.sizey", "Slow Raster Size Y", kDOUBLE, &fBeamSlowRy_lab},
+        {"fastraster.sizex", "Fast Raster Size X", kDOUBLE, &fBeamFastRx_lab},
+        {"fastraster.sizey", "Fast Raster Size Y", kDOUBLE, &fBeamFastRy_lab},
         {"react.t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
         {"react.t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
         {"react.p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},

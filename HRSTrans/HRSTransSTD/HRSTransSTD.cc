@@ -31,7 +31,7 @@ HRSTransSTD::~HRSTransSTD()
     // Nothing to do
 }
 
-int HRSTransSTD::TransLeftHRS(double* pV5)
+int HRSTransSTD::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePosY)
 {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
@@ -39,12 +39,14 @@ int HRSTransSTD::TransLeftHRS(double* pV5)
 
     float x_test, y_test;
 
-    // Target to Q1 exit
+    // to Target Q1 exit
     // circle of radius 14.92 cm
     x_test = x_l12p5_q1ex_(vector_jjl, ii) * m2cm;
     y_test = y_l12p5_q1ex_(vector_jjl, ii) * m2cm;
+    PlanePosX[13] = x_test;
+    PlanePosY[13] = y_test;
     if ((x_test * x_test + y_test * y_test) > (14.92 * 14.92))
-        return 5;
+        return 13;
 
     // Target to dipole entrance
     // trapezoid 522.0cm > x > 498.1cm, |y| < -0.1924 * x - 19.24
@@ -57,22 +59,28 @@ int HRSTransSTD::TransLeftHRS(double* pV5)
     // trapezoid -46.19cm < x < 46.19cm, |y| < -0.0161 * x + 12.5
     x_test = x_l12p5_dext_(vector_jjl, ii) * m2cm;
     y_test = y_l12p5_dext_(vector_jjl, ii) * m2cm;
+    PlanePosX[24]= x_test;
+    PlanePosY[24] = y_test;
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
-        return 5;
+        return 24;
 
     // Target to Q3 entrance
     // circle of radius 30.0 cm
     x_test = x_l12p5_q3en_(vector_jjl, ii) * m2cm;
     y_test = y_l12p5_q3en_(vector_jjl, ii) * m2cm;
+    PlanePosX[26] = x_test;
+    PlanePosY[26] = y_test;
     if ((x_test * x_test + y_test * y_test) > (30.0 * 30.0))
-        return 5;
+        return 26;
 
     // Target to Q3 exit
     // circle of radius 30.0 cm
     x_test = x_l12p5_q3ex_(vector_jjl, ii) * m2cm;
     y_test = y_l12p5_q3ex_(vector_jjl, ii) * m2cm;
+    PlanePosX[29] = x_test;
+    PlanePosY[29] = y_test;
     if ((x_test * x_test + y_test * y_test) > (30.0 * 30.0))
-        return 5;
+        return 29;
 
     // If we reach this point, it means the test was successful
     float x_fp = x_l12p5_fp_(vector_jjl, ii);
@@ -90,7 +98,7 @@ int HRSTransSTD::TransLeftHRS(double* pV5)
     return 0;
 }
 
-int HRSTransSTD::TransRightHRS(double* pV5)
+int HRSTransSTD::TransRightHRS(double* pV5, double* PlanePosX, double* PlanePosY)
 {
     float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
     int iii = 5;
@@ -102,8 +110,10 @@ int HRSTransSTD::TransRightHRS(double* pV5)
     // circle of radius 14.92 cm
     x_test = x_r12p5_q1ex_(vector_jjl, ii) * m2cm;
     y_test = y_r12p5_q1ex_(vector_jjl, ii) * m2cm;
+    PlanePosX[13] = x_test;
+    PlanePosY[13] = y_test;
     if ((x_test * x_test + y_test * y_test) > (14.92 * 14.92))
-        return 5;
+        return 13;
 
     // Target to dipole entrance
     // trapezoid 522.0cm > x > 498.1cm, |y| < -0.1924 * x - 19.24
@@ -116,23 +126,29 @@ int HRSTransSTD::TransRightHRS(double* pV5)
     // trapezoid -46.19cm < x < 46.19cm, |y| < -0.0161 * x + 12.5
     x_test = x_r12p5_dext_(vector_jjl, ii) * m2cm;
     y_test = y_r12p5_dext_(vector_jjl, ii) * m2cm;
+    PlanePosX[24]= x_test;
+    PlanePosY[24] = y_test;
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
-        return 5;
+        return 24;
 
     // Target to Q3 entrance
     // circle of radius 30.0 cm
 
     x_test = x_r12p5_q3en_(vector_jjl, ii) * m2cm;
     y_test = y_r12p5_q3en_(vector_jjl, ii) * m2cm;
+    PlanePosX[26] = x_test;
+    PlanePosY[26] = y_test;
     if ((x_test * x_test + y_test * y_test) > (30.0 * 30.0))
-        return 5;
+        return 26;
 
     // Target to Q3 exit
     // circle of radius 30.0 cm
     x_test = x_r12p5_q3ex_(vector_jjl, ii) * m2cm;
     y_test = y_r12p5_q3ex_(vector_jjl, ii) * m2cm;
+    PlanePosX[29] = x_test;
+    PlanePosY[29] = y_test;
     if ((x_test * x_test + y_test * y_test) > (30.0 * 30.0))
-        return 5;
+        return 29;
 
     // If we reach this point, it means the test was successful
     float x_fp = x_r12p5_fp_(vector_jjl, ii);
