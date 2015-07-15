@@ -47,7 +47,7 @@ G2PBwdHRS::G2PBwdHRS()
     //Only for ROOT I/O
 }
 
-G2PBwdHRS::G2PBwdHRS(const char *name) : fFieldRatio(0.0), fSetting(1), frecz_lab(0.0), pSieve(NULL), pModel(NULL)
+G2PBwdHRS::G2PBwdHRS(const char *name) : fE(0.0), fFieldRatio(0.0), fSetting(1), frecz_lab(0.0), pSieve(NULL), pModel(NULL)
 {
     if (pG2PBwdHRS) {
         Error("G2PBwdHRS()", "Only one instance of G2PBwdHRS allowed.");
@@ -132,11 +132,13 @@ int G2PBwdHRS::Process()
         Info(here, " ");
 
     if (gG2PVars->FindSuffix("bpm.x") && gG2PVars->FindSuffix("fp.x")) {
+        fE = gG2PVars->FindSuffix("phys.e")->GetValue();
+
         fV5bpm_tr[0] = gG2PVars->FindSuffix("bpm.x")->GetValue();
         fV5bpm_tr[1] = gG2PVars->FindSuffix("bpm.t")->GetValue();
         fV5bpm_tr[2] = gG2PVars->FindSuffix("bpm.y")->GetValue();
         fV5bpm_tr[3] = gG2PVars->FindSuffix("bpm.p")->GetValue();
-        fV5bpm_tr[4] = gG2PVars->FindSuffix("bpm.z")->GetValue();
+        fbpmz_tr = gG2PVars->FindSuffix("bpm.z")->GetValue();
 
         fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
         fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
@@ -144,6 +146,18 @@ int G2PBwdHRS::Process()
         fV5fp_tr[3] = gG2PVars->FindSuffix("fp.p")->GetValue();
     } else
         return -1;
+
+    fV5bpm_tr[4] = fE / fHRSMomentum - 1;
+
+    int save = fDebug;
+    fDebug = 0;
+
+    if (fbpmz_tr < 0.0)
+        Drift("forward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr); // Drift to target plane (z_tr = 0)
+    else
+        Drift("backward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr);
+
+    fDebug = save;
 
     fV5fp_tr[4] = fV5bpm_tr[0];
 
@@ -192,6 +206,8 @@ int G2PBwdHRS::Process()
 
 void G2PBwdHRS::Clear(Option_t *opt)
 {
+    fbpmz_tr = 0;
+
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5tpsnake_tr, 0, sizeof(fV5tpsnake_tr));

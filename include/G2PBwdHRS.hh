@@ -47,6 +47,7 @@ protected:
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
+    double fE;
     double fFieldRatio;
 
     int fSetting;
@@ -55,6 +56,7 @@ protected:
     double frecz_lab;
 
     double fV5bpm_tr[5];
+    double fbpmz_tr;
 
     double fV5fp_tr[5];
 

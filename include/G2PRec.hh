@@ -60,6 +60,7 @@ protected:
 
     double fV5bpm_bpm[5];
     double fV5bpm_tr[5];
+    double fbpmz_tr;
 
     double fV5tpmat_tr[5];
     double fV5tpcorr_tr[5];

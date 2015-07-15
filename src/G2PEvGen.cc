@@ -173,26 +173,19 @@ int G2PEvGen::Process()
 
     if (fForceElastic)
         fV5react_tr[4] = elasticd;
-    else { 
-      
-        // no larger than elastic momentum
-        if( fDeltaLow > elasticd )
-         	return -1;
-	else {
-	  double tempd = fDeltaHigh;
-	  if(fDeltaHigh > elasticd)  tempd = elasticd; 
-	  tempd = pRand->Uniform(fDeltaLow, tempd);
-	  fV5react_tr[4] = tempd;
-	}
-	/*
-	
-        //need check when acceptance study
-        double tempd = pRand->Uniform(fDeltaLow, fDeltaHigh);
-        if (tempd > elasticd)
-   	  return -1;
-        else fV5react_tr[4] = tempd;
-	*/
+    else {
 
+        // no larger than elastic momentum
+        if (fDeltaLow > elasticd)
+            return -1;
+        else {
+            double tempd = fDeltaHigh;
+
+            if (fDeltaHigh > elasticd)  tempd = elasticd;
+
+            tempd = pRand->Uniform(fDeltaLow, tempd);
+            fV5react_tr[4] = tempd;
+        }
     }
 
     if (freactz_tr < 0.0)

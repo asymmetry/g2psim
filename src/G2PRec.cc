@@ -93,7 +93,19 @@ int G2PRec::Process()
 
     double bpm_temp[5];
     BPM2HCS(fV5bpm_bpm, bpm_temp);
-    HCS2TCS(bpm_temp, fV5bpm_tr, fV5bpm_tr[4]);
+    HCS2TCS(bpm_temp, fV5bpm_tr, fbpmz_tr);
+
+    fV5bpm_tr[4] = fE0 / fHRSMomentum - 1;
+
+    int save = fDebug;
+    fDebug = 0;
+
+    if (fbpmz_tr < 0.0)
+        Drift("forward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr); // Drift to target plane (z_tr = 0)
+    else
+        Drift("backward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr);
+
+    fDebug = save;
 
     if (fDebug > 1) {
         Info(here, "bpm_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_tr[0], fV5bpm_tr[1], fV5bpm_tr[2], fV5bpm_tr[3], fV5bpm_tr[4]);
@@ -164,6 +176,8 @@ int G2PRec::Process()
 
 void G2PRec::Clear(Option_t * /*option*/)
 {
+    fbpmz_tr = 0.0;
+
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));

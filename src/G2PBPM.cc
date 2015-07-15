@@ -89,9 +89,33 @@ int G2PBPM::Process()
     } else
         return -1;
 
-    GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
+    //GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
 
-    BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
+    //BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
+
+    double x[3] = {fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4]};
+    double p[3] = {fE0 * sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), fE0 * sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), fE0 * cos(fV5beam_lab[1])};
+
+    int save = fDebug;
+    fDebug = 0;
+
+    if (x[2] < 0.0)
+        Drift("forward", x, p, 0.0, x, p);
+    else
+        Drift("backward", x, p, 0.0, x, p);
+
+    fDebug = save;
+
+    if (fabs(p[2] - fE0) < 1e-8) {
+        fV5bpm_lab[1] = acos(1.0); // pb[2] may be a bit larger than fBeam Energy because of round-off error
+    } else
+        fV5bpm_lab[1] = acos(p[2] / fE0);
+
+    fV5bpm_lab[0] = x[0];
+    fV5bpm_lab[2] = x[1];
+    fV5bpm_lab[3] = atan2(p[1], p[0]);
+    fV5bpm_lab[4] = x[2];
+
     HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
 
     if (fDebug > 1)
@@ -102,6 +126,8 @@ int G2PBPM::Process()
 
 void G2PBPM::Clear(Option_t *opt)
 {
+    fbpmz_tr = 0;
+
     memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));

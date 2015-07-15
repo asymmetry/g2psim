@@ -200,21 +200,23 @@ int G2PFwdHRS::Process()
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
     fDumpFront[0] = x[0];
     fDumpFront[1] = x[1];
-    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3) || (x[1] < -43.0e-3) || (x[1] > 50.0e-3))
-      {
+
+    if ((fabs(x[0]) < 46.0e-3) || (fabs(x[0]) > 87.0e-3) || (x[1] < -43.0e-3) || (x[1] > 50.0e-3)) {
         fEndPlane = -2;
         return -1;
-      }
+    }
+
     // Local dump back face
     Drift("forward", V5troj, ztroj, 790.0e-3, V5troj, ztroj);
     TCS2HCS(V5troj[0], V5troj[2], ztroj, x[0], x[1], x[2]);
     fDumpBack[0] = x[0];
     fDumpBack[1] = x[1];
-    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3) || (x[1] < -53.0e-3) || (x[1] > 58.0e-3))
-      {
+
+    if ((fabs(x[0]) < 58.0e-3) || (fabs(x[0]) > 106.0e-3) || (x[1] < -53.0e-3) || (x[1] > 58.0e-3)) {
         fEndPlane = -1;
         return -1;
-      }
+    }
+
     // Sieve plane
     static G2PMaterial He("He", 2, 4.0026, 94.32, 0.00016, 41.8, 11.139393);
     l = Drift("forward", V5troj, ztroj, pSieve->GetZ(), fV5sieve_tr);
@@ -346,21 +348,15 @@ bool G2PFwdHRS::Forward(const double *V5tp_tr, double *V5fp_tr)
     bool isgood = false;
 
     if (fHRSAngle > 0) {
-        //pModel->CoordsCorrection(fHRSAngle-fModelAngle, V5);
-      fEndPlane = pModel->TransLeftHRS(V5, fPlanePosX, fPlanePosY);
+        fEndPlane = pModel->TransLeftHRS(V5, fPlanePosX, fPlanePosY);
 
         if (!fEndPlane)
             isgood = true;
-
-        //pModel->FPCorrLeft(V5tp_tr, V5);
     } else {
-        //pModel->CoordsCorrection(fHRSAngle+fModelAngle, V5);
         fEndPlane = pModel->TransRightHRS(V5, fPlanePosX, fPlanePosY);
 
         if (!fEndPlane)
             isgood = true;
-
-        //pModel->FPCorrRight(V5tp_tr, V5);
     }
 
     V5fp_tr[0] = V5[0];
