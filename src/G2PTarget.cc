@@ -76,7 +76,7 @@ int G2PTarget::Begin()
     double target_x0 = (fPF * 0.817 + (1 - fPF) * 0.145) / (fPF * 0.817 / 40.8739 + (1 - fPF) * 0.145 / 94.32);
     double target_density = fPF * 0.817 + (1 - fPF) * 0.145;
     double target_ion = 10.0 * fPF * 0.817 * log(53.047) / 17.0305 + 2 * (1 - fPF) * 0.145 * log(41.8) / 4.0026;
-    target_ion = target_ion / (fPF * 0.817 / 17.0305 * 4.0 + (1 - fPF) * 0.145 / 4.0026)/target_Z;
+    target_ion = target_ion / (fPF * 0.817 / 17.0305 * 4.0 + (1 - fPF) * 0.145 / 4.0026) / target_Z;
     target_ion = exp(target_ion);
     double hnup = 28.816 * sqrt(target_density * target_Z / target_A);
     double target_cor = 2.0 * log(target_ion / hnup) + 1;
@@ -151,11 +151,11 @@ int G2PTarget::Begin()
     cap_u->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - cap_thick) / 2);
     cap_u->SetMaterial(Al);
     G2PGeoBase *cap_d = new G2PGeoTube(min, target_r, cap_thick);
-    cap_d->SetOrigin(fTgOffsetX, fTgOffsetY,  (target_l - cap_thick) / 2);
+    cap_d->SetOrigin(fTgOffsetX, fTgOffsetY, (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
 
     G2PGeoBase *cap_d_short = new G2PGeoTube(min, target_r, cap_thick);
-    cap_d_short->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l/2.0 - shorttarget_l + cap_thick/2.0));
+    cap_d_short->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l / 2.0 - shorttarget_l + cap_thick / 2.0));
     cap_d_short->SetMaterial(Al);
 
     G2PGeoSub *nose = new G2PGeoSub(new G2PGeoTube(min, nose_r, chamber_h));
@@ -198,12 +198,14 @@ int G2PTarget::Begin()
         fGeos->Add(cap_u);
         fGeos->Add(cap_d);
         break;
+
     case 11: // production target
         fGeos->Add(shortproduction);
         fGeos->Add(cell);
         fGeos->Add(cap_u);
         fGeos->Add(cap_d_short);
         break;
+
     case 20: // optics target, 40mil carbon, no LHe
     case 22: // optics target, 125mil carbon, no LHe
         nose->SetMaterial(NULL);

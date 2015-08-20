@@ -40,7 +40,7 @@
 
 G2PBPM *G2PBPM::pG2PBPM = NULL;
 
-G2PBPM::G2PBPM() : fE0(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(0.0), fBPMBZ(0.0), fBPMARes(0.0), fBPMBRes(0.0), pfGetBPM(NULL)
+G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(0.0), fBPMBZ(0.0), fBPMARes(0.0), fBPMBRes(0.0), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");
@@ -89,33 +89,9 @@ int G2PBPM::Process()
     } else
         return -1;
 
-    //GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
+    GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
 
-    //BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
-
-    double x[3] = {fV5beam_lab[0], fV5beam_lab[2], fV5beam_lab[4]};
-    double p[3] = {fE0 * sin(fV5beam_lab[1]) *cos(fV5beam_lab[3]), fE0 * sin(fV5beam_lab[1]) *sin(fV5beam_lab[3]), fE0 * cos(fV5beam_lab[1])};
-
-    int save = fDebug;
-    fDebug = 0;
-
-    if (x[2] < 0.0)
-        Drift("forward", x, p, 0.0, x, p);
-    else
-        Drift("backward", x, p, 0.0, x, p);
-
-    fDebug = save;
-
-    if (fabs(p[2] - fE0) < 1e-8) {
-        fV5bpm_lab[1] = acos(1.0); // pb[2] may be a bit larger than fBeam Energy because of round-off error
-    } else
-        fV5bpm_lab[1] = acos(p[2] / fE0);
-
-    fV5bpm_lab[0] = x[0];
-    fV5bpm_lab[2] = x[1];
-    fV5bpm_lab[3] = atan2(p[1], p[0]);
-    fV5bpm_lab[4] = x[2];
-
+    BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
     HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
 
     if (fDebug > 1)
@@ -126,8 +102,6 @@ int G2PBPM::Process()
 
 void G2PBPM::Clear(Option_t *opt)
 {
-    fbpmz_tr = 0;
-
     memset(fV5beam_lab, 0, sizeof(fV5beam_lab));
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
     memset(fV5bpm_lab, 0, sizeof(fV5bpm_lab));
@@ -162,56 +136,60 @@ void G2PBPM::SetBPMPos()
 
     int orbit = 0;
 
-    if (fabs(fFieldRatio - 0.5) < 1e-4) {
-        if (fabs(fE0 - 2.254) < 0.2) {
-            orbit = 5;
-            fBPMAX = 0.7e-3;
-            fBPMAY = -98e-3;
-            fBPMAZ = -955.9e-3;
-            fBPMBX = 1e-3;
-            fBPMBY = -69.5e-3;
-            fBPMBZ = -691.9e-3;
-            pfGetBPM = &G2PBPM::GetBPM5;
-        } else if (fabs(fE0 - 1.706) < 0.2) {
-            orbit = 4;
-            fBPMAX = 0.3e-3;
-            fBPMAY = -130.8e-3;
-            fBPMAZ = -959.4e-3;
-            fBPMBX = 0.4e-3;
-            fBPMBY = -93.1e-3;
-            fBPMBZ = -696.5e-3;
-            pfGetBPM = &G2PBPM::GetBPM4;
-        } else if (fabs(fE0 - 1.159) < 0.2) {
-            orbit = 1;
-            fBPMAX = 1e-3;
-            fBPMAY = -196.1e-3;
-            fBPMAZ = -964.1e-3;
-            fBPMBX = 1.2e-3;
-            fBPMBY = -143.4e-3;
-            fBPMBZ = -703.8e-3;
-            pfGetBPM = &G2PBPM::GetBPM1;
+    if (fabs(fFieldType - 10) < 0.5) {
+        if (fabs(fFieldRatio - 0.5) < 1e-4) {
+            if (fabs(fE0 - 2.254) < 0.2) {
+                orbit = 5;
+                fBPMAX = 0.7e-3;
+                fBPMAY = -98e-3;
+                fBPMAZ = -955.9e-3;
+                fBPMBX = 1e-3;
+                fBPMBY = -69.5e-3;
+                fBPMBZ = -691.9e-3;
+                pfGetBPM = &G2PBPM::GetBPM5;
+            } else if (fabs(fE0 - 1.706) < 0.2) {
+                orbit = 4;
+                fBPMAX = 0.3e-3;
+                fBPMAY = -130.8e-3;
+                fBPMAZ = -959.4e-3;
+                fBPMBX = 0.4e-3;
+                fBPMBY = -93.1e-3;
+                fBPMBZ = -696.5e-3;
+                pfGetBPM = &G2PBPM::GetBPM4;
+            } else if (fabs(fE0 - 1.159) < 0.2) {
+                orbit = 1;
+                fBPMAX = 1e-3;
+                fBPMAY = -196.1e-3;
+                fBPMAZ = -964.1e-3;
+                fBPMBX = 1.2e-3;
+                fBPMBY = -143.4e-3;
+                fBPMBZ = -703.8e-3;
+                pfGetBPM = &G2PBPM::GetBPM1;
+            }
+        } else if (fabs(fFieldRatio - 1.0) < 1e-4) {
+            if (fabs(fE0 - 2.254) < 0.2) {
+                orbit = 7;
+                fBPMAX = 0.1e-3;
+                fBPMAY = -80e-3;
+                fBPMAZ = -955.2e-3;
+                fBPMBX = 0.4e-3;
+                fBPMBY = -55.6e-3;
+                fBPMBZ = -690.7e-3;
+                pfGetBPM = &G2PBPM::GetBPM7;
+            } else if (fabs(fE0 - 3.355) < 0.2) {
+                orbit = 9;
+                fBPMAX = 0;
+                fBPMAY = -53.6e-3;
+                fBPMAZ = -954.6e-3;
+                fBPMBX = 0.6e-3;
+                fBPMBY = -37e-3;
+                fBPMBZ = -689.6e-3;
+                pfGetBPM = &G2PBPM::GetBPM9;
+            }
         }
-    } else if (fabs(fFieldRatio - 1.0) < 1e-4) {
-        if (fabs(fE0 - 2.254) < 0.2) {
-            orbit = 7;
-            fBPMAX = 0.1e-3;
-            fBPMAY = -80e-3;
-            fBPMAZ = -955.2e-3;
-            fBPMBX = 0.4e-3;
-            fBPMBY = -55.6e-3;
-            fBPMBZ = -690.7e-3;
-            pfGetBPM = &G2PBPM::GetBPM7;
-        } else if (fabs(fE0 - 3.355) < 0.2) {
-            orbit = 9;
-            fBPMAX = 0;
-            fBPMAY = -53.6e-3;
-            fBPMAZ = -954.6e-3;
-            fBPMBX = 0.6e-3;
-            fBPMBY = -37e-3;
-            fBPMBZ = -689.6e-3;
-            pfGetBPM = &G2PBPM::GetBPM9;
-        }
-    } else {
+    }
+
+    if (orbit == 0) {
         fBPMAZ = -957.6e-3;
         fBPMBZ = -692.0e-3;
         pfGetBPM = &G2PBPM::GetBPM0;
@@ -345,6 +323,7 @@ int G2PBPM::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
+        {"field.type", "Field Type", kDOUBLE, &fFieldType},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"a.res", "BPM A Resolution", kDOUBLE, &fBPMARes},
         {"b.res", "BPM B Resolution", kDOUBLE, &fBPMBRes},

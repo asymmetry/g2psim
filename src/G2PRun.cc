@@ -73,9 +73,9 @@ G2PRun::G2PRun() : fConfigFile(NULL)
     fConfig["run.hrs.p0"] = 2.24949;
     fConfig["field.type"] = 10;
     fConfig["field.ratio"] = 0.0;
-    fConfig["run.targetoffset.x"]=0;
-    fConfig["run.targetoffset.y"]=0;
-    fConfig["run.targetoffset.z"]=0;
+    fConfig["run.targetoffset.x"] = 0;
+    fConfig["run.targetoffset.y"] = 0;
+    fConfig["run.targetoffset.z"] = 0;
     fConfigIsSet.clear();
 
     gG2PRun = this;
@@ -402,7 +402,7 @@ void G2PRun::SetTargetOffset(double x, double y, double z)
 {
     fConfig["run.targetoffset.x"] = (double) x;
     fConfig["run.targetoffset.y"] = (double) y;
-    fConfig["run.targetoffset.z"] = (double) z;  
+    fConfig["run.targetoffset.z"] = (double) z;
 
     fConfigIsSet.insert("run.targetoffset.x");
     fConfigIsSet.insert("run.targetoffset.y");

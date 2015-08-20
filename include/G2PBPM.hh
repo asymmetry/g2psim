@@ -57,6 +57,7 @@ protected:
     virtual void MakePrefix();
 
     double fE0;
+    double fFieldType;
     double fFieldRatio;
 
     double fBPMAX, fBPMAY;

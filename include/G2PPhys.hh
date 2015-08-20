@@ -68,7 +68,7 @@ protected:
     G2PPhys(); // Only for ROOT I/O
 
     double CalXS(const double *V5lab, const double *V5tr, double &scatangle);
-    double TDiLog( double x);
+    double TDiLog(double x);
     virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
