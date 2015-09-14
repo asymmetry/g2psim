@@ -8,7 +8,7 @@
 # System Info
 MYOS        := $(shell uname)
 ARCH        := $(shell uname -m)
-SHELL       := /bin/sh
+SHELL       := /bin/bash
 
 ###############################################################################
 # Project Info (only objs)

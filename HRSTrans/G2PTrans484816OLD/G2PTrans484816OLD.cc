@@ -33,7 +33,7 @@ G2PTrans484816OLD::~G2PTrans484816OLD()
     // Nothing to do
 }
 
-int G2PTrans484816OLD::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePosY)
+int G2PTrans484816OLD::TransLeftHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
     // Use right arm routines for left arm before left arm is ready
 
@@ -46,9 +46,9 @@ int G2PTrans484816OLD::TransLeftHRS(double* pV5, double* PlanePosX, double* Plan
     return fGoodParticle;
 }
 
-int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* PlanePosY)
+int G2PTrans484816OLD::TransRightHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int iii = 5;
     int *ii = &iii;
 
@@ -59,6 +59,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_sepex_(vector_jjl, ii) * m2cm;
     PlanePosX[7] = x_test;
     PlanePosY[7] = y_test;
+
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
         return 7;
 
@@ -67,6 +68,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_q1ent_(vector_jjl, ii) * m2cm;
     PlanePosX[10] = x_test;
     PlanePosY[10] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 15.0)
         return 10;
 
@@ -75,6 +77,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_q1ext_(vector_jjl, ii) * m2cm;
     PlanePosX[13] = x_test;
     PlanePosY[13] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
         return 13;
 
@@ -83,6 +86,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_q2ext_(vector_jjl, ii) * m2cm;
     PlanePosX[20] = x_test;
     PlanePosY[20] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 20;
 
@@ -91,15 +95,17 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_den_(vector_jjl, ii) * m2cm;
     PlanePosX[23] = x_test;
     PlanePosY[23] = y_test;
-    if ((x_test < -522.0) || (x_test>-498.1) || fabs(y_test) > 13.244)
+
+    if ((x_test < -522.0) || (x_test > -498.1) || fabs(y_test) > 13.244)
         return 23;
 
     // Target to dipole exit, ep24
     // trapezoid -46.19cm < x < 46.19cm, |y| < -0.0161 * x + 12.5
     x_test = x_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
     y_test = y_r5p65_484816old_dex_(vector_jjl, ii) * m2cm;
-    PlanePosX[24]= x_test;
+    PlanePosX[24] = x_test;
     PlanePosY[24] = y_test;
+
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
         return 24;
 
@@ -109,6 +115,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_q3ent_(vector_jjl, ii) * m2cm;
     PlanePosX[26] = x_test;
     PlanePosY[26] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 26;
 
@@ -118,6 +125,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     y_test = y_r5p65_484816old_q3ext_(vector_jjl, ii) * m2cm;
     PlanePosX[29] = x_test;
     PlanePosY[29] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 29;
 
@@ -137,7 +145,7 @@ int G2PTrans484816OLD::TransRightHRS(double* pV5, double* PlanePosX, double* Pla
     return 0;
 }
 
-void G2PTrans484816OLD::ReconLeftHRS(double* pV5)
+void G2PTrans484816OLD::ReconLeftHRS(double *pV5)
 {
     // In order to call right arm routines, need to flip y, phi
     pV5[2] *= -1;
@@ -147,9 +155,9 @@ void G2PTrans484816OLD::ReconLeftHRS(double* pV5)
     pV5[3] *= -1;
 }
 
-void G2PTrans484816OLD::ReconRightHRS(double* pV5)
+void G2PTrans484816OLD::ReconRightHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int iii = 5;
     int *ii = &iii;
 
@@ -169,7 +177,7 @@ void G2PTrans484816OLD::ReconRightHRS(double* pV5)
     pV5[4] = (double) delta_rec;
 }
 
-void G2PTrans484816OLD::FPCorrLeft(const double* V5tg, double* V5fp)
+void G2PTrans484816OLD::FPCorrLeft(const double *V5tg, double *V5fp)
 {
 #if CORRECTION_ORDER == 0
     V5fp[0] += (1.99661e-03);
@@ -178,14 +186,14 @@ void G2PTrans484816OLD::FPCorrLeft(const double* V5tg, double* V5fp)
     V5fp[3] += (-1.48819e-02);
 #endif
 #if CORRECTION_ORDER == 1
-    V5fp[0] += (1.99661e-03)+(-9.66663e-02) * V5tg[0]+(6.91887e-02) * V5tg[1]+(0.00000e+00) * V5tg[2]+(0.00000e+00) * V5tg[3]+(8.91337e-02) * V5tg[4];
-    V5fp[1] += (6.63373e-04)+(-1.38583e-02) * V5tg[0]+(1.64156e-02) * V5tg[1]+(0.00000e+00) * V5tg[2]+(0.00000e+00) * V5tg[3]+(5.99316e-02) * V5tg[4];
-    V5fp[2] += (-2.41468e-02)+(0.00000e+00) * V5tg[0]+(0.00000e+00) * V5tg[1]+(4.53343e-02) * V5tg[2]+(1.95084e-02) * V5tg[3]+(-4.89414e-02) * V5tg[4];
-    V5fp[3] += (-1.48819e-02)+(0.00000e+00) * V5tg[0]+(0.00000e+00) * V5tg[1]+(-3.48790e-02) * V5tg[2]+(1.72860e-03) * V5tg[3]+(8.37687e-02) * V5tg[4];
+    V5fp[0] += (1.99661e-03) + (-9.66663e-02) * V5tg[0] + (6.91887e-02) * V5tg[1] + (0.00000e+00) * V5tg[2] + (0.00000e+00) * V5tg[3] + (8.91337e-02) * V5tg[4];
+    V5fp[1] += (6.63373e-04) + (-1.38583e-02) * V5tg[0] + (1.64156e-02) * V5tg[1] + (0.00000e+00) * V5tg[2] + (0.00000e+00) * V5tg[3] + (5.99316e-02) * V5tg[4];
+    V5fp[2] += (-2.41468e-02) + (0.00000e+00) * V5tg[0] + (0.00000e+00) * V5tg[1] + (4.53343e-02) * V5tg[2] + (1.95084e-02) * V5tg[3] + (-4.89414e-02) * V5tg[4];
+    V5fp[3] += (-1.48819e-02) + (0.00000e+00) * V5tg[0] + (0.00000e+00) * V5tg[1] + (-3.48790e-02) * V5tg[2] + (1.72860e-03) * V5tg[3] + (8.37687e-02) * V5tg[4];
 #endif
 }
 
-void G2PTrans484816OLD::FPCorrRight(const double* V5tg, double* V5fp)
+void G2PTrans484816OLD::FPCorrRight(const double *V5tg, double *V5fp)
 {
     // Nothing to do
 }

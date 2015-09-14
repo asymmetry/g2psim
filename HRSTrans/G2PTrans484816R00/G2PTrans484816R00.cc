@@ -32,9 +32,9 @@ G2PTrans484816R00::~G2PTrans484816R00()
     // Nothing to do
 }
 
-int G2PTrans484816R00::TransLeftHRS(double* pV5)
+int G2PTrans484816R00::TransLeftHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5;
 
     // Succesfully reach focus plane
@@ -53,7 +53,7 @@ int G2PTrans484816R00::TransLeftHRS(double* pV5)
     return 0;
 }
 
-int G2PTrans484816R00::TransRightHRS(double* pV5)
+int G2PTrans484816R00::TransRightHRS(double *pV5)
 {
     // Use right arm routines for left arm before left arm is ready
 
@@ -66,9 +66,9 @@ int G2PTrans484816R00::TransRightHRS(double* pV5)
     return fGoodParticle;
 }
 
-void G2PTrans484816R00::ReconLeftHRS(double* pV5)
+void G2PTrans484816R00::ReconLeftHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5;
 
     vector_jjl[1] = vector_jjl[1] - txfit_l5p77(vector_jjl, ii);
@@ -87,7 +87,7 @@ void G2PTrans484816R00::ReconLeftHRS(double* pV5)
     pV5[4] = (double) delta_rec;
 }
 
-void G2PTrans484816R00::ReconRightHRS(double* pV5)
+void G2PTrans484816R00::ReconRightHRS(double *pV5)
 {
     // In order to call left arm routines, need to flip y, phi
     pV5[2] *= -1;
@@ -97,7 +97,7 @@ void G2PTrans484816R00::ReconRightHRS(double* pV5)
     pV5[3] *= -1;
 }
 
-void G2PTrans484816R00::FPCorrLeft(const double* V5tg, double* V5fp)
+void G2PTrans484816R00::FPCorrLeft(const double *V5tg, double *V5fp)
 {
 #if CORRECTION_ORDER == 0
     V5fp[0] += (-5.91123e-03);
@@ -116,14 +116,14 @@ void G2PTrans484816R00::FPCorrLeft(const double* V5tg, double* V5fp)
     //    V5fp[2] += (-1.78416e-02)+(0.00000e+00) * V5tg[0]+(9.90491e-03) * V5tg[1]+(-9.49504e-02) * V5tg[2]+(2.52013e-02) * V5tg[3]+(1.00987e+01) * V5tg[4];
     //    V5fp[3] += (-9.72573e-03)+(0.00000e+00) * V5tg[0]+(4.58426e-02) * V5tg[1]+(-9.99992e-02) * V5tg[2]+(1.55553e-02) * V5tg[3]+(1.00998e+01) * V5tg[4];
 
-    V5fp[0] += (-1.50612e-03)+(0.00000e+00) * V5tg[0]+(-2.72655e-02) * V5tg[1]+(-9.48539e-03) * V5tg[2]+(-7.25842e-02) * V5tg[3]+(8.58806e+00) * V5tg[4];
-    V5fp[1] += (1.35279e-03)+(0.00000e+00) * V5tg[0]+(2.23088e-02) * V5tg[1]+(1.21097e-02) * V5tg[2]+(-2.95080e-03) * V5tg[3]+(6.71229e-01) * V5tg[4];
-    V5fp[2] += (-1.83197e-02)+(0.00000e+00) * V5tg[0]+(9.00558e-03) * V5tg[1]+(-5.02045e-02) * V5tg[2]+(-2.48741e-03) * V5tg[3]+(9.62701e+00) * V5tg[4];
-    V5fp[3] += (-1.01323e-02)+(0.00000e+00) * V5tg[0]+(4.51187e-02) * V5tg[1]+(-9.76615e-02) * V5tg[2]+(-7.28207e-03) * V5tg[3]+(9.69853e+00) * V5tg[4];
+    V5fp[0] += (-1.50612e-03) + (0.00000e+00) * V5tg[0] + (-2.72655e-02) * V5tg[1] + (-9.48539e-03) * V5tg[2] + (-7.25842e-02) * V5tg[3] + (8.58806e+00) * V5tg[4];
+    V5fp[1] += (1.35279e-03) + (0.00000e+00) * V5tg[0] + (2.23088e-02) * V5tg[1] + (1.21097e-02) * V5tg[2] + (-2.95080e-03) * V5tg[3] + (6.71229e-01) * V5tg[4];
+    V5fp[2] += (-1.83197e-02) + (0.00000e+00) * V5tg[0] + (9.00558e-03) * V5tg[1] + (-5.02045e-02) * V5tg[2] + (-2.48741e-03) * V5tg[3] + (9.62701e+00) * V5tg[4];
+    V5fp[3] += (-1.01323e-02) + (0.00000e+00) * V5tg[0] + (4.51187e-02) * V5tg[1] + (-9.76615e-02) * V5tg[2] + (-7.28207e-03) * V5tg[3] + (9.69853e+00) * V5tg[4];
 #endif
 }
 
-void G2PTrans484816R00::FPCorrRight(const double* V5tg, double* V5fp)
+void G2PTrans484816R00::FPCorrRight(const double *V5tg, double *V5fp)
 {
     // Nothing to do
 }

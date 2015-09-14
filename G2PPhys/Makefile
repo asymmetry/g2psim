@@ -8,7 +8,7 @@
 # System Info
 MYOS        := $(shell uname)
 ARCH        := $(shell uname -m)
-SHELL       := /bin/sh
+SHELL       := /bin/bash
 
 ###############################################################################
 # Project Info
@@ -139,7 +139,7 @@ lib: $(LIBFILE).$(VERSION)
 
 ###############################################################################
 $(LIBFILE).$(VERSION): $(MODELLIST) $(OBJS)
-	@$(AR) cru $(LIBFILE).$(VERSION) $(OBJS) $(SUBOBJS) # &>/dev/null
+	@$(AR) cr $(LIBFILE).$(VERSION) $(OBJS) $(SUBOBJS) # &>/dev/null
 	@ln -sf $(LIBFILE).$(VERSION) $(LIBFILE)
 	@echo "Linking $(LIBFILE) ...... done!"
 

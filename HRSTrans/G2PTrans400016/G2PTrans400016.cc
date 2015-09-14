@@ -32,9 +32,9 @@ G2PTrans400016::~G2PTrans400016()
     // Nothing to do
 }
 
-int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePosY)
+int G2PTrans400016::TransLeftHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5;
 
     float x_test, y_test;
@@ -44,6 +44,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_sen(vector_jjl, ii) * m2cm;
     PlanePosX[5] = x_test;
     PlanePosY[5] = y_test;
+
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
         return 5;
 
@@ -52,6 +53,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_sex(vector_jjl, ii) * m2cm;
     PlanePosX[7] = x_test;
     PlanePosY[7] = y_test;
+
     if (fabs(x_test) < 8.4 || fabs(x_test) > 38.8 || fabs(y_test) > 9.7)
         return 7;
 
@@ -60,6 +62,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_q1en(vector_jjl, ii) * m2cm;
     PlanePosX[10] = x_test;
     PlanePosY[10] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
         return 10;
 
@@ -68,6 +71,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_q1ex(vector_jjl, ii) * m2cm;
     PlanePosX[13] = x_test;
     PlanePosY[13] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 14.92)
         return 13;
 
@@ -77,7 +81,8 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_q2ex(vector_jjl, ii) * m2mm;
     PlanePosX[20] = x_test;
     PlanePosY[20] = y_test;
-    if (((x_test - 1316.53) / 259.81 / cos(30. * kDEG))*((x_test - 1316.53) / 259.81 / cos(30. * kDEG))+(y_test / 300.)*(y_test / 300.) > 1)
+
+    if (((x_test - 1316.53) / 259.81 / cos(30. * kDEG)) * ((x_test - 1316.53) / 259.81 / cos(30. * kDEG)) + (y_test / 300.) * (y_test / 300.) > 1)
         return 20;
 
     // Target to dipole entrance, ep23
@@ -93,6 +98,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_dex(vector_jjl, ii) * m2cm;
     PlanePosX[24] = x_test;
     PlanePosY[24] = y_test;
+
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
         return 24;
 
@@ -102,6 +108,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_q3en(vector_jjl, ii) * m2cm;
     PlanePosX[26] = x_test;
     PlanePosY[26] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 26;
 
@@ -111,6 +118,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     y_test = y_l5p77_q3ex(vector_jjl, ii) * m2cm;
     PlanePosX[29] = x_test;
     PlanePosY[29] = y_test;
+
     if (sqrt(x_test * x_test + y_test * y_test) > 30.0)
         return 29;
 
@@ -130,7 +138,7 @@ int G2PTrans400016::TransLeftHRS(double* pV5, double* PlanePosX, double* PlanePo
     return 0;
 }
 
-int G2PTrans400016::TransRightHRS(double* pV5, double* PlanePosX, double* PlanePosY)
+int G2PTrans400016::TransRightHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
     // Use left arm routines for right arm before right arm is ready
 
@@ -143,9 +151,9 @@ int G2PTrans400016::TransRightHRS(double* pV5, double* PlanePosX, double* PlaneP
     return fGoodParticle;
 }
 
-void G2PTrans400016::ReconLeftHRS(double* pV5)
+void G2PTrans400016::ReconLeftHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5;
 
     vector_jjl[1] = vector_jjl[1] - txfit_l5p77(vector_jjl, ii);
@@ -164,7 +172,7 @@ void G2PTrans400016::ReconLeftHRS(double* pV5)
     pV5[4] = (double) delta_rec;
 }
 
-void G2PTrans400016::ReconRightHRS(double* pV5)
+void G2PTrans400016::ReconRightHRS(double *pV5)
 {
     // In order to call left arm routines, need to flip y, phi
     pV5[2] *= -1;

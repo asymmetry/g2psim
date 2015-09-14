@@ -29,7 +29,7 @@ GDHTransLargeX0::~GDHTransLargeX0()
     // Nothing to do
 }
 
-int GDHTransLargeX0::TransLeftHRS(double* pV5)
+int GDHTransLargeX0::TransLeftHRS(double *pV5)
 {
     // Use right arm routines for left arm before left arm is ready
 
@@ -42,9 +42,9 @@ int GDHTransLargeX0::TransLeftHRS(double* pV5)
     return fGoodParticle;
 }
 
-int GDHTransLargeX0::TransRightHRS(double* pV5)
+int GDHTransLargeX0::TransRightHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     float x_test, y_test;
     int ii = 5;
 
@@ -87,30 +87,35 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     // Target to Septum entrance, -14.06cm < x < -8.87cm, -9.9cm < y < 9.9cm
     x_test = x_sr6_largex0_ep3_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_ep3_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -14.06) || (x_test > -8.87) || (y_test < y_min) || (y_test > y_max))
         return 5;
 
     // Target to 1/4 Septum, -17.12cm < x < -10.89cm, -9.9cm < y < 9.9cm
     x_test = x_sr6_largex0_ep4_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_ep4_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -17.12) || (x_test > -10.89) || (y_test < y_min) || (y_test > y_max))
         return 5;
 
     // Target to 1/2 Septum, -21.29cm < x < -13.54cm, -9.9cm < y < 9.9cm
     x_test = x_sr6_largex0_ep5_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_ep5_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -21.29) || (x_test > -13.54) || (y_test < y_min) || (y_test > y_max))
         return 5;
 
     // Target to 3/4 Septum, -26.84cm < x < -16.97cm, -9.9cm < y < 9.9cm
     x_test = x_sr6_largex0_ep6_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_ep6_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -26.84) || (x_test > -16.97) || (y_test < y_min) || (y_test > y_max))
         return 5;
 
     // Target to Septum exit, -34.05cm < x < -21.56cm, -9.9cm < y < 9.9cm
     x_test = x_sr6_largex0_ep7_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_ep7_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -34.05) || (x_test > -21.56) || (y_test < y_min) || (y_test > y_max))
         return 5;
 
@@ -119,6 +124,7 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     x_test = x_sr6_largex0_q1ex_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_q1ex_(vector_jjl, &ii) * m2cm;
     x_test = x_test + 0.9;
+
     if ((x_test * x_test + y_test * y_test) > (14.92 * 14.92))
         return 5;
 
@@ -126,6 +132,7 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     // trapezoid, -522.0cm < x < -498.1cm, |y| < -0.1924 * x - 19.24
     x_test = x_sr6_largex0_dent_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_dent_(vector_jjl, &ii) * m2cm;
+
     if ((x_test < -522.0) || (x_test > -498.1) || fabs(y_test) > fabs(-0.1924 * x_test - 19.24))
         return 5;
 
@@ -133,6 +140,7 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     // trapezoid, -46.19cm < x < 46.19cm, |y| < -0.0161 * x + 12.5
     x_test = x_sr6_largex0_dext_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_dext_(vector_jjl, &ii) * m2cm;
+
     if (fabs(x_test) > 46.19 || fabs(y_test) > fabs(-0.0161 * x_test + 12.5))
         return 5;
 
@@ -140,6 +148,7 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     // circle of radius 30.0 cm
     x_test = x_sr6_largex0_q3en_(vector_jjl, &ii) * m2cm;
     y_test = y_sr6_largex0_q3en_(vector_jjl, &ii) * m2cm;
+
     if ((x_test * x_test + y_test * y_test) > (30.0 * 30.0))
         return 5;
 
@@ -149,6 +158,7 @@ int GDHTransLargeX0::TransRightHRS(double* pV5)
     y_test = y_sr6_largex0_q3ex_(vector_jjl, &ii) * m2cm;
     x_test = (x_test - 1.0) / (28.0);
     y_test = y_test / (30.0);
+
     if ((x_test * x_test + y_test * y_test) > 1.0)
         return 5;
 
@@ -173,7 +183,7 @@ void GDHTransLargeX0::ReconLeftHRS(double *pV5)
     // I am using the right arm routines to do the reconstruction, JJL did not provide routines for the 2nd version of GDH experiment
 
     // In order to call right arm routines, need to flip y, phi
-    float vector_jjl[] = {pV5[0], pV5[1], -pV5[2], -pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(-pV5[2]), float(-pV5[3]), float(pV5[4])};
     int ii = 5, jj = 1;
 
     // Orthogonalize theta as JJL asks
@@ -194,7 +204,7 @@ void GDHTransLargeX0::ReconLeftHRS(double *pV5)
 
 void GDHTransLargeX0::ReconRightHRS(double *pV5)
 {
-    float vector_jjl[] = {pV5[0], pV5[1], pV5[2], pV5[3], pV5[4]};
+    float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5, jj = 1;
 
     // the detail of input vector in focus plane is
