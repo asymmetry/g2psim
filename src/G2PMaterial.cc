@@ -107,7 +107,7 @@ double G2PMaterial::EnergyLoss(double E, double l)
 double G2PMaterial::MultiScattering(double E, double l)
 {
     // Only for electron
-    //return 0;
+
     double EMeV = E * 1000; // MeV
     double thicknessr = (l * 100) * fDensity / fX0; // l: m -> cm
 

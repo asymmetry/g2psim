@@ -27,7 +27,9 @@
 #include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
-
+#include "GDHTransLargeX0/GDHTransLargeX0.hh"
+#include "GDHTransSTD/GDHTransSTD.hh"
+#include "HRSTransSTD/HRSTransSTD.hh"
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
 #include "G2PGeoBase.hh"
@@ -67,6 +69,9 @@ G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(1), fSieveOn(false), fHoleID(-
     model_map["484816"] = 1;
     model_map["403216"] = 2;
     model_map["400016"] = 3;
+    model_map["gdhLargeX0"] = 4;
+    model_map["gdhSTD"] = 5;
+    model_map["hrsSTD"] = 6;
     model_map["484816OLD"] = 11;
     model_map["400016OLD"] = 21;
 
@@ -111,6 +116,18 @@ int G2PFwdHRS::Begin()
 
     case 3:
         pModel = new G2PTrans400016();
+        break;
+
+    case 4:
+        pModel = new GDHTransLargeX0();
+        break;
+
+    case 5:
+        pModel = new GDHTransSTD();
+        break;
+
+    case 6:
+        pModel = new HRSTransSTD();
         break;
 
     case 11:
@@ -248,6 +265,7 @@ int G2PFwdHRS::Process()
     E -= eloss;
     fTa += (l * 100) / (Kapton.GetRadLen() / Kapton.GetDensity());
 
+    /*
     // HRS exit
     static G2PMaterial Ti("Ti", 22, 47.867, 16.16, 4.54, 230.0, 4.4450);
     l = 0.01016e-2;
@@ -256,6 +274,7 @@ int G2PFwdHRS::Process()
     fELoss += eloss;
     E -= eloss;
     fTa += (l * 100) / (Ti.GetRadLen() / Ti.GetDensity());
+    */
 
     if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTa);
@@ -441,8 +460,8 @@ int G2PFwdHRS::DefineVariables(EMode mode)
         {"dump.ex.y", "Local Dump Exit Y", kDOUBLE, &fDumpBack[1]},
         {"septum.en.x", "Sepump Entrance X", kDOUBLE, &fPlanePosX[5]},
         {"septum.en.y", "Sepump Entrance Y", kDOUBLE, &fPlanePosY[5]},
-        {"septum.ex.x", "Sepump Exit X", kDOUBLE, &fPlanePosX[7]},
-        {"septum.ex.y", "Sepump Exit Y", kDOUBLE, &fPlanePosY[7]},
+        {"septum.ex.x", "Sepump Exit X", kDOUBLE, &fPlanePosX[9]},
+        {"septum.ex.y", "Sepump Exit Y", kDOUBLE, &fPlanePosY[9]},
         {"q1.en.x", "q1 Entrance X", kDOUBLE, &fPlanePosX[10]},
         {"q1.en.y", "q1 Entrance Y", kDOUBLE, &fPlanePosY[10]},
         {"q1.ex.x", "q1 Exit X", kDOUBLE, &fPlanePosX[13]},

@@ -14,15 +14,16 @@
 
 #include "HRSTransBase.hh"
 
-class GDHTransLargeX0 : public HRSTransBase {
+class GDHTransLargeX0 : public HRSTransBase
+{
 public:
     GDHTransLargeX0();
     ~GDHTransLargeX0();
 
-    int TransLeftHRS(double* vector_jjl);
-    int TransRightHRS(double* vector_jjl);
-    void ReconLeftHRS(double* vector_jjl);
-    void ReconRightHRS(double* vector_jjl);
+    int TransLeftHRS(double *vector_jjl, double *PlanePosX, double *PlanePosY);
+    int TransRightHRS(double *vector_jjl, double *PlanePosX, double *PlanePosY);
+    void ReconLeftHRS(double *vector_jjl);
+    void ReconRightHRS(double *vector_jjl);
 };
 
 #endif
