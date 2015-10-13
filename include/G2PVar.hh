@@ -63,7 +63,7 @@ protected:
     VarType fType;
 
 private:
-    ClassDef(G2PVar, 0)
+    ClassDef(G2PVar, 1)
 };
 
 #endif

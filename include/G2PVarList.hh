@@ -50,7 +50,7 @@ public:
     int RemoveRegexp(const char *expr);
 
 private:
-    ClassDef(G2PVarList, 2)
+    ClassDef(G2PVarList, 1)
 };
 
 #endif

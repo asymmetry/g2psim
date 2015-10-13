@@ -25,17 +25,22 @@ public:
     virtual int Begin();
     virtual int End();
 
+    //Gets
+
+    //Sets
+    void SetOffset(double x, double y, double z);
+    void SetPackingFraction(double pf);
+
 protected:
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
 
-    int fFieldType;
     int fTargetType;
+    int fFieldType;
 
     double fPF;
-    double fTgOffsetX;
-    double fTgOffsetY;
-    double fTgOffsetZ;
+    double fTgOffset[3];
+
     G2PAppList *fMats;
     G2PAppList *fGeos;
 

@@ -30,8 +30,10 @@
 
 static double kDEG = 3.14159265358979323846 / 180.0;
 
-G2PTarget::G2PTarget()
+G2PTarget::G2PTarget() : fTargetType(10), fFieldType(0), fPF(0.55)
 {
+    memset(fTgOffset, 0, sizeof(fTgOffset));
+
     fMats = new G2PAppList();
     fGeos = new G2PAppList();
 }
@@ -112,7 +114,7 @@ int G2PTarget::Begin()
     double chamber_h = 1.3589; // 53.5"
     double window_beam_thick;
 
-    if ((fFieldType == 11) || (fFieldType == 20)) // longitudinal or gep
+    if ((fFieldType == 0) || (fFieldType == 11) || (fFieldType == 20)) // longitudinal or gep
         window_beam_thick = 0.508e-3; // 20mil
     else
         window_beam_thick = 0.1778e-3; // 7mil
@@ -121,41 +123,45 @@ int G2PTarget::Begin()
 
     // Define Geometries
     G2PGeoBase *production = new G2PGeoTube(min, target_r, target_l - 2 * cap_thick);
+    production->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2]);
     production->SetMaterial(target);
 
     G2PGeoBase *shortproduction = new G2PGeoTube(min, target_r, shorttarget_l - 2 * cap_thick);
-    shortproduction->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - shorttarget_l) / 2);
+    shortproduction->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] - (target_l - shorttarget_l) / 2);
     shortproduction->SetMaterial(target);
 
-
     G2PGeoBase *optics = new G2PGeoTube(min, target_r, carbon_thick);
-    optics->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - carbon_thick) / 2);
+    optics->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] - (target_l - carbon_thick) / 2);
     optics->SetMaterial(C);
     G2PGeoBase *optics_LHe = new G2PGeoTube(min, target_r, target_l - carbon_thick);
-    optics_LHe->SetOrigin(fTgOffsetX, fTgOffsetY,  carbon_thick / 2);
+    optics_LHe->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] + carbon_thick / 2);
     optics_LHe->SetMaterial(LHe);
 
     G2PGeoBase *dummy = new G2PGeoTube(min, target_r, target_l - 2 * cap_thick);
+    dummy->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2]);
     dummy->SetMaterial(LHe);
 
     G2PGeoBase *dummy_nocap = new G2PGeoTube(min, target_r, target_l);
+    dummy_nocap->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2]);
     dummy_nocap->SetMaterial(LHe);
 
     G2PGeoBase *empty = new G2PGeoTube(min, target_r + cell_thick, target_l);
+    empty->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2]);
     empty->SetMaterial(LHe);
 
     G2PGeoBase *cell = new G2PGeoTube(target_r, target_r + cell_thick, target_l);
+    cell->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2]);
     cell->SetMaterial(PCTFE);
 
     G2PGeoBase *cap_u = new G2PGeoTube(min, target_r, cap_thick);
-    cap_u->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l - cap_thick) / 2);
+    cap_u->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] - (target_l - cap_thick) / 2);
     cap_u->SetMaterial(Al);
     G2PGeoBase *cap_d = new G2PGeoTube(min, target_r, cap_thick);
-    cap_d->SetOrigin(fTgOffsetX, fTgOffsetY, (target_l - cap_thick) / 2);
+    cap_d->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] + (target_l - cap_thick) / 2);
     cap_d->SetMaterial(Al);
 
     G2PGeoBase *cap_d_short = new G2PGeoTube(min, target_r, cap_thick);
-    cap_d_short->SetOrigin(fTgOffsetX, fTgOffsetY,  -(target_l / 2.0 - shorttarget_l + cap_thick / 2.0));
+    cap_d_short->SetOrigin(fTgOffset[0], fTgOffset[1], fTgOffset[2] - (target_l / 2.0 - shorttarget_l + cap_thick / 2.0));
     cap_d_short->SetMaterial(Al);
 
     G2PGeoSub *nose = new G2PGeoSub(new G2PGeoTube(min, nose_r, chamber_h));
@@ -253,8 +259,6 @@ int G2PTarget::Begin()
     TIter mat_iter(fMats);
 
     while (G2PMaterial *mat = static_cast<G2PMaterial *>(mat_iter())) {
-        gG2PApps->Add(mat);
-
         if (mat->Begin() != 0)
             return (fStatus = kBEGINERROR);
     }
@@ -262,8 +266,6 @@ int G2PTarget::Begin()
     TIter geo_iter(fGeos);
 
     while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
-        gG2PApps->Add(geo);
-
         if (!geo->IsInit())
             if (geo->Begin() != 0)
                 return (fStatus = kBEGINERROR);
@@ -291,6 +293,24 @@ int G2PTarget::End()
     return (G2PAppBase::End());
 }
 
+void G2PTarget::SetOffset(double x, double y, double z)
+{
+    fTgOffset[0] = x;
+    fTgOffset[1] = y;
+    fTgOffset[2] = z;
+
+    fConfigIsSet.insert((unsigned long) &fTgOffset[0]);
+    fConfigIsSet.insert((unsigned long) &fTgOffset[1]);
+    fConfigIsSet.insert((unsigned long) &fTgOffset[2]);
+}
+
+void G2PTarget::SetPackingFraction(double pf)
+{
+    fPF = pf;
+
+    fConfigIsSet.insert((unsigned long) &fPF);
+}
+
 int G2PTarget::Configure(EMode mode)
 {
     if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
@@ -301,11 +321,11 @@ int G2PTarget::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.target.type", "Run Type", kINT, &fTargetType},
-        {"run.target.production.pf", "Packing Fraction", kDOUBLE, &fPF},
         {"field.type", "GEP", kINT, &fFieldType},
-        {"run.targetoffset.x", "Target offset x", kDOUBLE, &fTgOffsetX },
-        {"run.targetoffset.y", "Target offset y", kDOUBLE, &fTgOffsetY },
-        {"run.targetoffset.z", "Target offset z", kDOUBLE, &fTgOffsetZ },
+        {"run.target.pf", "Packing Fraction", kDOUBLE, &fPF},
+        {"run.target.offset.x", "Target offset x", kDOUBLE, &fTgOffset[0]},
+        {"run.target.offset.y", "Target offset y", kDOUBLE, &fTgOffset[1]},
+        {"run.target.offset.z", "Target offset z", kDOUBLE, &fTgOffset[2]},
         {0}
     };
 

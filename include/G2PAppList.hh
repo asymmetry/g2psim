@@ -26,7 +26,7 @@ public:
     G2PAppList *FindList(int priority) const;
 
 private:
-    ClassDef(G2PAppList, 2)
+    ClassDef(G2PAppList, 1)
 };
 
 #endif

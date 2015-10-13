@@ -40,7 +40,7 @@ public:
 
     // Sets
     void SetOrigin(double x, double y, double z);
-    void SetEulerAngle(double alpha, double beta, double gamma);
+    void SetAngle(double alpha, double beta, double gamma);
     void SetZRange(double zmin, double zmax);
     void SetRRange(double rmin, double rmax);
     void SetZStep(double stepz);

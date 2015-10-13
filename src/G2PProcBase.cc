@@ -339,7 +339,10 @@ int G2PProcBase::Configure(EMode mode)
         {0}
     };
 
-    return ConfigureFromList(confs, mode);
+    if (ConfigureFromList(confs, mode) != 0)
+        return -1;
+
+    return 0;
 }
 
 int G2PProcBase::DefineVariables(EMode mode)

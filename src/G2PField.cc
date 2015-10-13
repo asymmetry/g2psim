@@ -200,7 +200,7 @@ void G2PField::SetRStep(double stepr)
     fConfigIsSet.insert((unsigned long) &fRStep);
 }
 
-void G2PField::SetEulerAngle(double alpha, double beta, double gamma)
+void G2PField::SetAngle(double alpha, double beta, double gamma)
 {
     // The Euler angle is defined using Z-X'-Z" convention
 

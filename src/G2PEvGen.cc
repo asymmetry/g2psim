@@ -92,11 +92,9 @@ int G2PEvGen::Process()
     }
 
     if (fBeamFastRx_lab > 1e-5 || fBeamFastRy_lab > 1e-5) {
-
         X_lab += pRand->Uniform(-fBeamFastRx_lab, fBeamFastRx_lab);
         Y_lab += pRand->Uniform(-fBeamFastRy_lab, fBeamFastRy_lab);
     }
-
 
     X_lab += fBeamX_lab;
     Y_lab += fBeamY_lab;
@@ -393,10 +391,10 @@ int G2PEvGen::Configure(EMode mode)
         {"beam.l_z", "Beam Z (set by BPM)", kDOUBLE, &fBeamZ_lab},
         {"beam.tilt.t", "Beam Tilt Angle Theta", kDOUBLE, &fTiltTheta_bpm},
         {"beam.tilt.p", "Beam Tilt Angle Phi", kDOUBLE, &fTiltPhi_bpm},
-        {"slowraster.sizex", "Slow Raster Size X", kDOUBLE, &fBeamSlowRx_lab},
-        {"slowraster.sizey", "Slow Raster Size Y", kDOUBLE, &fBeamSlowRy_lab},
-        {"fastraster.sizex", "Fast Raster Size X", kDOUBLE, &fBeamFastRx_lab},
-        {"fastraster.sizey", "Fast Raster Size Y", kDOUBLE, &fBeamFastRy_lab},
+        {"raster.slow.x", "Slow Raster Size X", kDOUBLE, &fBeamSlowRx_lab},
+        {"raster.slow.y", "Slow Raster Size Y", kDOUBLE, &fBeamSlowRy_lab},
+        {"raster.fast.x", "Fast Raster Size X", kDOUBLE, &fBeamFastRx_lab},
+        {"raster.fast.y", "Fast Raster Size Y", kDOUBLE, &fBeamFastRy_lab},
         {"react.t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
         {"react.t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
         {"react.p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},

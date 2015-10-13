@@ -416,7 +416,7 @@ int G2PDrift::Configure(EMode mode)
         {"run.particle.mass", "Particle Mass", kDOUBLE, &fM0},
         {"run.particle.charge", "Particle Charge", kDOUBLE, &fQ},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"step", "Step Size", kDOUBLE, &fStep},
+        {"step.size", "Step Size", kDOUBLE, &fStep},
         {"step.limit", "Step Size Limit", kDOUBLE, &fStepLimit},
         {"error.low", "Lower limit", kDOUBLE, &fErrLoLimit},
         {"error.high", "Upper Limit", kDOUBLE, &fErrHiLimit},
