@@ -74,7 +74,7 @@ OBJS        := $(patsubst $(SRCDIR)/%.o,$(OBJDIR)/%.o,$(OBJS))
 DEPS        := $(subst .o,.d,$(OBJS))
 
 SUBOBJS     := $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
-	       $(wildcard $(n)/*.[CcFf])))
+               $(wildcard $(n)/*.[CcFf])))
 SUBOBJS     += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\
                $(wildcard $(n)/*.[Cc][Cc])))
 SUBOBJS     += $(foreach n,$(MODELLIST),$(patsubst $(n)%,$(n)/$(OBJDIR)%,\

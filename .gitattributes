@@ -1,0 +1,4 @@
+*.C linguist-language=C++
+HRSTrans/*/*.h linguist-language=C++
+g2psim_linkdef.h linguist-language=C++
+HRSTrans/GDH*/* linguist-vendored=true

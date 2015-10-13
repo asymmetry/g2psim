@@ -116,7 +116,7 @@ endif
 
 # Analyzer
 ifdef ANALYZER
-    ANADIRS := $(wildcard $(addprefix $(ANALYZER)/,src hana_decode hana_scaler))
+    ANADIRS := $(wildcard $(addprefix $(ANALYZER)/, src hana_decode hana_scaler))
     ANACFLAGS := $(addprefix -I,$(ANADIRS))
     ANALIBS := -L$(ANALYZER) -lHallA -ldc -lscaler
 endif
