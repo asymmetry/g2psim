@@ -33,11 +33,13 @@ public:
 
     // Gets
     virtual G2PMaterial *GetMaterial() const;
+    int GetNUsed() const;
 
     // Sets
     virtual void SetOrigin(double x, double y, double z);
     virtual void SetEulerAngle(double alpha, double beta, double gamma);
     virtual void SetMaterial(G2PMaterial *mat);
+    void SetNUsed(int n);
 
 protected:
     G2PGeoBase(); // No instance allowed for this class
@@ -57,6 +59,8 @@ protected:
     virtual bool IsInside(double x, double y, double z) = 0;
 
     virtual void MakePrefix();
+
+    int fNUsed;
 
     bool fTranslation;
     double fOrigin[3];

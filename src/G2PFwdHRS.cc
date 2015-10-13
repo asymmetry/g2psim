@@ -52,7 +52,7 @@ G2PFwdHRS *G2PFwdHRS::pG2PFwdHRS = NULL;
 
 G2PFwdHRS::G2PFwdHRS()
 {
-    //Only for ROOT I/O
+    // Only for ROOT I/O
 }
 
 G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(1), fSieveOn(false), fHoleID(-1), fEndPlane(0), pSieve(NULL), pModel(NULL)
@@ -478,7 +478,6 @@ int G2PFwdHRS::DefineVariables(EMode mode)
         {"q3.en.y", "q3 Entrance Y", kDOUBLE, &fPlanePosY[26]},
         {"q3.ex.x", "q3 Exit X", kDOUBLE, &fPlanePosX[29]},
         {"q3.ex.y", "q3 Exit Y", kDOUBLE, &fPlanePosY[29]},
-
         {0}
     };
 

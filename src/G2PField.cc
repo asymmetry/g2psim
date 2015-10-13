@@ -514,8 +514,13 @@ void G2PField::SaveRootFile()
                 field->Fill();
             }
 
-    file->Write();
+    field->Write();
+    delete field;
+    field = NULL;
+
     file->Close();
+    delete file;
+    file = NULL;
 }
 #endif
 

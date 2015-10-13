@@ -129,13 +129,12 @@ int main(int argc, char **argv)
 
     G2PRun *run = new G2PRun();
     run->SetConfigFile(fConfig);
+    run->SetNEvent(fN);
 
     if (fDebug != 1)
         run->SetDebugLevel(fDebug);
 
-    G2PSim *sim = new G2PSim();
-    sim->SetNEvent(fN);
-    sim->SetOutFile(fOutput);
+    G2PSim *sim = new G2PSim(fOutput);
 
     if (fBPM) {
         G2PBPM *bpm = new G2PBPM();

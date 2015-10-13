@@ -35,7 +35,7 @@ G2PTarget::G2PTarget() : fTargetType(10), fFieldType(0), fPF(0.55)
     memset(fTgOffset, 0, sizeof(fTgOffset));
 
     fMats = new G2PAppList();
-    fGeos = new G2PAppList();
+    fGeos = gG2PGeos;
 }
 
 G2PTarget::~G2PTarget()
@@ -45,21 +45,14 @@ G2PTarget::~G2PTarget()
     while (G2PAppBase *aobj = static_cast<G2PAppBase *>(mat_iter())) {
         if (aobj != NULL) {
             fMats->Remove(aobj);
-            aobj->Delete();
+            delete aobj;
         }
     }
 
-    TIter geo_iter(fGeos);
-
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(geo_iter())) {
-        if (aobj != NULL) {
-            fGeos->Remove(aobj);
-            aobj->Delete();
-        }
+    if (fMats) {
+        delete fMats;
+        fMats = NULL;
     }
-
-    delete fMats;
-    delete fGeos;
 }
 
 int G2PTarget::Begin()
@@ -270,8 +263,6 @@ int G2PTarget::Begin()
             if (geo->Begin() != 0)
                 return (fStatus = kBEGINERROR);
     }
-
-    gG2PGeos = fGeos;
 
     return (fStatus = kOK);
 }

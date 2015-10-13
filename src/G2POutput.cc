@@ -39,19 +39,20 @@ G2POutput::G2POutput()
     // Only for ROOT I/O
 }
 
-G2POutput::G2POutput(const char *filename) : fFileName(filename), fFile(NULL), fNVar(0), fVar(NULL), fTree(NULL), fConfig(NULL)
+G2POutput::G2POutput(const char *filename) : fNVar(0), fVar(NULL), fConfig(NULL)
 {
+    fFile = new TFile(filename, "RECREATE");
+
     fVName.clear();
     fVariables.clear();
 }
 
 G2POutput::~G2POutput()
 {
-    if (fTree)
-        delete fTree;
-
-    if (fVar)
-        delete [] fVar;
+    if (fFile) {
+        delete fFile;
+        fFile = NULL;
+    }
 }
 
 int G2POutput::Begin()
@@ -63,7 +64,6 @@ int G2POutput::Begin()
         return -1;
     }
 
-    fFile = new TFile(fFileName, "RECREATE");
     fTree = new TTree("T", "G2PSim Output Tree");
 
     fNVar = 0;
@@ -103,7 +103,14 @@ int G2POutput::Process()
 
 int G2POutput::End()
 {
+    if (fVar) {
+        delete[] fVar;
+        fVar = NULL;
+    }
+
     fTree->Write();
+    delete fTree;
+    fTree = NULL;
 
     fConfig = new TMacro("config");
 
@@ -122,11 +129,13 @@ int G2POutput::End()
     fConfig->AddLine("}");
 
     delete[] conf;
+    conf = NULL;
 
     fConfig->Write();
+    delete fConfig;
+    fConfig = NULL;
 
     fFile->Purge();
-    fFile->Save();
     fFile->Close();
 
     return 0;

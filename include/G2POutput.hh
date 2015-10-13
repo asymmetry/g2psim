@@ -40,7 +40,6 @@ protected:
     G2POutput(); // Only for ROOT I/O
     int Attach();
 
-    const char *fFileName;
     TFile *fFile;
 
     int fNVar;

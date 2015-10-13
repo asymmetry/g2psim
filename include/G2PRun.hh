@@ -50,19 +50,32 @@ public:
 
     //Sets
     void SetConfigFile(const char *file);
+
+    void SetNEvent(int n);
     void SetDebugLevel(int n);
     void SetSeed(unsigned n);
-    void SetBeamEnergy(double value);
-    void SetParticle(int id);
+
+    void SetRunType(const char *type);
     void SetTargetType(const char *type);
-    void SetTarget(int Z, int A);
-    void SetTargetMass(double M);
-    void SetTargetPF(double pf);
+    void SetTargetType(int id);
+    void SetFieldType(const char *type);
+    void SetFieldType(int id);
+
+    void SetParticle(int id);
+    void SetBeamEnergy(double value);
+
     void SetHRSAngle(double angle);
     void SetHRSMomentum(double P0);
-    void SetFieldType(const char *type);
-    void SetFieldRatio(double ratio);
+
+    void SetTarget(int Z, int A);
+    void SetTargetMass(double M);
+
     void SetTargetOffset(double x, double y, double z);
+    void SetTargetPF(double pf);
+
+    void SetFieldRatio(double ratio);
+    void SetFieldAngle(double alpha, double beta, double gamma);
+
 protected:
     int ParseConfigFile();
     int ParseSetting(const char *prefix, const config_setting_t *setting);

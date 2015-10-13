@@ -40,7 +40,6 @@ protected:
     virtual bool IsInside(double x, double y, double z);
 
     G2PGeoBase *fMinuend;
-
     G2PAppList *fSubGeos;
 
 private:

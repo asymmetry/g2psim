@@ -43,15 +43,20 @@ static const double kRP[4] = { -7.435500e-04, -2.130200e-03, +1.195000e-03, +0.0
 
 G2PRand *G2PAppBase::pRand = G2PRand::GetInstance();
 
-G2PAppBase::G2PAppBase() : fPrefix(NULL), fStatus(kNOTBEGIN), fConfigured(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
+G2PAppBase::G2PAppBase() : fStatus(kNOTBEGIN), fConfigured(false), fDebug(0), fPriority(0), fHRSAngle(0.0)
 {
+    fPrefix = new char[2];
+    *fPrefix = 0;
+
     fConfigIsSet.clear();
 }
 
 G2PAppBase::~G2PAppBase()
 {
-    delete[] fPrefix;
-    fPrefix = NULL;
+    if (fPrefix) {
+        delete[] fPrefix;
+        fPrefix = NULL;
+    }
 
     fConfigIsSet.clear();
 }
@@ -449,7 +454,10 @@ int G2PAppBase::Configure(EMode mode)
         {0}
     };
 
-    return ConfigureFromList(confs, mode);
+    if (ConfigureFromList(confs, mode) != 0)
+        return -1;
+
+    return 0;
 }
 
 int G2PAppBase::ConfigureFromList(const ConfDef *list, EMode mode)
@@ -476,7 +484,7 @@ int G2PAppBase::ConfigureFromList(const char *prefix, const ConfDef *list, EMode
                 if (mode == kTWOWAY)
                     gG2PRun->SetConfig(item, prefix);
             } else {
-                if (gG2PRun->GetConfig(item, prefix))
+                if (gG2PRun->GetConfig(item, prefix) == 0)
                     fConfigIsSet.insert((unsigned long) item->var);
             }
 

@@ -36,15 +36,26 @@ G2PGeoSub::~G2PGeoSub()
 {
     TIter next(fSubGeos);
 
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
+    while (G2PGeoBase *aobj = static_cast<G2PGeoBase *>(next())) {
         if (aobj != NULL) {
             fSubGeos->Remove(aobj);
-            aobj->Delete();
+
+            if (aobj->GetNUsed() == 0)
+                delete aobj;
+            else
+                aobj->SetNUsed(aobj->GetNUsed() - 1);
         }
     }
 
-    delete fMinuend;
-    delete fSubGeos;
+    if (fMinuend) {
+        delete fMinuend;
+        fMinuend = NULL;
+    }
+
+    if (fSubGeos) {
+        delete fSubGeos;
+        fSubGeos = NULL;
+    }
 }
 
 int G2PGeoSub::Begin()
@@ -97,6 +108,7 @@ bool G2PGeoSub::IsInside(const double *V3)
 
 void G2PGeoSub::Subtract(G2PGeoBase *geo)
 {
+    geo->SetNUsed(geo->GetNUsed() + 1);
     fSubGeos->Add(geo);
 }
 

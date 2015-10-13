@@ -25,7 +25,7 @@
 
 #include "G2PGeoBase.hh"
 
-G2PGeoBase::G2PGeoBase() : fTranslation(false), fRotation(false), pMaterial(NULL), pfLab2Geo(NULL), pfGeo2Lab(NULL)
+G2PGeoBase::G2PGeoBase() : fNUsed(0), fTranslation(false), fRotation(false), pMaterial(NULL), pfLab2Geo(NULL), pfGeo2Lab(NULL)
 {
     memset(fOrigin, 0, sizeof(fOrigin));
     memset(fEulerAngle, 0, sizeof(fEulerAngle));
@@ -88,6 +88,11 @@ G2PMaterial *G2PGeoBase::GetMaterial() const
     return pMaterial;
 }
 
+int G2PGeoBase::GetNUsed() const
+{
+    return fNUsed;
+}
+
 void G2PGeoBase::SetOrigin(double x, double y, double z)
 {
     fOrigin[0] = x;
@@ -115,6 +120,11 @@ void G2PGeoBase::SetEulerAngle(double alpha, double beta, double gamma)
 void G2PGeoBase::SetMaterial(G2PMaterial *mat)
 {
     pMaterial = mat;
+}
+
+void G2PGeoBase::SetNUsed(int n)
+{
+    fNUsed = n;
 }
 
 void G2PGeoBase::SetGeoPosition()

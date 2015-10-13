@@ -14,7 +14,7 @@ SHELL       := /bin/bash
 # Project Info
 EXECFILE    := g2psim
 LIBFILE     := libG2PSim.so
-VERSION     := 1.9.0
+VERSION     := 2.0.0
 
 SRCDIR      := src
 INCDIR      := include

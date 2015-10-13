@@ -8,6 +8,7 @@
 //   Jan 2013, C. Gu, First public version.
 //   Sep 2013, C. Gu, Rewrite the structure of the simulation.
 //   Jan 2015, C. Gu, Remove function Init().
+//   Oct 2015, C. Gu, Modify it as a G2PProcBase class.
 //
 
 #include <cstdlib>
@@ -20,8 +21,10 @@
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
+#include "G2PGlobals.hh"
 #include "G2POutput.hh"
 #include "G2PProcBase.hh"
+#include "G2PRand.hh"
 #include "G2PRun.hh"
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
@@ -30,14 +33,14 @@
 
 using namespace std;
 
-G2PAppList *gG2PApps = new G2PAppList();
-G2PAppList *gG2PGeos = new G2PAppList();
-G2PRun *gG2PRun = NULL;
-G2PVarList *gG2PVars = new G2PVarList();
-
 G2PSim *G2PSim::pG2PSim = NULL;
 
-G2PSim::G2PSim() : fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fProcs(NULL)
+G2PSim::G2PSim()
+{
+    // Only for ROOT I/O
+}
+
+G2PSim::G2PSim(const char *filename) : fN(50000), fIndex(1), fDebug(1), fIsGood(false), pOutput(NULL), fProcs(NULL)
 {
     if (pG2PSim) {
         Error("G2PSim::G2PSim()", "Only one instance of G2PSim allowed.");
@@ -46,26 +49,16 @@ G2PSim::G2PSim() : fOutFile(NULL), fN(50000), fIndex(1), fDebug(1), fIsGood(fals
     }
 
     pG2PSim = this;
+
+    pOutput = new G2POutput(filename);
 }
 
 G2PSim::~G2PSim()
 {
-    TIter next(gG2PApps);
-
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
-        if (aobj != NULL) {
-            gG2PApps->Remove(aobj);
-            aobj->Delete();
-        }
-    }
-
-    delete gG2PApps;
-    delete gG2PGeos;
-    delete gG2PRun;
-    delete gG2PVars;
-
-    if (pOutput)
+    if (pOutput) {
         delete pOutput;
+        pOutput = NULL;
+    }
 
     if (pG2PSim == this)
         pG2PSim = NULL;
@@ -102,31 +95,22 @@ int G2PSim::Run()
     return 0;
 }
 
-void G2PSim::SetNEvent(int n)
-{
-    fN = n;
-}
-
-void G2PSim::SetOutFile(const char *name)
-{
-    fOutFile = name;
-}
-
 int G2PSim::Begin()
 {
     static const char *const here = "Begin()";
 
     // Set run manager
-    if (gG2PRun == NULL)
-        Error((here), "No run manager found.");
-    else if (gG2PRun->Begin() != 0)
-        return -1;
-
-    ConfDef debug = {"run.debuglevel", "Debug Level", kINT, &fDebug};
-    gG2PRun->GetConfig(&debug, "");
+    if (gG2PRun == NULL) {
+        Error(here, "No run manager found.");
+        return (fStatus = kBEGINERROR);
+    } else if (gG2PRun->Begin() != 0)
+        return (fStatus = kBEGINERROR);
 
     if (fDebug > 0)
         Info(here, "Starting run ......");
+
+    if (G2PProcBase::Begin() != 0)
+        return (fStatus = kBEGINERROR);
 
     // Set tools
     TIter next(gG2PApps);
@@ -139,7 +123,7 @@ int G2PSim::Begin()
 
         if (!aobj->IsInit())
             if (aobj->Begin() != 0)
-                return -1;
+                return (fStatus = kBEGINERROR);
     }
 
     fProcs = gG2PApps->FindList("G2PProcBase");
@@ -147,41 +131,13 @@ int G2PSim::Begin()
     if (fDebug > 0)
         gG2PRun->Print();
 
-    // Set output manager
-    gG2PVars->DefineByType("event", "Event number", &fIndex, kINT);
-    gG2PVars->DefineByType("isgood", "Good event", &fIsGood, kBOOL);
-
-    pOutput = new G2POutput(fOutFile);
-
     if (pOutput->Begin() != 0)
-        return -1;
+        return (fStatus = kBEGINERROR);
 
     if (fDebug > 0)
         Info(here, "Ready to go!");
 
-    return 0;
-}
-
-int G2PSim::End()
-{
-    static const char *const here = "End()";
-
-    if (fDebug > 0)
-        Info(here, "Cleaning ......");
-
-    TIter next(gG2PApps);
-
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next()))
-        aobj->End();
-
-    pOutput->End();
-
-    gG2PRun->End();
-
-    if (fDebug > 0)
-        Info(here, "Run finished!");
-
-    return 0;
+    return (fStatus = kOK);
 }
 
 int G2PSim::Process()
@@ -215,6 +171,28 @@ int G2PSim::Process()
     return status;
 }
 
+int G2PSim::End()
+{
+    static const char *const here = "End()";
+
+    if (fDebug > 0)
+        Info(here, "Cleaning ......");
+
+    TIter next(gG2PApps);
+
+    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next()))
+        aobj->End();
+
+    pOutput->End();
+
+    gG2PRun->End();
+
+    if (fDebug > 0)
+        Info(here, "Run finished!");
+
+    return 0;
+}
+
 bool G2PSim::IsAllDone(G2PAppList *procs)
 {
     static const char *const g2pproc = "G2PProcBase";
@@ -238,6 +216,41 @@ bool G2PSim::IsAllDone(G2PAppList *procs)
     }
 
     return done;
+}
+
+int G2PSim::Configure(EMode mode)
+{
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
+        return 0;
+
+    ConfDef confs[] = {
+        {"run.n", "Event Amount", kINT, &fN},
+        {"run.debuglevel", "Debug Level", kINT, &fDebug},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+int G2PSim::DefineVariables(EMode mode)
+{
+    if (mode == kDEFINE && fDefined)
+        return 0;
+
+    VarDef vars[] = {
+        {"event", "Event ID", kINT, &fIndex},
+        {"isgood", "Good Event", kBOOL, &fIsGood},
+        {0}
+    };
+
+    return DefineVarsFromList("", vars, mode);
+}
+
+void G2PSim::MakePrefix()
+{
+    const char *base = "sim";
+
+    G2PAppBase::MakePrefix(base);
 }
 
 ClassImp(G2PSim)
