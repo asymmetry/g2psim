@@ -238,6 +238,32 @@ void G2PBPM::GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpma
     V5bpm_bpm[4] = 0.0;
 }
 
+void G2PBPM::GetBPM2(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
+{
+    using namespace Orbit2;
+
+    GetBPMAB(V5beam_lab, V4bpmab_bpm);
+
+    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
+    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
+    V5bpm_bpm[4] = 0.0;
+}
+
+void G2PBPM::GetBPM3(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
+{
+    using namespace Orbit3;
+
+    GetBPMAB(V5beam_lab, V4bpmab_bpm);
+
+    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
+    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
+    V5bpm_bpm[4] = 0.0;
+}
+
 void G2PBPM::GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
 {
     using namespace Orbit4;
@@ -267,6 +293,19 @@ void G2PBPM::GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpma
 void G2PBPM::GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
 {
     using namespace Orbit7;
+
+    GetBPMAB(V5beam_lab, V4bpmab_bpm);
+
+    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
+    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
+    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
+    V5bpm_bpm[4] = 0.0;
+}
+
+void G2PBPM::GetBPM8(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
+{
+    using namespace Orbit8;
 
     GetBPMAB(V5beam_lab, V4bpmab_bpm);
 

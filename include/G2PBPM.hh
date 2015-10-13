@@ -45,9 +45,12 @@ protected:
     void GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM2(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM3(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
+    void GetBPM8(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
     void GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm);
 
     void GetBPMAB(const double *V5beam_lab, double *V4bpmab_bpm);
