@@ -145,24 +145,6 @@ double G2PDrift::Drift(const char *dir, const double *x, const double *p, G2PDri
     return result;
 }
 
-void G2PDrift::SetStep(double init, double limit)
-{
-    fStep = init;
-    fStepLimit = limit;
-
-    fConfigIsSet.insert((unsigned long) &fStep);
-    fConfigIsSet.insert((unsigned long) &fStepLimit);
-}
-
-void G2PDrift::SetErrLimit(double lo, double hi)
-{
-    fErrLoLimit = lo;
-    fErrHiLimit = hi;
-
-    fConfigIsSet.insert((unsigned long) &fErrLoLimit);
-    fConfigIsSet.insert((unsigned long) &fErrHiLimit);
-}
-
 double G2PDrift::DriftHCS(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout)
 {
     // Drift in lab coordinate
@@ -413,8 +395,8 @@ int G2PDrift::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"run.particle.mass", "Particle Mass", kDOUBLE, &fM0},
-        {"run.particle.charge", "Particle Charge", kDOUBLE, &fQ},
+        {"particle.mass", "Particle Mass", kDOUBLE, &fM0},
+        {"particle.charge", "Particle Charge", kDOUBLE, &fQ},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"step.size", "Step Size", kDOUBLE, &fStep},
         {"step.limit", "Step Size Limit", kDOUBLE, &fStepLimit},

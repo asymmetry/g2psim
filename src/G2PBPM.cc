@@ -40,7 +40,7 @@
 
 G2PBPM *G2PBPM::pG2PBPM = NULL;
 
-G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBPMAY(0.0), fBPMBX(0.0), fBPMBY(0.0), fBPMAZ(0.0), fBPMBZ(0.0), fBPMARes(0.0), fBPMBRes(0.0), pfGetBPM(NULL)
+G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), fBPMARes(0.0), fBPMBRes(0.0), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");
@@ -49,6 +49,9 @@ G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0.0), fFieldRatio(0.0), fBPMAX(0.0), fBP
     }
 
     pG2PBPM = this;
+
+    memset(fBPMA, 0, sizeof(fBPMA));
+    memset(fBPMB, 0, sizeof(fBPMB));
 
     fPriority = 2;
 
@@ -69,6 +72,7 @@ int G2PBPM::Begin()
         return (fStatus = kBEGINERROR);
 
     SetBPMPos();
+    Configure(kWRITE); // Write BPM positions to G2PRun
 
     return (fStatus = kOK);
 }
@@ -134,68 +138,66 @@ void G2PBPM::SetBPMPos()
 {
     static const char *const here = "SetBPMPos()";
 
+    static const double bpmpos[10][6] = {
+        {0, 0, -957.6e-3, 0, 0, -692.0e-3}, // orbit 0
+        {1.0e-3, -196.1e-3, -964.1e-3, 1.2e-3, -143.4e-3, -703.8e-3}, // orbit 1
+        { -0.4e-3, -33.6e-3, -955.5e-3, -0.6e-3, -17.4e-3, -690.5e-3}, // orbit 2
+        {0.2e-3, -27.1e-3, -955.2e-3, 0.5e-3, -19.8e-3, -689.7e-3}, // orbit 3
+        {0.3e-3, -130.8e-3, -959.4e-3, 0.4e-3, -93.1e-3, -696.5e-3}, // orbit 4
+        {0.7e-3, -98.0e-3, -955.9e-3, 1.0e-3, -69.5e-3, -691.9e-3}, // orbit 5
+        {0, 0, 0, 0, 0, 0},
+        {0.1e-3, -80.0e-3, -955.2e-3, 0.4e-3, -55.6e-3, -690.7e-3}, // orbit 7
+        {0.4e-3, -24.2e-3, -955.1e-3, 0.6e-3, -17.1e-3, -689.6e-3}, // orbit 8
+        {0, -53.6e-3, -954.6e-3, 0.6e-3, -37.0e-3, -689.6e-3} // orbit 9
+    };
+
     int orbit = 0;
 
-    if (fabs(fFieldType - 10) < 0.5) {
+    if (fFieldType == 10 || fFieldType == 11) {
         if (fabs(fFieldRatio - 0.5) < 1e-4) {
             if (fabs(fE0 - 2.254) < 0.2) {
                 orbit = 5;
-                fBPMAX = 0.7e-3;
-                fBPMAY = -98e-3;
-                fBPMAZ = -955.9e-3;
-                fBPMBX = 1e-3;
-                fBPMBY = -69.5e-3;
-                fBPMBZ = -691.9e-3;
                 pfGetBPM = &G2PBPM::GetBPM5;
             } else if (fabs(fE0 - 1.706) < 0.2) {
                 orbit = 4;
-                fBPMAX = 0.3e-3;
-                fBPMAY = -130.8e-3;
-                fBPMAZ = -959.4e-3;
-                fBPMBX = 0.4e-3;
-                fBPMBY = -93.1e-3;
-                fBPMBZ = -696.5e-3;
                 pfGetBPM = &G2PBPM::GetBPM4;
             } else if (fabs(fE0 - 1.159) < 0.2) {
                 orbit = 1;
-                fBPMAX = 1e-3;
-                fBPMAY = -196.1e-3;
-                fBPMAZ = -964.1e-3;
-                fBPMBX = 1.2e-3;
-                fBPMBY = -143.4e-3;
-                fBPMBZ = -703.8e-3;
                 pfGetBPM = &G2PBPM::GetBPM1;
             }
         } else if (fabs(fFieldRatio - 1.0) < 1e-4) {
             if (fabs(fE0 - 2.254) < 0.2) {
                 orbit = 7;
-                fBPMAX = 0.1e-3;
-                fBPMAY = -80e-3;
-                fBPMAZ = -955.2e-3;
-                fBPMBX = 0.4e-3;
-                fBPMBY = -55.6e-3;
-                fBPMBZ = -690.7e-3;
                 pfGetBPM = &G2PBPM::GetBPM7;
             } else if (fabs(fE0 - 3.355) < 0.2) {
                 orbit = 9;
-                fBPMAX = 0;
-                fBPMAY = -53.6e-3;
-                fBPMAZ = -954.6e-3;
-                fBPMBX = 0.6e-3;
-                fBPMBY = -37e-3;
-                fBPMBZ = -689.6e-3;
                 pfGetBPM = &G2PBPM::GetBPM9;
             }
         }
+    } else if (fFieldType == 30) {
+        if (fabs(fE0 - 2.254) < 0.2) {
+            orbit = 8;
+            pfGetBPM = &G2PBPM::GetBPM8;
+        } else if (fabs(fE0 - 1.706) < 0.2) {
+            orbit = 3;
+            pfGetBPM = &G2PBPM::GetBPM3;
+        } else if (fabs(fE0 - 1.159) < 0.2) {
+            orbit = 2;
+            pfGetBPM = &G2PBPM::GetBPM2;
+        }
     }
 
-    if (orbit == 0) {
-        fBPMAZ = -957.6e-3;
-        fBPMBZ = -692.0e-3;
+    if (orbit == 0)
         pfGetBPM = &G2PBPM::GetBPM0;
+
+    for (int i = 0; i < 3; i++) {
+        fBPMA[i] = bpmpos[orbit][i];
+        fBPMB[i] = bpmpos[orbit][i + 3];
+        fConfigIsSet.insert((unsigned long) &fBPMA[i]);
+        fConfigIsSet.insert((unsigned long) &fBPMB[i]);
     }
 
-    if (fDebug > 0)
+    if (fDebug > 1)
         Info(here, "Using orbit %d.", orbit);
 }
 
@@ -209,8 +211,8 @@ void G2PBPM::GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpma
     for (int i = 0; i < 4; i++)
         V4bpmab_bpm[i] *= 1e-3;
 
-    double x[3] = {(V4bpmab_bpm[2] + V4bpmab_bpm[0]) / 2, (V4bpmab_bpm[3] + V4bpmab_bpm[1]) / 2, (fBPMBZ + fBPMAZ) / 2};
-    double p[3] = {(V4bpmab_bpm[2] - V4bpmab_bpm[0]) / (fBPMBZ - fBPMAZ), (V4bpmab_bpm[3] - V4bpmab_bpm[1]) / (fBPMBZ - fBPMAZ), 1.0};
+    double x[3] = {(V4bpmab_bpm[2] + V4bpmab_bpm[0]) / 2, (V4bpmab_bpm[3] + V4bpmab_bpm[1]) / 2, (fBPMB[2] + fBPMA[2]) / 2};
+    double p[3] = {(V4bpmab_bpm[2] - V4bpmab_bpm[0]) / (fBPMB[2] - fBPMA[2]), (V4bpmab_bpm[3] - V4bpmab_bpm[1]) / (fBPMB[2] - fBPMA[2]), 1.0};
     double normE = fE0 / sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
 
     for (int i = 0; i < 3; i++)
@@ -225,109 +227,30 @@ void G2PBPM::GetBPM0(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpma
     V5bpm_bpm[4] = x[2];
 }
 
-void G2PBPM::GetBPM1(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit1;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
+#define GETBPM(ORBITN) \
+void G2PBPM::GetBPM##ORBITN(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm) \
+{ \
+    using namespace Orbit##ORBITN; \
+\
+    GetBPMAB(V5beam_lab, V4bpmab_bpm); \
+\
+    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3; \
+    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4); \
+    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3; \
+    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4); \
+    V5bpm_bpm[4] = 0.0; \
 }
 
-void G2PBPM::GetBPM2(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit2;
+GETBPM(1)
+GETBPM(2)
+GETBPM(3)
+GETBPM(4)
+GETBPM(5)
+GETBPM(7)
+GETBPM(8)
+GETBPM(9)
 
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM3(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit3;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM4(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit4;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM5(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit5;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM7(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit7;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM8(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit8;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
-
-void G2PBPM::GetBPM9(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
-{
-    using namespace Orbit9;
-
-    GetBPMAB(V5beam_lab, V4bpmab_bpm);
-
-    V5bpm_bpm[0] = target_x(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[1] = target_theta(V4bpmab_bpm, 4);
-    V5bpm_bpm[2] = target_y(V4bpmab_bpm, 4) * 1e-3;
-    V5bpm_bpm[3] = target_phi(V4bpmab_bpm, 4);
-    V5bpm_bpm[4] = 0.0;
-}
+#undef GETBPM
 
 void G2PBPM::GetBPMAB(const double *V5beam_lab, double *V4bpmab_bpm)
 {
@@ -338,12 +261,12 @@ void G2PBPM::GetBPMAB(const double *V5beam_lab, double *V4bpmab_bpm)
 
     int save = fDebug;
     fDebug = 0;
-    Drift("backward", x, p, fBPMBZ, x, p);
-    V4bpmab_bpm[2] = pRand->Gaus(x[0] - fBPMBX, fBPMBRes) * 1e3;
-    V4bpmab_bpm[3] = pRand->Gaus(x[1] - fBPMBY, fBPMBRes) * 1e3;
-    Drift("backward", x, p, fBPMAZ, x, p);
-    V4bpmab_bpm[0] = pRand->Gaus(x[0] - fBPMAX, fBPMARes) * 1e3;
-    V4bpmab_bpm[1] = pRand->Gaus(x[1] - fBPMAY, fBPMARes) * 1e3;
+    Drift("backward", x, p, fBPMB[2], x, p);
+    V4bpmab_bpm[2] = pRand->Gaus(x[0] - fBPMB[0], fBPMBRes) * 1e3;
+    V4bpmab_bpm[3] = pRand->Gaus(x[1] - fBPMB[1], fBPMBRes) * 1e3;
+    Drift("backward", x, p, fBPMA[2], x, p);
+    V4bpmab_bpm[0] = pRand->Gaus(x[0] - fBPMA[0], fBPMARes) * 1e3;
+    V4bpmab_bpm[1] = pRand->Gaus(x[1] - fBPMA[1], fBPMARes) * 1e3;
     fDebug = save;
 
     if (fDebug > 2) {
@@ -362,9 +285,15 @@ int G2PBPM::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
-        {"field.type", "Field Type", kDOUBLE, &fFieldType},
+        {"run.field", "Field Type", kINT, &fFieldType},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
+        {"a.x", "BPM A X Position", kDOUBLE, &fBPMA[0]},
+        {"a.y", "BPM A Y Position", kDOUBLE, &fBPMA[1]},
+        {"a.z", "BPM A Z Position", kDOUBLE, &fBPMA[2]},
         {"a.res", "BPM A Resolution", kDOUBLE, &fBPMARes},
+        {"b.x", "BPM B X Position", kDOUBLE, &fBPMB[0]},
+        {"b.y", "BPM B Y Position", kDOUBLE, &fBPMB[1]},
+        {"b.z", "BPM B Z Position", kDOUBLE, &fBPMB[2]},
         {"b.res", "BPM B Resolution", kDOUBLE, &fBPMBRes},
         {0}
     };

@@ -48,7 +48,7 @@ G2PBwdDB::G2PBwdDB()
     // Only for ROOT I/O
 }
 
-G2PBwdDB::G2PBwdDB(const char *name) : fFieldRatio(0.0), frecz_lab(0.0), fDBPrefix(NULL), fDBFile(name)
+G2PBwdDB::G2PBwdDB(const char *name) : fDBFile(name), fFieldRatio(0.0), frecz_lab(0.0)
 {
     if (pG2PBwdDB) {
         Error("G2PBwdDB()", "Only one instance of G2PBwdDB allowed.");
@@ -80,13 +80,13 @@ int G2PBwdDB::Begin()
 
     pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
-    if (fHRSAngle > 0) {
-        fDBPrefix = "L";
+    const char *dbprefix = "L";
 
+    if (fHRSAngle > 0) {
         if (fDBFile == NULL)
             fDBFile = "db_L.vdc.dat";
     } else {
-        fDBPrefix = "R";
+        dbprefix = "R";
 
         if (fDBFile == NULL)
             fDBFile = "db_R.vdc.dat";
@@ -100,7 +100,7 @@ int G2PBwdDB::Begin()
         return (fStatus = kBEGINERROR);
     }
 
-    TString tag(fDBPrefix);
+    TString tag(dbprefix);
     Ssiz_t pos = tag.Index(".");
 
     if (pos != kNPOS)
@@ -389,6 +389,47 @@ double G2PBwdDB::GetEffBPM(int axis)
     return effbpm_tr;
 }
 
+double G2PBwdDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
+{
+    // Calculate the value of a variable at the target
+    // Must already have x values for the matrix elements
+    double value = 0.0;
+    double v = 0.0;
+
+    for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
+        if (it->fValue != 0.0) {
+            v = it->fValue;
+            vector<int>::size_type np = it->fPower.size();
+
+            for (vector<int>::size_type i = 0; i < np; i++)
+                v *= powers[it->fPower[i]][i + 1];
+
+            value += v;
+        }
+    }
+
+    return value;
+}
+
+void G2PBwdDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
+{
+    // Calculate the value of a matrix element for a given x
+    double value = 0.0;
+
+    for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
+        value = 0.0;
+
+        if (it->fOrder > 0) {
+            for (int i = it->fOrder - 1; i >= 1; i--)
+                value = x * (value + it->fPoly[i]);
+
+            value += it->fPoly[0];
+        }
+
+        it->fValue = value;
+    }
+}
+
 bool G2PBwdDB::Backward(const double *V5fp_tr, double *V5tp_tr)
 {
     static const char *const here = "Backward()";
@@ -443,17 +484,17 @@ int G2PBwdDB::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"fit.x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
-        {"fit.x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
-        {"fit.x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
-        {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
-        {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
-        {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"l_z", "Rec Z (lab)", kDOUBLE, &frecz_lab},
+        {"x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
+        {"x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
+        {"x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
+        {"y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
+        {"y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
+        {"y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
+        {"z", "Rec Z (lab)", kDOUBLE, &frecz_lab},
         {0}
     };
 
-    return ConfigureFromList(confs, mode);
+    return ConfigureFromList("rec.", confs, mode);
 }
 
 int G2PBwdDB::DefineVariables(EMode mode)
@@ -496,47 +537,6 @@ void G2PBwdDB::MakePrefix()
     const char *base = "bwd";
 
     G2PAppBase::MakePrefix(base);
-}
-
-double G2PBwdDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
-{
-    // Calculate the value of a variable at the target
-    // Must already have x values for the matrix elements
-    double value = 0.0;
-    double v = 0.0;
-
-    for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
-        if (it->fValue != 0.0) {
-            v = it->fValue;
-            vector<int>::size_type np = it->fPower.size();
-
-            for (vector<int>::size_type i = 0; i < np; i++)
-                v *= powers[it->fPower[i]][i + 1];
-
-            value += v;
-        }
-    }
-
-    return value;
-}
-
-void G2PBwdDB::CalcMatrix(const double x, vector<THaMatrixElement> &matrix)
-{
-    // Calculate the value of a matrix element for a given x
-    double value = 0.0;
-
-    for (vector<THaMatrixElement>::iterator it = matrix.begin(); it != matrix.end(); it++) {
-        value = 0.0;
-
-        if (it->fOrder > 0) {
-            for (int i = it->fOrder - 1; i >= 1; i--)
-                value = x * (value + it->fPoly[i]);
-
-            value += it->fPoly[0];
-        }
-
-        it->fValue = value;
-    }
 }
 
 G2PBwdDB::THaMatrixElement::THaMatrixElement() :

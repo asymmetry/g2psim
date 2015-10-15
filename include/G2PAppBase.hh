@@ -12,6 +12,7 @@
 //   Sep 2013, C. Gu, Add configure functions.
 //   Nov 2014, C. Gu, Set random seed in G2PRun class.
 //   Nov 2014, C. Gu, Add fHRSAngle and several interface function for coordinate transform.
+//   Oct 2015, C. Gu, Rewrite configure functions with switch..case structure.
 //
 
 #ifndef G2P_APPBASE_H

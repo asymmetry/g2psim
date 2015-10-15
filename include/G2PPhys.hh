@@ -77,12 +77,9 @@ protected:
 
     int fPID;
     int fZ, fA; // Define Target
-    double fTargetMass;
     double fParticleMass;
     double *fPars;
     int fNPars;
-
-    double fHRSMomentum;
 
     double fE;
     double fTb, fTa;

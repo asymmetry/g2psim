@@ -60,12 +60,10 @@ protected:
     virtual void MakePrefix();
 
     double fE0;
-    double fFieldType;
+    int fFieldType;
     double fFieldRatio;
 
-    double fBPMAX, fBPMAY;
-    double fBPMBX, fBPMBY;
-    double fBPMAZ, fBPMBZ;
+    double fBPMA[3], fBPMB[3];
     double fBPMARes, fBPMBRes;
 
     double fV5beam_lab[5];

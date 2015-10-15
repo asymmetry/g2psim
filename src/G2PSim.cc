@@ -154,9 +154,9 @@ int G2PSim::Process()
 
     while (!IsAllDone(fProcs)) {
         G2PAppList *list = fProcs->FindList(step);
-        TIter it(list);
+        TIter step_iter(list);
 
-        while (G2PProcBase *pobj = static_cast<G2PProcBase *>(it())) {
+        while (G2PProcBase *pobj = static_cast<G2PProcBase *>(step_iter())) {
             if (pobj->Process() != 0) {
                 status = -1;
                 pobj->SetStage(G2PProcBase::kSTOP);
@@ -225,7 +225,7 @@ int G2PSim::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.n", "Event Amount", kINT, &fN},
-        {"run.debuglevel", "Debug Level", kINT, &fDebug},
+        {"run.debug", "Debug Level", kINT, &fDebug},
         {0}
     };
 

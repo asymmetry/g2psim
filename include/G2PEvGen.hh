@@ -35,8 +35,8 @@ public:
     void SetBeamPos(double x, double y, double z);
     void SetTiltAngle(double theta, double phi);
     void SetReactZ(double low, double high);
-    void SetSlowRasterSize(double sizex, double sizey);
     void SetFastRasterSize(double sizex, double sizey);
+    void SetSlowRasterSize(double sizex, double sizey);
     void SetTargetTh(double low, double high);
     void SetTargetPh(double low, double high);
     void SetDelta(double low, double high);
@@ -55,14 +55,15 @@ protected:
     bool fUseTrans;
 
     double fE0;
-    double fm;
-    double fM0;
+    double fm, fM0;
     double fFieldRatio;
 
     bool fForceElastic;
 
-    double fBeamX_lab, fBeamY_lab, fBeamZ_lab;
-    double fBeamSlowRx_lab, fBeamSlowRy_lab, fBeamFastRx_lab, fBeamFastRy_lab;
+    double fBeamX_bpm, fBeamT_bpm, fBeamY_bpm, fBeamP_bpm, fBeamZ_bpm;
+
+    double fBeamFastRx_lab, fBeamFastRy_lab;
+    double fBeamSlowRx_lab, fBeamSlowRy_lab;
 
     double fE; // Beam energy after energy loss
     double fELoss;
@@ -78,9 +79,6 @@ protected:
 
     double fDeltaLow; // in the unit of delta
     double fDeltaHigh;
-
-    double fTiltTheta_bpm;
-    double fTiltPhi_bpm;
 
     double fV5beam_lab[5];
     double fV5react_tr[5];

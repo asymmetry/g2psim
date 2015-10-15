@@ -12,6 +12,7 @@
 //   Sep 2013, C. Gu, Add configure functions.
 //   Nov 2014, C. Gu, Set random seed in G2PRun class.
 //   Nov 2014, C. Gu, Add fHRSAngle and several interface function for coordinate transform.
+//   Oct 2015, C. Gu, Rewrite configure functions with switch..case structure.
 //
 
 #include <cstdlib>
@@ -63,7 +64,7 @@ G2PAppBase::~G2PAppBase()
 
 int G2PAppBase::Begin()
 {
-    static const char *const here = "Begin()";
+    //static const char *const here = "Begin()";
 
     if (IsZombie())
         return (fStatus = kBEGINERROR);
@@ -74,9 +75,6 @@ int G2PAppBase::Begin()
         fConfigured = true;
     else
         fConfigured = false;
-
-    if (fDebug > 1)
-        Info(here, "Beginning ...");
 
     return (fStatus = (fConfigured ? kOK : kBEGINERROR));
 }
@@ -90,7 +88,7 @@ int G2PAppBase::End()
 
 void G2PAppBase::Clear(Option_t *opt)
 {
-    // Default does nothing
+    // Nothing to do
 
     return;
 }
@@ -449,8 +447,8 @@ int G2PAppBase::Configure(EMode mode)
         return 0;
 
     ConfDef confs[] = {
-        {"run.debuglevel", "Debug Level", kINT, &fDebug},
-        {"run.hrs.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
+        {"run.debug", "Debug Level", kINT, &fDebug},
+        {"run.angle", "HRS Angle", kDOUBLE, &fHRSAngle},
         {0}
     };
 
@@ -478,25 +476,42 @@ int G2PAppBase::ConfigureFromList(const char *prefix, const ConfDef *list, EMode
 
     const ConfDef *item = list;
 
-    if (mode == kREAD || mode == kTWOWAY) {
+    switch (mode) {
+    case kREAD:
         while (item->name) {
-            if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end()) {
-                if (mode == kTWOWAY)
-                    gG2PRun->SetConfig(item, prefix);
-            } else {
+            gG2PRun->GetConfig(item, prefix);
+            item++;
+        }
+
+        break;
+
+    case kTWOWAY:
+        while (item->name) {
+            if (fConfigIsSet.find((unsigned long) item->var) != fConfigIsSet.end())
+                gG2PRun->SetConfig(item, prefix);
+            else {
                 if (gG2PRun->GetConfig(item, prefix) == 0)
                     fConfigIsSet.insert((unsigned long) item->var);
+                else
+                    gG2PRun->SetConfig(item, prefix);
             }
 
             item++;
         }
-    } else if (mode == kWRITE) {
+
+        break;
+
+    case kWRITE:
         while (item->name) {
             gG2PRun->SetConfig(item, prefix);
             item++;
         }
-    } else
+
+        break;
+
+    default:
         return -1;
+    }
 
     return 0;
 }

@@ -30,8 +30,18 @@
 
 static double kDEG = 3.14159265358979323846 / 180.0;
 
+G2PTarget *G2PTarget::pG2PTarget = NULL;
+
 G2PTarget::G2PTarget() : fTargetType(10), fFieldType(0), fPF(0.55)
 {
+    if (pG2PTarget) {
+        Error("G2PTarget()", "Only one instance of G2PTarget allowed.");
+        MakeZombie();
+        return;
+    }
+
+    pG2PTarget = this;
+
     memset(fTgOffset, 0, sizeof(fTgOffset));
 
     fMats = new G2PAppList();
@@ -40,19 +50,22 @@ G2PTarget::G2PTarget() : fTargetType(10), fFieldType(0), fPF(0.55)
 
 G2PTarget::~G2PTarget()
 {
-    TIter mat_iter(fMats);
-
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(mat_iter())) {
-        if (aobj != NULL) {
-            fMats->Remove(aobj);
-            delete aobj;
-        }
-    }
-
     if (fMats) {
+        TIter next(fMats);
+
+        while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
+            if (aobj != NULL) {
+                fMats->Remove(aobj);
+                delete aobj;
+            }
+        }
+
         delete fMats;
         fMats = NULL;
     }
+
+    if (pG2PTarget == this)
+        pG2PTarget = NULL;
 }
 
 int G2PTarget::Begin()
@@ -107,7 +120,7 @@ int G2PTarget::Begin()
     double chamber_h = 1.3589; // 53.5"
     double window_beam_thick;
 
-    if ((fFieldType == 0) || (fFieldType == 11) || (fFieldType == 20)) // longitudinal or gep
+    if ((fFieldType == 0) || (fFieldType == 20) || (fFieldType == 30)) // longitudinal or gep
         window_beam_thick = 0.508e-3; // 20mil
     else
         window_beam_thick = 0.1778e-3; // 7mil
@@ -284,24 +297,6 @@ int G2PTarget::End()
     return (G2PAppBase::End());
 }
 
-void G2PTarget::SetOffset(double x, double y, double z)
-{
-    fTgOffset[0] = x;
-    fTgOffset[1] = y;
-    fTgOffset[2] = z;
-
-    fConfigIsSet.insert((unsigned long) &fTgOffset[0]);
-    fConfigIsSet.insert((unsigned long) &fTgOffset[1]);
-    fConfigIsSet.insert((unsigned long) &fTgOffset[2]);
-}
-
-void G2PTarget::SetPackingFraction(double pf)
-{
-    fPF = pf;
-
-    fConfigIsSet.insert((unsigned long) &fPF);
-}
-
 int G2PTarget::Configure(EMode mode)
 {
     if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
@@ -311,12 +306,12 @@ int G2PTarget::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"run.target.type", "Run Type", kINT, &fTargetType},
-        {"field.type", "GEP", kINT, &fFieldType},
-        {"run.target.pf", "Packing Fraction", kDOUBLE, &fPF},
-        {"run.target.offset.x", "Target offset x", kDOUBLE, &fTgOffset[0]},
-        {"run.target.offset.y", "Target offset y", kDOUBLE, &fTgOffset[1]},
-        {"run.target.offset.z", "Target offset z", kDOUBLE, &fTgOffset[2]},
+        {"run.target", "Target Type", kINT, &fTargetType},
+        {"run.field", "Field Type", kINT, &fFieldType},
+        {"pf", "Packing Fraction", kDOUBLE, &fPF},
+        {"offset.x", "Target offset x", kDOUBLE, &fTgOffset[0]},
+        {"offset.y", "Target offset y", kDOUBLE, &fTgOffset[1]},
+        {"offset.z", "Target offset z", kDOUBLE, &fTgOffset[2]},
         {0}
     };
 

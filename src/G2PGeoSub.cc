@@ -34,27 +34,27 @@ G2PGeoSub::G2PGeoSub(G2PGeoBase *geo) : fMinuend(geo)
 
 G2PGeoSub::~G2PGeoSub()
 {
-    TIter next(fSubGeos);
+    if (fSubGeos) {
+        TIter next(fSubGeos);
 
-    while (G2PGeoBase *aobj = static_cast<G2PGeoBase *>(next())) {
-        if (aobj != NULL) {
-            fSubGeos->Remove(aobj);
+        while (G2PGeoBase *aobj = static_cast<G2PGeoBase *>(next())) {
+            if (aobj != NULL) {
+                fSubGeos->Remove(aobj);
 
-            if (aobj->GetNUsed() == 0)
-                delete aobj;
-            else
-                aobj->SetNUsed(aobj->GetNUsed() - 1);
+                if (aobj->GetNUsed() == 0)
+                    delete aobj;
+                else
+                    aobj->SetNUsed(aobj->GetNUsed() - 1);
+            }
         }
+
+        delete fSubGeos;
+        fSubGeos = NULL;
     }
 
     if (fMinuend) {
         delete fMinuend;
         fMinuend = NULL;
-    }
-
-    if (fSubGeos) {
-        delete fSubGeos;
-        fSubGeos = NULL;
     }
 }
 
@@ -65,9 +65,9 @@ int G2PGeoSub::Begin()
 
     fMinuend->Begin();
 
-    TIter geo_iter(fSubGeos);
+    TIter next(fSubGeos);
 
-    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter())) {
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next())) {
         if (!geo->IsInit())
             if (geo->Begin() != 0)
                 return (fStatus = kBEGINERROR);
@@ -80,9 +80,9 @@ int G2PGeoSub::End()
 {
     fMinuend->End();
 
-    TIter geo_iter(fSubGeos);
+    TIter next(fSubGeos);
 
-    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(geo_iter()))
+    while (G2PGeoBase *geo = static_cast<G2PGeoBase *>(next()))
         if (geo->End() != 0)
             return -1;
 

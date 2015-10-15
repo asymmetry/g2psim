@@ -25,12 +25,6 @@ public:
     virtual int Begin();
     virtual int End();
 
-    //Gets
-
-    //Sets
-    void SetOffset(double x, double y, double z);
-    void SetPackingFraction(double pf);
-
 protected:
     virtual int Configure(EMode mode = kTWOWAY);
     virtual void MakePrefix();
@@ -45,6 +39,8 @@ protected:
     G2PAppList *fGeos;
 
 private:
+    static G2PTarget *pG2PTarget;
+
     ClassDef(G2PTarget, 1)
 };
 

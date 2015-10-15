@@ -30,7 +30,7 @@
 #pragma link C++ class G2PData+;
 #pragma link C++ class G2PEvGen+;
 #pragma link C++ class G2PFwdHRS+;
-#pragma link C++ class G2PFwdTarget+;
+#pragma link C++ class G2PFwdTest+;
 #pragma link C++ class G2POptics+;
 #pragma link C++ class G2PPhys+;
 #pragma link C++ class G2PRec+;

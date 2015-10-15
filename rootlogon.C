@@ -8,6 +8,9 @@
     gSystem->AddIncludePath("-I$PWD/G2PPhys");
     gInterpreter->AddIncludePath("$PWD/G2PPhys");
 
-    gSystem->AddIncludePath("-I$LIBCONFIG/include");
-    gInterpreter->AddIncludePath("$LIBCONFIG/include");
+    if (TString(gSystem->Getenv("LIBCONFIG")) != "/usr")
+    {
+        gSystem->AddIncludePath("-I$LIBCONFIG/include");
+        gInterpreter->AddIncludePath("$LIBCONFIG/include");
+    }
 }

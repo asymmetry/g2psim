@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PFwdTarget
+/* class G2PFwdTest
  * It simulates the movement of the scatted particles only in the target field without energy loss.
  * Input variables: fV5tp_tr, fV5react_lab (register in gG2PVars).
  */
@@ -28,34 +28,34 @@
 #include "G2PVarDef.hh"
 #include "G2PVarList.hh"
 
-#include "G2PFwdTarget.hh"
+#include "G2PFwdTest.hh"
 
 using namespace std;
 
-G2PFwdTarget *G2PFwdTarget::pG2PFwdTarget = NULL;
+G2PFwdTest *G2PFwdTest::pG2PFwdTest = NULL;
 
-G2PFwdTarget::G2PFwdTarget() : fSieveOn(false), fHoleID(-1), pSieve(NULL)
+G2PFwdTest::G2PFwdTest() : fSieveOn(false), fHoleID(-1), pSieve(NULL)
 {
-    if (pG2PFwdTarget) {
-        Error("G2PFwdTarget()", "Only one instance of G2PFwdTarget allowed.");
+    if (pG2PFwdTest) {
+        Error("G2PFwdTest()", "Only one instance of G2PFwdTest allowed.");
         MakeZombie();
         return;
     }
 
-    pG2PFwdTarget = this;
+    pG2PFwdTest = this;
 
     fPriority = 3;
 
     Clear();
 }
 
-G2PFwdTarget::~G2PFwdTarget()
+G2PFwdTest::~G2PFwdTest()
 {
-    if (pG2PFwdTarget == this)
-        pG2PFwdTarget = NULL;
+    if (pG2PFwdTest == this)
+        pG2PFwdTest = NULL;
 }
 
-int G2PFwdTarget::Begin()
+int G2PFwdTest::Begin()
 {
     //static const char* const here = "Begin()";
 
@@ -67,7 +67,7 @@ int G2PFwdTarget::Begin()
     return (fStatus = kOK);
 }
 
-int G2PFwdTarget::Process()
+int G2PFwdTest::Process()
 {
     static const char *const here = "Process()";
 
@@ -121,7 +121,7 @@ int G2PFwdTarget::Process()
     return 0;
 }
 
-void G2PFwdTarget::Clear(Option_t *opt)
+void G2PFwdTest::Clear(Option_t *opt)
 {
     freactz_tr = 0;
 
@@ -132,7 +132,7 @@ void G2PFwdTarget::Clear(Option_t *opt)
     G2PProcBase::Clear(opt);
 }
 
-void G2PFwdTarget::SetSieve(const char *opt)
+void G2PFwdTest::SetSieve(const char *opt)
 {
     string str = opt;
 
@@ -145,7 +145,23 @@ void G2PFwdTarget::SetSieve(const char *opt)
     }
 }
 
-int G2PFwdTarget::DefineVariables(EMode mode)
+int G2PFwdTest::Configure(EMode mode)
+{
+    if ((mode == kREAD || mode == kTWOWAY) && fConfigured)
+        return 0;
+
+    if (G2PProcBase::Configure(mode) != 0)
+        return -1;
+
+    ConfDef confs[] = {
+        {"sieve", "Sieve Slit Switch", kBOOL, &fSieveOn},
+        {0}
+    };
+
+    return ConfigureFromList(confs, mode);
+}
+
+int G2PFwdTest::DefineVariables(EMode mode)
 {
     if (mode == kDEFINE && fDefined)
         return 0;
@@ -171,11 +187,11 @@ int G2PFwdTarget::DefineVariables(EMode mode)
     return DefineVarsFromList(vars, mode);
 }
 
-void G2PFwdTarget::MakePrefix()
+void G2PFwdTest::MakePrefix()
 {
     const char *base = "fwd";
 
     G2PAppBase::MakePrefix(base);
 }
 
-ClassImp(G2PFwdTarget)
+ClassImp(G2PFwdTest)

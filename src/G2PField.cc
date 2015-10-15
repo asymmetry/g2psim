@@ -157,62 +157,6 @@ void G2PField::GetField(const double *x, double *b)
         Info(here, "%10.3e %10.3e %10.3e : %10.3e %10.3e %10.3e", pos[0], pos[1], pos[2], b[0], b[1], b[2]);
 }
 
-void G2PField::SetOrigin(double x, double y, double z)
-{
-    fOrigin[0] = x;
-    fOrigin[1] = y;
-    fOrigin[2] = z;
-
-    fConfigIsSet.insert((unsigned long) &fOrigin[0]);
-    fConfigIsSet.insert((unsigned long) &fOrigin[1]);
-    fConfigIsSet.insert((unsigned long) &fOrigin[2]);
-}
-
-void G2PField::SetZRange(double zmin, double zmax)
-{
-    fZMin = zmin;
-    fZMax = zmax;
-
-    fConfigIsSet.insert((unsigned long) &fZMin);
-    fConfigIsSet.insert((unsigned long) &fZMax);
-}
-
-void G2PField::SetRRange(double rmin, double rmax)
-{
-    fRMin = rmin;
-    fRMax = rmax;
-
-    fConfigIsSet.insert((unsigned long) &fRMin);
-    fConfigIsSet.insert((unsigned long) &fRMax);
-}
-
-void G2PField::SetZStep(double stepz)
-{
-    fZStep = stepz;
-
-    fConfigIsSet.insert((unsigned long) &fZStep);
-}
-
-void G2PField::SetRStep(double stepr)
-{
-    fRStep = stepr;
-
-    fConfigIsSet.insert((unsigned long) &fRStep);
-}
-
-void G2PField::SetAngle(double alpha, double beta, double gamma)
-{
-    // The Euler angle is defined using Z-X'-Z" convention
-
-    fEulerAngle[0] = alpha;
-    fEulerAngle[1] = beta;
-    fEulerAngle[2] = gamma;
-
-    fConfigIsSet.insert((unsigned long) &fEulerAngle[0]);
-    fConfigIsSet.insert((unsigned long) &fEulerAngle[1]);
-    fConfigIsSet.insert((unsigned long) &fEulerAngle[2]);
-}
-
 void G2PField::SetRotationMatrix()
 {
     // The Euler angle is defined using Z-X'-Z" convention

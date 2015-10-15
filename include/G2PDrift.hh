@@ -54,12 +54,6 @@ public:
 
     virtual double Drift(const char *dir, const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);
 
-    // Gets
-
-    // Sets
-    void SetStep(double init, double limit);
-    void SetErrLimit(double lo, double hi);
-
 protected:
     double DriftHCS(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);
     double DriftHCSNF(const double *x, const double *p, G2PDriftCondition &stop, double *xout, double *pout);

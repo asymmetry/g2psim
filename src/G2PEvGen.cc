@@ -40,7 +40,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PEvGen *G2PEvGen::pG2PEvGen = NULL;
 
-G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_lab(0.0), fBeamY_lab(0.0), fBeamZ_lab(0.0), fBeamSlowRx_lab(0.0), fBeamSlowRy_lab(0.0), fBeamFastRx_lab(0.0), fBeamFastRy_lab(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0), fTiltTheta_bpm(0.0), fTiltPhi_bpm(0.0)
+G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_bpm(0.0), fBeamT_bpm(0.0), fBeamY_bpm(0.0), fBeamP_bpm(0.0), fBeamZ_bpm(0.0), fBeamFastRx_lab(0.0), fBeamFastRy_lab(0.0), fBeamSlowRx_lab(0.0), fBeamSlowRy_lab(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0)
 {
     if (pG2PEvGen) {
         Error("G2PEvGen()", "Only one instance of G2PEvGen allowed.");
@@ -53,7 +53,6 @@ G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio
     fPriority = 1;
     Clear();
 }
-
 G2PEvGen::~G2PEvGen()
 {
     if (pG2PEvGen == this)
@@ -68,6 +67,7 @@ int G2PEvGen::Begin()
         return (fStatus = kBEGINERROR);
 
     SetTiltAngle();
+    Configure(kWRITE); // Write beam angles to G2PRun
 
     return (fStatus = kOK);
 }
@@ -96,8 +96,8 @@ int G2PEvGen::Process()
         Y_lab += pRand->Uniform(-fBeamFastRy_lab, fBeamFastRy_lab);
     }
 
-    X_lab += fBeamX_lab;
-    Y_lab += fBeamY_lab;
+    X_lab += fBeamX_bpm;
+    Y_lab += fBeamY_bpm;
     double ReactZ_lab = pRand->Uniform(fReactZLow_lab, fReactZHigh_lab);
 
     GetReactPoint(X_lab, Y_lab, ReactZ_lab, fV5beam_lab);
@@ -222,22 +222,22 @@ void G2PEvGen::Clear(Option_t *opt)
 
 void G2PEvGen::SetBeamPos(double x, double y, double z)
 {
-    fBeamX_lab = x;
-    fBeamY_lab = y;
-    fBeamZ_lab = z;
+    fBeamX_bpm = x;
+    fBeamY_bpm = y;
+    fBeamZ_bpm = z;
 
-    fConfigIsSet.insert((unsigned long) &fBeamX_lab);
-    fConfigIsSet.insert((unsigned long) &fBeamY_lab);
-    fConfigIsSet.insert((unsigned long) &fBeamZ_lab);
+    fConfigIsSet.insert((unsigned long) &fBeamX_bpm);
+    fConfigIsSet.insert((unsigned long) &fBeamY_bpm);
+    fConfigIsSet.insert((unsigned long) &fBeamZ_bpm);
 }
 
 void G2PEvGen::SetTiltAngle(double theta, double phi)
 {
-    fTiltTheta_bpm = theta;
-    fTiltPhi_bpm = phi;
+    fBeamT_bpm = theta;
+    fBeamP_bpm = phi;
 
-    fConfigIsSet.insert((unsigned long) &fTiltTheta_bpm);
-    fConfigIsSet.insert((unsigned long) &fTiltPhi_bpm);
+    fConfigIsSet.insert((unsigned long) &fBeamT_bpm);
+    fConfigIsSet.insert((unsigned long) &fBeamP_bpm);
 }
 
 void G2PEvGen::SetReactZ(double low, double high)
@@ -310,37 +310,34 @@ void G2PEvGen::SetCoords(const char *coords)
 
 void G2PEvGen::SetTiltAngle()
 {
-    static const char *const here = "SetTiltAngle()";
+    //static const char *const here = "SetTiltAngle()";
 
-    if ((fConfigIsSet.find((unsigned long) &fTiltTheta_bpm) == fConfigIsSet.end())
-            && (fConfigIsSet.find((unsigned long) &fTiltPhi_bpm) == fConfigIsSet.end())) {
+    if ((fConfigIsSet.find((unsigned long) &fBeamT_bpm) == fConfigIsSet.end())
+            && (fConfigIsSet.find((unsigned long) &fBeamP_bpm) == fConfigIsSet.end())) {
         // Default values
         if (fabs(fFieldRatio - 0.5) < 1e-8) {
             if (fabs(fE0 - 2.254) < 0.2)
-                fTiltTheta_bpm = 3.31 * kDEG;
+                fBeamT_bpm = 3.31 * kDEG;
             else if (fabs(fE0 - 1.706) < 0.2)
-                fTiltTheta_bpm = 4.03 * kDEG;
+                fBeamT_bpm = 4.03 * kDEG;
             else if (fabs(fE0 - 1.158) < 0.2)
-                fTiltTheta_bpm = 5.97 * kDEG;
+                fBeamT_bpm = 5.97 * kDEG;
             else
-                fTiltTheta_bpm = 0.0;
+                fBeamT_bpm = 0.0;
         } else if (fabs(fFieldRatio - 1.0) < 1e-8) {
             if (fabs(fE0 - 2.254) < 0.2)
-                fTiltTheta_bpm = 0.0;
+                fBeamT_bpm = 0.0;
             else if (fabs(fE0 - 3.355) < 0.2)
-                fTiltTheta_bpm = 0.0;
+                fBeamT_bpm = 0.0;
             else
-                fTiltTheta_bpm = 0.0;
+                fBeamT_bpm = 0.0;
         } else
-            fTiltTheta_bpm = 0.0;
+            fBeamT_bpm = 0.0;
 
-        fTiltPhi_bpm = 0.0;
+        fBeamP_bpm = 0.0;
 
-        if (fDebug > 0)
-            Info(here, "Default set to %10.3e %10.3e", fTiltTheta_bpm / kDEG, fTiltPhi_bpm / kDEG);
-    } else {
-        if (fDebug > 0)
-            Info(here, "Manually set to %10.3e %10.3e", fTiltTheta_bpm / kDEG, fTiltPhi_bpm / kDEG);
+        fConfigIsSet.insert((unsigned long) &fBeamT_bpm);
+        fConfigIsSet.insert((unsigned long) &fBeamP_bpm);
     }
 }
 
@@ -348,12 +345,12 @@ void G2PEvGen::GetReactPoint(double x, double y, double reactz, double *V5)
 {
     static const char *const here = "GetReactPoint()";
 
-    double xb[3] = {x, y, fBeamZ_lab};
-    double p[3] = {tan(fTiltPhi_bpm), tan(fTiltTheta_bpm), 1.0};
+    double xb[3] = {x, y, fBeamZ_bpm};
+    double p[3] = {tan(fBeamP_bpm), tan(fBeamT_bpm), 1.0};
     double pp = sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
     double pb[3] = {fE0 *p[0] / pp, fE0 *p[1] / pp, fE0 *p[2] / pp};    // convert tilt angle from bpm coordinate system to lab system
 
-    if (fBeamZ_lab < reactz)
+    if (fBeamZ_bpm < reactz)
         Drift("forward", xb, pb, reactz, xb, pb);
     else
         Drift("backward", xb, pb, reactz, xb, pb);
@@ -370,7 +367,7 @@ void G2PEvGen::GetReactPoint(double x, double y, double reactz, double *V5)
     V5[4] = xb[2];
 
     if (fDebug > 2)
-        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, fBeamZ_lab, V5[0], V5[1], V5[2], V5[3], V5[4]);
+        Info(here, "%10.3e %10.3e %10.3e -> %10.3e %10.3e %10.3e %10.3e %10.3e", x, y, fBeamZ_bpm, V5[0], V5[1], V5[2], V5[3], V5[4]);
 }
 
 int G2PEvGen::Configure(EMode mode)
@@ -383,18 +380,18 @@ int G2PEvGen::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
-        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
-        {"run.target.mass", "Target Mass", kDOUBLE, &fM0},
+        {"particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
+        {"target.mass", "Target Mass", kDOUBLE, &fM0},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"beam.l_x", "Beam X", kDOUBLE, &fBeamX_lab},
-        {"beam.l_y", "Beam Y", kDOUBLE, &fBeamY_lab},
-        {"beam.l_z", "Beam Z (set by BPM)", kDOUBLE, &fBeamZ_lab},
-        {"beam.tilt.t", "Beam Tilt Angle Theta", kDOUBLE, &fTiltTheta_bpm},
-        {"beam.tilt.p", "Beam Tilt Angle Phi", kDOUBLE, &fTiltPhi_bpm},
-        {"raster.slow.x", "Slow Raster Size X", kDOUBLE, &fBeamSlowRx_lab},
-        {"raster.slow.y", "Slow Raster Size Y", kDOUBLE, &fBeamSlowRy_lab},
+        {"beam.x", "Beam X", kDOUBLE, &fBeamX_bpm},
+        {"beam.t", "Beam Tilt Angle Theta", kDOUBLE, &fBeamT_bpm},
+        {"beam.y", "Beam Y", kDOUBLE, &fBeamY_bpm},
+        {"beam.p", "Beam Tilt Angle Phi", kDOUBLE, &fBeamP_bpm},
+        {"beam.z", "Beam Z (set by BPM)", kDOUBLE, &fBeamZ_bpm},
         {"raster.fast.x", "Fast Raster Size X", kDOUBLE, &fBeamFastRx_lab},
         {"raster.fast.y", "Fast Raster Size Y", kDOUBLE, &fBeamFastRy_lab},
+        {"raster.slow.x", "Slow Raster Size X", kDOUBLE, &fBeamSlowRx_lab},
+        {"raster.slow.y", "Slow Raster Size Y", kDOUBLE, &fBeamSlowRy_lab},
         {"react.t.min", "Theta Min", kDOUBLE, &fTargetThLow_tr},
         {"react.t.max", "Theta Max", kDOUBLE, &fTargetThHigh_tr},
         {"react.p.min", "Phi Min", kDOUBLE, &fTargetPhLow_tr},
@@ -402,8 +399,8 @@ int G2PEvGen::Configure(EMode mode)
         {"react.d.min", "Delta Min", kDOUBLE, &fDeltaLow},
         {"react.d.max", "Delta Max", kDOUBLE, &fDeltaHigh},
         {"react.d.elastic", "Delta Elastic", kBOOL, &fForceElastic},
-        {"react.l_z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
-        {"react.l_z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
+        {"react.z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
+        {"react.z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
         {0}
     };
     return ConfigureFromList(confs, mode);

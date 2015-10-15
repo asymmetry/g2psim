@@ -36,16 +36,6 @@ public:
 
     virtual void GetField(const double *x, double *b);
 
-    // Gets
-
-    // Sets
-    void SetOrigin(double x, double y, double z);
-    void SetAngle(double alpha, double beta, double gamma);
-    void SetZRange(double zmin, double zmax);
-    void SetRRange(double rmin, double rmax);
-    void SetZStep(double stepz);
-    void SetRStep(double stepr);
-
 protected:
     void SetRotationMatrix();
 

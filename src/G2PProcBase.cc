@@ -334,8 +334,8 @@ int G2PProcBase::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
-        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
+        {"run.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
+        {"target.mass", "Target Mass", kDOUBLE, &fTargetMass},
         {0}
     };
 

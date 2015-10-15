@@ -27,8 +27,6 @@
 #include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
-#include "GDHTransLargeX0/GDHTransLargeX0.hh"
-#include "GDHTransSTD/GDHTransSTD.hh"
 #include "HRSTransSTD/HRSTransSTD.hh"
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -55,7 +53,7 @@ G2PFwdHRS::G2PFwdHRS()
     // Only for ROOT I/O
 }
 
-G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(1), fSieveOn(false), fHoleID(-1), fEndPlane(0), pSieve(NULL), pModel(NULL)
+G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(10), fSieveOn(false), fHoleID(-1), fEndPlane(0), pSieve(NULL), pModel(NULL)
 {
     if (pG2PFwdHRS) {
         Error("G2PFwdHRS()", "Only one instance of G2PFwdHRS allowed.");
@@ -66,12 +64,13 @@ G2PFwdHRS::G2PFwdHRS(const char *name) : fSetting(1), fSieveOn(false), fHoleID(-
     pG2PFwdHRS = this;
 
     map<string, int> model_map;
-    model_map["484816"] = 1;
-    model_map["403216"] = 2;
-    model_map["400016"] = 3;
-    model_map["gdhLargeX0"] = 4;
-    model_map["gdhSTD"] = 5;
-    model_map["hrsSTD"] = 6;
+    model_map["std"] = 0;
+    model_map["STD"] = 0;
+    model_map["standard"] = 0;
+    model_map["Standard"] = 0;
+    model_map["484816"] = 10;
+    model_map["403216"] = 20;
+    model_map["400016"] = 30;
     model_map["484816OLD"] = 11;
     model_map["400016OLD"] = 21;
 
@@ -106,28 +105,20 @@ int G2PFwdHRS::Begin()
     pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
     switch (fSetting) {
-    case 1:
+    case 0:
+        pModel = new HRSTransSTD();
+        break;
+
+    case 10:
         pModel = new G2PTrans484816();
         break;
 
-    case 2:
+    case 20:
         pModel = new G2PTrans484816(); // FIXME: should be 403216 here
         break;
 
-    case 3:
+    case 30:
         pModel = new G2PTrans400016();
-        break;
-
-    case 4:
-        pModel = new GDHTransLargeX0();
-        break;
-
-    case 5:
-        pModel = new GDHTransSTD();
-        break;
-
-    case 6:
-        pModel = new HRSTransSTD();
         break;
 
     case 11:
@@ -274,7 +265,7 @@ int G2PFwdHRS::Process()
     fELoss += eloss;
     E -= eloss;
     fTa += (l * 100) / (Ti.GetRadLen() / Ti.GetDensity());
-    */
+     */
 
     if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTa);
@@ -406,10 +397,12 @@ int G2PFwdHRS::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"vdc.res.x", "VDC Resolution X", kDOUBLE, &fVDCRes[0]},
-        {"vdc.res.t", "VDC Resolution T", kDOUBLE, &fVDCRes[1]},
-        {"vdc.res.y", "VDC Resolution Y", kDOUBLE, &fVDCRes[2]},
-        {"vdc.res.p", "VDC Resolution P", kDOUBLE, &fVDCRes[3]},
+        {"run.hrs", "HRS Setting", kINT, &fSetting},
+        {"sieve", "Sieve Slit Switch", kBOOL, &fSieveOn},
+        {"vdc.x", "VDC Resolution X", kDOUBLE, &fVDCRes[0]},
+        {"vdc.t", "VDC Resolution T", kDOUBLE, &fVDCRes[1]},
+        {"vdc.y", "VDC Resolution Y", kDOUBLE, &fVDCRes[2]},
+        {"vdc.p", "VDC Resolution P", kDOUBLE, &fVDCRes[3]},
         {0}
     };
 

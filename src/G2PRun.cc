@@ -11,6 +11,7 @@
 //   May 2013, C. Gu, Add G2PProcBase classes, G2PRunBase is more general.
 //   Sep 2013, C. Gu, Combine G2PRunBase and G2PRun to be the new run manager.
 //   Nov 2014, J. Liu, Add target type and field type.
+//   Oct 2015, C. Gu, Use G2PRun to handle all parameters.
 //
 
 #include <cstdlib>
@@ -66,22 +67,6 @@ G2PRun::G2PRun() : fConfigFile("sim.cfg")
     pG2PRun = this;
 
     fConfig.clear();
-    fConfig["run.n"] = 50000;
-    fConfig["run.debuglevel"] = 1;
-    fConfig["run.seed"] = 0;
-    fConfig["run.e0"] = 2.2535;
-    fConfig["run.particle.id"] = 11;
-    fConfig["run.particle.mass"] = 0.51099892811e-3;
-    fConfig["run.particle.charge"] = -1 * e;
-    fConfig["run.target.type"] = 10;
-    fConfig["run.target.z"] = 1;
-    fConfig["run.target.a"] = 1;
-    fConfig["run.target.mass"] = 1.00794 * kU;
-    fConfig["run.target.pf"] = 0.55;
-    fConfig["run.hrs.angle"] = 5.767 * kDEG;
-    fConfig["run.hrs.p0"] = 2.24949;
-    fConfig["field.type"] = 0;
-    fConfig["field.ratio"] = 0.0;
     fConfigIsSet.clear();
 
     gG2PApps = new G2PAppList();
@@ -93,56 +78,56 @@ G2PRun::G2PRun() : fConfigFile("sim.cfg")
 
 G2PRun::~G2PRun()
 {
-    if (pG2PRun == this)
-        pG2PRun = NULL;
-
-    TIter next(gG2PApps);
-
-    while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
-        if (aobj != NULL) {
-            gG2PApps->Remove(aobj);
-            delete aobj;
-        }
-    }
-
     if (gG2PApps) {
+        TIter next(gG2PApps);
+
+        while (G2PAppBase *aobj = static_cast<G2PAppBase *>(next())) {
+            if (aobj != NULL) {
+                gG2PApps->Remove(aobj);
+                delete aobj;
+            }
+        }
+
         delete gG2PApps;
         gG2PApps = NULL;
     }
 
-    TIter geo_iter(gG2PGeos);
-
-    while (G2PGeoBase *aobj = static_cast<G2PGeoBase *>(geo_iter())) {
-        if (aobj != NULL) {
-            gG2PGeos->Remove(aobj);
-
-            if (aobj->GetNUsed() == 0)
-                delete aobj;
-            else
-                aobj->SetNUsed(aobj->GetNUsed() - 1);
-        }
-    }
-
     if (gG2PGeos) {
+        TIter next(gG2PGeos);
+
+        while (G2PGeoBase *aobj = static_cast<G2PGeoBase *>(next())) {
+            if (aobj != NULL) {
+                gG2PGeos->Remove(aobj);
+
+                if (aobj->GetNUsed() == 0)
+                    delete aobj;
+                else
+                    aobj->SetNUsed(aobj->GetNUsed() - 1);
+            }
+        }
+
         delete gG2PGeos;
         gG2PGeos = NULL;
     }
 
-    TIter var_iter(gG2PVars);
-
-    while (G2PVar *aobj = static_cast<G2PVar *>(var_iter())) {
-        if (aobj != NULL) {
-            gG2PVars->Remove(aobj);
-            delete aobj;
-        }
-    }
-
     if (gG2PVars) {
+        TIter next(gG2PVars);
+
+        while (G2PVar *aobj = static_cast<G2PVar *>(next())) {
+            if (aobj != NULL) {
+                gG2PVars->Remove(aobj);
+                delete aobj;
+            }
+        }
+
         delete gG2PVars;
         gG2PVars = NULL;
     }
 
     gG2PRun = NULL;
+
+    if (pG2PRun == this)
+        pG2PRun = NULL;
 }
 
 int G2PRun::Begin()
@@ -186,9 +171,6 @@ int G2PRun::Begin()
 
 int G2PRun::End()
 {
-    if (fConfig["run.debuglevel"] > 1)
-        Print();
-
     return 0;
 }
 
@@ -359,9 +341,9 @@ void G2PRun::SetNEvent(int n)
 
 void G2PRun::SetDebugLevel(int n)
 {
-    fConfig["run.debuglevel"] = (double) n;
+    fConfig["run.debug"] = (double) n;
 
-    fConfigIsSet.insert("run.debuglevel");
+    fConfigIsSet.insert("run.debug");
 }
 
 void G2PRun::SetSeed(unsigned n)
@@ -421,18 +403,20 @@ void G2PRun::SetTargetType(const char *type)
 
 void G2PRun::SetTargetType(int id)
 {
-    fConfig["run.target.type"] = (double) id;
-    fConfigIsSet.insert("run.target.type");
+    fConfig["run.target"] = (double) id;
+
+    if (fConfigIsSet.count("run.particle") == 0)
+        SetParticle(11);
 
     switch (id) {
     case 10:
     case 11:
-        if (fConfigIsSet.count("run.target.z") == 0) {
+        if (fConfigIsSet.count("target.z") == 0) {
             SetTarget(1, 1);
             SetTargetMass(1.00794 * kU);
         }
 
-        if (fConfigIsSet.count("run.target.pf") == 0)
+        if (fConfigIsSet.count("target.pf") == 0)
             SetTargetPF(0.55);
 
         break;
@@ -441,7 +425,7 @@ void G2PRun::SetTargetType(int id)
     case 21:
     case 22:
     case 23:
-        if (fConfigIsSet.count("run.target.z") == 0) {
+        if (fConfigIsSet.count("target.z") == 0) {
             SetTarget(6, 12);
             SetTargetMass(12.0107 * kU);
         }
@@ -451,13 +435,15 @@ void G2PRun::SetTargetType(int id)
     case 30:
     case 31:
     case 40:
-        if (fConfigIsSet.count("run.target.z") == 0) {
+        if (fConfigIsSet.count("target.z") == 0) {
             SetTarget(2, 4);
             SetTargetMass(4.002602 * kU);
         }
 
         break;
     }
+
+    fConfigIsSet.insert("run.target");
 }
 
 void G2PRun::SetFieldType(const char *type)
@@ -466,10 +452,13 @@ void G2PRun::SetFieldType(const char *type)
     tempmap["none"] = 0;
     tempmap["nofield"] = 0;
     tempmap["trans"] = 10;
+    tempmap["trans_2.5T"] = 10;
     tempmap["transverse"] = 10;
-    tempmap["long"] = 11;
-    tempmap["longitudinal"] = 11;
-    tempmap["gep"] = 20;
+    tempmap["trans_5.0T"] = 11;
+    tempmap["trans_5T"] = 11;
+    tempmap["long"] = 20;
+    tempmap["longitudinal"] = 20;
+    tempmap["gep"] = 30;
 
     if (tempmap.count(type) > 0)
         SetFieldType(tempmap[type]);
@@ -479,8 +468,7 @@ void G2PRun::SetFieldType(const char *type)
 
 void G2PRun::SetFieldType(int id)
 {
-    fConfig["field.type"] = id;
-    fConfigIsSet.insert("field.type");
+    fConfig["run.field"] = id;
 
     switch (id) {
     case 0:
@@ -500,9 +488,18 @@ void G2PRun::SetFieldType(int id)
         if (fConfigIsSet.count("field.ratio") == 0)
             SetFieldRatio(5.0);
 
+        if (fConfigIsSet.count("field.angle.alpha") == 0)
+            SetFieldAngle(90 * kDEG, 90 * kDEG, -90 * kDEG);
+
         break;
 
     case 20:
+        if (fConfigIsSet.count("field.ratio") == 0)
+            SetFieldRatio(5.0);
+
+        break;
+
+    case 30:
         if (fConfigIsSet.count("field.ratio") == 0)
             SetFieldRatio(5.0);
 
@@ -511,45 +508,47 @@ void G2PRun::SetFieldType(int id)
 
         break;
     }
+
+    fConfigIsSet.insert("run.field");
 }
 
 void G2PRun::SetParticle(int id)
 {
     static const char *const here = "SetParticle()";
 
-    fConfig["run.particle.id"] = (double) id;
+    fConfig["run.particle"] = (double) id;
 
     switch (id) {
     case 11: // e-
-        fConfig["run.particle.mass"] = 0.5109989281e-3;
-        fConfig["run.particle.charge"] = -1 * e;
+        fConfig["particle.mass"] = 0.5109989281e-3;
+        fConfig["particle.charge"] = -1 * e;
         break;
 
     case -11: // e+
-        fConfig["run.particle.mass"] = 0.5109989281e-3;
-        fConfig["run.particle.charge"] = e;
+        fConfig["particle.mass"] = 0.5109989281e-3;
+        fConfig["particle.charge"] = e;
         break;
 
     case -211: // pi-
-        fConfig["run.particle.mass"] = 139.5701835e-3;
-        fConfig["run.particle.charge"] = -1 * e;
+        fConfig["particle.mass"] = 139.5701835e-3;
+        fConfig["particle.charge"] = -1 * e;
         break;
 
     case 211: // pi+
-        fConfig["run.particle.mass"] = 139.5701835e-3;
-        fConfig["run.particle.charge"] = e;
+        fConfig["particle.mass"] = 139.5701835e-3;
+        fConfig["particle.charge"] = e;
         break;
 
     default: // e-
         Warning(here, "Unknown pid, use electrons.");
-        fConfig["run.particle.mass"] = 0.5109989281e-3;
-        fConfig["run.particle.charge"] = -1 * e;
+        fConfig["particle.mass"] = 0.5109989281e-3;
+        fConfig["particle.charge"] = -1 * e;
         break;
     }
 
-    fConfigIsSet.insert("run.particle.id");
-    fConfigIsSet.insert("run.particle.mass");
-    fConfigIsSet.insert("run.particle.charge");
+    fConfigIsSet.insert("run.particle");
+    fConfigIsSet.insert("particle.mass");
+    fConfigIsSet.insert("particle.charge");
 }
 
 void G2PRun::SetBeamEnergy(double E)
@@ -561,50 +560,50 @@ void G2PRun::SetBeamEnergy(double E)
 
 void G2PRun::SetHRSAngle(double angle)
 {
-    fConfig["run.hrs.angle"] = angle;
+    fConfig["run.angle"] = angle;
 
-    fConfigIsSet.insert("run.hrs.angle");
+    fConfigIsSet.insert("run.angle");
 }
 
 void G2PRun::SetHRSMomentum(double P0)
 {
-    fConfig["run.hrs.p0"] = P0;
+    fConfig["run.p0"] = P0;
 
-    fConfigIsSet.insert("run.hrs.p0");
+    fConfigIsSet.insert("run.p0");
 }
 
 void G2PRun::SetTarget(int Z, int A)
 {
-    fConfig["run.target.z"] = (double) Z;
-    fConfig["run.target.a"] = (double) A;
+    fConfig["target.z"] = (double) Z;
+    fConfig["target.a"] = (double) A;
 
-    fConfigIsSet.insert("run.target.z");
-    fConfigIsSet.insert("run.target.a");
+    fConfigIsSet.insert("target.z");
+    fConfigIsSet.insert("target.a");
 }
 
 void G2PRun::SetTargetMass(double M)
 {
-    fConfig["run.target.mass"] = M;
+    fConfig["target.mass"] = M;
 
-    fConfigIsSet.insert("run.target.mass");
+    fConfigIsSet.insert("target.mass");
 }
 
 void G2PRun::SetTargetOffset(double x, double y, double z)
 {
-    fConfig["run.target.offset.x"] = (double) x;
-    fConfig["run.target.offset.y"] = (double) y;
-    fConfig["run.target.offset.z"] = (double) z;
+    fConfig["target.offset.x"] = x;
+    fConfig["target.offset.y"] = y;
+    fConfig["target.offset.z"] = z;
 
-    fConfigIsSet.insert("run.target.offset.x");
-    fConfigIsSet.insert("run.target.offset.y");
-    fConfigIsSet.insert("run.target.offset.z");
+    fConfigIsSet.insert("target.offset.x");
+    fConfigIsSet.insert("target.offset.y");
+    fConfigIsSet.insert("target.offset.z");
 }
 
 void G2PRun::SetTargetPF(double pf)
 {
-    fConfig["run.target.pf"] = pf;
+    fConfig["target.pf"] = pf;
 
-    fConfigIsSet.insert("run.target.pf");
+    fConfigIsSet.insert("target.pf");
 }
 
 void G2PRun::SetFieldRatio(double ratio)
@@ -614,11 +613,22 @@ void G2PRun::SetFieldRatio(double ratio)
     fConfigIsSet.insert("field.ratio");
 }
 
+void G2PRun::SetFieldOrigin(double x, double y, double z)
+{
+    fConfig["field.origin.x"] = x;
+    fConfig["field.origin.y"] = y;
+    fConfig["field.origin.z"] = z;
+
+    fConfigIsSet.insert("field.origin.x");
+    fConfigIsSet.insert("field.origin.y");
+    fConfigIsSet.insert("field.origin.z");
+}
+
 void G2PRun::SetFieldAngle(double alpha, double beta, double gamma)
 {
-    fConfig["field.angle.alpha"] = (double) alpha;
-    fConfig["field.angle.beta"] = (double) beta;
-    fConfig["field.angle.gamma"] = (double) gamma;
+    fConfig["field.angle.alpha"] = alpha;
+    fConfig["field.angle.beta"] = beta;
+    fConfig["field.angle.gamma"] = gamma;
 
     fConfigIsSet.insert("field.angle.alpha");
     fConfigIsSet.insert("field.angle.beta");

@@ -44,39 +44,11 @@ public:
 protected:
     G2PBwdDB(); // Only for ROOT I/O
 
-    double GetEffBPM(int axis);
-
-    bool Backward(const double *V5fp_tr, double *V5tp_tr);
-
-    virtual int Configure(EMode mode = kTWOWAY);
-    virtual int DefineVariables(EMode mode = kDEFINE);
-    virtual void MakePrefix();
-
-    double fFieldRatio;
-
-    double fFitPars[2][3];
-    double frecz_lab;
-
-    double fV5bpm_tr[5];
-
-    double fV5fp_tr[5];
-
-    double fV5tpmat_tr[5];
-    double fV5sieveproj_tr[5];
-
-    double fV5tprec_tr[5];
-    double fV5tprec_lab[5];
-
-    G2PSieve *pSieve;
-
-private:
-
     enum {
         kPORDER = 7, kNUM_PRECOMP_POW = 10
     }; // constants
 
     // Class for storing matrix element data
-
     class THaMatrixElement
     {
     public:
@@ -96,11 +68,33 @@ private:
         double fValue; // the final value once x is given
     };
 
+    double GetEffBPM(int axis);
+
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
 
-    const char *fDBPrefix;
+    bool Backward(const double *V5fp_tr, double *V5tp_tr);
+
+    virtual int Configure(EMode mode = kTWOWAY);
+    virtual int DefineVariables(EMode mode = kDEFINE);
+    virtual void MakePrefix();
+
     const char *fDBFile;
+
+    double fFieldRatio;
+
+    double fFitPars[2][3];
+    double frecz_lab;
+
+    double fV5bpm_tr[5];
+
+    double fV5fp_tr[5];
+
+    double fV5tpmat_tr[5];
+    double fV5sieveproj_tr[5];
+
+    double fV5tprec_tr[5];
+    double fV5tprec_lab[5];
 
     vector<THaMatrixElement> *fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;
@@ -113,6 +107,9 @@ private:
     vector<THaMatrixElement> fYMatrixElems;
     vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
 
+    G2PSieve *pSieve;
+
+private:
     static G2PBwdDB *pG2PBwdDB;
 
     ClassDef(G2PBwdDB, 1)

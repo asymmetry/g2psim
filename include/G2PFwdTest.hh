@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-/* class G2PFwdTarget
+/* class G2PFwdTest
  * It simulates the movement of the scatted particles only in the target field without any cuts and energy loss.
  * Input variables: fV5tp_tr, fV5react_lab (register in gG2PVars).
  */
@@ -9,18 +9,18 @@
 //   May 2014, C. Gu, First public version.
 //
 
-#ifndef G2P_FWDTARGET_H
-#define G2P_FWDTARGET_H
+#ifndef G2P_FWDTEST_H
+#define G2P_FWDTEST_H
 
 #include "G2PProcBase.hh"
 
 class G2PSieve;
 
-class G2PFwdTarget : public G2PProcBase
+class G2PFwdTest : public G2PProcBase
 {
 public:
-    G2PFwdTarget();
-    virtual ~G2PFwdTarget();
+    G2PFwdTest();
+    virtual ~G2PFwdTest();
 
     virtual int Begin();
     virtual int Process();
@@ -32,6 +32,7 @@ public:
     void SetSieve(const char *opt);
 
 protected:
+    virtual int Configure(EMode mode = kTWOWAY);
     virtual int DefineVariables(EMode mode = kDEFINE);
     virtual void MakePrefix();
 
@@ -47,9 +48,9 @@ protected:
     G2PSieve *pSieve;
 
 private:
-    static G2PFwdTarget *pG2PFwdTarget;
+    static G2PFwdTest *pG2PFwdTest;
 
-    ClassDef(G2PFwdTarget, 1)
+    ClassDef(G2PFwdTest, 1)
 };
 
 #endif

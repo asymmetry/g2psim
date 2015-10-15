@@ -11,6 +11,7 @@
 //   May 2013, C. Gu, Add G2PProcBase classes, G2PRunBase is more general.
 //   Sep 2013, C. Gu, Combine G2PRunBase and G2PRun to be the new run manager.
 //   Nov 2014, J. Liu, Add target type and field type.
+//   Oct 2015, C. Gu, Use G2PRun to handle all parameters.
 //
 
 #ifndef G2P_RUN_H
@@ -74,6 +75,7 @@ public:
     void SetTargetPF(double pf);
 
     void SetFieldRatio(double ratio);
+    void SetFieldOrigin(double x, double y, double z);
     void SetFieldAngle(double alpha, double beta, double gamma);
 
 protected:

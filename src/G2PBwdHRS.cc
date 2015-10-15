@@ -26,6 +26,7 @@
 #include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
 #include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
+#include "HRSTransSTD/HRSTransSTD.hh"
 
 #include "G2PAppBase.hh"
 #include "G2PAppList.hh"
@@ -47,7 +48,7 @@ G2PBwdHRS::G2PBwdHRS()
     //Only for ROOT I/O
 }
 
-G2PBwdHRS::G2PBwdHRS(const char *name) : fE(0.0), fFieldRatio(0.0), fSetting(1), frecz_lab(0.0), pSieve(NULL), pModel(NULL)
+G2PBwdHRS::G2PBwdHRS(const char *name) : fE(0.0), fFieldRatio(0.0), fSetting(10), frecz_lab(0.0), pSieve(NULL), pModel(NULL)
 {
     if (pG2PBwdHRS) {
         Error("G2PBwdHRS()", "Only one instance of G2PBwdHRS allowed.");
@@ -58,9 +59,13 @@ G2PBwdHRS::G2PBwdHRS(const char *name) : fE(0.0), fFieldRatio(0.0), fSetting(1),
     pG2PBwdHRS = this;
 
     map<string, int> model_map;
-    model_map["484816"] = 1;
-    model_map["403216"] = 2;
-    model_map["400016"] = 3;
+    model_map["std"] = 0;
+    model_map["STD"] = 0;
+    model_map["standard"] = 0;
+    model_map["Standard"] = 0;
+    model_map["484816"] = 10;
+    model_map["403216"] = 20;
+    model_map["400016"] = 30;
     model_map["484816OLD"] = 11;
     model_map["400016OLD"] = 21;
 
@@ -95,15 +100,19 @@ int G2PBwdHRS::Begin()
     pSieve = static_cast<G2PSieve *>(gG2PApps->Find("G2PSieve"));
 
     switch (fSetting) {
-    case 1:
+    case 0:
+        pModel = new HRSTransSTD();
+        break;
+
+    case 10:
         pModel = new G2PTrans484816();
         break;
 
-    case 2:
+    case 20:
         pModel = new G2PTrans484816(); // FIXME: should be 403216 here
         break;
 
-    case 3:
+    case 30:
         pModel = new G2PTrans400016();
         break;
 
@@ -332,18 +341,19 @@ int G2PBwdHRS::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
+        {"run.hrs", "HRS Setting", kINT, &fSetting},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"fit.x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
-        {"fit.x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
-        {"fit.x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
-        {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
-        {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
-        {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"l_z", "Rec Z (lab)", kDOUBLE, &frecz_lab},
+        {"x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
+        {"x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
+        {"x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
+        {"y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
+        {"y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
+        {"y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
+        {"z", "Rec Z (lab)", kDOUBLE, &frecz_lab},
         {0}
     };
 
-    return ConfigureFromList(confs, mode);
+    return ConfigureFromList("rec.", confs, mode);
 }
 
 int G2PBwdHRS::DefineVariables(EMode mode)

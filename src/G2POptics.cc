@@ -398,7 +398,7 @@ int G2POptics::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
+        {"particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
         {0}
     };
 

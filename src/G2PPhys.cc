@@ -80,7 +80,7 @@ G2PPhys::G2PPhys()
     // Only for ROOT I/O
 }
 
-G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fTargetMass(0.0), fParticleMass(0.0), fPars(NULL), fNPars(0), fHRSMomentum(2.251),  pModel(NULL)
+G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fParticleMass(0.0), fPars(NULL), fNPars(0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
@@ -348,12 +348,10 @@ int G2PPhys::Configure(EMode mode)
         return -1;
 
     ConfDef confs[] = {
-        {"run.particle.id", "Particle ID", kINT, &fPID},
-        {"run.target.z", "Target Z", kINT, &fZ},
-        {"run.target.a", "Target A", kINT, &fA},
-        {"run.target.mass", "Target Mass", kDOUBLE, &fTargetMass},
-        {"run.hrs.p0", "HRS Momentum", kDOUBLE, &fHRSMomentum},
-        {"run.particle.mass", "Beam Particle Mass", kDOUBLE, &fParticleMass},
+        {"run.particle", "Particle ID", kINT, &fPID},
+        {"target.z", "Target Z", kINT, &fZ},
+        {"target.a", "Target A", kINT, &fA},
+        {"particle.mass", "Beam Particle Mass", kDOUBLE, &fParticleMass},
         {0}
     };
 
