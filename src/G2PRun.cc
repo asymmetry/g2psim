@@ -477,7 +477,7 @@ void G2PRun::SetFieldType(int id)
 
     case 10:
         if (fConfigIsSet.count("field.ratio") == 0)
-            SetFieldRatio(2.5);
+            SetFieldRatio(0.5);
 
         if (fConfigIsSet.count("field.angle.alpha") == 0)
             SetFieldAngle(90 * kDEG, 90 * kDEG, -90 * kDEG);
@@ -486,7 +486,7 @@ void G2PRun::SetFieldType(int id)
 
     case 11:
         if (fConfigIsSet.count("field.ratio") == 0)
-            SetFieldRatio(5.0);
+            SetFieldRatio(1.0);
 
         if (fConfigIsSet.count("field.angle.alpha") == 0)
             SetFieldAngle(90 * kDEG, 90 * kDEG, -90 * kDEG);
@@ -495,13 +495,13 @@ void G2PRun::SetFieldType(int id)
 
     case 20:
         if (fConfigIsSet.count("field.ratio") == 0)
-            SetFieldRatio(5.0);
+            SetFieldRatio(1.0);
 
         break;
 
     case 30:
         if (fConfigIsSet.count("field.ratio") == 0)
-            SetFieldRatio(5.0);
+            SetFieldRatio(1.0);
 
         if (fConfigIsSet.count("field.angle.alpha") == 0)
             SetFieldAngle(90 * kDEG, 5.6 * kDEG, -90 * kDEG);
