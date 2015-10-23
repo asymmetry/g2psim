@@ -33,11 +33,9 @@ public:
     // Gets
 
     // Sets
-    void SetHRSMomentum(int n, double *value);
     void SetBPMZ(double value);
-    void SetFoilZ(int n, double *value);
-    void SetTargetMass(int n, double *value);
-    void SetEnergyLoss(int n, double *value);
+    void SetFoilZ(double value);
+    void SetEnergyLoss(double *value, int n);
 
 protected:
     G2POptics(); // Only for ROOT I/O
@@ -61,16 +59,11 @@ protected:
     queue<sData> fData;
 
     double fE0;
-    double fm;
-    double fM0;
+    double fm, fM0;
     double fELoss;
     double fBPMZ;
     double fFoilZ;
 
-    int fNFoil;
-    vector<double> fHRSMomentumV;
-    vector<double> fFoilZV;
-    vector<double> fM0V;
     vector<double> fELossV;
 
     int fHoleID;

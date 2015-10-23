@@ -41,7 +41,7 @@ G2POptics::G2POptics()
     // Only for ROOT I/O
 }
 
-G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0.0), fM0(0.0), fELoss(0.0), fBPMZ(0), fNFoil(1), fHoleID(-1), pSieve(NULL)
+G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0.0), fM0(0.0), fELoss(0.0), fBPMZ(0), fHoleID(-1), pSieve(NULL)
 {
     if (pG2POptics) {
         Error("G2POptics()", "Only one instance of G2POptics allowed.");
@@ -53,12 +53,6 @@ G2POptics::G2POptics(const char *filename) : fDataFile(filename), fE0(0.0), fm(0
 
     fPriority = 1;
 
-    fHRSMomentumV.clear();
-    fHRSMomentumV.push_back(0.0);
-    fFoilZV.clear();
-    fFoilZV.push_back(0.0);
-    fM0V.clear();
-    fM0V.push_back(0.0);
     fELossV.clear();
     fELossV.push_back(0.0);
 
@@ -105,10 +99,7 @@ int G2POptics::Process()
     }
 
     fHoleID = tempdata.ind;
-    int kineID = fHoleID / (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
-    int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol() * fNFoil);
-    int foilID = res / (pSieve->GetNRow() * pSieve->GetNCol());
-    res = res % (pSieve->GetNRow() * pSieve->GetNCol());
+    int res = fHoleID % (pSieve->GetNRow() * pSieve->GetNCol());
 
     fE0 = tempdata.eb / 1000.0;
 
@@ -129,8 +120,6 @@ int G2POptics::Process()
     if (fDebug > 1)
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
 
-    fFoilZ = fFoilZV[foilID];
-
     double x[3] = {fV5bpm_lab[0], fV5bpm_lab[2], fV5bpm_lab[4]};
     double p[3] = {fE0 * sin(fV5bpm_lab[1]) *cos(fV5bpm_lab[3]), fE0 * sin(fV5bpm_lab[1]) *sin(fV5bpm_lab[3]), fE0 * cos(fV5bpm_lab[1])};
 
@@ -148,9 +137,7 @@ int G2POptics::Process()
     DCS2TRCS(fV5fp_det, fV5fp_tr);
     TRCS2FCS(fV5fp_tr, fV5fp_rot);
 
-    fHRSMomentum = fHRSMomentumV[kineID];
-    fM0 = fM0V[foilID];
-    fELoss = fELossV[foilID];
+    fELoss = fELossV[res];
 
     if (fDebug > 1)
         Info(here, "bpm_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_lab[0], fV5bpm_lab[1], fV5bpm_lab[2], fV5bpm_lab[3], fV5bpm_lab[4]);
@@ -274,7 +261,6 @@ int G2POptics::Process()
 void G2POptics::Clear(Option_t *opt)
 {
     fHoleID = -1;
-    fFoilZ = 0;
     fbpmz_tr = 0;
 
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
@@ -290,43 +276,22 @@ void G2POptics::Clear(Option_t *opt)
     G2PProcBase::Clear(opt);
 }
 
-void G2POptics::SetHRSMomentum(int n, double *value)
-{
-    fHRSMomentumV.clear();
-
-    for (int i = 0; i < n; i++)
-        fHRSMomentumV.push_back(value[i]);
-}
-
 void G2POptics::SetBPMZ(double value)
 {
     fBPMZ = value;
+
+    fConfigIsSet.insert((unsigned long) &fBPMZ);
 }
 
-void G2POptics::SetFoilZ(int n, double *value)
+void G2POptics::SetFoilZ(double value)
 {
-    fNFoil = n;
+    fFoilZ = value;
 
-    fFoilZV.clear();
-
-    for (int i = 0; i < n; i++)
-        fFoilZV.push_back(value[i]);
+    fConfigIsSet.insert((unsigned long) &fFoilZ);
 }
 
-void G2POptics::SetTargetMass(int n, double *value)
+void G2POptics::SetEnergyLoss(double *value, int n)
 {
-    fNFoil = n;
-
-    fM0V.clear();
-
-    for (int i = 0; i < n; i++)
-        fM0V.push_back(value[i]);
-}
-
-void G2POptics::SetEnergyLoss(int n, double *value)
-{
-    fNFoil = n;
-
     fELossV.clear();
 
     for (int i = 0; i < n; i++)
@@ -399,6 +364,9 @@ int G2POptics::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
+        {"target.mass", "Target Mass", kDOUBLE, &fM0},
+        {"beam.z", "BPM Z", kDOUBLE, &fBPMZ},
+        {"foil.z", "Target Foil Z", kDOUBLE, &fFoilZ},
         {0}
     };
 
@@ -416,6 +384,7 @@ int G2POptics::DefineVariables(EMode mode)
     VarDef vars[] = {
         {"id", "Hole ID", kINT, &fHoleID},
         {"energy", "Beam Energy", kDOUBLE, &fE0},
+        {"eloss", "Energy Loss", kDOUBLE, &fELoss},
         {"bpm.b_x", "BPM X (bpm)", kDOUBLE, &fV5bpm_bpm[0]},
         {"bpm.b_t", "BPM T (bpm)", kDOUBLE, &fV5bpm_bpm[1]},
         {"bpm.b_y", "BPM Y (bpm)", kDOUBLE, &fV5bpm_bpm[2]},
