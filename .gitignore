@@ -31,11 +31,9 @@ scripts/
 *.map
 *.root
 
-G2PSim
-g2psim
-G2PRec
-g2prec
 /*.C
 /*.cfg
 /*.def
+!Run.C
 !rootlogon.C
+!sim.cfg

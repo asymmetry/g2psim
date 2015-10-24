@@ -12,7 +12,6 @@ SHELL       := /bin/bash
 
 ###############################################################################
 # Project Info
-EXECFILE    := g2psim
 LIBFILE     := libG2PSim.so
 VERSION     := 2.0.0
 
@@ -23,8 +22,6 @@ OBJDIR      := obj.$(ARCH)
 MODELLIST   := HRSTrans G2PPhys
 
 DICTFILE    := g2psim_dict.cc
-RECEXECFILE := g2prec
-RECMAINNAME := Main_Rec
 
 MODELLIST   := $(strip $(MODELLIST))
 INCDIRS     := $(INCDIR) $(MODELLIST)
@@ -114,13 +111,6 @@ else
     $(error $$LIBCONFIG environment variable not defined)
 endif
 
-# Analyzer
-ifdef ANALYZER
-    ANADIRS := $(wildcard $(addprefix $(ANALYZER)/, src hana_decode hana_scaler))
-    ANACFLAGS := $(addprefix -I,$(ANADIRS))
-    ANALIBS := -L$(ANALYZER) -lHallA -ldc -lscaler
-endif
-
 ###############################################################################
 # Pre-defined commands
 define make-dependency-cc
@@ -164,37 +154,21 @@ VPATH       := $(SRCDIR)
 .SUFFIXES: .h .hh .H .HH
 .SUFFIXES: .o .d
 
-.PHONY: all exe lib script
+.PHONY: all lib
 .PHONY: $(MODELLIST)
 .PHONY: clean distclean
 .PHONY: test help env
 
 ###############################################################################
-all: exe lib script
+all: lib
 
-exe: $(EXECFILE)
 lib: $(LIBFILE).$(VERSION)
 
 ###############################################################################
-$(EXECFILE): $(MODELLIST) $(OBJS) $(DICTOBJ) $(OBJDIR)/Main.o
-	@$(LD) $(LDFLAGS) -o $@ $(OBJS) $(DICTOBJ) $(OBJDIR)/Main.o $(LIBS)
-	@echo "Linking $@ ...... done!"
-
-$(OBJDIR)/Main.o: Main.cc
-	@$(compile-cxx)
-
-$(RECEXECFILE): $(MODELLIST) $(OBJS) $(DICTOBJ) $(OBJDIR)/$(RECMAINNAME).o
-	@$(LD) $(LDFLAGS) -o $@ $(OBJS) $(DICTOBJ) $(OBJDIR)/$(RECMAINNAME).o \
-	    $(LIBS) $(ANALIBS)
-	@echo "Linking $@ ...... done!"
-
-$(OBJDIR)/$(RECMAINNAME).o: $(RECMAINNAME).cc
-	@echo "Compiling $< ......"
-	@$(CXX) $(CXXFLAGS) $(ANACFLAGS) -c $< -o $@
-
 $(LIBFILE).$(VERSION): $(MODELLIST) $(OBJS) $(DICTOBJ)
 	@$(LD) -shared $(LDFLAGS) -o $@ $(OBJS) $(DICTOBJ) $(LIBS)
 	@ln -sf $@ $(LIBFILE)
+	@cd pyg2psim; ln -sf ../$@ $(LIBFILE); cd ..
 	@echo "Linking $(LIBFILE) ...... done!"
 
 $(DICTFILE): $(HEADERS) $(LINKDEFFILE)
@@ -206,13 +180,6 @@ $(DICTOBJ): $(DICTFILE)
 
 $(MODELLIST):
 	@make -s -C $@
-
-###############################################################################
-script:
-	@if [ ! -e "Run.C" ] ; then cp -pr "templates/Run.C" "Run.C" ; \
-	echo "Generate Run.C ...... done!"; fi
-	@if [ ! -e "sim.cfg" ] ; then cp -pr "templates/sim.cfg" "sim.cfg" ; \
-	echo "Generate sim.cfg ...... done!"; fi
 
 ###############################################################################
 # Make dependencies
@@ -267,9 +234,8 @@ $(OBJDIR)/%.o: %.F
 ###############################################################################
 # Clean
 clean:
-	@rm -f $(EXECFILE) $(RECEXECFILE)
-	@rm -f $(DICTFILE) $(DICTHEADER)
 	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
+	@rm -f $(DICTFILE) $(DICTHEADER)
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#
 
