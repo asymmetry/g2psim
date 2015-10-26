@@ -2,6 +2,7 @@
 
 /* class G2PData
  * It loads real data to the simulation.
+ * The file should be generated with tree2ascii program.
  */
 
 // History:

@@ -2,7 +2,7 @@
 
 from os.path import join, dirname, realpath
 from time import time
-import numpy as np
+from array import array
 
 import ROOT
 ROOT.gSystem.Load(join(dirname(realpath(__file__)), 'libG2PSim.so'))
@@ -121,10 +121,10 @@ def run(**kwds):
         bwd = ROOT.G2PBwdHRS(hrs)
         cb = c['backward']
         if 'xpars' in cb:
-            cbx = np.array(cb['xpars'], dtype=float)
+            cbx = array('d', cb['xpars'])
             bwd.SetParsX(cbx)
         if 'ypars' in cb:
-            cby = np.array(cb['ypars'], dtype=float)
+            cby = array('d', cb['ypars'])
             bwd.SetParsY(cby)
         if 'z' in cb:
             bwd.SetRecZ(cb['z'])
@@ -134,7 +134,7 @@ def run(**kwds):
         cp = c['phys']
         phys = ROOT.G2PPhys(cp['model'])
         if 'pars' in cp:
-            mpars = np.array(cp['pars'], dtype=float)
+            mpars = array('d', cp['pars'])
             phys.SetPars(mpars, len(cp['pars']))
         ROOT.gG2PApps.Add(phys)
 
@@ -184,7 +184,7 @@ def optrun(**kwds):
     if 'bpmz' in co:
         optics.SetBPMZ(co['bpmz'])
     if 'eloss' in co:
-        coe = np.array(co['eloss'], dtype=float)
+        coe = array('d', co['eloss'])
         optics.SetEnergyLoss(coe, len(coe))
     ROOT.gG2PApps.Add(optics)
 

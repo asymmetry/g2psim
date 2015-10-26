@@ -9,47 +9,80 @@ class CustomHelpFormatter(ap.HelpFormatter):
             metavar, = self._metavar_formatter(action, action.dest)(1)
             return metavar
         else:
-            options = '' if len(action.option_strings[0]) == 2 else '    '
-            options = options + ', '.join(action.option_strings)
-            if action.nargs != 0:
-                default = '=' + str(action.default) if action.default else ''
-                if default == '' and action.const != '':
-                    default = '=' + str(action.const)
-                options = options + default
+            options = ''
+            if len(action.option_strings[0]) == 2:
+                options = action.option_strings[0]
+                if len(action.option_strings) > 1:
+                    options += ',  ' + ', '.join(action.option_strings[1:])
+            elif len(action.option_strings[0]) == 3:
+                options = action.option_strings[0]
+                if len(action.option_strings) > 1:
+                    options += ', ' + ', '.join(action.option_strings[1:])
+            else:
+                options = '     ' + ', '.join(action.option_strings)
             return options
 
-parser = ap.ArgumentParser(prog='g2psim', usage='%(prog)s [options]', formatter_class=CustomHelpFormatter)
-parser.add_argument('-e', '--event', default=10000, type=int, help='number of event to simulate', dest='n')
-parser.add_argument('-d', '--debug', default=1, help='set debug level', dest='debug')
-parser.add_argument('-o', '--output', default='test.root', help='set output file name', dest='filename')
-parser.add_argument('-c', '--config', default='defaults', help='set simulation configuration', dest='base')
+parser = ap.ArgumentParser(prog='g2psim', usage='%(prog)s [options] configuration', formatter_class=CustomHelpFormatter)
+parser._negative_number_matcher = re.compile(r'^-(\d+\.?|\d*\.\d+)([eE][+\-]?\d+)?$')
+parser.add_argument('base', nargs='?', default='defaults', help='the configuration to used in simulation', metavar='configuration')
+parser.add_argument('-d', '--debug', default=1, help='set debug level (default: %(default)s)', dest='debug')
+parser.add_argument('-o', '--output', default='test.root', help='set output file name (default: %(default)s)', dest='filename')
+parser.add_argument('-e', '--event', default=10000, type=int, help='set number of event (default: %(default)s)', dest='n')
+parser.add_argument('-l', '--list', action='store_true', help='show the content of the configuration and exit', dest='flag_list')
+parser.add_argument('--list-all', action='store_true', help='show a list of  available configurations and exit', dest='flag_list_all')
 parser.add_argument('--optics', action='store_true', help='simulate with optics data', dest='flag_optics')
-parser.add_argument('-l', '--list', nargs='?', const='NAME', default=None, help='list all configurations or the content of one particular configuration', dest='list')
+parser.add_argument('-e0', '--energy', type=float, help='set beam energy', dest='e0')
+parser.add_argument('-p0', '--momentum', type=float, help='set HRS momentum', dest='p0')
+parser.add_argument('--beam-pos', nargs=3, type=float, help='set beam position (require %(nargs)s args)', dest='beam_pos')
+parser.add_argument('--beam-angle', nargs=2, type=float, help='set beam angle (require %(nargs)s args)', dest='beam_angle')
 
 args = vars(parser.parse_args())
 
 sys.path.append(os.getcwd())
 import pyg2psim as sim
 
-if args['list'] == 'NAME':
+if args['flag_list_all']:
     clist = dir(sim.config_list)
     pat = re.compile(r'__.*__')
     for i in clist:
         if not pat.match(i) and isinstance(getattr(sim.config_list, i), dict):
             print(i)
     exit(0)
-elif args['list']:
-    if hasattr(sim.config_list, args['list']):
-        sim.config.printf(getattr(sim.config_list, args['list']))
-        exit(0)
-    else:
-        print('g2psim: error: unrecognized configurations: {0}\n'.format(args['base']))
-        parser.print_help()
-        exit(1)
-del args['list']
+del args['flag_list_all']
 
 if hasattr(sim.config_list, args['base']):
-    args['base'] = getattr(sim.config_list, args['base'])
+    if args['flag_list']:
+        sim.config.printf(getattr(sim.config_list, args['base']))
+        exit(0)
+    del args['flag_list']
+
+    if args['e0'] != None:
+        if not 'run' in args:
+            args['run'] = {}
+        args['run']['e0'] = args['e0']
+    del args['e0']
+
+    if args['p0'] != None:
+        if not 'run' in args:
+            args['run'] = {}
+        args['run']['p0'] = args['p0']
+    del args['p0']
+
+    if args['beam_pos'] != None:
+        if not 'generator' in args:
+            args['generator'] = {}
+            args['generator']['beam'] = {}
+        args['generator']['beam']['pos'] = args['beam_pos'][:2]
+        args['generator']['beam']['z'] = args['beam_pos'][2]
+    del args['beam_pos']
+
+    if args['beam_angle'] != None:
+        if not 'generator' in args:
+            args['generator'] = {}
+            args['generator']['beam'] = {}
+        args['generator']['beam']['angle'] = args['beam_angle']
+    del args['beam_angle']
+
     if not args['flag_optics']:
         del args['flag_optics']
         sim.run(**args)

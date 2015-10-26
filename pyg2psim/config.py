@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+import config_list
+
 def expand(c):
     r = c.copy()
     while 'base' in r:
-        base = r['base']
+        base = getattr(config_list, r['base'])
         del r['base']
         r = merge(base, r)
     return r
