@@ -25,6 +25,7 @@ public:
 
     virtual int Begin();
     virtual int Process();
+    virtual int Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5tpcorr_tr, double *V5sieveproj_tr, double *V5tprec_tr, double *V5tprec_lab);
     virtual void Clear(Option_t *opt = "");
 
     // Gets
@@ -42,25 +43,13 @@ protected:
     double fE0;
     double fFieldRatio;
 
-    double frecz_lab;
-
-    double fTgtXCorrT;
-    double fTgtXCorrP;
-    double fTgtXCorrD;
-
-    double fTgtYCorrT;
-    double fTgtYCorrP;
-    double fTgtYCorrD;
-
-    double fConsCorrT;
-    double fConsCorrP;
-    double fConsCorrD;
-
     double fFitPars[2][3];
 
+    double fCorT[3];
+    double fCorP[3];
+    double fCorD[3];
+
     double fV5bpm_bpm[5];
-    double fV5bpm_tr[5];
-    double fbpmz_tr;
 
     double fV5tpmat_tr[5];
     double fV5tpcorr_tr[5];

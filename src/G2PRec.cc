@@ -32,7 +32,7 @@
 
 G2PRec *G2PRec::pG2PRec = NULL;
 
-G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fTgtXCorrT(0.0), fTgtXCorrP(0.0), fTgtXCorrD(0.0), fTgtYCorrT(0.0), fTgtYCorrP(0.0), fTgtYCorrD(0.0), fConsCorrT(0.0), fConsCorrP(0.0), fConsCorrD(0.0), pSieve(NULL)
+G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), pSieve(NULL)
 {
     if (pG2PRec) {
         Error("G2PRec()", "Only one instance of G2PRec allowed.");
@@ -43,6 +43,9 @@ G2PRec::G2PRec() : fE0(0.0), fFieldRatio(0.0), frecz_lab(0.0), fTgtXCorrT(0.0), 
     pG2PRec = this;
 
     memset(fFitPars, 0, sizeof(fFitPars));
+    memset(fCorT, 0, sizeof(fCorT));
+    memset(fCorP, 0, sizeof(fCorP));
+    memset(fCorD, 0, sizeof(fCorD));
 
     fPriority = 1;
 
@@ -69,7 +72,7 @@ int G2PRec::Begin()
 
 int G2PRec::Process()
 {
-    static const char *const here = "Process()";
+    //static const char *const here = "Process()";
 
     if (gG2PVars->FindSuffix("bpm.b_x") && gG2PVars->FindSuffix("tp.mat.x")) {
         fV5bpm_bpm[0] = gG2PVars->FindSuffix("bpm.b_x")->GetValue();
@@ -86,89 +89,98 @@ int G2PRec::Process()
     } else
         return -1;
 
-    if (fDebug > 1)
-        Info(here, "bpm_bpm   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_bpm[0], fV5bpm_bpm[1], fV5bpm_bpm[2], fV5bpm_bpm[3], fV5bpm_bpm[4]);
+    return Process(fV5bpm_bpm, fV5tpmat_tr, fV5tpcorr_tr, fV5sieveproj_tr, fV5tprec_tr, fV5tprec_lab);
+}
 
-    frecz_lab = fV5bpm_bpm[4];
+int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5tpcorr_tr, double *V5sieveproj_tr, double *V5tprec_tr, double *V5tprec_lab)
+{
+    static const char *const here = "Process()";
+
+    if (fDebug > 1)
+        Info(here, "bpm_bpm   : %10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_bpm[0], V5bpm_bpm[1], V5bpm_bpm[2], V5bpm_bpm[3], V5bpm_bpm[4]);
+
+    double recz_lab = V5bpm_bpm[4];
+    double V5bpm_tr[5] = {0};
+    double bpmz_tr = 0.0;
 
     double bpm_temp[5];
-    BPM2HCS(fV5bpm_bpm, bpm_temp);
-    HCS2TCS(bpm_temp, fV5bpm_tr, fbpmz_tr);
+    BPM2HCS(V5bpm_bpm, bpm_temp);
+    HCS2TCS(bpm_temp, V5bpm_tr, bpmz_tr);
 
-    fV5bpm_tr[4] = fE0 / fHRSMomentum - 1;
+    V5bpm_tr[4] = fE0 / fHRSMomentum - 1;
 
     int save = fDebug;
     fDebug = 0;
 
-    if (fbpmz_tr < 0.0)
-        Drift("forward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr); // Drift to target plane (z_tr = 0)
+    if (bpmz_tr < 0.0)
+        Drift("forward", V5bpm_tr, bpmz_tr, 0.0, V5bpm_tr); // Drift to target plane (z_tr = 0)
     else
-        Drift("backward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr);
+        Drift("backward", V5bpm_tr, bpmz_tr, 0.0, V5bpm_tr);
 
     fDebug = save;
 
     if (fDebug > 1) {
-        Info(here, "bpm_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5bpm_tr[0], fV5bpm_tr[1], fV5bpm_tr[2], fV5bpm_tr[3], fV5bpm_tr[4]);
-        Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
+        Info(here, "bpm_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", V5bpm_tr[0], V5bpm_tr[1], V5bpm_tr[2], V5bpm_tr[3], V5bpm_tr[4]);
+        Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpmat_tr[0], V5tpmat_tr[1], V5tpmat_tr[2], V5tpmat_tr[3], V5tpmat_tr[4]);
     }
 
     // first iteration
-    GetEffBPM(fV5tpmat_tr, fV5bpm_tr, bpm_temp);
-    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+    GetEffBPM(V5tpmat_tr, V5bpm_tr, bpm_temp);
+    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
 
     if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
 
     // second iteration
-    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
-    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
+    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
 
     if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
 
     // third iteration
-    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
-    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
+    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
 
-    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
-    fV5tpcorr_tr[0] = bpm_temp[0];
-    fV5tpcorr_tr[2] = bpm_temp[2];
-
-    if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
-
-    Project(fV5tpcorr_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
+    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
+    V5tpcorr_tr[0] = bpm_temp[0];
+    V5tpcorr_tr[2] = bpm_temp[2];
 
     if (fDebug > 1)
-        Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
 
-    double l = Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
+    Project(V5tpcorr_tr, 0.0, pSieve->GetZ(), V5sieveproj_tr);
+
+    if (fDebug > 1)
+        Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", V5sieveproj_tr[0], V5sieveproj_tr[1], V5sieveproj_tr[2], V5sieveproj_tr[3], V5sieveproj_tr[4]);
+
+    double l = Drift("backward", V5sieveproj_tr, pSieve->GetZ(), 0.0, V5tprec_tr);
 
     if (l > 2.0) {
         for (int i = 0; i < 5; i++) {
-            fV5tprec_tr[i] = 1.e+38;
-            fV5tprec_lab[i] = 1.e+38;
+            V5tprec_tr[i] = 1.e+38;
+            V5tprec_lab[i] = 1.e+38;
         }
 
         return -1;
     }
 
-    TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
+    TCS2HCS(V5tprec_tr, 0.0, V5tprec_lab);
 
-    if (fabs(frecz_lab) > 1.0e-5) {
+    if (fabs(recz_lab) > 1.0e-5) {
         double z_tr;
 
-        if (fV5tprec_lab[4] < frecz_lab)
-            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+        if (V5tprec_lab[4] < recz_lab)
+            Drift("forward", V5tprec_tr, 0.0, recz_lab, V5tprec_tr, z_tr);
         else
-            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+            Drift("backward", V5tprec_tr, 0.0, recz_lab, V5tprec_tr, z_tr);
 
-        TCS2HCS(fV5tprec_tr, z_tr, fV5tprec_lab);
+        TCS2HCS(V5tprec_tr, z_tr, V5tprec_lab);
     }
 
     if (fDebug > 1) {
-        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
-        Info(here, "rec_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_lab[0], fV5tprec_lab[1], fV5tprec_lab[2], fV5tprec_lab[3], fV5tprec_lab[4]);
+        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tprec_tr[0], V5tprec_tr[1], V5tprec_tr[2], V5tprec_tr[3], V5tprec_tr[4]);
+        Info(here, "rec_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tprec_lab[0], V5tprec_lab[1], V5tprec_lab[2], V5tprec_lab[3], V5tprec_lab[4]);
     }
 
     return 0;
@@ -176,10 +188,7 @@ int G2PRec::Process()
 
 void G2PRec::Clear(Option_t * /*option*/)
 {
-    fbpmz_tr = 0.0;
-
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
-    memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
     memset(fV5tpcorr_tr, 0, sizeof(fV5tpcorr_tr));
     memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
@@ -213,10 +222,10 @@ void G2PRec::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5
 void G2PRec::Correct(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
 {
     V5corr_tr[0] = V5tp_tr[0];
-    V5corr_tr[1] = V5tp_tr[1] + fTgtXCorrT * V5bpm_tr[0] + fTgtYCorrT * V5bpm_tr[2] + fConsCorrT;
+    V5corr_tr[1] = V5tp_tr[1] + fCorT[0] + fCorT[1] * V5bpm_tr[0] + fCorT[2] * V5bpm_tr[2];
     V5corr_tr[2] = V5tp_tr[2];
-    V5corr_tr[3] = V5tp_tr[3] + fTgtXCorrP * V5bpm_tr[0] + fTgtYCorrP * V5bpm_tr[2] + fConsCorrP;
-    V5corr_tr[4] = V5tp_tr[4] + fTgtXCorrD * V5bpm_tr[0] + fTgtYCorrD * V5bpm_tr[2] + fConsCorrD;
+    V5corr_tr[3] = V5tp_tr[3] + fCorP[0] + fCorP[1] * V5bpm_tr[0] + fCorP[2] * V5bpm_tr[2];
+    V5corr_tr[4] = V5tp_tr[4] + fCorD[0] + fCorD[1] * V5bpm_tr[0] + fCorD[2] * V5bpm_tr[2];
 }
 
 int G2PRec::Configure(EMode mode)
@@ -236,15 +245,15 @@ int G2PRec::Configure(EMode mode)
         {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
         {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
         {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"tgxcorr.t", "Extended Target Correction T", kDOUBLE, &fTgtXCorrT},
-        {"tgxcorr.p", "Extended Target Correction T", kDOUBLE, &fTgtXCorrP},
-        {"tgxcorr.d", "Extended Target Correction D", kDOUBLE, &fTgtXCorrD},
-        {"tgycorr.t", "Target Y Correction T", kDOUBLE, &fTgtYCorrT},
-        {"tgycorr.p", "Target Y Correction P", kDOUBLE, &fTgtYCorrP},
-        {"tgycorr.d", "Target Y Correction D", kDOUBLE, &fTgtYCorrD},
-        {"concorr.t", "Const Correction T", kDOUBLE, &fConsCorrT},
-        {"concorr.p", "Const Correction P", kDOUBLE, &fConsCorrP},
-        {"concorr.d", "Const Correction D", kDOUBLE, &fConsCorrD},
+        {"cor.t.p0", "T Const Correction ", kDOUBLE, &fCorT[0]},
+        {"cor.t.px", "T Correction vs Target X", kDOUBLE, &fCorT[1]},
+        {"cor.t.py", "T Correction vs Target Y", kDOUBLE, &fCorT[2]},
+        {"cor.p.p0", "P Const Correction", kDOUBLE, &fCorP[0]},
+        {"cor.p.px", "P Correction vs Target X", kDOUBLE, &fCorP[1]},
+        {"cor.p.py", "P Correction vs Target Y", kDOUBLE, &fCorP[2]},
+        {"cor.d.p0", "D Const Correction", kDOUBLE, &fCorD[0]},
+        {"cor.d.px", "D Correction vs Target X", kDOUBLE, &fCorD[1]},
+        {"cor.d.py", "D Correction vs Target Y", kDOUBLE, &fCorD[2]},
         {0}
     };
 

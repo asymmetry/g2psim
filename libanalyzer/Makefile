@@ -12,19 +12,15 @@ SHELL       := /bin/bash
 
 ###############################################################################
 # Project Info
-LIBFILE     := libG2PSim.so
-VERSION     := 2.0.0
+LIBFILE     := libanalyzer.so
 
 SRCDIR      := src
-INCDIR      := include
+INCDIR      := src
 OBJDIR      := obj.$(ARCH)
 
-MODELLIST   := HRSTrans G2PPhys
+DICTFILE    := halla_dict.cc
 
-DICTFILE    := g2psim_dict.cc
-
-MODELLIST   := $(strip $(MODELLIST))
-INCDIRS     := $(INCDIR) $(MODELLIST)
+INCDIRS     := $(INCDIR)
 LINKDEFFILE := $(subst dict.cc,linkdef.h,$(DICTFILE))
 DICTHEADER  := $(addsuffix .h,$(basename $(DICTFILE)))
 DICTOBJ     := $(OBJDIR)/$(addsuffix .o,$(basename $(DICTFILE)))
@@ -45,8 +41,8 @@ else
     MODE    := -m64
 endif
 INCFLAGS    := $(addprefix -I,$(INCDIRS))
-CFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCFLAGS)
-CXXFLAGS    := -Wall -fPIC -O3 -g $(MODE) $(INCFLAGS)
+CFLAGS      := -Wall -DHAS_SSTREAM -fPIC -O3 -g $(MODE) $(INCFLAGS)
+CXXFLAGS    := -Wall -DHAS_SSTREAM -fPIC -O3 -g $(MODE) $(INCFLAGS)
 FFLAGS      := -Wall -fPIC -O3 -g $(MODE) $(INCFLAGS)
 ifeq ($(MYOS),Darwin) #in Darwin, do not use -fno-leading-underscore
     FFLAGS  += -fno-second-underscore -fno-automatic -fbounds-check \
@@ -80,9 +76,8 @@ DEPS        := $(subst .o,.d,$(OBJS))
 
 ###############################################################################
 # Libraries
-LIBS        := $(foreach mod,$(MODELLIST),$(join -L -l,$(mod) $(mod)))
-SYSLIBS     := -lstdc++ -lm -lgfortran
-LIBS        += $(SYSLIBS)
+SYSLIBS     := -lstdc++ -lm
+LIBS        := $(SYSLIBS)
 
 # ROOT
 ifdef ROOTSYS
@@ -94,21 +89,6 @@ ifdef ROOTSYS
     LIBS    += $(ROOTLIBS)
 else
     $(error $$ROOTSYS environment variable not defined)
-endif
-
-# LIBConfig
-ifdef LIBCONFIG
-    ifneq ($(LIBCONFIG),/usr)
-        LCONFCFLAGS += -I$(LIBCONFIG)/include
-    endif
-    LCONFLIBS := -L$(LIBCONFIG)/lib -lconfig
-
-    INCFLAGS += $(LCONFCFLAGS)
-    CFLAGS  += $(LCONFCFLAGS)
-    CXXFLAGS += $(LCONFCFLAGS)
-    LIBS    += $(LCONFLIBS)
-else
-    $(error $$LIBCONFIG environment variable not defined)
 endif
 
 ###############################################################################
@@ -154,23 +134,18 @@ VPATH       := $(SRCDIR)
 .SUFFIXES: .h .hh .H .HH
 .SUFFIXES: .o .d
 
-.PHONY: all lib libanalyzer
-.PHONY: $(MODELLIST) libanalyzer.so
+.PHONY: all lib
 .PHONY: clean distclean
 .PHONY: test help env
 
 ###############################################################################
-all: lib libanalyzer
+all: lib
 
-lib: $(LIBFILE).$(VERSION)
-
-libanalyzer: libanalyzer.so
+lib: $(LIBFILE)
 
 ###############################################################################
-$(LIBFILE).$(VERSION): $(MODELLIST) $(OBJS) $(DICTOBJ)
+$(LIBFILE): $(OBJS) $(DICTOBJ)
 	@$(LD) -shared $(LDFLAGS) -o $@ $(OBJS) $(DICTOBJ) $(LIBS)
-	@ln -sf $@ $(LIBFILE)
-	@cd pyg2psim; ln -sf ../$@ $(LIBFILE); cd ..
 	@echo "Linking $(LIBFILE) ...... done!"
 
 $(DICTFILE): $(HEADERS) $(LINKDEFFILE)
@@ -179,15 +154,6 @@ $(DICTFILE): $(HEADERS) $(LINKDEFFILE)
 
 $(DICTOBJ): $(DICTFILE)
 	@$(compile-cxx)
-
-libanalyzer.so:
-	@make -s -C libanalyzer
-	@ln -sf libanalyzer/$@ $@
-	@cd pyg2psim; ln -sf ../$@ $@; cd ..
-	@echo "Linking $@ ...... done!"
-
-$(MODELLIST):
-	@make -s -C $@
 
 ###############################################################################
 # Make dependencies
@@ -242,19 +208,12 @@ $(OBJDIR)/%.o: %.F
 ###############################################################################
 # Clean
 clean:
-	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
+	@rm -f $(LIBFILE)
 	@rm -f $(DICTFILE) $(DICTHEADER)
-	@rm -f libanalyzer.so
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#
 
 distclean: clean
-	@for model in $(MODELLIST); do \
-	    if [[ -d $$model ]]; then \
-	        make distclean -s -C $$model; \
-	    fi; \
-	done;
-	@make distclean -s -C libanalyzer
 
 test:
 	@echo "MYOS:     $(ARCH) $(MYOS)"
