@@ -59,10 +59,10 @@ defaults = {
     },
     'phys': {
 #        'pars': [0, 0],
-    'model': 'pbosted'
+        'model': 'pbosted'
     },
     'optics': {
-        'filename': 'Sieve.full.f51',
+        'data': 'Sieve.full.f51',
         'foilz': 0,
         'bpmz': 0,
         'eloss': [0] * 49

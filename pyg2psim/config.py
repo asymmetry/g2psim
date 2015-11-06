@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import config_list
+from . import config_list
 
 def expand(c):
     r = c.copy()
@@ -32,4 +32,4 @@ def _printf(c, prefix):
             nprefix = str(k) + '.'
             _printf(v, nprefix)
         else:
-            print(prefix + str(k) + ': {0}'.format(v))
+            print('{}{}: {}'.format(prefix, k, v))

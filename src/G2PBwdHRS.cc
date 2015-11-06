@@ -173,17 +173,21 @@ int G2PBwdHRS::Process()
     if (!Backward(fV5fp_tr, fV5tpsnake_tr))
         return -1;
 
+    double bpm_temp[5];
     double delta_old = 1e38;
 
     while (fabs(fV5tpsnake_tr[4] - delta_old) > 1.e-3) {
         delta_old = fV5tpsnake_tr[4];
-        fV5fp_tr[4] = GetEffBPM(0); // Get effective bpm x
+        GetEffBPM(fV5tpsnake_tr, fV5bpm_tr, bpm_temp);
+        fV5fp_tr[4] = bpm_temp[0];
 
         if (!Backward(fV5fp_tr, fV5tpsnake_tr))
             return -1;
     }
 
-    fV5tpsnake_tr[2] = GetEffBPM(1); // Get effective bpm y
+    GetEffBPM(fV5tpsnake_tr, fV5bpm_tr, bpm_temp);
+    fV5tpsnake_tr[0] = bpm_temp[0]; // Get effective bpm x
+    fV5tpsnake_tr[2] = bpm_temp[2]; // Get effective bpm y
 
     if (fDebug > 1)
         Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpsnake_tr[0], fV5tpsnake_tr[1], fV5tpsnake_tr[2], fV5tpsnake_tr[3], fV5tpsnake_tr[4]);
@@ -196,19 +200,22 @@ int G2PBwdHRS::Process()
     Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
     TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
 
+    if (fDebug > 1)
+        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+
     if (fabs(frecz_lab) > 1.0e-5) {
         double z_tr;
 
         if (fV5tprec_lab[4] < frecz_lab)
-            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5rec_tr, z_tr);
         else
-            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5rec_tr, z_tr);
 
-        TCS2HCS(fV5tprec_tr, z_tr, fV5tprec_lab);
+        TCS2HCS(fV5rec_tr, z_tr, fV5rec_lab);
     }
 
     if (fDebug > 1)
-        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
 
     return 0;
 }
@@ -223,6 +230,8 @@ void G2PBwdHRS::Clear(Option_t *opt)
     memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
     memset(fV5tprec_tr, 0, sizeof(fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof(fV5tprec_lab));
+    memset(fV5rec_tr, 0, sizeof(fV5rec_tr));
+    memset(fV5rec_lab, 0, sizeof(fV5rec_lab));
 
     G2PProcBase::Clear(opt);
 }
@@ -256,38 +265,27 @@ void G2PBwdHRS::SetRecZ(double z)
     fConfigIsSet.insert((unsigned long) &frecz_lab);
 }
 
-double G2PBwdHRS::GetEffBPM(int axis)
+void G2PBwdHRS::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr)
 {
     static const char *const here = "GetEffBPM()";
 
-    double xbpm_tr = fV5bpm_tr[0];
-    double ybpm_tr = fV5bpm_tr[2];
-
-    double effbpm_tr;
-
-    if (axis == 0)
-        effbpm_tr = xbpm_tr;
-    else if (axis == 1)
-        effbpm_tr = ybpm_tr;
-    else
-        return 1e38;
+    V5bpmeff_tr[0] = V5bpm_tr[0];
+    V5bpmeff_tr[1] = V5bpm_tr[1];
+    V5bpmeff_tr[2] = V5bpm_tr[2];
+    V5bpmeff_tr[3] = V5bpm_tr[3];
+    V5bpmeff_tr[4] = V5bpm_tr[4];
 
     if (fFieldRatio > 1e-5) {
         // Fit:
         // (Xbpm_tr-Xeffbpm_tr) vs P
         // ([0]+[1]/x)
-        double p = (1 + fV5tpsnake_tr[4]) * fHRSMomentum;
-
-        if (axis == 0)
-            effbpm_tr = xbpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * ybpm_tr) / p) / 1000;
-        else if (axis == 1)
-            effbpm_tr = ybpm_tr - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * xbpm_tr) / p) / 1000;
+        double p = (1 + V5tp_tr[4]) * fHRSMomentum;
+        V5bpmeff_tr[0] = V5bpm_tr[0] - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * V5bpm_tr[2]) / p) / 1000;
+        V5bpmeff_tr[2] = V5bpm_tr[2] - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * V5bpm_tr[0]) / p) / 1000;
     }
 
     if (fDebug > 2)
-        Info(here, "effbpm_tr :%10.3e", effbpm_tr);
-
-    return effbpm_tr;
+        Info(here, "effbpm_tr : %10.3e %10.3e", V5bpmeff_tr[0], V5bpmeff_tr[2]);
 }
 
 bool G2PBwdHRS::Backward(const double *V5fp_tr, double *V5tp_tr)
@@ -364,6 +362,23 @@ int G2PBwdHRS::DefineVariables(EMode mode)
     if (G2PProcBase::DefineVariables(mode) != 0)
         return -1;
 
+    VarDef gvars[] = {
+        {"x", "Rec X", kDOUBLE, &fV5rec_tr[0]},
+        {"t", "Rec T", kDOUBLE, &fV5rec_tr[1]},
+        {"y", "Rec Y", kDOUBLE, &fV5rec_tr[2]},
+        {"p", "Rec P", kDOUBLE, &fV5rec_tr[3]},
+        {"d", "Rec D", kDOUBLE, &fV5rec_tr[4]},
+        {"l_x", "Rec X (lab)", kDOUBLE, &fV5rec_lab[0]},
+        {"l_t", "Rec T (lab)", kDOUBLE, &fV5rec_lab[1]},
+        {"l_y", "Rec Y (lab)", kDOUBLE, &fV5rec_lab[2]},
+        {"l_p", "Rec P (lab)", kDOUBLE, &fV5rec_lab[3]},
+        {"l_z", "Rec Z (lab)", kDOUBLE, &fV5rec_lab[4]},
+        {0}
+    };
+
+    if (DefineVarsFromList("rec.", gvars, mode) != 0)
+        return -1;
+
     VarDef vars[] = {
         {"tp.snake.x", "SNAKE Rec to Target Plane X", kDOUBLE, &fV5tpsnake_tr[0]},
         {"tp.snake.t", "SNAKE Rec to Target Plane T", kDOUBLE, &fV5tpsnake_tr[1]},
@@ -375,16 +390,11 @@ int G2PBwdHRS::DefineVariables(EMode mode)
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
         {"sieve.proj.p", "Project to Sieve P", kDOUBLE, &fV5sieveproj_tr[3]},
         {"sieve.proj.d", "Project to Sieve D", kDOUBLE, &fV5sieveproj_tr[3]},
-        {"tp.rec.x", "Rec X", kDOUBLE, &fV5tprec_tr[0]},
-        {"tp.rec.t", "Rec T", kDOUBLE, &fV5tprec_tr[1]},
-        {"tp.rec.y", "Rec Y", kDOUBLE, &fV5tprec_tr[2]},
-        {"tp.rec.p", "Rec P", kDOUBLE, &fV5tprec_tr[3]},
-        {"tp.rec.d", "Rec D", kDOUBLE, &fV5tprec_tr[4]},
-        {"tp.rec.l_x", "Rec X (lab)", kDOUBLE, &fV5tprec_lab[0]},
-        {"tp.rec.l_t", "Rec T (lab)", kDOUBLE, &fV5tprec_lab[1]},
-        {"tp.rec.l_y", "Rec Y (lab)", kDOUBLE, &fV5tprec_lab[2]},
-        {"tp.rec.l_p", "Rec P (lab)", kDOUBLE, &fV5tprec_lab[3]},
-        {"tp.rec.l_z", "Rec Z (lab)", kDOUBLE, &fV5tprec_lab[4]},
+        {"tp.rec.x", "Rec to Target Plane X", kDOUBLE, &fV5tprec_tr[0]},
+        {"tp.rec.t", "Rec to Target Plane T", kDOUBLE, &fV5tprec_tr[1]},
+        {"tp.rec.y", "Rec to Target Plane Y", kDOUBLE, &fV5tprec_tr[2]},
+        {"tp.rec.p", "Rec to Target Plane P", kDOUBLE, &fV5tprec_tr[3]},
+        {"tp.rec.d", "Rec to Target Plane D", kDOUBLE, &fV5tprec_tr[4]},
         {0}
     };
 

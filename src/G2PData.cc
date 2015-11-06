@@ -37,7 +37,7 @@ G2PData::G2PData()
     // Only for ROOT I/O
 }
 
-G2PData::G2PData(const char *filename) : fDataFile(filename)
+G2PData::G2PData(const char *filename) : fDataFile(filename), fHoleID(-1)
 {
     if (pG2PData) {
         Error("G2PData()", "Only one instance of G2PData allowed.");
@@ -87,6 +87,9 @@ int G2PData::Process()
 
     tempdata = fData.front();
 
+    fHoleID = tempdata.ind;
+    fE = tempdata.eb / 1000.0;
+
     fV5bpm_bpm[0] = tempdata.xb / 1000.0;
     fV5bpm_bpm[1] = tempdata.tb;
     fV5bpm_bpm[2] = tempdata.yb / 1000.0;
@@ -117,6 +120,7 @@ int G2PData::Process()
 
 void G2PData::Clear(Option_t *opt)
 {
+    fE = 0;
     fbpmz_tr = 0;
 
     memset(fV5bpm_bpm, 0, sizeof(fV5bpm_bpm));
@@ -160,7 +164,16 @@ int G2PData::DefineVariables(EMode mode)
     if (G2PProcBase::DefineVariables(mode) != 0)
         return -1;
 
+    VarDef gvars[] = {
+        {"e", "Beam Energy", kDOUBLE, &fE},
+        {0}
+    };
+
+    if (DefineVarsFromList("phys.", gvars, mode) != 0)
+        return -1;
+
     VarDef vars[] = {
+        {"id", "Hole ID", kINT, &fHoleID},
         {"fp.x", "FP X", kDOUBLE, &fV5fp_tr[0]},
         {"fp.t", "FP T", kDOUBLE, &fV5fp_tr[1]},
         {"fp.y", "FP Y", kDOUBLE, &fV5fp_tr[2]},

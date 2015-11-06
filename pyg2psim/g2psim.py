@@ -7,8 +7,8 @@ from array import array
 import ROOT
 ROOT.gSystem.Load(join(dirname(realpath(__file__)), 'libG2PSim.so'))
 
-from config_list import defaults
-from config import expand
+from .config_list import defaults
+from .config import expand
 
 def run(**kwds):
     if not 'base' in kwds:
@@ -161,8 +161,6 @@ def optrun(**kwds):
     run.SetNEvent(n)
     if 'conf' in c:
         run.SetConfigFile(c['conf'])
-    else:
-        run.SetConfigFile('optics.cfg')
     if 'debug' in c:
         run.SetDebugLevel(c['debug'])
     if 'seed' in c:
@@ -178,7 +176,7 @@ def optrun(**kwds):
         run.SetParticle(cr['particle'])
 
     co = c['optics']
-    optics = ROOT.G2POptics(co['filename'])
+    optics = ROOT.G2POptics(co['data'])
     if 'foilz' in co:
         optics.SetFoilZ(co['foilz'])
     if 'bpmz' in co:
@@ -199,4 +197,53 @@ def optrun(**kwds):
     print('Average calculation time for one event: {0:.3f} ms'.format((end-begin) / n * 1000))
 
 def recrun(**kwds):
-    pass
+    from config_list import defaults
+    if not 'base' in kwds:
+        kwds['base'] = defaults
+    c = expand(kwds)
+
+    kDEG = 3.14159265358979323846 / 180.0
+
+    run = ROOT.G2PRun()
+    n = c['n']
+    run.SetNEvent(n)
+    if 'conf' in c:
+        run.SetConfigFile(c['conf'])
+    if 'debug' in c:
+        run.SetDebugLevel(c['debug'])
+    if 'seed' in c:
+        run.SetSeed(c['seed'])
+
+    cr = c['run']
+    run.SetBeamEnergy(cr['e0'])
+    run.SetHRSAngle(cr['angle'] * kDEG)
+    run.SetHRSMomentum(cr['p0'])
+    run.SetTargetType(cr['target'])
+    run.SetFieldType(cr['field'])
+    if 'particle' in cr:
+        run.SetParticle(cr['particle'])
+
+    cd = c['dbrec']
+    data = ROOT.G2PData(cd['data'])
+    ROOT.gG2PApps.Add(data)
+    bwd = ROOT.G2PBwdDB(cd['database'])
+    cb = c['backward']
+    if 'xpars' in cb:
+        cbx = array('d', cb['xpars'])
+        bwd.SetParsX(cbx)
+    if 'ypars' in cb:
+        cby = array('d', cb['ypars'])
+        bwd.SetParsY(cby)
+    if 'z' in cb:
+        bwd.SetRecZ(cb['z'])
+    ROOT.gG2PApps.Add(bwd)
+
+    fname = 'test.root'
+    if 'filename' in c:
+        fname = c['filename']
+    sim = ROOT.G2PSim(fname)
+
+    begin = time()
+    sim.Run()
+    end = time()
+    print('Average calculation time for one event: {0:.3f} ms'.format((end-begin) / n * 1000))

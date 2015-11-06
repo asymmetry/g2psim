@@ -90,6 +90,6 @@ if hasattr(sim.config_list, args['base']):
         del args['flag_optics']
         sim.optrun(**args)
 else:
-    print('g2psim: error: unrecognized configurations: {0}\n'.format(args['base']))
+    print('g2psim: error: unrecognized configurations: {}\n'.format(args['base']))
     parser.print_help()
     exit(1)

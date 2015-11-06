@@ -46,6 +46,9 @@ protected:
 
     queue<sData> fData;
 
+    int fHoleID;
+    double fE;
+
     double fV5bpm_bpm[5];
     double fV5bpm_lab[5];
     double fV5bpm_tr[5];

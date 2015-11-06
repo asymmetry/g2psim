@@ -48,7 +48,7 @@ G2PBwdDB::G2PBwdDB()
     // Only for ROOT I/O
 }
 
-G2PBwdDB::G2PBwdDB(const char *name) : fDBFile(name), fFieldRatio(0.0), frecz_lab(0.0)
+G2PBwdDB::G2PBwdDB(const char *name) : fDBFile(name), fE(0.0), fFieldRatio(0.0), frecz_lab(0.0)
 {
     if (pG2PBwdDB) {
         Error("G2PBwdDB()", "Only one instance of G2PBwdDB allowed.");
@@ -59,6 +59,9 @@ G2PBwdDB::G2PBwdDB(const char *name) : fDBFile(name), fFieldRatio(0.0), frecz_la
     pG2PBwdDB = this;
 
     memset(fFitPars, 0, sizeof(fFitPars));
+    memset(fCorT, 0, sizeof(fCorT));
+    memset(fCorP, 0, sizeof(fCorP));
+    memset(fCorD, 0, sizeof(fCorD));
 
     fPriority = 5;
 
@@ -265,11 +268,13 @@ int G2PBwdDB::Process()
         Info(here, " ");
 
     if (gG2PVars->FindSuffix("bpm.x") && gG2PVars->FindSuffix("fp.x")) {
+        fE = gG2PVars->FindSuffix("phys.e")->GetValue();
+
         fV5bpm_tr[0] = gG2PVars->FindSuffix("bpm.x")->GetValue();
         fV5bpm_tr[1] = gG2PVars->FindSuffix("bpm.t")->GetValue();
         fV5bpm_tr[2] = gG2PVars->FindSuffix("bpm.y")->GetValue();
         fV5bpm_tr[3] = gG2PVars->FindSuffix("bpm.p")->GetValue();
-        fV5bpm_tr[4] = gG2PVars->FindSuffix("bpm.z")->GetValue();
+        fbpmz_tr = gG2PVars->FindSuffix("bpm.z")->GetValue();
 
         fV5fp_tr[0] = gG2PVars->FindSuffix("fp.x")->GetValue();
         fV5fp_tr[1] = gG2PVars->FindSuffix("fp.t")->GetValue();
@@ -278,18 +283,47 @@ int G2PBwdDB::Process()
     } else
         return -1;
 
+    fV5bpm_tr[4] = fE / fHRSMomentum - 1;
+
+    int save = fDebug;
+    fDebug = 0;
+
+    if (fbpmz_tr < 0.0)
+        Drift("forward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr); // Drift to target plane (z_tr = 0)
+    else
+        Drift("backward", fV5bpm_tr, fbpmz_tr, 0.0, fV5bpm_tr);
+
+    fDebug = save;
+
+    double bpm_temp[5];
     fV5fp_tr[4] = fV5bpm_tr[0];
 
     if (!Backward(fV5fp_tr, fV5tpmat_tr))
         return -1;
 
-    fV5tpmat_tr[0] = GetEffBPM(0); // Get effective bpm x
-    fV5tpmat_tr[2] = GetEffBPM(1); // Get effective bpm y
+    if (fDebug > 1)
+        Info(here, "tpmat_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
+
+    // first iteration
+    GetEffBPM(fV5tpmat_tr, fV5bpm_tr, bpm_temp);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+
+    // second iteration
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+
+    // third iteration
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    Correct(bpm_temp, fV5tpmat_tr, fV5tpcorr_tr);
+
+    GetEffBPM(fV5tpcorr_tr, fV5bpm_tr, bpm_temp);
+    fV5tpcorr_tr[0] = bpm_temp[0];
+    fV5tpcorr_tr[2] = bpm_temp[2];
 
     if (fDebug > 1)
-        Info(here, "tpsnake_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpmat_tr[0], fV5tpmat_tr[1], fV5tpmat_tr[2], fV5tpmat_tr[3], fV5tpmat_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
-    Project(fV5tpmat_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
+    Project(fV5tpcorr_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
 
     if (fDebug > 1)
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
@@ -297,31 +331,39 @@ int G2PBwdDB::Process()
     Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
     TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
 
+    if (fDebug > 1)
+        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+
     if (fabs(frecz_lab) > 1.0e-5) {
         double z_tr;
 
         if (fV5tprec_lab[4] < frecz_lab)
-            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+            Drift("forward", fV5tprec_tr, 0.0, frecz_lab, fV5rec_tr, z_tr);
         else
-            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5tprec_tr, z_tr);
+            Drift("backward", fV5tprec_tr, 0.0, frecz_lab, fV5rec_tr, z_tr);
 
-        TCS2HCS(fV5tprec_tr, z_tr, fV5tprec_lab);
+        TCS2HCS(fV5rec_tr, z_tr, fV5rec_lab);
     }
 
     if (fDebug > 1)
-        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5rec_tr[0], fV5rec_tr[1], fV5rec_tr[2], fV5rec_tr[3], fV5rec_tr[4]);
 
     return 0;
 }
 
 void G2PBwdDB::Clear(Option_t *opt)
 {
+    fbpmz_tr = 0;
+
     memset(fV5bpm_tr, 0, sizeof(fV5bpm_tr));
     memset(fV5fp_tr, 0, sizeof(fV5fp_tr));
     memset(fV5tpmat_tr, 0, sizeof(fV5tpmat_tr));
+    memset(fV5tpcorr_tr, 0, sizeof(fV5tpcorr_tr));
     memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
     memset(fV5tprec_tr, 0, sizeof(fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof(fV5tprec_lab));
+    memset(fV5rec_tr, 0, sizeof(fV5rec_tr));
+    memset(fV5rec_lab, 0, sizeof(fV5rec_lab));
 
     G2PProcBase::Clear(opt);
 }
@@ -355,38 +397,36 @@ void G2PBwdDB::SetRecZ(double z)
     fConfigIsSet.insert((unsigned long) &frecz_lab);
 }
 
-double G2PBwdDB::GetEffBPM(int axis)
+void G2PBwdDB::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr)
 {
     static const char *const here = "GetEffBPM()";
 
-    double xbpm_tr = fV5bpm_tr[0];
-    double ybpm_tr = fV5bpm_tr[2];
-
-    double effbpm_tr;
-
-    if (axis == 0)
-        effbpm_tr = xbpm_tr;
-    else if (axis == 1)
-        effbpm_tr = ybpm_tr;
-    else
-        return 1e38;
+    V5bpmeff_tr[0] = V5bpm_tr[0];
+    V5bpmeff_tr[1] = V5bpm_tr[1];
+    V5bpmeff_tr[2] = V5bpm_tr[2];
+    V5bpmeff_tr[3] = V5bpm_tr[3];
+    V5bpmeff_tr[4] = V5bpm_tr[4];
 
     if (fFieldRatio > 1e-5) {
         // Fit:
         // (Xbpm_tr-Xeffbpm_tr) vs P
         // ([0]+[1]/x)
-        double p = (1 + fV5tpmat_tr[4]) * fHRSMomentum;
-
-        if (axis == 0)
-            effbpm_tr = xbpm_tr - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * ybpm_tr) / p) / 1000;
-        else if (axis == 1)
-            effbpm_tr = ybpm_tr - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * xbpm_tr) / p) / 1000;
+        double p = (1 + V5tp_tr[4]) * fHRSMomentum;
+        V5bpmeff_tr[0] = V5bpm_tr[0] - (fFitPars[0][0] + (fFitPars[0][1] + fFitPars[0][2] * V5bpm_tr[2]) / p) / 1000;
+        V5bpmeff_tr[2] = V5bpm_tr[2] - (fFitPars[1][0] + (fFitPars[1][1] + fFitPars[1][2] * V5bpm_tr[0]) / p) / 1000;
     }
 
     if (fDebug > 2)
-        Info(here, "effbpm_tr :%10.3e", effbpm_tr);
+        Info(here, "effbpm_tr : %10.3e %10.3e", V5bpmeff_tr[0], V5bpmeff_tr[2]);
+}
 
-    return effbpm_tr;
+void G2PBwdDB::Correct(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr)
+{
+    V5corr_tr[0] = V5tp_tr[0];
+    V5corr_tr[1] = V5tp_tr[1] + fCorT[0] + fCorT[1] * V5bpm_tr[0] + fCorT[2] * V5bpm_tr[2];
+    V5corr_tr[2] = V5tp_tr[2];
+    V5corr_tr[3] = V5tp_tr[3] + fCorP[0] + fCorP[1] * V5bpm_tr[0] + fCorP[2] * V5bpm_tr[2];
+    V5corr_tr[4] = V5tp_tr[4] + fCorD[0] + fCorD[1] * V5bpm_tr[0] + fCorD[2] * V5bpm_tr[2];
 }
 
 double G2PBwdDB::CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix)
@@ -490,6 +530,15 @@ int G2PBwdDB::Configure(EMode mode)
         {"y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
         {"y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
         {"y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
+        {"t.p0", "T Const Correction ", kDOUBLE, &fCorT[0]},
+        {"t.px", "T Correction vs Target X", kDOUBLE, &fCorT[1]},
+        {"t.py", "T Correction vs Target Y", kDOUBLE, &fCorT[2]},
+        {"p.p0", "P Const Correction", kDOUBLE, &fCorP[0]},
+        {"p.px", "P Correction vs Target X", kDOUBLE, &fCorP[1]},
+        {"p.py", "P Correction vs Target Y", kDOUBLE, &fCorP[2]},
+        {"d.p0", "D Const Correction", kDOUBLE, &fCorD[0]},
+        {"d.px", "D Correction vs Target X", kDOUBLE, &fCorD[1]},
+        {"d.py", "D Correction vs Target Y", kDOUBLE, &fCorD[2]},
         {"z", "Rec Z (lab)", kDOUBLE, &frecz_lab},
         {0}
     };
@@ -505,27 +554,44 @@ int G2PBwdDB::DefineVariables(EMode mode)
     if (G2PProcBase::DefineVariables(mode) != 0)
         return -1;
 
+    VarDef gvars[] = {
+        {"x", "Rec X", kDOUBLE, &fV5rec_tr[0]},
+        {"t", "Rec T", kDOUBLE, &fV5rec_tr[1]},
+        {"y", "Rec Y", kDOUBLE, &fV5rec_tr[2]},
+        {"p", "Rec P", kDOUBLE, &fV5rec_tr[3]},
+        {"d", "Rec D", kDOUBLE, &fV5rec_tr[4]},
+        {"l_x", "Rec X (lab)", kDOUBLE, &fV5rec_lab[0]},
+        {"l_t", "Rec T (lab)", kDOUBLE, &fV5rec_lab[1]},
+        {"l_y", "Rec Y (lab)", kDOUBLE, &fV5rec_lab[2]},
+        {"l_p", "Rec P (lab)", kDOUBLE, &fV5rec_lab[3]},
+        {"l_z", "Rec Z (lab)", kDOUBLE, &fV5rec_lab[4]},
+        {0}
+    };
+
+    if (DefineVarsFromList("rec.", gvars, mode) != 0)
+        return -1;
+
     VarDef vars[] = {
         {"tp.mat.x", "Matrix Rec to Target Plane X", kDOUBLE, &fV5tpmat_tr[0]},
         {"tp.mat.t", "Matrix Rec to Target Plane T", kDOUBLE, &fV5tpmat_tr[1]},
         {"tp.mat.y", "Matrix Rec to Target Plane Y", kDOUBLE, &fV5tpmat_tr[2]},
         {"tp.mat.p", "Matrix Rec to Target Plane P", kDOUBLE, &fV5tpmat_tr[3]},
         {"tp.mat.d", "Matrix Rec to Target Plane D", kDOUBLE, &fV5tpmat_tr[4]},
+        {"tp.corr.x", "After Correction X", kDOUBLE, &fV5tpcorr_tr[0]},
+        {"tp.corr.t", "After Correction T", kDOUBLE, &fV5tpcorr_tr[1]},
+        {"tp.corr.y", "After Correction Y", kDOUBLE, &fV5tpcorr_tr[2]},
+        {"tp.corr.p", "After Correction P", kDOUBLE, &fV5tpcorr_tr[3]},
+        {"tp.corr.d", "After Correction D", kDOUBLE, &fV5tpcorr_tr[4]},
         {"sieve.proj.x", "Project to Sieve X", kDOUBLE, &fV5sieveproj_tr[0]},
         {"sieve.proj.t", "Project to Sieve T", kDOUBLE, &fV5sieveproj_tr[1]},
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
         {"sieve.proj.p", "Project to Sieve P", kDOUBLE, &fV5sieveproj_tr[3]},
         {"sieve.proj.d", "Project to Sieve D", kDOUBLE, &fV5sieveproj_tr[3]},
-        {"tp.rec.x", "Rec X", kDOUBLE, &fV5tprec_tr[0]},
-        {"tp.rec.t", "Rec T", kDOUBLE, &fV5tprec_tr[1]},
-        {"tp.rec.y", "Rec Y", kDOUBLE, &fV5tprec_tr[2]},
-        {"tp.rec.p", "Rec P", kDOUBLE, &fV5tprec_tr[3]},
-        {"tp.rec.d", "Rec D", kDOUBLE, &fV5tprec_tr[4]},
-        {"tp.rec.l_x", "Rec X (lab)", kDOUBLE, &fV5tprec_lab[0]},
-        {"tp.rec.l_t", "Rec T (lab)", kDOUBLE, &fV5tprec_lab[1]},
-        {"tp.rec.l_y", "Rec Y (lab)", kDOUBLE, &fV5tprec_lab[2]},
-        {"tp.rec.l_p", "Rec P (lab)", kDOUBLE, &fV5tprec_lab[3]},
-        {"tp.rec.l_z", "Rec Z (lab)", kDOUBLE, &fV5tprec_lab[4]},
+        {"tp.rec.x", "Rec to Target Plane X", kDOUBLE, &fV5tprec_tr[0]},
+        {"tp.rec.t", "Rec to Target Plane T", kDOUBLE, &fV5tprec_tr[1]},
+        {"tp.rec.y", "Rec to Target Plane Y", kDOUBLE, &fV5tprec_tr[2]},
+        {"tp.rec.p", "Rec to Target Plane P", kDOUBLE, &fV5tprec_tr[3]},
+        {"tp.rec.d", "Rec to Target Plane D", kDOUBLE, &fV5tprec_tr[4]},
         {0}
     };
 

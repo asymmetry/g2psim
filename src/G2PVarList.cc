@@ -205,7 +205,10 @@ G2PVar *G2PVarList::FindSuffix(const char *suf) const
     while (G2PVar *ptr = static_cast<G2PVar *>(next())) {
         name = ptr->GetName();
 
-        if (name.EndsWith(suf)) {
+        if (name.EqualTo(suf)) {
+            p = ptr;
+            break;
+        } else if (name.EndsWith(suf)) {
             if (nfind == 0)
                 p = ptr;
 

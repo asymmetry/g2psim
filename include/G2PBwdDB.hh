@@ -68,7 +68,8 @@ protected:
         double fValue; // the final value once x is given
     };
 
-    double GetEffBPM(int axis);
+    void GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr);
+    void Correct(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr);
 
     void CalcMatrix(const double x, vector<THaMatrixElement> &matrix);
     double CalcVar(const double powers[][5], vector<THaMatrixElement> &matrix);
@@ -81,20 +82,29 @@ protected:
 
     const char *fDBFile;
 
+    double fE;
     double fFieldRatio;
 
     double fFitPars[2][3];
+    double fCorT[3];
+    double fCorP[3];
+    double fCorD[3];
     double frecz_lab;
 
     double fV5bpm_tr[5];
+    double fbpmz_tr;
 
     double fV5fp_tr[5];
 
     double fV5tpmat_tr[5];
+    double fV5tpcorr_tr[5];
     double fV5sieveproj_tr[5];
 
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
+
+    double fV5rec_tr[5];
+    double fV5rec_lab[5];
 
     vector<THaMatrixElement> *fCurrentMatrixElems;
     vector<THaMatrixElement> ftMatrixElems;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import ctypes, os, re, sys
+import os, re, sys
 import argparse as ap
 from array import array
 from math import tan
@@ -15,7 +15,7 @@ class CustomHelpFormatter(ap.HelpFormatter):
             options = ''
             if len(action.option_strings[0]) > 2:
                 options = '    '
-            options = options + ', '.join(action.option_strings)
+            options += ', '.join(action.option_strings)
             return options
 
 pwd = os.getcwd()
@@ -29,12 +29,7 @@ parser.add_argument('-s', '--sepfile', action='store_true', help='store result t
 
 args = vars(parser.parse_args())
 
-bpmdir = args['bpmdir']
-dbdir = args['dbdir']
-debug = args['debug']
-rootdir = args['rootdir']
-sepfile_flag = args['sepfile_flag']
-run = args['run']
+run, bpmdir, dbdir, debug, rootdir, sepfile_flag = [args[x] for x in ['run', 'bpmdir', 'dbdir', 'debug', 'rootdir', 'sepfile_flag']]
 arm = 'L' if run < 20000 else 'R'
 
 import ROOT
@@ -48,24 +43,21 @@ else:
     print('The G2PSim or analyzer library does not exist!')
     exit(1)
 
-rootfile = '{0}/g2p_{1}.root'.format(rootdir, run)
+rootfile = '{}/g2p_{}.root'.format(rootdir, run)
 if not exists(rootfile):
-    print('{0} does not exist!'.format(rootfile))
+    print('{} does not exist!'.format(rootfile))
     exit(1)
-f = None
-t = None
-fout = None
-tout = None
+f, t, fout, tout = None, None, None, None
 if sepfile_flag:
     f = True
     t = ROOT.TChain('T')
     t.Add(rootfile)
     for i in range(1, 20):
-        if exists('{0}/g2p_{1}_{2}.root'.format(rootdir, run, i)):
-            t.Add('{0}/g2p_{1}_{2}.root'.format(rootdir, run, i))
+        if exists('{}/g2p_{}_{}.root'.format(rootdir, run, i)):
+            t.Add('{}/g2p_{}_{}.root'.format(rootdir, run, i))
     if bpmdir != None:
-        t.AddFriend('T', '{0}/bpm_{1}.root'.format(bpmdir, run))
-    fout = ROOT.TFile('{0}/optics_{1}.root'.format(rootdir, run), 'RECREATE')
+        t.AddFriend('T', '{}/bpm_{}.root'.format(bpmdir, run))
+    fout = ROOT.TFile('{}/optics_{}.root'.format(rootdir, run), 'RECREATE')
     tout = ROOT.TTree('T', 'reconstructed kinematics tree')
 else:
     f = ROOT.TFile(rootfile, 'UPDATE')
@@ -80,25 +72,25 @@ time = int(getattr(t, 'Event_Branch').GetHeader().GetEvtTime()/1.0e6)
 timelist = [int(x) for x in os.listdir(dbdir) if str.isdigit(x)]
 timelist.sort()
 dbtime = [x for x in timelist if x < time][-1]
-dbfile = join(dbdir, str(dbtime), 'db_{0}.optics.cfg'.format(arm))
-print('Use {0}'.format(dbfile))
+dbfile = join(dbdir, str(dbtime), 'db_{}.optics.cfg'.format(arm))
+print('Use {}'.format(dbfile))
 if not exists(dbfile):
-    print('{0} does not exist!'.format(dbfile))
+    print('{} does not exist!'.format(dbfile))
     exit(1)
 ROOT.gG2PRun.SetConfigFile(dbfile)
 
-ep = [-1, -1]
+e, p = -1, -1
 rundbfile = join(dbdir, 'db_rec.dat')
 with open(rundbfile, 'r') as fi:
     for line in fi:
         if line.startswith(str(run)):
-            ep = map(float, line.strip().split())[1:3]
+            _, p, e = [float(x) for x in line.strip().split()]
             break
-if ep[0] != -1.0:
-    ROOT.gG2PRun.SetBeamEnergy(ep[1])
-    ROOT.gG2PRun.SetHRSMomentum(ep[0])
+if e != -1 and p != -1:
+    ROOT.gG2PRun.SetBeamEnergy(e)
+    ROOT.gG2PRun.SetHRSMomentum(p)
 else:
-    print('db_rec.dat do not have settings for run {0}!'.format(run))
+    print('db_rec.dat do not have settings for run {}!'.format(run))
     exit(1)
 
 rec = ROOT.G2PRec()
@@ -117,44 +109,40 @@ if debug > 0:
     ROOT.gG2PRun.Print()
 print('Ready to go!')
 
-bpmvars = None
-bpmz = 0
+bpmvars, bpmz = None, 0
 gep = False
-if t.FindBranch('{0}rb.tgt_m13_x'.format(arm)):
-    bpmvars = [x.format(arm) for x in ['{0}rb.tgt_m13_x', '{0}rb.tgt_m13_theta', '{0}rb.tgt_m13_y', '{0}rb.tgt_m13_phi']]
+if t.FindBranch('{}rb.tgt_m13_x'.format(arm)):
+    bpmvars = [x.format(arm) for x in ['{}rb.tgt_m13_x', '{}rb.tgt_m13_theta', '{}rb.tgt_m13_y', '{}rb.tgt_m13_phi']]
     bpmz = -13.6271e-3
-elif t.FindBranch('{0}rb.tgt_m12_x'.format(arm)):
-    bpmvars = [x.format(arm) for x in ['{0}rb.tgt_m12_x', '{0}rb.tgt_m12_theta', '{0}rb.tgt_m12_y', '{0}rb.tgt_m12_phi']]
+elif t.FindBranch('{}rb.tgt_m12_x'.format(arm)):
+    bpmvars = [x.format(arm) for x in ['{}rb.tgt_m12_x', '{}rb.tgt_m12_theta', '{}rb.tgt_m12_y', '{}rb.tgt_m12_phi']]
     bpmz = -12.5476e-3
-elif t.FindBranch('{0}rb.tgt_m10_x'.format(arm)):
-    bpmvars = [x.format(arm) for x in ['{0}rb.tgt_m10_x', '{0}rb.tgt_m10_theta', '{0}rb.tgt_m10_y', '{0}rb.tgt_m10_phi']]
+elif t.FindBranch('{}rb.tgt_m10_x'.format(arm)):
+    bpmvars = [x.format(arm) for x in ['{}rb.tgt_m10_x', '{}rb.tgt_m10_theta', '{}rb.tgt_m10_y', '{}rb.tgt_m10_phi']]
     bpmz = -10.81e-3
-elif t.FindBranch('{0}rb.tgt_0_x'.format(arm)):
-    bpmvars = [x.format(arm) for x in ['{0}rb.tgt_0_x', '{0}rb.tgt_0_theta', '{0}rb.tgt_0_y', '{0}rb.tgt_0_phi']]
-elif not t.FindBranch('{0}rb.bpmavail'.format(arm)):
+elif t.FindBranch('{}rb.tgt_0_x'.format(arm)):
+    bpmvars = [x.format(arm) for x in ['{}rb.tgt_0_x', '{}rb.tgt_0_theta', '{}rb.tgt_0_y', '{}rb.tgt_0_phi']]
+elif not t.FindBranch('{}rb.bpmavail'.format(arm)):
     gep = True
 else:
     print('Could not find beam information.')
     exit(1)
-bpmavailvar = '{0}rb.bpmavail'.format(arm)
-tpmatvars = [x.format(arm) for x in ['{0}.gold.x', '{0}.gold.th', '{0}.gold.y', '{0}.gold.ph', '{0}.gold.dp']]
+bpmavailvar = '{}rb.bpmavail'.format(arm)
+tpmatvars = [x.format(arm) for x in ['{}.gold.x', '{}.gold.th', '{}.gold.y', '{}.gold.ph', '{}.gold.dp']]
 
 inc = 0
 while f:
     if not sepfile_flag:
-        print('Opening existed rootfile {0}'.format(rootfile))
-        
-    #tpcorrvars = [x.format(arm) for x in ['{0}.cor.x', '{0}.cor.th', '{0}.cor.y', '{0}.cor.ph', '{0}.cor.dp']]
-    #tpcorrdata = [array('d', [0]) for x in range(5)]
-    recvars = [x.format(arm) for x in ['{0}.rec.x', '{0}.rec.th', '{0}.rec.y', '{0}.rec.ph', '{0}.rec.dp']]
+        print('Opening existed rootfile {}'.format(rootfile))
+
+    recvars = [x.format(arm) for x in ['{}.rec.x', '{}.rec.th', '{}.rec.y', '{}.rec.ph', '{}.rec.dp']]
     recdata = [array('d', [0]) for x in range(5)]
-    reclvars = [x.format(arm) for x in ['{0}.rec.l_x', '{0}.rec.l_th', '{0}.rec.l_y', '{0}.rec.l_ph', '{0}.rec.l_z']]
+    reclvars = [x.format(arm) for x in ['{}.rec.l_x', '{}.rec.l_th', '{}.rec.l_y', '{}.rec.l_ph', '{}.rec.l_z']]
     recldata = [array('d', [0]) for x in range(5)]
     newbranch = []
     def addvars(n, d):
         for i in range(len(n)):
             newbranch.append(tout.Branch(n[i], d[i], n[i] + '/D'))
-    #addvars(tpcorrvars, tpcorrdata)
     addvars(recvars, recdata)
     addvars(reclvars, recldata)
 
@@ -163,9 +151,9 @@ while f:
         t.GetEntry(i)
         evnum = getattr(t, 'Event_Branch').GetHeader().GetEvtNum()
         if debug > 1:
-            print('Processing event {0} ......'.format(evnum))
+            print('Processing event {} ......'.format(evnum))
         elif i % 10000 == 0 and i != 0:
-            print('{0} event processed ......'.format(i))
+            print('{} event processed ......'.format(i))
 
         bpmavail = 1
         bpm_bpm = [0] * 5
@@ -177,23 +165,16 @@ while f:
             bpm_bpm.append(bpmz)
         tpmat_tr = [getattr(t, x) for x in tpmatvars]
 
-        tpcorr_tr = array('d', [1e38] * 5)
-        sieveproj_tr = array('d', [1e38] * 5)
         rec_tr = array('d', [1e38] * 5)
         rec_lab = array('d', [1e38] * 5)
-        if bpmavail < 0.5 or any(x > 1e8 for x in tpmat_tr):
-            if debug > 2:
-                print('{0:1d}'.format(bpmavail) + ' '.join(['{0:10.3e}'.format(x) for x in tpmat_tr]))
-        else:
-            rec.Process(array('d', bpm_bpm), array('d', tpmat_tr), tpcorr_tr, sieveproj_tr, rec_tr, rec_lab)
+        if bpmavail > 0.5 and all(x < 1e10 for x in tpmat_tr):
+            rec.Process(array('d', bpm_bpm), array('d', tpmat_tr), rec_tr, rec_lab)
+            if all(x < 1e37 for x in rec_tr):
+                rec_tr[1] = tan(rec_tr[1])
+                rec_tr[3] = tan(rec_tr[3])
             def arraytodata(a, d):
                 for i in range(len(d)):
                     d[i][0] = a[i]
-            def totan(l):
-                if all(x < 1e37 for x in l):
-                    l[1] = tan(l[1])
-                    l[3] = tan(l[3])         
-            map(totan, [tpcorr_tr, sieveproj_tr, rec_tr])
             arraytodata(rec_tr, recdata)
             arraytodata(rec_lab, recldata)
 
@@ -211,7 +192,7 @@ while f:
     else:
         f.Close()
         inc += 1
-        rootfile = '{0}/g2p_{1}_{2}.root'.format(rootdir, run, inc)
+        rootfile = '{}/g2p_{}_{}.root'.format(rootdir, run, inc)
         if exists(rootfile):
             f = ROOT.TFile(rootfile, 'UPDATE')
         else:

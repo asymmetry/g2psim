@@ -39,7 +39,7 @@ public:
 protected:
     G2PBwdHRS(); // Only for ROOT I/O
 
-    double GetEffBPM(int axis);
+    void GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr);
 
     bool Backward(const double *V5fp_tr, double *V5tp_tr);
 
@@ -65,6 +65,9 @@ protected:
 
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
+
+    double fV5rec_tr[5];
+    double fV5rec_lab[5];
 
     G2PSieve *pSieve;
     HRSTransBase *pModel;

@@ -89,10 +89,10 @@ int G2PRec::Process()
     } else
         return -1;
 
-    return Process(fV5bpm_bpm, fV5tpmat_tr, fV5tpcorr_tr, fV5sieveproj_tr, fV5tprec_tr, fV5tprec_lab);
+    return Process(fV5bpm_bpm, fV5tpmat_tr, fV5tprec_tr, fV5tprec_lab);
 }
 
-int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5tpcorr_tr, double *V5sieveproj_tr, double *V5tprec_tr, double *V5tprec_lab)
+int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5rec_tr, double *V5rec_lab)
 {
     static const char *const here = "Process()";
 
@@ -126,61 +126,64 @@ int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V
 
     // first iteration
     GetEffBPM(V5tpmat_tr, V5bpm_tr, bpm_temp);
-    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
+    Correct(bpm_temp, V5tpmat_tr, fV5tpcorr_tr);
 
     if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
     // second iteration
-    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
-    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
+    GetEffBPM(fV5tpcorr_tr, V5bpm_tr, bpm_temp);
+    Correct(bpm_temp, V5tpmat_tr, fV5tpcorr_tr);
 
     if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
     // third iteration
-    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
-    Correct(bpm_temp, V5tpmat_tr, V5tpcorr_tr);
+    GetEffBPM(fV5tpcorr_tr, V5bpm_tr, bpm_temp);
+    Correct(bpm_temp, V5tpmat_tr, fV5tpcorr_tr);
 
-    GetEffBPM(V5tpcorr_tr, V5bpm_tr, bpm_temp);
-    V5tpcorr_tr[0] = bpm_temp[0];
-    V5tpcorr_tr[2] = bpm_temp[2];
-
-    if (fDebug > 1)
-        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tpcorr_tr[0], V5tpcorr_tr[1], V5tpcorr_tr[2], V5tpcorr_tr[3], V5tpcorr_tr[4]);
-
-    Project(V5tpcorr_tr, 0.0, pSieve->GetZ(), V5sieveproj_tr);
+    GetEffBPM(fV5tpcorr_tr, V5bpm_tr, bpm_temp);
+    fV5tpcorr_tr[0] = bpm_temp[0];
+    fV5tpcorr_tr[2] = bpm_temp[2];
 
     if (fDebug > 1)
-        Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", V5sieveproj_tr[0], V5sieveproj_tr[1], V5sieveproj_tr[2], V5sieveproj_tr[3], V5sieveproj_tr[4]);
+        Info(here, "tpcorr_tr : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tpcorr_tr[0], fV5tpcorr_tr[1], fV5tpcorr_tr[2], fV5tpcorr_tr[3], fV5tpcorr_tr[4]);
 
-    double l = Drift("backward", V5sieveproj_tr, pSieve->GetZ(), 0.0, V5tprec_tr);
+    Project(fV5tpcorr_tr, 0.0, pSieve->GetZ(), fV5sieveproj_tr);
+
+    if (fDebug > 1)
+        Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
+
+    double l = Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
 
     if (l > 2.0) {
         for (int i = 0; i < 5; i++) {
-            V5tprec_tr[i] = 1.e+38;
-            V5tprec_lab[i] = 1.e+38;
+            fV5tprec_tr[i] = 1.e+38;
+            fV5tprec_lab[i] = 1.e+38;
         }
 
         return -1;
     }
 
-    TCS2HCS(V5tprec_tr, 0.0, V5tprec_lab);
+    TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
+
+    if (fDebug > 1)
+        Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
 
     if (fabs(recz_lab) > 1.0e-5) {
         double z_tr;
 
-        if (V5tprec_lab[4] < recz_lab)
-            Drift("forward", V5tprec_tr, 0.0, recz_lab, V5tprec_tr, z_tr);
+        if (fV5tprec_lab[4] < recz_lab)
+            Drift("forward", fV5tprec_tr, 0.0, recz_lab, V5rec_tr, z_tr);
         else
-            Drift("backward", V5tprec_tr, 0.0, recz_lab, V5tprec_tr, z_tr);
+            Drift("backward", fV5tprec_tr, 0.0, recz_lab, V5rec_tr, z_tr);
 
-        TCS2HCS(V5tprec_tr, z_tr, V5tprec_lab);
+        TCS2HCS(V5rec_tr, z_tr, V5rec_lab);
     }
 
     if (fDebug > 1) {
-        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tprec_tr[0], V5tprec_tr[1], V5tprec_tr[2], V5tprec_tr[3], V5tprec_tr[4]);
-        Info(here, "rec_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", V5tprec_lab[0], V5tprec_lab[1], V5tprec_lab[2], V5tprec_lab[3], V5tprec_lab[4]);
+        Info(here, "rec_tr    : %10.3e %10.3e %10.3e %10.3e %10.3e", V5rec_tr[0], V5rec_tr[1], V5rec_tr[2], V5rec_tr[3], V5rec_tr[4]);
+        Info(here, "rec_lab   : %10.3e %10.3e %10.3e %10.3e %10.3e", V5rec_lab[0], V5rec_lab[1], V5rec_lab[2], V5rec_lab[3], V5rec_lab[4]);
     }
 
     return 0;
@@ -194,6 +197,8 @@ void G2PRec::Clear(Option_t * /*option*/)
     memset(fV5sieveproj_tr, 0, sizeof(fV5sieveproj_tr));
     memset(fV5tprec_tr, 0, sizeof(fV5tprec_tr));
     memset(fV5tprec_lab, 0, sizeof(fV5tprec_lab));
+    memset(fV5rec_tr, 0, sizeof(fV5rec_tr));
+    memset(fV5rec_lab, 0, sizeof(fV5rec_lab));
 }
 
 void G2PRec::GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr)
@@ -239,21 +244,21 @@ int G2PRec::Configure(EMode mode)
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"fit.x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
-        {"fit.x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
-        {"fit.x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
-        {"fit.y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
-        {"fit.y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
-        {"fit.y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
-        {"cor.t.p0", "T Const Correction ", kDOUBLE, &fCorT[0]},
-        {"cor.t.px", "T Correction vs Target X", kDOUBLE, &fCorT[1]},
-        {"cor.t.py", "T Correction vs Target Y", kDOUBLE, &fCorT[2]},
-        {"cor.p.p0", "P Const Correction", kDOUBLE, &fCorP[0]},
-        {"cor.p.px", "P Correction vs Target X", kDOUBLE, &fCorP[1]},
-        {"cor.p.py", "P Correction vs Target Y", kDOUBLE, &fCorP[2]},
-        {"cor.d.p0", "D Const Correction", kDOUBLE, &fCorD[0]},
-        {"cor.d.px", "D Correction vs Target X", kDOUBLE, &fCorD[1]},
-        {"cor.d.py", "D Correction vs Target Y", kDOUBLE, &fCorD[2]},
+        {"x.p0", "Effective X p0", kDOUBLE, &fFitPars[0][0]},
+        {"x.p1", "Effective X p1", kDOUBLE, &fFitPars[0][1]},
+        {"x.p2", "Effective X p2", kDOUBLE, &fFitPars[0][2]},
+        {"y.p0", "Effective Y p0", kDOUBLE, &fFitPars[1][0]},
+        {"y.p1", "Effective Y p1", kDOUBLE, &fFitPars[1][1]},
+        {"y.p2", "Effective Y p2", kDOUBLE, &fFitPars[1][2]},
+        {"t.p0", "T Const Correction ", kDOUBLE, &fCorT[0]},
+        {"t.px", "T Correction vs Target X", kDOUBLE, &fCorT[1]},
+        {"t.py", "T Correction vs Target Y", kDOUBLE, &fCorT[2]},
+        {"p.p0", "P Const Correction", kDOUBLE, &fCorP[0]},
+        {"p.px", "P Correction vs Target X", kDOUBLE, &fCorP[1]},
+        {"p.py", "P Correction vs Target Y", kDOUBLE, &fCorP[2]},
+        {"d.p0", "D Const Correction", kDOUBLE, &fCorD[0]},
+        {"d.px", "D Correction vs Target X", kDOUBLE, &fCorD[1]},
+        {"d.py", "D Correction vs Target Y", kDOUBLE, &fCorD[2]},
         {0}
     };
 
@@ -279,16 +284,21 @@ int G2PRec::DefineVariables(EMode mode)
         {"sieve.proj.y", "Project to Sieve Y", kDOUBLE, &fV5sieveproj_tr[2]},
         {"sieve.proj.p", "Project to Sieve P", kDOUBLE, &fV5sieveproj_tr[3]},
         {"sieve.proj.d", "Project to Sieve D", kDOUBLE, &fV5sieveproj_tr[4]},
-        {"x", "Rec X", kDOUBLE, &fV5tprec_tr[0]},
-        {"t", "Rec T", kDOUBLE, &fV5tprec_tr[1]},
-        {"y", "Rec Y", kDOUBLE, &fV5tprec_tr[2]},
-        {"p", "Rec P", kDOUBLE, &fV5tprec_tr[3]},
-        {"d", "Rec D", kDOUBLE, &fV5tprec_tr[4]},
-        {"l_x", "Rec X (lab)", kDOUBLE, &fV5tprec_lab[0]},
-        {"l_t", "Rec T (lab)", kDOUBLE, &fV5tprec_lab[1]},
-        {"l_y", "Rec Y (lab)", kDOUBLE, &fV5tprec_lab[2]},
-        {"l_p", "Rec P (lab)", kDOUBLE, &fV5tprec_lab[3]},
-        {"l_z", "Rec Z (lab)", kDOUBLE, &fV5tprec_lab[4]},
+        {"tp.rec.x", "Rec to Target Plane X", kDOUBLE, &fV5tprec_tr[0]},
+        {"tp.rec.t", "Rec to Target Plane T", kDOUBLE, &fV5tprec_tr[1]},
+        {"tp.rec.y", "Rec to Target Plane Y", kDOUBLE, &fV5tprec_tr[2]},
+        {"tp.rec.p", "Rec to Target Plane P", kDOUBLE, &fV5tprec_tr[3]},
+        {"tp.rec.d", "Rec to Target Plane D", kDOUBLE, &fV5tprec_tr[4]},
+        {"x", "Rec X", kDOUBLE, &fV5rec_tr[0]},
+        {"t", "Rec T", kDOUBLE, &fV5rec_tr[1]},
+        {"y", "Rec Y", kDOUBLE, &fV5rec_tr[2]},
+        {"p", "Rec P", kDOUBLE, &fV5rec_tr[3]},
+        {"d", "Rec D", kDOUBLE, &fV5rec_tr[4]},
+        {"l_x", "Rec X (lab)", kDOUBLE, &fV5rec_lab[0]},
+        {"l_t", "Rec T (lab)", kDOUBLE, &fV5rec_lab[1]},
+        {"l_y", "Rec Y (lab)", kDOUBLE, &fV5rec_lab[2]},
+        {"l_p", "Rec P (lab)", kDOUBLE, &fV5rec_lab[3]},
+        {"l_z", "Rec Z (lab)", kDOUBLE, &fV5rec_lab[4]},
         {0}
     };
 

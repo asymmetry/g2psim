@@ -25,7 +25,7 @@ public:
 
     virtual int Begin();
     virtual int Process();
-    virtual int Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5tpcorr_tr, double *V5sieveproj_tr, double *V5tprec_tr, double *V5tprec_lab);
+    virtual int Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V5rec_tr, double *V5rec_lab);
     virtual void Clear(Option_t *opt = "");
 
     // Gets
@@ -57,6 +57,9 @@ protected:
 
     double fV5tprec_tr[5];
     double fV5tprec_lab[5];
+
+    double fV5rec_tr[5];
+    double fV5rec_lab[5];
 
     G2PSieve *pSieve;
 
