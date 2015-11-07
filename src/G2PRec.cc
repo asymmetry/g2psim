@@ -167,10 +167,17 @@ int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V
 
     TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
 
-    if (fDebug > 1)
+    if (fDebug > 1) {
         Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+        Info(here, "tprec_lab : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_lab[0], fV5tprec_lab[1], fV5tprec_lab[2], fV5tprec_lab[3], fV5tprec_lab[4]);
+    }
 
-    if (fabs(recz_lab) > 1.0e-5) {
+    for (int i = 0; i < 5; i++) {
+        V5rec_tr[i] = fV5tprec_tr[i];
+        V5rec_lab[i] = fV5tprec_lab[i];
+    }
+
+    if (fabs(fV5tprec_lab[4]) > 1.0e-5) {
         double z_tr;
 
         if (fV5tprec_lab[4] < recz_lab)

@@ -331,10 +331,17 @@ int G2PBwdDB::Process()
     Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
     TCS2HCS(fV5tprec_tr, 0.0, fV5tprec_lab);
 
-    if (fDebug > 1)
+    if (fDebug > 1) {
         Info(here, "tprec_tr  : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_tr[0], fV5tprec_tr[1], fV5tprec_tr[2], fV5tprec_tr[3], fV5tprec_tr[4]);
+        Info(here, "tprec_lab : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_lab[0], fV5tprec_lab[1], fV5tprec_lab[2], fV5tprec_lab[3], fV5tprec_lab[4]);
+    }
 
-    if (fabs(frecz_lab) > 1.0e-5) {
+    for (int i = 0; i < 5; i++) {
+        fV5rec_tr[i] = fV5tprec_tr[i];
+        fV5rec_lab[i] = fV5tprec_lab[i];
+    }
+
+    if (fabs(fV5tprec_lab[4]) > 1.0e-5) {
         double z_tr;
 
         if (fV5tprec_lab[4] < frecz_lab)
