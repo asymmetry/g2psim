@@ -154,9 +154,7 @@ int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V
     if (fDebug > 1)
         Info(here, "sivproj_tr: %10.3e %10.3e %10.3e %10.3e %10.3e", fV5sieveproj_tr[0], fV5sieveproj_tr[1], fV5sieveproj_tr[2], fV5sieveproj_tr[3], fV5sieveproj_tr[4]);
 
-    double l = Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr);
-
-    if (l > 2.0) {
+    if (Drift("backward", fV5sieveproj_tr, pSieve->GetZ(), 0.0, fV5tprec_tr) > 2.0) {
         for (int i = 0; i < 5; i++) {
             fV5tprec_tr[i] = 1.e+38;
             fV5tprec_lab[i] = 1.e+38;
@@ -172,11 +170,6 @@ int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V
         Info(here, "tprec_lab : %10.3e %10.3e %10.3e %10.3e %10.3e", fV5tprec_lab[0], fV5tprec_lab[1], fV5tprec_lab[2], fV5tprec_lab[3], fV5tprec_lab[4]);
     }
 
-    for (int i = 0; i < 5; i++) {
-        V5rec_tr[i] = fV5tprec_tr[i];
-        V5rec_lab[i] = fV5tprec_lab[i];
-    }
-
     if (fabs(fV5tprec_lab[4]) > 1.0e-5) {
         double z_tr;
 
@@ -186,6 +179,11 @@ int G2PRec::Process(const double *V5bpm_bpm, const double *V5tpmat_tr, double *V
             Drift("backward", fV5tprec_tr, 0.0, recz_lab, V5rec_tr, z_tr);
 
         TCS2HCS(V5rec_tr, z_tr, V5rec_lab);
+    } else {
+        for (int i = 0; i < 5; i++) {
+            V5rec_tr[i] = fV5tprec_tr[i];
+            V5rec_lab[i] = fV5tprec_lab[i];
+        }
     }
 
     if (fDebug > 1) {

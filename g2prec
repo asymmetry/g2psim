@@ -135,16 +135,25 @@ while f:
     if not sepfile_flag:
         print('Opening existed rootfile {}'.format(rootfile))
 
-    recvars = [x.format(arm) for x in ['{}.rec.x', '{}.rec.th', '{}.rec.y', '{}.rec.ph', '{}.rec.dp']]
-    recdata = [array('d', [0]) for x in range(5)]
-    reclvars = [x.format(arm) for x in ['{}.rec.l_x', '{}.rec.l_th', '{}.rec.l_y', '{}.rec.l_ph', '{}.rec.l_z']]
-    recldata = [array('d', [0]) for x in range(5)]
+    recvars = [(x.format(arm), array('d', [0])) for x in ['{}.rec.x', '{}.rec.th', '{}.rec.y', '{}.rec.ph', '{}.rec.dp']]
+    reclvars = [(x.format(arm), array('d', [0])) for x in ['{}.rec.l_x', '{}.rec.l_th', '{}.rec.l_y', '{}.rec.l_ph', '{}.rec.l_z']]
+    def removevars(lv):
+        for i in lv:
+            rb = t.GetBranch(i[0])
+            rl = t.GetLeaf(i[0])
+            if rl:
+                t.GetListOfLeaves().Remove(rl)
+                t.GetListOfLeaves().Compress()
+            if rb:
+                t.GetListOfBranches().Remove(rb)
+                t.GetListOfBranches().Compress()
+    if not sepfile_flag:
+        map(removevars, [recvars, reclvars])
     newbranch = []
-    def addvars(n, d):
-        for i in range(len(n)):
-            newbranch.append(tout.Branch(n[i], d[i], n[i] + '/D'))
-    addvars(recvars, recdata)
-    addvars(reclvars, recldata)
+    def addvars(lv):
+        for i in lv:
+            newbranch.append(tout.Branch(i[0], i[1], i[0] + '/D'))
+    map(addvars, [recvars, reclvars])
 
     n = t.GetEntries()
     for i in range(n):
@@ -172,11 +181,10 @@ while f:
             if all(x < 1e37 for x in rec_tr):
                 rec_tr[1] = tan(rec_tr[1])
                 rec_tr[3] = tan(rec_tr[3])
-            def arraytodata(a, d):
-                for i in range(len(d)):
-                    d[i][0] = a[i]
-            arraytodata(rec_tr, recdata)
-            arraytodata(rec_lab, recldata)
+        def arraytodata(adp):
+            for i, j in enumerate(adp[0]):
+                j[1][0] = adp[1][i]
+        map(arraytodata, [(recvars, rec_tr), (reclvars, rec_lab)])
 
         if sepfile_flag:
             tout.Fill()
@@ -195,6 +203,8 @@ while f:
         rootfile = '{}/g2p_{}_{}.root'.format(rootdir, run, inc)
         if exists(rootfile):
             f = ROOT.TFile(rootfile, 'UPDATE')
+            t = f.Get('T')
+            tout = t
         else:
             f = None
 
