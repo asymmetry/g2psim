@@ -157,7 +157,7 @@ optics_l_11582590 = {
         'p0': 1.1573,
         'hrs': '400016'
     },
-    'generator': {'react': {'p': [-0.15, -0.03]}}
+    'generator': {'react': {'t': [-0.16, -0.03]}}
 }
 
 # longitudinal

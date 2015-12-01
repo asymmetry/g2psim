@@ -3,6 +3,7 @@
 from os.path import join, dirname, realpath
 from time import time
 from array import array
+from multiprocessing import Process
 
 import ROOT
 ROOT.gSystem.Load(join(dirname(realpath(__file__)), 'libG2PSim.so'))
@@ -10,7 +11,7 @@ ROOT.gSystem.Load(join(dirname(realpath(__file__)), 'libG2PSim.so'))
 from .config_list import defaults
 from .config import expand
 
-def run(**kwds):
+def _run(**kwds):
     if not 'base' in kwds:
         kwds['base'] = defaults
     c = expand(kwds)
@@ -148,7 +149,7 @@ def run(**kwds):
     end = time()
     print('Average calculation time for one event: {0:.3f} ms'.format((end-begin) / n * 1000))
 
-def optrun(**kwds):
+def _optrun(**kwds):
     from config_list import defaults
     if not 'base' in kwds:
         kwds['base'] = defaults
@@ -196,7 +197,7 @@ def optrun(**kwds):
     end = time()
     print('Average calculation time for one event: {0:.3f} ms'.format((end-begin) / n * 1000))
 
-def recrun(**kwds):
+def _recrun(**kwds):
     from config_list import defaults
     if not 'base' in kwds:
         kwds['base'] = defaults
@@ -247,3 +248,21 @@ def recrun(**kwds):
     sim.Run()
     end = time()
     print('Average calculation time for one event: {0:.3f} ms'.format((end-begin) / n * 1000))
+
+def run(**kwds):
+    p = Process(target=_run, kwargs=kwds)
+    print 'Process will start.'
+    p.start()
+    p.join()
+
+def optrun(**kwds):
+    p = Process(target=_optrun, kwargs=kwds)
+    print 'Process will start.'
+    p.start()
+    p.join()
+
+def recrun(**kwds):
+    p = Process(target=_recrun, kwargs=kwds)
+    print 'Process will start.'
+    p.start()
+    p.join()

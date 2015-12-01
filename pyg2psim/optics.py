@@ -177,8 +177,7 @@ def simf51hole(run, conf, holeid, overwrite=False):
                 't': [ct - 3.0e-3, ct + 3.0e-3],
                 'p': [cp - 3.0e-3, cp + 3.0e-3]
             }
-        },
-        'bpm': 0, 'backward': 0, 'phys': 0
+        }
     }
     sim.run(**pars)
 
@@ -290,6 +289,37 @@ def getfullf51(conf, overwrite=False):
                 for j in fin:
                     f.write(j)
 
+def fitmat(conf, overwrite=False):
+    c = _zload(conf)
+    database = join(c['fitpath'], c['fitdir'], c['database'])
+    if exists(database) and not overwrite:
+        print('{} already exists.'.format(database))
+        return None
+    fitdir = join(c['fitpath'], c['fitdir'])
+    fitinfile = join(fitdir, c['fitinfile'])
+    if not exists(fitdir) or not exists(fitinfile):
+        print('Check fitting directory.')
+        return None
+
+    pwd = os.getcwd()
+    os.chdir(c['fitpath'])
+    fitinfile = join(c['fitdir'], c['fitinfile'])
+    phfitfile = join(c['fitdir'], 'db_L.vdc.dat.ph1')
+    thfitfile = join(c['fitdir'], 'db_L.vdc.dat.th1')
+    dpfitfile = join(c['fitdir'], 'db_L.vdc.dat.dp1')
+    with open('log', 'w') as f:
+        print('Generating {} ......'.format(phfitfile))
+        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("phi","' + fitinfile + '","' + phfitfile + '")']
+        sp.call(command, stdout=f, stderr=f)
+        print('Generating {} ......'.format(thfitfile))
+        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("theta", "' + phfitfile + '", "' + thfitfile + '")']
+        sp.call(command, stdout=f, stderr=f)
+        print('Generating {} ......'.format(dpfitfile))
+        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("delta", "' + thfitfile + '", "' + dpfitfile + '")']
+        sp.call(command, stdout=f, stderr=f)
+
+    os.chdir(pwd)
+
 def gendata(run, conf, overwrite=False):
     c = _zload(conf)
     datafile = join(c['simpath'], 'g2p_{}.dat'.format(run))
@@ -298,16 +328,12 @@ def gendata(run, conf, overwrite=False):
         return None
     tree2ascii = c['tree2ascii']
     vardef = c['vardef']
-    cutfile = join(c['cutpath'], 'g2p_{}.root.SieveCut.cut'.format(run))
-    dppat = re.compile(r'(\(L\.tr\.tg_dp>[-.0-9]* && L\.tr\.tg_dp<[-.0-9]*\) && )')
-    hfppat = re.compile(r'(hfpcut_L_[0-9]_[0-9]_[0-9] && )')
-    with open(cutfile, 'r') as f:
-        with open('tempcut', 'w') as fout:
-            for i in f:
-                j = dppat.sub(r'', i)
-                j = hfppat.sub(r'', j)
-                fout.write(j)
-
+    #dppat = re.compile(r'(\(L\.tr\.tg_dp>[-.0-9]* && L\.tr\.tg_dp<[-.0-9]*\) && )')
+    #hpat = re.compile(r'(hcut_L_[0-9]_[0-9]_[0-9] && )')
+    #hfppat = re.compile(r'(hfpcut_L_[0-9]_[0-9]_[0-9] && )')
+    with open('tempcut', 'w') as f:
+        f.write('bcut_L_{} && fcut_L_{} && ((DL.evtypebits>>3)&1) && (DL.edtpr[0]==0) && Lrb.bpmavail>0.5 && L.tr.n==1'.format(run % 10 // 2, run % 10))
+    cutfile = 'tempcut'
     gcutfile = join(c['cutpath'], 'g2p_{}.root.FullCut.root'.format(run // 10))
     rootfilelist = [join(c['rootpath'], 'g2p_{}.root'.format(x)) for x in c[run]['runlist']]
     if not all(exists(x) for x in [tree2ascii, vardef, cutfile, gcutfile] + rootfilelist):
@@ -316,15 +342,16 @@ def gendata(run, conf, overwrite=False):
 
     print('Generating {} ......'.format(datafile))
     command = [tree2ascii, '-pv']
+    command += ['-S', '200000']
     command += ['-d', vardef]
-    command += ['-c', 'tempcut']
+    command += ['-c', cutfile]
     command += ['-g', gcutfile]
     command += ['-o', datafile]
     command += rootfilelist
     sp.call(command)
 
-    if exists('tempcut'):
-        os.remove('tempcut')
+    if exists(cutfile):
+        os.remove(cutfile)
 
 def recwithdb(run, conf, overwrite=False):
     c = _zload(conf)
@@ -355,78 +382,3 @@ def recwithdb(run, conf, overwrite=False):
         'dbrec': {'data': datafile, 'database': database}
     }
     sim.recrun(**pars)
-
-def compare(run, conf, overwrite=False):
-    c = _zload(conf)
-    tplot = '{}_theta.png'.format(run)
-    pplot = '{}_phi.png'.format(run)
-    dplot = '{}_delta.png'.format(run)
-    if all(exists(x) for x in [tplot, pplot, dplot]) and not overwrite:
-        print('Plots already exists.')
-        return None
-    recfile = join(c['simpath'], 'g2p_{}.root'.format(run))
-    simfile = join(c['simpath'], 'run_{}.root'.format(run))
-    if not exists(recfile) or not exists(simfile):
-        print('Require {} and {} as input.'.format(recfile, simfile))
-        return None
-
-    t1 = ROOT.TChain('T')
-    t1.Add(recfile)
-    t2 = ROOT.TChain('T')
-    t2.Add(simfile)
-    simconf = config.expand(getattr(config_list, c['config']))
-    cgrt = simconf['generator']['react']['t']
-    cgrp = simconf['generator']['react']['p']
-    h11 = [None] * 49
-    h12 = [None] * 49
-    h13 = [None] * 49
-    h21 = [None] * 49
-    h22 = [None] * 49
-    h23 = [None] * 49
-
-    ROOT.gROOT.SetBatch(ROOT.kTRUE)
-    c1 = ROOT.TCanvas('c1', 'c1', 300 * 7, 200 * 7)
-    c1.Divide(7, 7)
-    c2 = ROOT.TCanvas('c2', 'c2', 300 * 7, 200 * 7)
-    c2.Divide(7, 7)
-    c3 = ROOT.TCanvas('c3', 'c3', 300 * 7, 200 * 7)
-    c3.Divide(7, 7)
-    for i in range(49):
-        h11[i] = ROOT.TH1D('h11' + str(i), 'Theta', 200, cgrt[0] - 0.01, cgrt[1] + 0.01)
-        h21[i] = h11[i].Clone('h21' + str(i))
-        h12[i] = ROOT.TH1D('h12' + str(i), 'Phi', 200, cgrp[0] - 0.01, cgrp[1] + 0.01)
-        h22[i] = h12[i].Clone('h22' + str(i))
-        h13[i] = ROOT.TH1D('h13' + str(i), 'Delta', 200, c[run]['delta'] - 0.01, c[run]['delta'] + 0.005)
-        h23[i] = h13[i].Clone('h23' + str(i))
-
-        cut1 = 'data.id=={}'.format(i)
-        cut2 = '(isgood&&fwd.id.hole=={})*phys.react.xs'.format(i)
-        N1 = t1.Project('h11' + str(i), 'rec.t', cut1)
-        N2 = t2.Project('h21' + str(i), 'rec.t', cut2)
-        if N1 < 50 or N2 < 50:
-            continue
-        N1 = h11[i].GetMaximum()
-        N2 = h21[i].GetMaximum()
-        ratio = float(N1) / N2
-        cut2 = '(isgood&&fwd.id.hole=={})*(phys.react.xs*{})'.format(i, ratio)
-
-        c1.cd((7 - i % 7) * 7 - i // 7)
-        t1.Draw('rec.t>>h11{}'.format(i), cut1)
-        t2.Draw('rec.t>>h21{}'.format(i), cut2, 'same')
-        h21[i].SetLineColor(2)
-        c1.Update()
-        c2.cd((7 - i % 7) * 7 - i // 7)
-        t1.Draw('rec.p>>h12{}'.format(i), cut1)
-        t2.Draw('rec.p>>h22{}'.format(i), cut2, 'same')
-        h22[i].SetLineColor(2)
-        c2.Update()
-        c3.cd((7 - i % 7) * 7 - i // 7)
-        t1.Draw('rec.d>>h13{}'.format(i), cut1)
-        t2.Draw('rec.d>>h23{}'.format(i), cut2, 'same')
-        h23[i].SetLineColor(2)
-        c3.Update()
-
-    c1.Print(tplot)
-    c2.Print(pplot)
-    c3.Print(dplot)
-    ROOT.gROOT.SetBatch(ROOT.kFALSE)
