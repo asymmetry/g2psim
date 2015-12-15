@@ -306,6 +306,7 @@ def fitmat(conf, overwrite=False):
     fitinfile = join(c['fitdir'], c['fitinfile'])
     phfitfile = join(c['fitdir'], 'db_L.vdc.dat.ph1')
     thfitfile = join(c['fitdir'], 'db_L.vdc.dat.th1')
+    ytfitfile = join(c['fitdir'], 'db_L.vdc.dat.yt1')
     dpfitfile = join(c['fitdir'], 'db_L.vdc.dat.dp1')
     with open('log', 'w') as f:
         print('Generating {} ......'.format(phfitfile))
@@ -314,8 +315,11 @@ def fitmat(conf, overwrite=False):
         print('Generating {} ......'.format(thfitfile))
         command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("theta", "' + phfitfile + '", "' + thfitfile + '")']
         sp.call(command, stdout=f, stderr=f)
+        print('Generating {} ......'.format(ytfitfile))
+        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("y", "' + thfitfile + '", "' + ytfitfile + '")']
+        sp.call(command, stdout=f, stderr=f)
         print('Generating {} ......'.format(dpfitfile))
-        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("delta", "' + thfitfile + '", "' + dpfitfile + '")']
+        command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("delta", "' + ytfitfile + '", "' + dpfitfile + '")']
         sp.call(command, stdout=f, stderr=f)
 
     os.chdir(pwd)
