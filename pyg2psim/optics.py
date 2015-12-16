@@ -386,3 +386,72 @@ def recwithdb(run, conf, overwrite=False):
         'dbrec': {'data': datafile, 'database': database}
     }
     sim.recrun(**pars)
+
+def calcenter(run, conf, overwrite=False):
+    c = _zload(conf)
+    if 'center' in c[run] and not overwrite:
+        print('Found old central hole settings, set overwrite to recalculate.')
+        return None
+    simfile = join(c['simpath'], 'temp/{0}/run_{0}_24.root'.format(run))
+    recfile = join(c['simpath'], 'g2p_{}.root'.format(run))
+    if not exists(simfile) or not exists(recfile):
+        print('Require {} and {} as input.'.format(simfile, recfile))
+        return None
+
+    print('Calculating central hole settings in {} ......'.format(run))
+
+    ROOT.gROOT.SetBatch(ROOT.kTRUE)
+
+    if not 'center' in c[run]:
+        c[run]['center'] = {}
+    t1 = ROOT.TChain('T')
+    t1.Add(recfile)
+    t2 = ROOT.TChain('T')
+    t2.Add(simfile)
+
+    c1 = ROOT.TCanvas('c1', 'c1', 600, 400)
+
+    h11 = ROOT.TH1D('h11', '', 100, c[run]['delta'] - 0.002, c[run]['delta'] + 0.002)
+    h21 = h11.Clone('h21')
+    h11c = h11.Clone('h11c')
+    h21c = h11.Clone('h21c')
+    h20x = ROOT.TH1D('h20x', '', 100, -0.01, 0.01)
+    h20y = h20x.Clone('h20y')
+
+    cut1 = 'bwd.sieve.proj.x>-0.005&&bwd.sieve.proj.x<0.005&&bwd.sieve.proj.y>-0.005&&bwd.sieve.proj.y<0.005&&isgood'
+    cut2 = '(isgood&&fwd.id.hole==24)*phys.react.xs'
+    t1.Project('h11', 'bwd.tp.mat.d', cut1)
+    t1.Project('h11c', 'bwd.tp.mat.d', cut1)
+    t2.Project('h21', 'bwd.tp.snake.d', cut2)
+    t2.Project('h21c', 'bwd.tp.snake.d', cut2)
+    t2.Project('h20x', 'fwd.tp.proj.x', cut2)
+    t2.Project('h20y', 'fwd.tp.proj.y', cut2)
+
+    h11c.Smooth(100)
+    h21c.Smooth(100)
+    peak1 = h11c.GetBinCenter(h11c.GetMaximumBin())
+    peak2 = h21c.GetBinCenter(h21c.GetMaximumBin())
+    if abs(peak1 - peak2) > 0.0005:
+        print('Warning!\nWarning!\nWarning!')
+    r1 = h11.Fit('gaus', 'QS', '', peak1 - 0.00025, peak1 + 0.00025)
+    r2 = h21.Fit('gaus', 'QS', '', peak2 - 0.00025, peak2 + 0.00025)
+    d1 = r1.Parameter(1)
+    d2 = r2.Parameter(1)
+    x = h20x.GetMean()
+    y = h20y.GetMean()
+
+    h11.Draw()
+    c1.Update()
+    c1.Print('temp1_{}.png'.format(run))
+    h21.Draw()
+    c1.Update()
+    c1.Print('temp2_{}.png'.format(run))
+
+    ROOT.gROOT.SetBatch(ROOT.kFALSE)
+
+    c[run]['center']['d_data'] = d1
+    c[run]['center']['d_sim'] = d2
+    c[run]['center']['x_tg'] = x
+    c[run]['center']['y_tg'] = y
+
+    _zdump(c, conf)
