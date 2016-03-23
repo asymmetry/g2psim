@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import gzip, os, re
-from os.path import exists, join
+from os.path import exists, join, splitext
 from math import tan
 try: import cPickle as pkl
 except: import pickle as pkl
@@ -304,10 +304,11 @@ def fitmat(conf, overwrite=False):
     pwd = os.getcwd()
     os.chdir(c['fitpath'])
     fitinfile = join(c['fitdir'], c['fitinfile'])
-    phfitfile = join(c['fitdir'], 'db_L.vdc.dat.ph1')
-    thfitfile = join(c['fitdir'], 'db_L.vdc.dat.th1')
-    ytfitfile = join(c['fitdir'], 'db_L.vdc.dat.yt1')
-    dpfitfile = join(c['fitdir'], 'db_L.vdc.dat.dp1')
+    basename, ext = splitext(fitinfile)
+    phfitfile = basename + '.ph1'
+    thfitfile = basename + '.th1'
+    ytfitfile = basename + '.yt1'
+    dpfitfile = basename + '.dp1'
     with open('log', 'w') as f:
         print('Generating {} ......'.format(phfitfile))
         command = ['analyzer', '-b', '-q', 'OpticsOptScript.C("phi","' + fitinfile + '","' + phfitfile + '")']
@@ -330,13 +331,22 @@ def gendata(run, conf, overwrite=False):
     if exists(datafile) and not overwrite:
         print('{} already exists.'.format(datafile))
         return None
+    oldcutfile = join(c['cutpath'], 'g2p_{}.root.SieveCut.cut'.format(run))
+    if not exists(oldcutfile):
+        print('Require {} as input.'.format(oldcutfile))
+        return None
+
     tree2ascii = c['tree2ascii']
     vardef = c['vardef']
-    #dppat = re.compile(r'(\(L\.tr\.tg_dp>[-.0-9]* && L\.tr\.tg_dp<[-.0-9]*\) && )')
-    #hpat = re.compile(r'(hcut_L_[0-9]_[0-9]_[0-9] && )')
-    #hfppat = re.compile(r'(hfpcut_L_[0-9]_[0-9]_[0-9] && )')
+    dppat = re.compile(r'(\([LR]\.tr\.tg_dp>[-.0-9]* && [LR]\.tr\.tg_dp<[-.0-9]*\) && )')
+    #hpat = re.compile(r'(hcut_[LR]_[0-9]_[0-9]_[0-9] && )')
+    hfppat = re.compile(r'(hfpcut_[LR]_[0-9]_[0-9]_[0-9] && )')
     with open('tempcut', 'w') as f:
-        f.write('bcut_L_{} && fcut_L_{} && ((DL.evtypebits>>3)&1) && (DL.edtpr[0]==0) && Lrb.bpmavail>0.5 && L.tr.n==1'.format(run % 10 // 2, run % 10))
+        with open(oldcutfile, 'r') as fin:
+            for l in fin:
+                l = dppat.sub('', l)
+                l = hfppat.sub('', l)
+                f.write(l)
     cutfile = 'tempcut'
     gcutfile = join(c['cutpath'], 'g2p_{}.root.FullCut.root'.format(run // 10))
     rootfilelist = [join(c['rootpath'], 'g2p_{}.root'.format(x)) for x in c[run]['runlist']]
@@ -365,7 +375,7 @@ def recwithdb(run, conf, overwrite=False):
         return None
     database = join(c['fitpath'], c['fitdir'], c['database'])
     if not exists(database):
-        print('Require {} as input.'.format(databse))
+        print('Require {} as input.'.format(database))
         return None
     if not 'f51pars' in c[run]:
         print('Require f51 pars.')
@@ -415,14 +425,24 @@ def calcenter(run, conf, overwrite=False):
     h21 = h11.Clone('h21')
     h11c = h11.Clone('h11c')
     h21c = h11.Clone('h21c')
+    h10x = ROOT.TH1D('h10x', '', 400, -0.05, 0.05)
+    h10y = ROOT.TH1D('h10y', '', 400, -0.03, 0.03)
     h20x = ROOT.TH1D('h20x', '', 100, -0.01, 0.01)
     h20y = h20x.Clone('h20y')
 
-    cut1 = 'bwd.sieve.proj.x>-0.005&&bwd.sieve.proj.x<0.005&&bwd.sieve.proj.y>-0.005&&bwd.sieve.proj.y<0.005&&isgood'
+    cut1 = 'bwd.sieve.proj.x>-0.01&&bwd.sieve.proj.x<0.01&&bwd.sieve.proj.y>-0.01&&bwd.sieve.proj.y<0.01&&isgood'
+    N1 = t1.Project('h10x', 'bwd.sieve.proj.x', cut1)
+    t1.Project('h10y', 'bwd.sieve.proj.y', cut1)
+    h10x.Smooth(100)
+    h10y.Smooth(100)
+    px = h10x.GetBinCenter(h10x.GetMaximumBin())
+    py = h10y.GetBinCenter(h10y.GetMaximumBin())
+    cut1 = 'bwd.sieve.proj.x>{}&&bwd.sieve.proj.x<{}&&bwd.sieve.proj.y>{}&&bwd.sieve.proj.y<{}&&isgood'.format(px - 0.005, px + 0.005, py - 0.003, py + 0.003)
+
     cut2 = '(isgood&&fwd.id.hole==24)*phys.react.xs'
     t1.Project('h11', 'bwd.tp.mat.d', cut1)
     t1.Project('h11c', 'bwd.tp.mat.d', cut1)
-    t2.Project('h21', 'bwd.tp.snake.d', cut2)
+    N2 = t2.Project('h21', 'bwd.tp.snake.d', cut2)
     t2.Project('h21c', 'bwd.tp.snake.d', cut2)
     t2.Project('h20x', 'fwd.tp.proj.x', cut2)
     t2.Project('h20y', 'fwd.tp.proj.y', cut2)
@@ -431,21 +451,28 @@ def calcenter(run, conf, overwrite=False):
     h21c.Smooth(100)
     peak1 = h11c.GetBinCenter(h11c.GetMaximumBin())
     peak2 = h21c.GetBinCenter(h21c.GetMaximumBin())
-    if abs(peak1 - peak2) > 0.0005:
-        print('Warning!\nWarning!\nWarning!')
-    r1 = h11.Fit('gaus', 'QS', '', peak1 - 0.00025, peak1 + 0.00025)
-    r2 = h21.Fit('gaus', 'QS', '', peak2 - 0.00025, peak2 + 0.00025)
-    d1 = r1.Parameter(1)
-    d2 = r2.Parameter(1)
+
     x = h20x.GetMean()
     y = h20y.GetMean()
 
-    h11.Draw()
-    c1.Update()
-    c1.Print('temp1_{}.png'.format(run))
-    h21.Draw()
-    c1.Update()
-    c1.Print('temp2_{}.png'.format(run))
+    d1, d2 = None, None
+    if N1 <= 0 or N2 <=0:
+        print('Error!\nError!\nError!')
+        d1, d2 = 1e38, 1e38
+    else:
+        if abs(peak1 - peak2) > 0.0005:
+            print('Warning!\nWarning!\nWarning!')
+        r1 = h11.Fit('gaus', 'QS', '', peak1 - 0.00025, peak1 + 0.00025)
+        r2 = h21.Fit('gaus', 'QS', '', peak2 - 0.0005, peak2 + 0.0005)
+        d1 = r1.Parameter(1)
+        d2 = r2.Parameter(1)
+
+        h11.Draw()
+        c1.Update()
+        c1.Print('temp1_{}.png'.format(run))
+        h21.Draw()
+        c1.Update()
+        c1.Print('temp2_{}.png'.format(run))
 
     ROOT.gROOT.SetBatch(ROOT.kFALSE)
 

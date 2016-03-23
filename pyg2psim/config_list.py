@@ -259,7 +259,8 @@ optics_r_22542590 = {
         'beam': optics_l['generator']['beam'],
         'raster': optics_l['generator']['raster'],
         'react': {
-            't': [-0.1, 0.02],
+            't': [-0.12, 0.02],
+            'p': [-0.04, 0.04],
             'd': 'elastic',
             'z': optics_l['generator']['react']['z']
         }
@@ -305,7 +306,7 @@ optics_r_11582590 = {
         'p0': 1.1573,
         'hrs': '400016'
     },
-    'generator': {'react': {'t': [-0.15, -0.03]}}
+    'generator': {'react': {'t': [-0.16, -0.03]}}
 }
 
 run_r_22545000 = {
