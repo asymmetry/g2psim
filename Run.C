@@ -108,8 +108,9 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     //gun->SetReactZ(-14.1350e-3,  14.1350e-3); // production
     //gun->SetReactZ(-479.425e-3, -479.933e-3); // window longitudinal
 
-    //gun->SetRasterSize(15.0e-3); // production
-    gun->SetSlowRasterSize(0.2e-3, 0.2e-3); // optics
+    gun->SetBeamProfile(0.8e-3, 0.25e-3, 35.0 * kDEG); // ellipse
+    gun->SetFastRasterSize(0, 0); // optics
+    gun->SetSlowRasterSize(0, 0); // optics
 
     gun->SetTargetTh(-60.0e-3,   60.0e-3);
     //gun->SetTargetTh(-100.0e-3,   20.0e-3); // 2.253GeV, 2.5T, 90deg
@@ -129,8 +130,7 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     // BPM
     ///////////////////////////////////////////////////////////////////////////
     G2PBPM *bpm = new G2PBPM();
-    bpm->SetBPMRes(0, 0);
-    //bpm->SetBPMRes(0.2e-3, 0.4e-3);
+    bpm->SetBPMRes(0, 0); // pos and ang res
     gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////

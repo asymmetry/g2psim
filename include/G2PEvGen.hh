@@ -35,6 +35,7 @@ public:
     void SetBeamPos(double x, double y, double z);
     void SetTiltAngle(double theta, double phi);
     void SetReactZ(double low, double high);
+    void SetBeamProfile(double a, double b, double angle);
     void SetFastRasterSize(double sizex, double sizey);
     void SetSlowRasterSize(double sizex, double sizey);
     void SetTargetTh(double low, double high);
@@ -62,8 +63,9 @@ protected:
 
     double fBeamX_bpm, fBeamT_bpm, fBeamY_bpm, fBeamP_bpm, fBeamZ_bpm;
 
-    double fBeamFastRx_lab, fBeamFastRy_lab;
-    double fBeamSlowRx_lab, fBeamSlowRy_lab;
+    double fProfileA, fProfileB, fProfileAngle; // a, b and rotation angle for an ellipse
+    double fFastRasterX, fFastRasterY;
+    double fSlowRasterX, fSlowRasterY;
 
     double fE; // Beam energy after energy loss
     double fELoss;

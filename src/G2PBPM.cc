@@ -15,6 +15,7 @@
 //   Jul 2013, C. Gu, Treat optics (no field) case specially.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //   Jan 2015, C. Gu, Use new Drift() function in G2PProcBase.
+//   May 2016, C. Gu, Only take an overall resolution.
 //
 
 #include <cstdlib>
@@ -40,7 +41,7 @@
 
 G2PBPM *G2PBPM::pG2PBPM = NULL;
 
-G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), fBPMARes(0.0), fBPMBRes(0.0), pfGetBPM(NULL)
+G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), fBPMResPos(0.0), fBPMResAngle(0.0), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");
@@ -94,6 +95,10 @@ int G2PBPM::Process()
         return -1;
 
     GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
+    fV5bpm_bpm[0] = pRand->Gaus(fV5bpm_bpm[0], fBPMResPos);
+    fV5bpm_bpm[1] = pRand->Gaus(fV5bpm_bpm[1], fBPMResAngle);
+    fV5bpm_bpm[2] = pRand->Gaus(fV5bpm_bpm[2], fBPMResPos);
+    fV5bpm_bpm[3] = pRand->Gaus(fV5bpm_bpm[3], fBPMResAngle);
 
     BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
     HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
@@ -115,13 +120,13 @@ void G2PBPM::Clear(Option_t *opt)
     G2PProcBase::Clear(opt);
 }
 
-void G2PBPM::SetBPMRes(double a, double b)
+void G2PBPM::SetBPMRes(double pos, double angle)
 {
-    fBPMARes = a;
-    fBPMBRes = b;
+    fBPMResPos = pos;
+    fBPMResAngle = angle;
 
-    fConfigIsSet.insert((unsigned long) &fBPMARes);
-    fConfigIsSet.insert((unsigned long) &fBPMBRes);
+    fConfigIsSet.insert((unsigned long) &fBPMResPos);
+    fConfigIsSet.insert((unsigned long) &fBPMResAngle);
 }
 
 void G2PBPM::GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
@@ -262,11 +267,11 @@ void G2PBPM::GetBPMAB(const double *V5beam_lab, double *V4bpmab_bpm)
     int save = fDebug;
     fDebug = 0;
     Drift("backward", x, p, fBPMB[2], x, p);
-    V4bpmab_bpm[2] = pRand->Gaus(x[0] - fBPMB[0], fBPMBRes) * 1e3;
-    V4bpmab_bpm[3] = pRand->Gaus(x[1] - fBPMB[1], fBPMBRes) * 1e3;
+    V4bpmab_bpm[2] = (x[0] - fBPMB[0]) * 1e3;
+    V4bpmab_bpm[3] = (x[1] - fBPMB[1]) * 1e3;
     Drift("backward", x, p, fBPMA[2], x, p);
-    V4bpmab_bpm[0] = pRand->Gaus(x[0] - fBPMA[0], fBPMARes) * 1e3;
-    V4bpmab_bpm[1] = pRand->Gaus(x[1] - fBPMA[1], fBPMARes) * 1e3;
+    V4bpmab_bpm[0] = (x[0] - fBPMA[0]) * 1e3;
+    V4bpmab_bpm[1] = (x[1] - fBPMA[1]) * 1e3;
     fDebug = save;
 
     if (fDebug > 2) {
@@ -287,14 +292,14 @@ int G2PBPM::Configure(EMode mode)
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
         {"run.field", "Field Type", kINT, &fFieldType},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
+        {"res.pos", "BPM Space Resolution", kDOUBLE, &fBPMResPos},
+        {"res.angle", "BPM Angle Resolution", kDOUBLE, &fBPMResPos},
         {"a.x", "BPM A X Position", kDOUBLE, &fBPMA[0]},
         {"a.y", "BPM A Y Position", kDOUBLE, &fBPMA[1]},
         {"a.z", "BPM A Z Position", kDOUBLE, &fBPMA[2]},
-        {"a.res", "BPM A Resolution", kDOUBLE, &fBPMARes},
         {"b.x", "BPM B X Position", kDOUBLE, &fBPMB[0]},
         {"b.y", "BPM B Y Position", kDOUBLE, &fBPMB[1]},
         {"b.z", "BPM B Z Position", kDOUBLE, &fBPMB[2]},
-        {"b.res", "BPM B Resolution", kDOUBLE, &fBPMBRes},
         {0}
     };
 

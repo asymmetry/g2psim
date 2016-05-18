@@ -15,6 +15,7 @@
 //   Jul 2013, C. Gu, Treat optics (no field) case specially.
 //   Sep 2013, C. Gu, Rewrite it as a G2PProcBase class.
 //   Jan 2015, C. Gu, Use new Drift() function in G2PProcBase.
+//   May 2016, C. Gu, Only take an overall resolution.
 //
 
 #ifndef G2P_BPM_H
@@ -37,7 +38,7 @@ public:
     // Gets
 
     // Sets
-    void SetBPMRes(double a, double b);
+    void SetBPMRes(double pos, double angle);
 
 protected:
     void SetBPMPos();
@@ -63,8 +64,9 @@ protected:
     int fFieldType;
     double fFieldRatio;
 
+    double fBPMResPos, fBPMResAngle;
+
     double fBPMA[3], fBPMB[3];
-    double fBPMARes, fBPMBRes;
 
     double fV5beam_lab[5];
     double fV5bpm_bpm[5];
