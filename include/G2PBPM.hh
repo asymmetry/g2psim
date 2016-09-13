@@ -38,7 +38,8 @@ public:
     // Gets
 
     // Sets
-    void SetBPMRes(double pos, double angle);
+    void SetPosRes(double x, double y);
+    void SetAngRes(double theta, double phi);
 
 protected:
     void SetBPMPos();
@@ -64,7 +65,7 @@ protected:
     int fFieldType;
     double fFieldRatio;
 
-    double fBPMResPos, fBPMResAngle;
+    double fBPMResPos[2], fBPMResAngle[2];
 
     double fBPMA[3], fBPMB[3];
 

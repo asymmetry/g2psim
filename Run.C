@@ -130,7 +130,8 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     // BPM
     ///////////////////////////////////////////////////////////////////////////
     G2PBPM *bpm = new G2PBPM();
-    bpm->SetBPMRes(0, 0); // pos and ang res
+    bpm->SetPosRes(0, 0); // pos and ang res
+    bpm->SetAngRes(0, 0); // pos and ang res
     gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////

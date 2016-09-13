@@ -41,7 +41,7 @@
 
 G2PBPM *G2PBPM::pG2PBPM = NULL;
 
-G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), fBPMResPos(0.0), fBPMResAngle(0.0), pfGetBPM(NULL)
+G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), pfGetBPM(NULL)
 {
     if (pG2PBPM) {
         Error("G2PBPM()", "Only one instance of G2PBPM allowed.");
@@ -53,6 +53,8 @@ G2PBPM::G2PBPM() : fE0(0.0), fFieldType(0), fFieldRatio(0.0), fBPMResPos(0.0), f
 
     memset(fBPMA, 0, sizeof(fBPMA));
     memset(fBPMB, 0, sizeof(fBPMB));
+    memset(fBPMResPos, 0, sizeof(fBPMResPos));
+    memset(fBPMResAngle, 0, sizeof(fBPMResAngle));
 
     fPriority = 2;
 
@@ -95,10 +97,10 @@ int G2PBPM::Process()
         return -1;
 
     GetBPM(fV5beam_lab, fV5bpm_bpm, fV4bpmab_bpm);
-    fV5bpm_bpm[0] = pRand->Gaus(fV5bpm_bpm[0], fBPMResPos);
-    fV5bpm_bpm[1] = pRand->Gaus(fV5bpm_bpm[1], fBPMResAngle);
-    fV5bpm_bpm[2] = pRand->Gaus(fV5bpm_bpm[2], fBPMResPos);
-    fV5bpm_bpm[3] = pRand->Gaus(fV5bpm_bpm[3], fBPMResAngle);
+    fV5bpm_bpm[0] = pRand->Gaus(fV5bpm_bpm[0], fBPMResPos[0]);
+    fV5bpm_bpm[1] = pRand->Gaus(fV5bpm_bpm[1], fBPMResAngle[0]);
+    fV5bpm_bpm[2] = pRand->Gaus(fV5bpm_bpm[2], fBPMResPos[1]);
+    fV5bpm_bpm[3] = pRand->Gaus(fV5bpm_bpm[3], fBPMResAngle[1]);
 
     BPM2HCS(fV5bpm_bpm, fV5bpm_lab);
     HCS2TCS(fV5bpm_lab, fV5bpm_tr, fbpmz_tr);
@@ -120,13 +122,22 @@ void G2PBPM::Clear(Option_t *opt)
     G2PProcBase::Clear(opt);
 }
 
-void G2PBPM::SetBPMRes(double pos, double angle)
+void G2PBPM::SetPosRes(double x, double y)
 {
-    fBPMResPos = pos;
-    fBPMResAngle = angle;
+    fBPMResPos[0] = x;
+    fBPMResPos[1] = y;
 
-    fConfigIsSet.insert((unsigned long) &fBPMResPos);
-    fConfigIsSet.insert((unsigned long) &fBPMResAngle);
+    fConfigIsSet.insert((unsigned long) &fBPMResPos[0]);
+    fConfigIsSet.insert((unsigned long) &fBPMResPos[1]);
+}
+
+void G2PBPM::SetAngRes(double theta, double phi)
+{
+    fBPMResAngle[0] = theta;
+    fBPMResAngle[1] = phi;
+
+    fConfigIsSet.insert((unsigned long) &fBPMResAngle[0]);
+    fConfigIsSet.insert((unsigned long) &fBPMResAngle[1]);
 }
 
 void G2PBPM::GetBPM(const double *V5beam_lab, double *V5bpm_bpm, double *V4bpmab_bpm)
@@ -292,8 +303,10 @@ int G2PBPM::Configure(EMode mode)
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
         {"run.field", "Field Type", kINT, &fFieldType},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
-        {"res.pos", "BPM Space Resolution", kDOUBLE, &fBPMResPos},
-        {"res.angle", "BPM Angle Resolution", kDOUBLE, &fBPMResPos},
+        {"res.x", "BPM X Resolution", kDOUBLE, &fBPMResPos[0]},
+        {"res.y", "BPM Y Resolution", kDOUBLE, &fBPMResPos[1]},
+        {"res.t", "BPM T Resolution", kDOUBLE, &fBPMResAngle[0]},
+        {"res.p", "BPM P Resolution", kDOUBLE, &fBPMResAngle[1]},
         {"a.x", "BPM A X Position", kDOUBLE, &fBPMA[0]},
         {"a.y", "BPM A Y Position", kDOUBLE, &fBPMA[1]},
         {"a.z", "BPM A Z Position", kDOUBLE, &fBPMA[2]},
