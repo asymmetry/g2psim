@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os, re, sys
+import os, re, shutil, sys
 import argparse as ap
 from array import array
-from math import tan
+from math import sin, cos, tan, acos, sqrt
 from os.path import exists, join
 
 class CustomHelpFormatter(ap.HelpFormatter):
@@ -31,6 +31,8 @@ args = vars(parser.parse_args())
 
 run, bpmdir, dbdir, debug, rootdir, sepfile_flag = [args[x] for x in ['run', 'bpmdir', 'dbdir', 'debug', 'rootdir', 'sepfile_flag']]
 arm = 'L' if run < 20000 else 'R'
+
+m = 0.938272046
 
 import ROOT
 if exists('pyg2psim') and exists('pyg2psim/libG2PSim.so') and exists('pyg2psim/libanalyzer.so'):
@@ -60,6 +62,7 @@ if sepfile_flag:
     fout = ROOT.TFile('{}/optics_{}.root'.format(rootdir, run), 'RECREATE')
     tout = ROOT.TTree('T', 'reconstructed kinematics tree')
 else:
+    shutil.copy2(rootfile, '{}/g2p_{}.bak.root'.format(rootdir, run))
     f = ROOT.TFile(rootfile, 'UPDATE')
     t = f.Get('T')
     tout = t
@@ -79,12 +82,13 @@ if not exists(dbfile):
     exit(1)
 ROOT.gG2PRun.SetConfigFile(dbfile)
 
-e, p = -1, -1
+e, p, pol = -1, -1, +1
 rundbfile = join(dbdir, 'db_rec.dat')
 with open(rundbfile, 'r') as fi:
     for line in fi:
         if line.startswith(str(run)):
-            _, p, e = [float(x) for x in line.strip().split()]
+            _, p, e, pol = [float(x) for x in line.strip().split()]
+            pol = int(pol)
             break
 if e != -1 and p != -1:
     ROOT.gG2PRun.SetBeamEnergy(e)
@@ -130,6 +134,28 @@ else:
 bpmavailvar = '{}rb.bpmavail'.format(arm)
 tpmatvars = [x.format(arm) for x in ['{}.gold.x', '{}.gold.th', '{}.gold.y', '{}.gold.ph', '{}.gold.dp']]
 
+def cross(A, B):
+    return [A[1] * B[2] - A[2] * B[1], A[2] * B[0] - A[0] * B[2], A[0] * B[1] - A[1] * B[0]]
+
+def calkins(bpm, rec, d):
+    ep = p * (1 + d)
+    nu = e / 1000.0 - ep
+
+    A = [tan(bpm[3]), tan(bpm[1]), 1]
+    B = [sin(rec[1]) * cos(rec[3]), sin(rec[1]) * sin(rec[3]), cos(rec[1])]
+    C = [pol, 0, 0]
+
+    scatang = acos((A[0] * B[0] + A[1] * B[1] + A[2] * B[2]) / sqrt((A[0]**2 + A[1]**2 + A[2]**2) * (B[0]**2 + B[1]**2 + B[2]**2)))
+
+    q2 = 4 * e * ep * sin(scatang / 2)**2
+    w2 = m**2 + 2 * m * nu - q2
+
+    D = cross(A, B)
+    E = cross(A, C)
+    fieldang = acos((D[0] * E[0] + D[1] * E[1] + D[2] * E[2]) / sqrt((D[0]**2 + D[1]**2 + D[2]**2) * (E[0]**2 + E[1]**2 + E[2]**2)))
+
+    return [nu, scatang, q2, w2, fieldang]
+
 inc = 0
 while f:
     if not sepfile_flag:
@@ -137,6 +163,7 @@ while f:
 
     recvars = [(x.format(arm), array('d', [0])) for x in ['{}.rec.x', '{}.rec.th', '{}.rec.y', '{}.rec.ph', '{}.rec.dp']]
     reclvars = [(x.format(arm), array('d', [0])) for x in ['{}.rec.l_x', '{}.rec.l_th', '{}.rec.l_y', '{}.rec.l_ph', '{}.rec.l_z']]
+    kinvars = [(x.format(arm), array('d', [0])) for x in ['{}.kin.nu', '{}.kin.scatang', '{}.kin.q2', '{}.kin.w2', '{}.kin.fieldang']]
     def removevars(lv):
         for i in lv:
             rb = t.GetBranch(i[0])
@@ -148,12 +175,12 @@ while f:
                 t.GetListOfBranches().Remove(rb)
                 t.GetListOfBranches().Compress()
     if not sepfile_flag:
-        map(removevars, [recvars, reclvars])
+        map(removevars, [recvars, reclvars, kinvars])
     newbranch = []
     def addvars(lv):
         for i in lv:
             newbranch.append(tout.Branch(i[0], i[1], i[0] + '/D'))
-    map(addvars, [recvars, reclvars])
+    map(addvars, [recvars, reclvars, kinvars])
 
     n = t.GetEntries()
     for i in range(n):
@@ -176,15 +203,17 @@ while f:
 
         rec_tr = array('d', [1e38] * 5)
         rec_lab = array('d', [1e38] * 5)
+        kins = array('d', [1e38] * 5)
         if bpmavail > 0.5 and all(x < 1e10 for x in tpmat_tr):
             rec.Process(array('d', bpm_bpm), array('d', tpmat_tr), rec_tr, rec_lab)
             if all(x < 1e37 for x in rec_tr):
                 rec_tr[1] = tan(rec_tr[1])
                 rec_tr[3] = tan(rec_tr[3])
+                kins = calkins(bpm_bpm, rec_lab, rec_tr[4])
         def arraytodata(adp):
             for i, j in enumerate(adp[0]):
                 j[1][0] = adp[1][i]
-        map(arraytodata, [(recvars, rec_tr), (reclvars, rec_lab)])
+        map(arraytodata, [(recvars, rec_tr), (reclvars, rec_lab), (kinvars, kins)])
 
         if sepfile_flag:
             tout.Fill()
@@ -202,6 +231,7 @@ while f:
         inc += 1
         rootfile = '{}/g2p_{}_{}.root'.format(rootdir, run, inc)
         if exists(rootfile):
+            shutil.copy2(rootfile, '{}/g2p_{}_{}.bak.root'.format(rootdir, run, inc))
             f = ROOT.TFile(rootfile, 'UPDATE')
             t = f.Get('T')
             tout = t
