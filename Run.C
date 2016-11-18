@@ -120,8 +120,7 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     //gun->SetTargetTh(-160.0e-3,  -50.0e-3); // 2.253GeV, 5.0T, 90deg
     gun->SetTargetPh(-30.0e-3,   30.0e-3);
 
-    //gun->SetDelta(-0.04, 0.04); // normal
-    gun->SetDelta("elastic"); // optics
+    gun->SetDelta(-0.04, 0.04);
     //gun->SetDelta(-0.8, 0.5); // effective bpm
 
     gG2PApps->Add(gun);
@@ -176,8 +175,7 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     // cross section
     ///////////////////////////////////////////////////////////////////////////
     G2PPhys *phys = new G2PPhys("elastic");
-    double ppars[1] = {2};
-    phys->SetPars(ppars, 1);
+    phys->SetPar(1, 5);
     gG2PApps->Add(phys);
 
     ///////////////////////////////////////////////////////////////////////////

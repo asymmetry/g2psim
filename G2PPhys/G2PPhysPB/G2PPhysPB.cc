@@ -6,12 +6,8 @@
  * Valid for all W<3 GeV and all Q2<10 GeV2.
  *
  * Radiative correction parameters:
- * Tb: total radiative length before scattering in radiation length;
- * Ta: total radiative length after scattering in radiation length;
- *
- * How to set parameters:
- * If set 2 parameters with SetPars(pars,2), then pars[0]->Tb, pars[1]->Ta;
- * Other uses will be considered as invalid.
+ * [1] Tb: total radiative length before scattering in radiation length;
+ * [2] Ta: total radiative length after scattering in radiation length.
  */
 
 // History:
@@ -46,8 +42,7 @@ static double PBosted(int Z, int A, double Ei, double Ef, double theta, double T
     return XS;
 }
 
-G2PPhysPB::G2PPhysPB() :
-    fTb(0.0), fTa(0.0)
+G2PPhysPB::G2PPhysPB() : fTb(0.0), fTa(0.0)
 {
     // Nothing to do
 }
@@ -57,21 +52,19 @@ G2PPhysPB::~G2PPhysPB()
     // Nothing to do
 }
 
-void G2PPhysPB::SetPars(double *array, int n)
+void G2PPhysPB::SetPar(int id, double value)
 {
-    G2PPhysBase::SetPars(array, n);
-
-    switch (n) {
-    case 0:
+    switch (id) {
+    case 1:
+        fTb = value;
         break;
 
     case 2:
-        fTb = fPars[0];
-        fTa = fPars[1];
+        fTa = value;
         break;
 
     default:
-        printf("Error: G2PPhysPB::SetPars(): Invalid number of pars.\n");
+        printf("Error: G2PPhysPB::SetPars(): Invalid parameter id.\n");
         break;
     }
 }

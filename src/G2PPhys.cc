@@ -28,8 +28,7 @@
  *
  * Please also read headers of QFS, PBosted, EPC and WISER models. They contains very important usage information!
  *
- * Unit of elastic cross section is ub/sr.
- * Unit of inelastic cross section is ub/MeV-sr.
+ * Unit of cross section is ub/MeV-sr.
  */
 
 // History:
@@ -40,6 +39,7 @@
 //   Oct 2013, C. Gu, Add H, He, N form factors.
 //   Feb 2014, C. Gu, Add EPC model.
 //   Apr 2014, C. Gu, Update H form factors.
+//   Nov 2016, C. Gu, Rewrite parameter parser.
 //
 
 #include <cstdlib>
@@ -80,7 +80,7 @@ G2PPhys::G2PPhys()
     // Only for ROOT I/O
 }
 
-G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fParticleMass(0.0), fPars(NULL), fNPars(0), pModel(NULL)
+G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fParticleMass(0.0), pModel(NULL)
 {
     if (pG2PPhys) {
         Error("G2PPhys()", "Only one instance of G2PPhys allowed.");
@@ -89,6 +89,8 @@ G2PPhys::G2PPhys(const char *model) : fSetting(1), fPID(11), fZ(1), fA(1), fPart
     }
 
     pG2PPhys = this;
+
+    fPars.clear();
 
     fPriority = 7;
     map<string, int> model_map;
@@ -148,7 +150,13 @@ int G2PPhys::Begin()
 
     pModel->SetTarget(fZ, fA);
     pModel->SetParticle(fPID);
-    pModel->SetPars(fPars, fNPars);
+
+    map<int, double>::const_iterator it = fPars.begin();
+
+    while (it != fPars.end()) {
+        pModel->SetPar(it->first, it->second);
+        it++;
+    }
 
     return (fStatus = kOK);
 }
@@ -226,10 +234,9 @@ void G2PPhys::Clear(Option_t *opt)
     G2PProcBase::Clear(opt);
 }
 
-void G2PPhys::SetPars(double *array, int n)
+void G2PPhys::SetPar(int id, double value)
 {
-    fPars = array;
-    fNPars = n;
+    fPars[id] = value;
 }
 
 double G2PPhys::CalXS(const double *V5lab, const double *V5tr, double &scatangle)

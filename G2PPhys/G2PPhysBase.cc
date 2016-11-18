@@ -28,12 +28,12 @@
  *
  * Please also read headers of QFS, PBosted, EPC and WISER models. They contains very important usage information!
  *
- * Unit of elastic cross section is ub/sr.
- * Unit of inelastic cross section is ub/MeV-sr.
+ * Unit of cross section is ub/MeV-sr.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version.
+//   Nov 2016, C. Gu, Rewrite parameter parser.
 //
 
 #include <cstdlib>
@@ -45,11 +45,11 @@
 
 using namespace std;
 
-static const double kU = 931.49406121;
+static const double kU = 0.93149406121; // MeV
 
 G2PPhysBase::G2PPhysBase() : fZ(1), fA(1), fTargetMass(0.0), fPID(11)
 {
-    fPars.clear();
+    // Nothing to do
 }
 
 G2PPhysBase::~G2PPhysBase()
@@ -65,11 +65,14 @@ void G2PPhysBase::SetTarget(int Z, int A)
     if (fabs(fTargetMass) < 1.0e-8) SetTargetMass();
 }
 
-void G2PPhysBase::SetPars(double *array, int n)
+void G2PPhysBase::SetTargetMass(double value)
 {
-    fPars.clear();
+    fTargetMass = value;
+}
 
-    for (int i = 0; i < n; i++) fPars.push_back(array[i]);
+void G2PPhysBase::SetParticle(int pid)
+{
+    fPID = pid;
 }
 
 void G2PPhysBase::SetTargetMass()

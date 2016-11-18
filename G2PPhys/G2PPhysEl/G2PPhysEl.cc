@@ -12,22 +12,24 @@
  * * C12: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
  * * N14: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  *
- * How to set parameters:
- * H1:
- * If set 1 parameters with SetPars(pars,1), pars[0]=2 means to use 2007 low Q2 fit without TPE correction,
- *   pars[0]=3 means to use 2007 low Q2 fit with TPE correction,
- *   default is to use 2011 global fit with TPE correction;
- * C12:
- * If set 1 parameters with SetPars(pars,1), pars[0]=2 means to use Stansfield's form factors,
- *   default is to use Cardman's fit;
- * Other uses will be considered as invalid.
+ * Parameters:
+ * [1] fRes: resolution of the elastic peak;
+ * [2] fSettings:
+ *   H1:
+ *     2 means to use 2007 low Q2 fit without TPE correction,
+ *     3 means to use 2007 low Q2 fit with TPE correction,
+ *     default is to use 2011 global fit with TPE correction;
+ *   C12:
+ *     2 means to use Stansfield's form factors,
+ *     default is to use Cardman's fit.
  */
 
 // History:
 //   Mar 2013, C. Gu, First public version, with C12 models.
 //   Apr 2013, C. Gu, Add L. Cardman's C12 charge densities.
 //   Nov 2013, C. Gu, Add He4 and N14 charge and magnetization densities from D. Jager, original coded by M. Friedman.
-//   Apr 2014, C. Gu, Add H1 form factors from J. Arrington.(Thanks to M. Cummings)
+//   Apr 2014, C. Gu, Add H1 form factors from J. Arrington. (Thanks to M. Cummings)
+//   Nov 2016, C. Gu, Rewrite the elastic model with a Gaussian type resolution.
 //
 
 #include <cstdlib>
@@ -49,6 +51,7 @@ extern "C" {
 }
 
 static const double kPi = 3.1415926535897932384626;
+static const double kSqrt2Pi = sqrt(2 * kPi);
 static const double kDEG = kPi / 180.0;
 static const double kMEV = 1.0e-3;
 static const double kAlpha = 1 / 137.035999679;
@@ -179,7 +182,7 @@ static double FF_All(int Z, double Q2)
     return FF;
 }
 
-G2PPhysEl::G2PPhysEl() : fSetting(1)
+G2PPhysEl::G2PPhysEl() : fRes(10), fSetting(1)
 {
     // Constructor
 
@@ -196,38 +199,44 @@ G2PPhysEl::~G2PPhysEl()
     // Nothing to do
 }
 
-void G2PPhysEl::SetPars(double *array, int n)
+void G2PPhysEl::SetPar(int id, double value)
 {
-    G2PPhysBase::SetPars(array, n);
-
-    switch (n) {
-    case 0:
+    switch (id) {
+    case 1:
+        fRes = value;
         break;
 
-    case 1:
-        fSetting = int(fPars[0]);
+    case 2:
+        fSetting = int(value);
         break;
 
     default:
-        printf("Error: G2PPhysEl::SetPars(): Invalid number of pars.\n");
+        printf("Error: G2PPhysEl::SetPars(): Invalid parameter id.\n");
         break;
     }
 }
 
 double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
 {
-    if ((fZ == 1) && (fA == 1)) return GetXS_H1(Ei, theta);
+    double Eel = Ei / (1 + Ei / fTargetMass * (1 - cos(theta)));
+    double total = 0;
 
-    if ((fZ == 2) && (fA == 4)) return GetXS_He4(Ei, theta);
+    if ((fZ == 1) && (fA == 1))
+        total = GetXS_H1(Ei, theta);
+    else if ((fZ == 2) && (fA == 4))
+        total = GetXS_He4(Ei, theta);
+    else if ((fZ == 6) && (fA == 12)) {
+        if (fSetting == 2)
+            total = GetXS_All(Ei, theta);
+        else
+            total = Carbon(Ei, theta);
+    } else if ((fZ == 7) && (fA == 14))
+        total =  GetXS_N14(Ei, theta);
+    else
+        total = GetXS_All(Ei, theta);
 
-    if ((fZ == 6) && (fA == 12)) {
-        if (fSetting == 2) return GetXS_All(Ei, theta);
-        else return Carbon(Ei, theta);
-    }
-
-    if ((fZ == 7) && (fA == 14)) return GetXS_N14(Ei, theta);
-
-    return GetXS_All(Ei, theta);
+    double x = (Ef - Eel) * 1000;
+    return total * (1 / (fRes * kSqrt2Pi)) * exp(-x * x / (2 * fRes * fRes));
 }
 
 double G2PPhysEl::GetXS_H1(double Ei, double theta)

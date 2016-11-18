@@ -6,10 +6,8 @@
  * The cross section is calculated per nuclei. (Notice the difference with WISER model)
  * This model considers 2 situations: single pion production and multiple pion production.
  *
- * How to set parameters:
- * If set 1 parameters with SetPars(pars,1), then pars[0]=0 means to calculate
- *   single pion production only, default is multiple pion production;
- * Other uses will be considered as invalid.
+ * Parameters:
+ * [1] fMPI: 0 means to calculate single pion production only, default is multiple pion production.
  */
 
 // History:
@@ -57,22 +55,17 @@ G2PPhysEPC::~G2PPhysEPC()
     // Nothing to do
 }
 
-void G2PPhysEPC::SetPars(double *array, int n)
+void G2PPhysEPC::SetPar(int id, double value)
 {
-    G2PPhysBase::SetPars(array, n);
-
-    switch (n) {
-    case 0:
-        break;
-
+    switch (id) {
     case 1:
-        if (fPars[0] > 0.5) fMPI = 1;
+        if (value > 0.5) fMPI = 1;
         else fMPI = 0;
 
         break;
 
     default:
-        printf("Error: G2PPhysEPC::SetPars(): Invalid number of pars.\n");
+        printf("Error: G2PPhysEPC::SetPars(): Invalid parameter id.\n");
         break;
     }
 }

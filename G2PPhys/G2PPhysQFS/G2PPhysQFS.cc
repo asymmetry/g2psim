@@ -6,19 +6,13 @@
  * Predict (e,e') cross sections to within 20% for an incident electron in the energy range 0.5-5 GeV and for energy losses greater than 50 MeV.
  *
  * Radiative correction parameters:
- * Tb: total radiative length before scattering in radiation length;
- * Ta: total radiative length after scattering in radiation length;
+ * [1] Tb: total radiative length before scattering in radiation length;
+ * [2] Ta: total radiative length after scattering in radiation length.
  *
  * QFS model parameters:
- * EPS: separation energy in MeV;
- * EPSD: delta separation energy in MeV;
- * FP: Fermi momentum in MeV/c;
- *
- * How to set parameters:
- * If set 2 parameters with SetPars(pars,2), then pars[0]->Tb, pars[1]->Ta;
- * If set 3 parameters with SetPars(pars,3), then pars[0]->EPS, pars[1]->EPSD, pars[2]->FP;
- * If set 5 parameters with SetPars(pars,5), then pars[0]->EPS, pars[1]->EPSD, pars[2]->FP, pars[3]->Tb, pars[4]->Ta;
- * Other uses will be considered as invalid.
+ * [3] EPS: separation energy in MeV;
+ * [4] EPSD: delta separation energy in MeV;
+ * [5] FP: Fermi momentum in MeV/c.
  */
 
 // History:
@@ -53,8 +47,7 @@ static double QFS(int Z, int A, double Ei, double Ef, double theta, double EPS, 
     return XS;
 }
 
-G2PPhysQFS::G2PPhysQFS() :
-    fEPS(10.0), fEPSD(-10.0), fFP(220.0), fTb(0.0), fTa(0.0)
+G2PPhysQFS::G2PPhysQFS() : fEPS(10.0), fEPSD(-10.0), fFP(220.0), fTb(0.0), fTa(0.0)
 {
     // Nothing to do
 }
@@ -64,35 +57,31 @@ G2PPhysQFS::~G2PPhysQFS()
     // Nothing to do
 }
 
-void G2PPhysQFS::SetPars(double *array, int n)
+void G2PPhysQFS::SetPar(int id, double value)
 {
-    G2PPhysBase::SetPars(array, n);
-
-    switch (n) {
-    case 0:
+    switch (id) {
+    case 1:
+        fTb = value;
         break;
 
     case 2:
-        fTb = fPars[0];
-        fTa = fPars[1];
+        fTa = value;
         break;
 
     case 3:
-        fEPS = fPars[0];
-        fEPSD = fPars[1];
-        fFP = fPars[2];
+        fEPS = value;
+        break;
+
+    case 4:
+        fEPSD = value;
         break;
 
     case 5:
-        fEPS = fPars[0];
-        fEPSD = fPars[1];
-        fFP = fPars[2];
-        fTb = fPars[3];
-        fTa = fPars[4];
+        fFP = value;
         break;
 
     default:
-        printf("Error: G2PPhysQFS::SetPars(): Invalid number of pars.\n");
+        printf("Error: G2PPhysQFS::SetPars(): Invalid parameter id.\n");
         break;
     }
 }

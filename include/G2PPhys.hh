@@ -28,8 +28,7 @@
  *
  * Please also read headers of QFS, PBosted, EPC and WISER models. They contains very important usage information!
  *
- * Unit of elastic cross section is ub/sr.
- * Unit of inelastic cross section is ub/MeV-sr.
+ * Unit of cross section is ub/MeV-sr.
  */
 
 // History:
@@ -40,6 +39,7 @@
 //   Oct 2013, C. Gu, Add H, He, N form factors.
 //   Feb 2014, C. Gu, Add EPC model.
 //   Apr 2014, C. Gu, Update H form factors.
+//   Nov 2016, C. Gu, Rewrite parameter parser.
 //
 
 #ifndef G2P_PHYS_H
@@ -62,7 +62,7 @@ public:
     // Gets
 
     // Sets
-    void SetPars(double *array, int n);
+    void SetPar(int id, double value);
 
 protected:
     G2PPhys(); // Only for ROOT I/O
@@ -78,8 +78,7 @@ protected:
     int fPID;
     int fZ, fA; // Define Target
     double fParticleMass;
-    double *fPars;
-    int fNPars;
+    map<int, double> fPars;
 
     double fE;
     double fTb, fTa;

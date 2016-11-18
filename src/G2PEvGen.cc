@@ -40,7 +40,7 @@ static const double kDEG = 3.14159265358979323846 / 180.0;
 
 G2PEvGen *G2PEvGen::pG2PEvGen = NULL;
 
-G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fm(0.0), fM0(0.0), fFieldRatio(0.0), fForceElastic(false), fBeamX_bpm(0.0), fBeamT_bpm(0.0), fBeamY_bpm(0.0), fBeamP_bpm(0.0), fBeamZ_bpm(0.0), fProfileA(0.0), fProfileB(0.0), fProfileAngle(0.0), fFastRasterX(0.0), fFastRasterY(0.0), fSlowRasterX(0.0), fSlowRasterY(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0)
+G2PEvGen::G2PEvGen() : fUseTrans(true), fE0(0.0), fFieldRatio(0.0), fBeamX_bpm(0.0), fBeamT_bpm(0.0), fBeamY_bpm(0.0), fBeamP_bpm(0.0), fBeamZ_bpm(0.0), fProfileA(0.0), fProfileB(0.0), fProfileAngle(0.0), fFastRasterX(0.0), fFastRasterY(0.0), fSlowRasterX(0.0), fSlowRasterY(0.0), fE(0.0), fELoss(0.0), fTb(0.0), fReactZLow_lab(0.0), fReactZHigh_lab(0.0), fTargetThLow_tr(0.0), fTargetThHigh_tr(0.0), fTargetPhLow_tr(0.0), fTargetPhHigh_tr(0.0), fDeltaLow(0.0), fDeltaHigh(0.0)
 {
     if (pG2PEvGen) {
         Error("G2PEvGen()", "Only one instance of G2PEvGen allowed.");
@@ -188,27 +188,7 @@ int G2PEvGen::Process()
     if (fDebug > 2)
         Info("EnergyLoss()", "%10.3e %10.3e", fELoss, fTb);
 
-    // calculate elastic scattering momentum
-    double P = sqrt(fE * fE - fm * fm);
-    double scatmom = (P * fM0 / (fE + fM0 - P * cosang)) * (((fE + fM0) * sqrt(1 - (fm / fM0) * (fm / fM0) * (1 - cosang * cosang)) + (fE + (fm / fM0) * fm) * cosang) / (fE + fM0 + P * cosang));
-    double elasticd = scatmom / fHRSMomentum - 1;
-
-    if (fForceElastic)
-        fV5react_tr[4] = elasticd;
-    else {
-
-        // no larger than elastic momentum
-        if (fDeltaLow > elasticd)
-            return -1;
-        else {
-            double tempd = fDeltaHigh;
-
-            if (fDeltaHigh > elasticd)  tempd = elasticd;
-
-            tempd = pRand->Uniform(fDeltaLow, tempd);
-            fV5react_tr[4] = tempd;
-        }
-    }
+    fV5react_tr[4] =  pRand->Uniform(fDeltaLow, fDeltaHigh);
 
     if (freactz_tr < 0.0)
         Drift("forward", fV5react_tr, freactz_tr, 0.0, fV5tp_tr); // Drift to target plane (z_tr = 0)
@@ -321,13 +301,6 @@ void G2PEvGen::SetDelta(double low, double high)
     fConfigIsSet.insert((unsigned long) &fDeltaHigh);
 }
 
-void G2PEvGen::SetDelta(const char *elastic)
-{
-    fForceElastic = true;
-
-    fConfigIsSet.insert((unsigned long) &fForceElastic);
-}
-
 void G2PEvGen::SetCoords(const char *coords)
 {
     string s = coords;
@@ -410,8 +383,6 @@ int G2PEvGen::Configure(EMode mode)
 
     ConfDef confs[] = {
         {"run.e0", "Beam Energy", kDOUBLE, &fE0},
-        {"particle.mass", "Beam Particle Mass", kDOUBLE, &fm},
-        {"target.mass", "Target Mass", kDOUBLE, &fM0},
         {"field.ratio", "Field Ratio", kDOUBLE, &fFieldRatio},
         {"beam.x", "Beam X", kDOUBLE, &fBeamX_bpm},
         {"beam.t", "Beam Tilt Angle Theta", kDOUBLE, &fBeamT_bpm},
@@ -431,7 +402,6 @@ int G2PEvGen::Configure(EMode mode)
         {"react.p.max", "Phi Max", kDOUBLE, &fTargetPhHigh_tr},
         {"react.d.min", "Delta Min", kDOUBLE, &fDeltaLow},
         {"react.d.max", "Delta Max", kDOUBLE, &fDeltaHigh},
-        {"react.d.elastic", "Delta Elastic", kBOOL, &fForceElastic},
         {"react.z.min", "React Z Min", kDOUBLE, &fReactZLow_lab},
         {"react.z.max", "React Z Max", kDOUBLE, &fReactZHigh_lab},
         {0}

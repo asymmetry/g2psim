@@ -7,11 +7,7 @@
  * Photoproduction of pion/nucleons in DIS region.
  *
  * Parameters:
- * fRadLen: radiation length of the target, include both external and internal contribution.
- *
- * How to set parameters:
- * If set 1 parameters with SetPars(pars,1), then pars[0]->fRadLen;
- * Other uses will be considered as invalid.
+ * [1] fRadLen: radiation length of the target, include both external and internal contribution.
  */
 
 // History:
@@ -56,20 +52,15 @@ G2PPhysWISER::~G2PPhysWISER()
     // Nothing to do
 }
 
-void G2PPhysWISER::SetPars(double *array, int n)
+void G2PPhysWISER::SetPar(int id, double value)
 {
-    G2PPhysBase::SetPars(array, n);
-
-    switch (n) {
-    case 0:
-        break;
-
+    switch (id) {
     case 1:
-        fRadLen = fPars[0];
+        fRadLen = value;
         break;
 
     default:
-        printf("Error: G2PPhysWISER::SetPars(): Invalid number of pars.\n");
+        printf("Error: G2PPhysWISER::SetPars(): Invalid parameter id.\n");
         break;
     }
 }

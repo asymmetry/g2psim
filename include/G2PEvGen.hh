@@ -41,7 +41,6 @@ public:
     void SetTargetTh(double low, double high);
     void SetTargetPh(double low, double high);
     void SetDelta(double low, double high);
-    void SetDelta(const char *elastic);
     void SetCoords(const char *coords);
 
 protected:
@@ -56,10 +55,7 @@ protected:
     bool fUseTrans;
 
     double fE0;
-    double fm, fM0;
     double fFieldRatio;
-
-    bool fForceElastic;
 
     double fBeamX_bpm, fBeamT_bpm, fBeamY_bpm, fBeamP_bpm, fBeamZ_bpm;
 
