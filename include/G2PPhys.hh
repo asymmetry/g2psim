@@ -45,6 +45,8 @@
 #ifndef G2P_PHYS_H
 #define G2P_PHYS_H
 
+#include <map>
+
 #include "G2PProcBase.hh"
 
 class G2PPhysBase;
