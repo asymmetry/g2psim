@@ -6,10 +6,12 @@
  *
  * Elastic cross section models (G2PPhysEl):
  * * All: Form factors from K. C. Stansfield et al., Phys. Rev. C, 3(1971)1448
- * * 1H : Form factors from J. Arrington, Phys. Rev. C, 69(2004)022201
- * * 4He: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
- * * 12C: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
- * * 14N: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * H1 : Form factors from S. Venkat et al., Phys. Rev. C, 83(2011)015203 (global fit, with TPE correction)
+ *                          J. Arrington et al., Phys. Rev. C 76(2007)035201 (low Q2, with/without TPE correction)
+ * * He4: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ * * C12: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ *        Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
+ * * N14: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  *
  * Inelastic cross section models:
  * * G2PPhysEPC: J. W. Lightbody et al, Computers in Physics, 2(1988)57

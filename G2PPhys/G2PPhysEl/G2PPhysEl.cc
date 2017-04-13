@@ -9,7 +9,8 @@
  * * H1 : Form factors from S. Venkat et al., Phys. Rev. C, 83(2011)015203 (global fit, with TPE correction)
  *                          J. Arrington et al., Phys. Rev. C 76(2007)035201 (low Q2, with/without TPE correction)
  * * He4: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
- * * C12: Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
+ * * C12: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
+ *        Charge distribution from L. S. Cardman et al., Phys. Lett. B, 91(1970)203
  * * N14: Charge and magnetization densities from De Jager, At. Data Nucl. Data Tables, 14(1974)
  *
  * Parameters:
@@ -20,8 +21,8 @@
  *     3 means to use 2007 low Q2 fit with TPE correction,
  *     default is to use 2011 global fit with TPE correction;
  *   C12:
- *     2 means to use Stansfield's form factors,
- *     default is to use Cardman's fit.
+ *     2 means to use Larry's fit,
+ *     default is to use charge densities from De Jager.
  */
 
 // History:
@@ -30,6 +31,7 @@
 //   Nov 2013, C. Gu, Add He4 and N14 charge and magnetization densities from D. Jager, original coded by M. Friedman.
 //   Apr 2014, C. Gu, Add H1 form factors from J. Arrington. (Thanks to M. Cummings)
 //   Nov 2016, C. Gu, Rewrite the elastic model with a Gaussian type resolution.
+//   Apr 2017, C. Gu, Add C12 charge and magnetization densities from D. Jager.
 //
 
 #include <cstdlib>
@@ -62,7 +64,7 @@ static const double kFm = kHbar * kC / 1e-15 / 1e9 / kQe;
 
 static const double kIntegralMin = 0.0;
 static const double kIntegralMax = 10.0;
-static double kRho0GE_He4, kRho0GE_N14, kRho0GM_N14;
+static double kRho0GE_He4, kRho0GE_C12, kRho0GE_N14, kRho0GM_N14;
 
 static double rhoGE_He4(double x, void *data)
 {
@@ -97,6 +99,30 @@ static double Carbon(double Ei, double theta)
 
     XS *= 1.0e4; // fm^2 (1e-30m^2) to microbarn (1e-34m^2)
     return XS;
+}
+
+static double rhoGE_C12(double x, void *data)
+{
+    // Three-parameter Fermi model
+
+    return 4 * kPi * x * x * (1 - 0.1495 * x * x / 5.5479) / (1 + exp((x - 2.3554) / 0.5224));
+}
+
+static double funcGE_C12(double x, void *data)
+{
+    double qfm = *(double *) data;
+    return kRho0GE_C12 * rhoGE_C12(x, NULL) * sin(qfm * x) / (qfm * x);
+}
+
+static double GE_C12(double q2)
+{
+    // calculate GE from density function
+
+    double q = sqrt(q2);
+    double qfm = q / kFm;
+
+    double params[1] = {qfm};
+    return fabs(gauss_legendre(QUADRATURE_ORDER, funcGE_C12, params, kIntegralMin, kIntegralMax));
 }
 
 static double rhoGE_N14(double x, void *data)
@@ -188,6 +214,8 @@ G2PPhysEl::G2PPhysEl() : fRes(10), fSetting(1)
 
     double temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_He4, NULL, kIntegralMin, kIntegralMax);
     kRho0GE_He4 = 1. / temp;
+    temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_C12, NULL, kIntegralMin, kIntegralMax);
+    kRho0GE_C12 = 1. / temp;
     temp = gauss_legendre(QUADRATURE_ORDER, rhoGE_N14, NULL, kIntegralMin, kIntegralMax);
     kRho0GE_N14 = 1. / temp;
     temp = gauss_legendre(QUADRATURE_ORDER, rhoGM_N14, NULL, kIntegralMin, kIntegralMax);
@@ -227,9 +255,9 @@ double G2PPhysEl::GetXS(double Ei, double Ef, double theta)
         total = GetXS_He4(Ei, theta);
     else if ((fZ == 6) && (fA == 12)) {
         if (fSetting == 2)
-            total = GetXS_All(Ei, theta);
-        else
             total = Carbon(Ei, theta);
+        else
+            total = GetXS_C12(Ei, theta);
     } else if ((fZ == 7) && (fA == 14))
         total =  GetXS_N14(Ei, theta);
     else
@@ -315,6 +343,25 @@ double G2PPhysEl::GetXS_He4(double Ei, double theta)
 
     // De Jager, At. Data Nucl. Data Tables, 14(1974)
     double GE = GE_He4(Q2);
+    double GM = 0.0;
+
+    double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei) * (eP / Ei) * (2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau) * (GE * GE + tau * GM * GM));
+
+    return sigma * kFm * kFm * 1e4; // microbarn
+}
+
+double G2PPhysEl::GetXS_C12(double Ei, double theta)
+{
+    // reference: Xiaohui thesis, eq. 1.39 for sigma
+
+    int Z = 6;
+    double M = 11.1879; // GeV
+    double eP = Ei / (1 + Ei / M * (1 - cos(theta))); // scattered electron energy
+    double Q2 = 4 * Ei * eP * sin(theta / 2) * sin(theta / 2); // units GeV2
+    double tau = Q2 / 4.0 / M / M;
+
+    // De Jager, At. Data Nucl. Data Tables, 14(1974)
+    double GE = GE_C12(Q2);
     double GM = 0.0;
 
     double sigma = Z * Z * kAlpha * kAlpha / Q2 * (eP / Ei) * (eP / Ei) * (2 * tau * GM * GM + 1 / tan(theta / 2) / tan(theta / 2) / (1 + tau) * (GE * GE + tau * GM * GM));
