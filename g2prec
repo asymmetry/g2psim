@@ -126,8 +126,8 @@ elif t.FindBranch('{}rb.tgt_m10_x'.format(arm)):
     bpmz = -10.81e-3
 elif t.FindBranch('{}rb.tgt_0_x'.format(arm)):
     bpmvars = [x.format(arm) for x in ['{}rb.tgt_0_x', '{}rb.tgt_0_theta', '{}rb.tgt_0_y', '{}rb.tgt_0_phi']]
-elif not t.FindBranch('{}rb.bpmavail'.format(arm)):
-    gep = True
+#elif not t.FindBranch('{}rb.bpmavail'.format(arm)):
+#    gep = True
 else:
     print('Could not find beam information.')
     exit(1)
@@ -145,14 +145,22 @@ def calkins(bpm, rec, d):
     B = [sin(rec[1]) * cos(rec[3]), sin(rec[1]) * sin(rec[3]), cos(rec[1])]
     C = [pol, 0, 0]
 
-    scatang = acos((A[0] * B[0] + A[1] * B[1] + A[2] * B[2]) / sqrt((A[0]**2 + A[1]**2 + A[2]**2) * (B[0]**2 + B[1]**2 + B[2]**2)))
+    try:
+        scatang = acos((A[0] * B[0] + A[1] * B[1] + A[2] * B[2]) / sqrt((A[0]**2 + A[1]**2 + A[2]**2) * (B[0]**2 + B[1]**2 + B[2]**2)))
+    except ValueError:
+        scatang = 0.0
+        print A, B
 
     q2 = 4 * e * ep * sin(scatang / 2)**2
     w2 = m**2 + 2 * m * nu - q2
 
     D = cross(A, B)
     E = cross(A, C)
-    fieldang = acos((D[0] * E[0] + D[1] * E[1] + D[2] * E[2]) / sqrt((D[0]**2 + D[1]**2 + D[2]**2) * (E[0]**2 + E[1]**2 + E[2]**2)))
+    try:
+        fieldang = acos((D[0] * E[0] + D[1] * E[1] + D[2] * E[2]) / sqrt((D[0]**2 + D[1]**2 + D[2]**2) * (E[0]**2 + E[1]**2 + E[2]**2)))
+    except ValueError:
+        fieldang = 0.0
+        print D, E
 
     return [nu, scatang, q2, w2, fieldang]
 
