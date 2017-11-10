@@ -121,6 +121,10 @@ int G2PField::Begin()
 
     SetRotationMatrix();
 
+#ifdef DEBUGWITHROOT
+    SaveRootFile();
+#endif
+
     return (fStatus = status);
 }
 

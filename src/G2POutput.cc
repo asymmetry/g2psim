@@ -123,7 +123,7 @@ int G2POutput::End()
         ostringstream ostr; // String stream has a better output format
         ostr << conf[i].name << " = " << *((double *)conf[i].var);
         fConfig->AddLine(Form("cout << \"%s\" << endl;", ostr.str().c_str()));
-        delete((double *) conf[i].var);
+        delete ((double *) conf[i].var);
     }
 
     fConfig->AddLine("}");
