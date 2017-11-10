@@ -17,7 +17,7 @@
 #ifndef G2P_FIELD_H
 #define G2P_FIELD_H
 
-#define DEBUGWITHROOT
+//#define DEBUGWITHROOT
 
 #include <vector>
 
