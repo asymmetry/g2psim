@@ -122,7 +122,7 @@ int G2PBwdDB::Begin()
     // Locate the matrix label in the database file
     bool found = false;
 
-    while ((!found) && (ifs.getline(buff, LEN) != 0)) {
+    while ((!found) && (ifs.getline(buff, LEN))) {
         tmpline = ::Compress(buff); //strip blanks
 
         if (tmpline.EndsWith("\n"))
@@ -187,7 +187,7 @@ int G2PBwdDB::Begin()
         Info(here, "Loading matrix from %s ...", fDBFile);
 
     // Read matrix elements line by line
-    while (ifs.getline(buff, LEN) != 0) {
+    while (ifs.getline(buff, LEN)) {
         TString tmpline(buff);
 
         if (tmpline.EndsWith("\n"))

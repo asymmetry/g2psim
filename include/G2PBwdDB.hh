@@ -41,13 +41,6 @@ public:
     void SetParsY(const double *pars);
     void SetRecZ(double z);
 
-protected:
-    G2PBwdDB(); // Only for ROOT I/O
-
-    enum {
-        kPORDER = 7, kNUM_PRECOMP_POW = 10
-    }; // constants
-
     // Class for storing matrix element data
     class THaMatrixElement
     {
@@ -67,6 +60,13 @@ protected:
 
         double fValue; // the final value once x is given
     };
+
+protected:
+    G2PBwdDB(); // Only for ROOT I/O
+
+    enum {
+        kPORDER = 7, kNUM_PRECOMP_POW = 10
+    }; // constants
 
     void GetEffBPM(const double *V5tp_tr, const double *V5bpm_tr, double *V5bpmeff_tr);
     void Correct(const double *V5bpm_tr, const double *V5tp_tr, double *V5corr_tr);

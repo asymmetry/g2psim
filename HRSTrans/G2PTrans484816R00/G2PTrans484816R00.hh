@@ -19,8 +19,8 @@ public:
     G2PTrans484816R00();
     ~G2PTrans484816R00();
 
-    int TransLeftHRS(double* vector_jjl);
-    int TransRightHRS(double* vector_jjl);
+    int TransLeftHRS(double* vector_jjl, double* PlanePosX, double* PlanePosY);
+    int TransRightHRS(double* vector_jjl, double* PlanePosX, double* PlanePosY);
     void ReconLeftHRS(double* vector_jjl);
     void ReconRightHRS(double* vector_jjl);
 

@@ -32,7 +32,7 @@ G2PTrans484816R00::~G2PTrans484816R00()
     // Nothing to do
 }
 
-int G2PTrans484816R00::TransLeftHRS(double *pV5)
+int G2PTrans484816R00::TransLeftHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
     float vector_jjl[] = {float(pV5[0]), float(pV5[1]), float(pV5[2]), float(pV5[3]), float(pV5[4])};
     int ii = 5;
@@ -53,13 +53,13 @@ int G2PTrans484816R00::TransLeftHRS(double *pV5)
     return 0;
 }
 
-int G2PTrans484816R00::TransRightHRS(double *pV5)
+int G2PTrans484816R00::TransRightHRS(double *pV5, double *PlanePosX, double *PlanePosY)
 {
     // Use right arm routines for left arm before left arm is ready
 
     pV5[2] *= -1.;
     pV5[3] *= -1.;
-    int fGoodParticle = TransLeftHRS(pV5);
+    int fGoodParticle = TransLeftHRS(pV5, PlanePosX, PlanePosY);
     pV5[2] *= -1.;
     pV5[3] *= -1.;
 

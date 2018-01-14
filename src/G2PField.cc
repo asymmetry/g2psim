@@ -217,7 +217,7 @@ int G2PField::ReadMap()
 
     ifs.getline(buff, LEN); // eat the first line
 
-    while (ifs.getline(buff, LEN) != 0) {
+    while (ifs.getline(buff, LEN)) {
         TString tmpline(buff);
 
         if (tmpline.EndsWith("\n"))

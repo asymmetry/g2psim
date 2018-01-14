@@ -37,3 +37,4 @@ scripts/
 !Run.C
 !rootlogon.C
 !sim.cfg
+env.sh

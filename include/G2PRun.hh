@@ -24,11 +24,11 @@
 
 #include "TObject.h"
 
-#include "libconfig.h"
-
 #include "G2PVarDef.hh"
 
 using namespace std;
+
+struct config_setting_t;
 
 class G2PRand;
 
