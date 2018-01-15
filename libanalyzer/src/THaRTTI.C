@@ -60,13 +60,13 @@ Int_t THaRTTI::Find( TClass* cl, TString& var,
   VarType type;
   if( m->IsBasic() || m->IsEnum() ) {
     TString typnam( m->GetTypeName() );
-    if( typnam == "Double_t" )
+    if( typnam == "Double_t" || typnam == "double" )
       type = kDouble;
-    else if( typnam == "Float_t" || typnam == "Real_t" )
+    else if( typnam == "Float_t" || typnam == "float" || typnam == "Real_t" )
       type = kFloat;
-    else if( typnam == "Int_t" )
+    else if( typnam == "Int_t" || typnam == "int" )
       type = kInt;
-    else if( typnam == "UInt_t" )
+    else if( typnam == "UInt_t" || typnam == "unsigned int" )
       type = kUInt;
     else if( typnam == "Short_t" )
       type = kShort;
@@ -79,7 +79,7 @@ Int_t THaRTTI::Find( TClass* cl, TString& var,
     else if( typnam == "Char_t" || typnam == "Text_t" )
       type = kChar;
     else if( typnam == "Byte_t" || typnam == "UChar_t" ||
-	     typnam == "Bool_t" )
+	     typnam == "Bool_t" || typnam == "bool" )
       type = kByte;
     else if( m->IsEnum() )
       // Enumeration types are all treated as integers

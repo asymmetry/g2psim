@@ -20,8 +20,8 @@
 
 obj.*
 
-*_Dict.*
-*_dict.*
+G2PSimDict*
+analyzerDict*
 
 plots/
 scripts/

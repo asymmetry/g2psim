@@ -62,8 +62,8 @@ defaults = {
         'z': 0
     },
     'phys': {
-#        'pars': [0, 0],
         'model': 'pbosted'
+#        'pars': {1: 0}
     },
     'optics': {
         'data': 'Sieve.full.f51',
@@ -80,7 +80,7 @@ optics_l = {
         'beam': {'z': -13.6271e-3},
         'raster': {'slow': [0.0002, 0.0002]},
         'react': {
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': [-0.0141350, -0.0131191]
         }
     },
@@ -88,7 +88,7 @@ optics_l = {
     'backward': {'z': -13.6271e-3},
     'phys': {
         'model': 'elastic',
-        'pars': [2]
+        'pars': {1: 1.0 / 3, 2: 2}
     },
     'optics': {
         'foilz': -13.6271e-3,
@@ -115,7 +115,7 @@ optics_l_22542590 = {
         'react': {
             't': [-0.1, 0.02],
             'p': [-0.033, 0.032],
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': optics_l['generator']['react']['z']
         }
     },
@@ -185,7 +185,7 @@ optics_l_22545000 = {
         'beam': {'z': -12.5476e-3},
         'raster': {'slow': [0.0002, 0.0002]},
         'react': {
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': [-0.0141350, -0.0109601]
         }
     },
@@ -193,7 +193,7 @@ optics_l_22545000 = {
     'backward': {'z': -12.5476e-3},
     'phys': {
         'model': 'elastic',
-        'pars': [2]
+        'pars': {1: 1.0 / 3, 2: 2}
     },
     'optics': {
         'foilz': -12.5476e-3,
@@ -222,7 +222,7 @@ optics_l_22545090 = {
         'raster': optics_l_22545000['generator']['raster'],
         'react': {
             't': [-0.17, -0.05],
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': optics_l_22545000['generator']['react']['z']
         }
     },
@@ -265,7 +265,7 @@ optics_r_22542590 = {
         'react': {
             't': [-0.12, 0.02],
             'p': [-0.04, 0.04],
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': optics_l['generator']['react']['z']
         }
     },
@@ -349,7 +349,7 @@ optics_r_22545090 = {
         'raster': optics_l_22545000['generator']['raster'],
         'react': {
             't': [-0.17, -0.05],
-            'd': 'elastic',
+            'd': [-0.01, 0.005],
             'z': optics_l_22545000['generator']['react']['z']
         }
     },

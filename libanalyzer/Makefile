@@ -18,11 +18,12 @@ SRCDIR      := src
 INCDIR      := src
 OBJDIR      := obj.$(ARCH)
 
-DICTFILE    := halla_dict.cc
+LINKDEFFILE := halla_linkdef.h
+
+DICTFILE    := analyzerDict.cc
+DICTPCMFILE := analyzerDict_rdict.pcm
 
 INCDIRS     := $(INCDIR)
-LINKDEFFILE := $(subst dict.cc,linkdef.h,$(DICTFILE))
-DICTHEADER  := $(addsuffix .h,$(basename $(DICTFILE)))
 DICTOBJ     := $(OBJDIR)/$(addsuffix .o,$(basename $(DICTFILE)))
 
 ###############################################################################
@@ -84,7 +85,6 @@ ifdef ROOTSYS
     ROOTCFLAGS := $(shell root-config --cflags)
     ROOTLIBS := $(shell root-config --libs) -lMinuit
 
-    CFLAGS  += $(ROOTCFLAGS)
     CXXFLAGS += $(ROOTCFLAGS)
     LIBS    += $(ROOTLIBS)
 else
@@ -209,7 +209,7 @@ $(OBJDIR)/%.o: %.F
 # Clean
 clean:
 	@rm -f $(LIBFILE)
-	@rm -f $(DICTFILE) $(DICTHEADER)
+	@rm -f $(DICTFILE) $(DICTPCMFILE)
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#
 

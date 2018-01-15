@@ -21,12 +21,13 @@ OBJDIR      := obj.$(ARCH)
 
 MODELLIST   := HRSTrans G2PPhys
 
-DICTFILE    := g2psim_dict.cc
+LINKDEFFILE := g2psim_linkdef.h
+
+DICTFILE    := G2PSimDict.cc
+DICTPCMFILE := G2PSimDict_rdict.pcm
 
 MODELLIST   := $(strip $(MODELLIST))
 INCDIRS     := $(INCDIR) $(MODELLIST)
-LINKDEFFILE := $(subst dict.cc,linkdef.h,$(DICTFILE))
-DICTHEADER  := $(addsuffix .h,$(basename $(DICTFILE)))
 DICTOBJ     := $(OBJDIR)/$(addsuffix .o,$(basename $(DICTFILE)))
 
 ###############################################################################
@@ -89,7 +90,6 @@ ifdef ROOTSYS
     ROOTCFLAGS := $(shell root-config --cflags)
     ROOTLIBS := $(shell root-config --libs) -lMinuit
 
-    CFLAGS  += $(ROOTCFLAGS)
     CXXFLAGS += $(ROOTCFLAGS)
     LIBS    += $(ROOTLIBS)
 else
@@ -243,7 +243,7 @@ $(OBJDIR)/%.o: %.F
 # Clean
 clean:
 	@rm -f $(LIBFILE) $(LIBFILE).$(VERSION)
-	@rm -f $(DICTFILE) $(DICTHEADER)
+	@rm -f $(DICTFILE) $(DICTPCMFILE)
 	@rm -f libanalyzer.so
 	@rm -f $(OBJDIR)/*
 	@rm -f *~ *# */*~ */*#

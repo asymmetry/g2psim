@@ -41,14 +41,14 @@ using namespace std;
        staterr("close",status);
   };       
 
-  int THaCodaFile::codaOpen(const char* fname, int mode) {  
+  int THaCodaFile::codaOpen(const char* fname, int /* mode */ ) {
        init(fname);
        int status = evOpen(fname,"r",&handle);
        staterr("open",status);
        return status;
   };
 
-  int THaCodaFile::codaOpen(const char* fname, const char* readwrite, int mode) {  
+  int THaCodaFile::codaOpen(const char* fname, const char* readwrite, int /* mode */ ) {
       init(fname);
       int status = evOpen(fname,readwrite,&handle);
       staterr("open",status);
@@ -262,7 +262,8 @@ void THaCodaFile::staterr(const char* tried_to, int status) {
     }
     cerr << Form("THaCodaFile: ERROR while trying to %s %s: ",
 		 tried_to, filename.Data());
-    switch (status) {
+    unsigned int ustatus = static_cast<unsigned int>(status);
+    switch (ustatus) {
       case S_EVFILE_TRUNC :
 	cerr << "Truncated event on file read. Evbuffer size is too small. "
 	     << endl;

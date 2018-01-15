@@ -97,10 +97,7 @@ def _run(**kwds):
                 gun.SetReactZ(cgrz[0], cgrz[1])
             if 'd' in cgr:
                 cgrd = cgr['d']
-                if isinstance(cgrd, list):
-                    gun.SetDelta(cgrd[0], cgrd[1])
-                elif isinstance(cgrd, str):
-                    gun.SetDelta(cgrd)
+                gun.SetDelta(cgrd[0], cgrd[1])
     ROOT.gG2PApps.Add(gun)
 
     fwd = ROOT.G2PFwdHRS(hrs)
@@ -143,8 +140,9 @@ def _run(**kwds):
         cp = c['phys']
         phys = ROOT.G2PPhys(cp['model'])
         if 'pars' in cp:
-            mpars = array('d', cp['pars'])
-            phys.SetPars(mpars, len(cp['pars']))
+            cpp = cp['pars']
+            for key, value in cpp.items():
+                phys.SetPar(key, value)
         ROOT.gG2PApps.Add(phys)
 
     fname = 'test.root'

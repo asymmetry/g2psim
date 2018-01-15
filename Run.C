@@ -7,21 +7,6 @@
 
 //
 
-#include <cstdlib>
-#include <cstdio>
-#include <time.h>
-
-#include "TROOT.h"
-
-#include "G2PBPM.hh"
-#include "G2PBwdHRS.hh"
-#include "G2PEvGen.hh"
-#include "G2PFwdHRS.hh"
-#include "G2PGlobals.hh"
-#include "G2PPhys.hh"
-#include "G2PRun.hh"
-#include "G2PSim.hh"
-
 static const double kDEG = 3.14159265358979323846 / 180.0;
 static const double e = 1.60217656535e-19;
 static const double kU = 0.931494028;
@@ -35,7 +20,7 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     run->SetConfigFile("sim.cfg");
     run->SetDebugLevel(1);
     run->SetSeed(1);
-    int N = 500000;
+    int N = 10000;
     //int N = 20000;
     run->SetNEvent(N);
 
@@ -57,8 +42,8 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     //run->SetHRSMomentum(1.7066);
     //run->SetHRSMomentum(1.1583);
 
-    //run->SetRunType("prod");
-    run->SetRunType("optics"); // 40 mil carbon, no LHe
+    run->SetRunType("prod");
+    //run->SetRunType("optics"); // 40 mil carbon, no LHe
     //run->SetRunType("optics_C40He"); // 40 mil carbon, with LHe
     //run->SetRunType("optics_C125"); // 125 mil carbon, no LHe
     //run->SetRunType("optics_C125He"); // 125 mil carbon, with LHe
@@ -72,10 +57,10 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     //run->SetTargetMass(12.0107 * kU);
     //run->SetTargetPF(0.55);
 
-    run->SetFieldType("none");
+    //run->SetFieldType("none");
     //run->SetFieldType("trans");
     //run->SetFieldType("trans_5T");
-    //run->SetFieldType("long");
+    run->SetFieldType("long");
     //run->SetFieldType("gep");
 
     ///////////////////////////////////////////////////////////////////////////
@@ -103,12 +88,12 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     gun->SetTiltAngle(0, 0);
     //gun->SetTiltAngle(tb, pb);
 
-    gun->SetReactZ(-14.1350e-3, -13.1191e-3); // 40mil C12
+    //gun->SetReactZ(-14.1350e-3, -13.1191e-3); // 40mil C12
     //gun->SetReactZ(-14.1350e-3, -10.9601e-3); // 125mil C12
-    //gun->SetReactZ(-14.1350e-3,  14.1350e-3); // production
+    gun->SetReactZ(-14.1350e-3,  14.1350e-3); // production
     //gun->SetReactZ(-479.425e-3, -479.933e-3); // window longitudinal
 
-    gun->SetBeamProfile(0.8e-3, 0.25e-3, 35.0 * kDEG); // ellipse
+    //gun->SetBeamProfile(0.8e-3, 0.25e-3, 35.0 * kDEG); // ellipse
     gun->SetFastRasterSize(0, 0); // optics
     gun->SetSlowRasterSize(0, 0); // optics
 
@@ -129,24 +114,24 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     // BPM
     ///////////////////////////////////////////////////////////////////////////
     G2PBPM *bpm = new G2PBPM();
-    bpm->SetPosRes(0, 0); // pos and ang res
-    bpm->SetAngRes(0, 0); // pos and ang res
+    bpm->SetPosRes(0.5e-3, 0.5e-3); // pos and ang res
+    bpm->SetAngRes(0.5e-3, 0.5e-3); // pos and ang res
     gG2PApps->Add(bpm);
 
     ///////////////////////////////////////////////////////////////////////////
     // major processes
     ///////////////////////////////////////////////////////////////////////////
     G2PFwdHRS *fwd = new G2PFwdHRS("484816");
-    fwd->SetSieve("in");
+    //fwd->SetSieve("in");
     gG2PApps->Add(fwd);
 
     G2PBwdHRS *bwd = new G2PBwdHRS("484816");
 
-    double xpars[3] = { 0, 0, 0};
-    double ypars[3] = { 0, 0, 0};
+    //double xpars[3] = { 0, 0, 0};
+    //double ypars[3] = { 0, 0, 0};
     // LHRS
-    //double xpars[3] = { 0.00079, -0.75038,  178.902}; // 5.0T, 0deg
-    //double ypars[3] = { 0.15693, -0.39864, -176.049}; // 5.0T, 0deg
+    double xpars[3] = { 0.00079, -0.75038,  178.902}; // 5.0T, 0deg
+    double ypars[3] = { 0.15693, -0.39864, -176.049}; // 5.0T, 0deg
     //double xpars[3] = {-0.00061,  3.13661, -4.87024}; // 2.5T, 90deg
     //double ypars[3] = {-0.08772,  0.21862, -17.5404}; // 2.5T, 90deg
     //double xpars[3] = {-0.03853,  6.34323, -4.97020}; // 5.0T, 90deg
@@ -166,16 +151,17 @@ int Run(double p0 = 2.2510, double xb = 0.0, double yb = 0.0, double zb = 0.0, d
     bwd->SetParsY(ypars);
 
     //bwd->SetRecZ(0.0); // production
-    bwd->SetRecZ(-13.6271e-3); // 40mil C12
-    //bwd->SetRecZ(-12.5476e-3); // 125mil C12
+    //bwd->SetRecZ(-13.6271e-3); // 40mil C12
+    bwd->SetRecZ(-12.5476e-3); // 125mil C12
 
     gG2PApps->Add(bwd);
 
     ///////////////////////////////////////////////////////////////////////////
     // cross section
     ///////////////////////////////////////////////////////////////////////////
-    G2PPhys *phys = new G2PPhys("elastic");
-    phys->SetPar(1, 5);
+    G2PPhys *phys = new G2PPhys("pbosted");
+    //phys->SetPar(1, 1.0 / 3);
+    //phys->SetPar(2, 2);
     gG2PApps->Add(phys);
 
     ///////////////////////////////////////////////////////////////////////////
