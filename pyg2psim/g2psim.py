@@ -33,7 +33,7 @@ def _run(**kwds):
     run.SetHRSAngle(cr['angle'] * kDEG)
     run.SetHRSMomentum(cr['p0'])
     hrs = cr['hrs']
-    run.SetTargetType(cr['target'])
+    run.SetRunType(cr['type'])
     run.SetFieldType(cr['field'])
     if 'particle' in cr:
         run.SetParticle(cr['particle'])
@@ -73,6 +73,9 @@ def _run(**kwds):
             if 'angle' in cgb:
                 cgba = cgb['angle']
                 gun.SetTiltAngle(cgba[0], cgba[1])
+        if 'profile' in cg:
+            cgp = cg['profile']
+            gun.SetBeamProfile(cgp[0], cgp[1], cgp[2])
         if 'raster' in cg:
             cgr = cg['raster']
             if 'fast' in cgr:
@@ -115,7 +118,12 @@ def _run(**kwds):
         cb = c['bpm']
         if 'res' in cb:
             cbr = cb['res']
-            bpm.SetBPMRes(cbr[0], cbr[1])
+            if 'pos' in cbr:
+                cbrp = cbr['pos']
+                bpm.SetPosRes(cbrp[0], cbrp[1])
+            if 'angle' in cbr:
+                cbra = cbr['angle']
+                bpm.SetAngRes(cbra[0], cbra[1])
         ROOT.gG2PApps.Add(bpm)
 
     if 'backward' in c and isinstance(c['backward'], dict):
@@ -171,7 +179,7 @@ def _optrun(**kwds):
     run.SetBeamEnergy(cr['e0'])
     run.SetHRSAngle(cr['angle'] * kDEG)
     run.SetHRSMomentum(cr['p0'])
-    run.SetTargetType(cr['target'])
+    run.SetRunType(cr['type'])
     run.SetFieldType(cr['field'])
     if 'particle' in cr:
         run.SetParticle(cr['particle'])
@@ -219,7 +227,7 @@ def _recrun(**kwds):
     run.SetBeamEnergy(cr['e0'])
     run.SetHRSAngle(cr['angle'] * kDEG)
     run.SetHRSMomentum(cr['p0'])
-    run.SetTargetType(cr['target'])
+    run.SetRunType(cr['type'])
     run.SetFieldType(cr['field'])
     if 'particle' in cr:
         run.SetParticle(cr['particle'])

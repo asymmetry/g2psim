@@ -8,12 +8,12 @@ defaults = {
 #    'debug': 1,
 #    'seed': 1,
     'run': {
+        'type': 'prod',
         'e0': 2.2535,
         'p0': 2.2495,
         'angle': 5.767,
 #        'particle': 11,
         'hrs': '484816',
-        'target': 'prod',
         'field': 'none'
     },
 #    'target': {
@@ -34,6 +34,7 @@ defaults = {
             'z': 0,
             'angle': [0, 0]
         },
+        'profile': [0, 0, 0],
         'raster': {
             'fast': [0, 0],
             'slow': [0.014, 0.014]
@@ -50,7 +51,10 @@ defaults = {
         'vdc': [1e-4, 5e-4, 1e-4, 5e-4]
     },
     'bpm': {
-        'res': [0.2e-3, 0.4e-3]
+        'res': {
+            'pos': [0.5e-3, 0.5e-3],
+            'angle': [0.5e-3, 0.5e-3]
+        }
     },
     'backward': {
         'xpars': [0, 0, 0],
@@ -71,7 +75,7 @@ defaults = {
 
 optics_l = {
     'base': 'defaults',
-    'run': {'target': 'optics'},
+    'run': {'type': 'optics'},
     'generator': {
         'beam': {'z': -13.6271e-3},
         'raster': {'slow': [0.0002, 0.0002]},
@@ -176,7 +180,7 @@ run_l_22545000 = {
 
 optics_l_22545000 = {
     'base': 'run_l_22545000',
-    'run': {'target': 'optics_C125'},
+    'run': {'type': 'optics_C125'},
     'generator': {
         'beam': {'z': -12.5476e-3},
         'raster': {'slow': [0.0002, 0.0002]},
