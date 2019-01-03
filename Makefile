@@ -181,13 +181,13 @@ $(DICTOBJ): $(DICTFILE)
 	@$(compile-cxx)
 
 libanalyzer.so:
-	@make -s -C libanalyzer
+	@$(MAKE) -s -C libanalyzer
 	@ln -sf libanalyzer/$@ $@
 	@cd pyg2psim; ln -sf ../$@ $@; cd ..
 	@echo "Linking $@ ...... done!"
 
 $(MODELLIST):
-	@make -s -C $@
+	@$(MAKE) -s -C $@
 
 ###############################################################################
 # Make dependencies

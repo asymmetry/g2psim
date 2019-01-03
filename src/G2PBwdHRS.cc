@@ -23,9 +23,8 @@
 
 #include "HRSTransBase.hh"
 #include "G2PTrans400016/G2PTrans400016.hh"
-#include "G2PTrans400016OLD/G2PTrans400016OLD.hh"
+#include "G2PTrans403216/G2PTrans403216.hh"
 #include "G2PTrans484816/G2PTrans484816.hh"
-#include "G2PTrans484816OLD/G2PTrans484816OLD.hh"
 #include "HRSTransSTD/HRSTransSTD.hh"
 
 #include "G2PAppBase.hh"
@@ -66,8 +65,6 @@ G2PBwdHRS::G2PBwdHRS(const char *name) : fE(0.0), fFieldRatio(0.0), fSetting(10)
     model_map["484816"] = 10;
     model_map["403216"] = 20;
     model_map["400016"] = 30;
-    model_map["484816OLD"] = 11;
-    model_map["400016OLD"] = 21;
 
     fSetting = model_map[name];
     fConfigIsSet.insert((unsigned long) &fSetting);
@@ -109,19 +106,11 @@ int G2PBwdHRS::Begin()
         break;
 
     case 20:
-        pModel = new G2PTrans484816(); // FIXME: should be 403216 here
+        pModel = new G2PTrans403216();
         break;
 
     case 30:
         pModel = new G2PTrans400016();
-        break;
-
-    case 11:
-        pModel = new G2PTrans484816OLD();
-        break;
-
-    case 21:
-        pModel = new G2PTrans400016OLD();
         break;
 
     default:

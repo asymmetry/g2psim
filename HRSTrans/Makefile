@@ -13,14 +13,13 @@ SHELL       := /bin/bash
 ###############################################################################
 # Project Info
 LIBFILE     := libHRSTrans.a
-VERSION     := 1.4.2
+VERSION     := 1.5.0
 
 SRCDIR      := .
 INCDIR      := .
 OBJDIR      := obj.$(ARCH)
 
-MODELLIST   := HRSTransSTD G2PTrans484816 G2PTrans400016 G2PTrans484816OLD \
-               G2PTrans484816R00 G2PTrans400016OLD GDHTransSTD GDHTransLargeX0
+MODELLIST   := HRSTransSTD G2PTrans484816 G2PTrans403216 G2PTrans400016
 
 MODELLIST   := $(strip $(MODELLIST))
 INCDIRS     := $(INCDIR) $(MODELLIST)
@@ -145,7 +144,7 @@ $(LIBFILE).$(VERSION): $(MODELLIST) $(OBJS)
 	@echo "Linking $(LIBFILE) ...... done!"
 
 $(MODELLIST):
-	@make -s -C $@
+	@$(MAKE) -s -C $@
 
 ###############################################################################
 # Make dependencies

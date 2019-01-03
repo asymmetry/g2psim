@@ -144,7 +144,7 @@ $(LIBFILE).$(VERSION): $(MODELLIST) $(OBJS)
 	@echo "Linking $(LIBFILE) ...... done!"
 
 $(MODELLIST):
-	@make -s -C $@
+	@$(MAKE) -s -C $@
 
 ###############################################################################
 # Make dependencies
